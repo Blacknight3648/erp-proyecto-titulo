@@ -1,0 +1,46 @@
+import React from 'react';
+import { Construction, ChevronLeft, Layout } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+
+export default function GestionProyectos() {
+    const navigate = useNavigate();
+
+    return (
+        <div className="min-h-[80vh] flex items-center justify-center p-6 animate-in fade-in zoom-in duration-700">
+            <div className="max-w-md w-full bg-white p-12 rounded-[3.5rem] shadow-2xl shadow-blue-100/50 border border-gray-100 text-center relative overflow-hidden">
+                {/* Decorative background element */}
+                <div className="absolute top-0 right-0 w-32 h-32 bg-blue-50 rounded-full -mr-16 -mt-16 opacity-50"></div>
+
+                <div className="relative z-10">
+                    <div className="w-24 h-24 bg-blue-50 rounded-[2rem] flex items-center justify-center mx-auto mb-8 shadow-sm shadow-blue-100">
+                        <Construction className="w-12 h-12 text-blue-600 animate-bounce" />
+                    </div>
+
+                    <h1 className="text-4xl font-black text-gray-900 tracking-tighter mb-4 italic uppercase">
+                        Gestión de <span className="text-blue-600">Proyectos</span>
+                    </h1>
+
+                    <div className="inline-flex items-center px-4 py-2 bg-amber-50 rounded-full mb-8">
+                        <span className="relative flex h-2 w-2 mr-3">
+                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
+                            <span className="relative inline-flex rounded-full h-2 w-2 bg-amber-600"></span>
+                        </span>
+                        <span className="text-[10px] font-black text-amber-600 uppercase tracking-[0.2em]">Módulo en Mantención</span>
+                    </div>
+
+                    <p className="text-gray-400 font-bold leading-relaxed mb-10">
+                        Estamos construyendo una nueva experiencia para la gestión integral de tus proyectos. Próximamente disponible.
+                    </p>
+
+                    <button
+                        onClick={() => navigate(-1)}
+                        className="flex items-center justify-center gap-3 w-full py-5 bg-gray-900 text-white rounded-[2rem] font-black text-xs uppercase tracking-[0.2em] hover:bg-black hover:-translate-y-1 transition-all shadow-xl shadow-gray-200"
+                    >
+                        <ChevronLeft className="w-4 h-4" />
+                        Volver Atrás
+                    </button>
+                </div>
+            </div>
+        </div>
+    );
+}

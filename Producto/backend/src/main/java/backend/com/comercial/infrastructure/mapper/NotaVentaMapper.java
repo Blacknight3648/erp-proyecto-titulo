@@ -1,0 +1,164 @@
+package backend.com.comercial.infrastructure.mapper;
+
+import backend.com.comercial.domain.model.EstadoNV;
+import backend.com.comercial.domain.model.ItemNV;
+import backend.com.comercial.domain.model.ItemNVTalla;
+import backend.com.comercial.domain.model.NotaVenta;
+import backend.com.comercial.infrastructure.persistence.entity.NotaVentaItemJpaEntity;
+import backend.com.comercial.infrastructure.persistence.entity.NotaVentaItemTallaJpaEntity;
+import backend.com.comercial.infrastructure.persistence.entity.NotaVentaJpaEntity;
+import backend.com.gestionUsuarios.cliente.infrastructure.persistence.entity.ClienteJpaEntity;
+import backend.com.gestionUsuarios.vendedor.infrastructure.persistence.entity.VendedorJpaEntity;
+import backend.com.shared.infrastructure.persistence.entity.ProductoJpaEntity;
+import backend.com.gestionUsuarios.proveedor.infrastructure.persistence.entity.ProveedorJpaEntity;
+import backend.com.shared.valueobjects.DocumentNumber;
+import backend.com.shared.valueobjects.Money;
+import org.springframework.stereotype.Component;
+
+import java.util.stream.Collectors;
+
+@Component
+public class NotaVentaMapper {
+
+    public NotaVenta toDomain(NotaVentaJpaEntity entity) {
+        if (entity == null)
+            return null;
+
+        return new NotaVenta(
+                entity.getIdNV(),
+                entity.getNumeroNV() != null ? new DocumentNumber(entity.getNumeroNV()) : null,
+                entity.getEvaluacionNegocioId(),
+                entity.getCliente() != null ? entity.getCliente().getClienteId() : null,
+                entity.getVendedor() != null ? entity.getVendedor().getIdVendedor() : null,
+                EstadoNV.valueOf(entity.getEstado()),
+                entity.getEsKit(),
+                entity.getDetalleKit(),
+                entity.getFechaEmision(),
+                entity.getFechaEntregaEstimada(),
+                new Money(entity.getMontoSubtotal(), entity.getMonedaSubtotal()),
+                new Money(entity.getMontoIva(), entity.getMonedaIva()),
+                new Money(entity.getMontoTotal(), entity.getMonedaTotal()),
+                entity.getItems().stream().map(this::toItemDomain).collect(Collectors.toList()));
+    }
+
+    private ItemNV toItemDomain(NotaVentaItemJpaEntity entity) {
+        if (entity == null)
+            return null;
+        return new ItemNV(
+                entity.getNroItem(),
+                entity.getProducto() != null ? entity.getProducto().getProductoId() : null,
+                entity.getModelo(),
+                entity.getTela(),
+                entity.getComposicion(),
+                entity.getColor(),
+                entity.getTalla(),
+                entity.getGenero(),
+                entity.getCodigo(),
+                entity.getProveedor() != null ? entity.getProveedor().getProveedorId() : null,
+                entity.getLlevaLogo(),
+                entity.getTipoItem(),
+                entity.getIsPersonalized(), // JpaEntity mantiene isPersonalized por ahora
+                entity.getDetalleOt(),
+                entity.getLogoDetalle(),
+                entity.getCantidad(),
+                new Money(entity.getPrecioUnitario(), entity.getMonedaPrecioUnitario()),
+                entity.getTallas().stream().map(this::toTallaDomain).collect(Collectors.toList()));
+    }
+
+    private ItemNVTalla toTallaDomain(NotaVentaItemTallaJpaEntity entity) {
+        if (entity == null)
+            return null;
+        return new ItemNVTalla(entity.getTalla(), entity.getCantidad());
+    }
+
+    public NotaVentaJpaEntity toEntity(NotaVenta domain) {
+        if (domain == null)
+            return null;
+
+        NotaVentaJpaEntity entity = new NotaVentaJpaEntity();
+        if (domain.getIdNV() != null) {
+            entity.setIdNV(domain.getIdNV());
+        }
+        if (domain.getNumeroNV() != null) {
+            entity.setNumeroNV(domain.getNumeroNV().getValue());
+        }
+        entity.setEvaluacionNegocioId(domain.getEvaluacionNegocioId());
+        entity.setEstado(domain.getEstado().name());
+        entity.setEsKit(domain.getEsKit());
+        entity.setDetalleKit(domain.getDetalleKit());
+        entity.setFechaEmision(domain.getFechaEmision());
+        entity.setFechaEntregaEstimada(domain.getFechaEntregaEstimada());
+
+        if (domain.getClienteId() != null) {
+            ClienteJpaEntity c = new ClienteJpaEntity();
+            c.setClienteId(domain.getClienteId());
+            entity.setCliente(c);
+        }
+        if (domain.getVendedorId() != null) {
+            VendedorJpaEntity v = new VendedorJpaEntity();
+            v.setIdVendedor(domain.getVendedorId());
+            entity.setVendedor(v);
+        }
+
+        if (domain.getMontoSubtotal() != null) {
+            entity.setMontoSubtotal(domain.getMontoSubtotal().getAmount());
+            entity.setMonedaSubtotal(domain.getMontoSubtotal().getCurrency());
+        }
+        if (domain.getMontoIva() != null) {
+            entity.setMontoIva(domain.getMontoIva().getAmount());
+            entity.setMonedaIva(domain.getMontoIva().getCurrency());
+        }
+        if (domain.getMontoTotal() != null) {
+            entity.setMontoTotal(domain.getMontoTotal().getAmount());
+            entity.setMonedaTotal(domain.getMontoTotal().getCurrency());
+        }
+
+        domain.getItems().forEach(itemDomain -> {
+            NotaVentaItemJpaEntity itemEntity = new NotaVentaItemJpaEntity();
+            itemEntity.setNroItem(itemDomain.getNroItem());
+            if (itemDomain.getProductoId() != null) {
+                ProductoJpaEntity p = new ProductoJpaEntity();
+                p.setProductoId(itemDomain.getProductoId());
+                itemEntity.setProducto(p);
+            }
+            itemEntity.setModelo(itemDomain.getModelo());
+            itemEntity.setTela(itemDomain.getTela());
+            itemEntity.setComposicion(itemDomain.getComposicion());
+            itemEntity.setColor(itemDomain.getColor());
+            itemEntity.setTalla(itemDomain.getTalla());
+            itemEntity.setGenero(itemDomain.getGenero());
+            itemEntity.setCodigo(itemDomain.getCodigo());
+            if (itemDomain.getProveedorId() != null) {
+                ProveedorJpaEntity prov = new ProveedorJpaEntity();
+                prov.setProveedorId(itemDomain.getProveedorId());
+                itemEntity.setProveedor(prov);
+            }
+            itemEntity.setLlevaLogo(itemDomain.getLlevaLogo());
+            itemEntity.setTipoItem(itemDomain.getTipoItem());
+            itemEntity.setIsPersonalized(itemDomain.getGeneraOt());
+            itemEntity.setDetalleOt(itemDomain.getDetalleOt());
+            itemEntity.setLogoDetalle(itemDomain.getLogoDetalle());
+            itemEntity.setCantidad(itemDomain.getCantidad());
+
+            if (itemDomain.getPrecioUnitario() != null) {
+                itemEntity.setPrecioUnitario(itemDomain.getPrecioUnitario().getAmount());
+                itemEntity.setMonedaPrecioUnitario(itemDomain.getPrecioUnitario().getCurrency());
+            }
+            if (itemDomain.getTotal() != null) {
+                itemEntity.setTotal(itemDomain.getTotal().getAmount());
+                itemEntity.setMonedaTotal(itemDomain.getTotal().getCurrency());
+            }
+
+            itemDomain.getTallas().forEach(tallaDomain -> {
+                NotaVentaItemTallaJpaEntity te = new NotaVentaItemTallaJpaEntity();
+                te.setTalla(tallaDomain.getTalla());
+                te.setCantidad(tallaDomain.getCantidad());
+                itemEntity.addTalla(te);
+            });
+
+            entity.addItem(itemEntity);
+        });
+
+        return entity;
+    }
+}

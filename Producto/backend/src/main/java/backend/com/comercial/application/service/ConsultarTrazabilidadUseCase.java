@@ -1,7 +1,5 @@
 package backend.com.comercial.application.service;
 
-import backend.com.adquisiciones.domain.model.SolicitudCompra;
-import backend.com.adquisiciones.domain.repository.SolicitudCompraRepository;
 import backend.com.comercial.domain.model.NotaVenta;
 import backend.com.comercial.domain.repository.EvaluacionNegocioRepository;
 import backend.com.comercial.domain.repository.NotaVentaRepository;
@@ -28,7 +26,6 @@ public class ConsultarTrazabilidadUseCase {
     private final CosteoRepository costeoRepository;
     private final SolicitudCostosRepository scosRepository;
     private final OrdenProduccionRepository opRepository;
-    private final SolicitudCompraRepository scRepository;
     private final OrdenTrabajoRepository otRepository;
 
     @Transactional(readOnly = true)
@@ -80,12 +77,6 @@ public class ConsultarTrazabilidadUseCase {
                     op.getEstado().name(), op.getFechaInicio()));
         }
 
-        // Buscar SCs asociadas
-        List<SolicitudCompra> scs = scRepository.findByNotaVentaId(notaVentaId);
-        for (SolicitudCompra sc : scs) {
-            trazabilidad.add(mapToDto("Solicitud Compra", sc.getIdSC(), sc.getNumeroSC().getValue().toString(),
-                    sc.getEstado().name(), sc.getFechaEmision()));
-        }
 
         // Buscar OTs asociadas (Personalización)
         otRepository.findByNotaVentaId(notaVentaId).forEach(ot -> {

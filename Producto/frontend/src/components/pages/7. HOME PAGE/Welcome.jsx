@@ -31,6 +31,15 @@ export default function Welcome() {
             color: 'from-amber-500 to-orange-600',
             bg: 'bg-amber-50',
             text: 'text-amber-600'
+        },
+        {
+            title: 'Trazabilidad',
+            description: 'Seguimiento unificado del ciclo de vida del pedido (Venta → Producción).',
+            icon: ShieldCheck,
+            path: '/trazabilidad/completa',
+            color: 'from-emerald-500 to-teal-600',
+            bg: 'bg-emerald-50',
+            text: 'text-emerald-600'
         }
     ];
 
@@ -48,7 +57,7 @@ export default function Welcome() {
                     <h2 className="text-2xl font-black text-gray-900 italic">Navegación Modular Inteligente</h2>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl">
                     {modules.map((module, idx) => (
                         <ModuleCard
                             key={idx}

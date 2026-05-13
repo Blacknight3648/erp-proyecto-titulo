@@ -1,8 +1,5 @@
 package backend.com.comercial.application.service;
 
-import backend.com.adquisiciones.application.dto.CrearSCCommand;
-import backend.com.adquisiciones.application.dto.SCItemDTO;
-import backend.com.adquisiciones.application.service.CrearSCUseCase;
 import backend.com.produccion.application.service.CrearOrdenProduccionUseCase;
 import backend.com.comercial.application.dto.CrearNVCommand;
 import backend.com.comercial.application.dto.NVResponse;
@@ -26,7 +23,6 @@ import java.util.stream.Collectors;
 public class CrearNVUseCase {
 
     private final NotaVentaRepository nvRepository;
-    private final CrearSCUseCase crearSCUseCase;
     private final CrearOrdenProduccionUseCase crearOPUseCase;
 
     @Transactional
@@ -45,7 +41,6 @@ public class CrearNVUseCase {
                 command.getDetalleKit(),
                 command.getFechaEntregaEstimada());
 
-        List<SCItemDTO> itemsParaAdquisicion = new ArrayList<>();
 
         if (command.getItems() != null) {
             for (int i = 0; i < command.getItems().size(); i++) {
@@ -77,31 +72,11 @@ public class CrearNVUseCase {
                         tallas);
                 nv.addItem(item);
 
-                // Check if this item generates a Solicitud de Compra (SC o SCI)
-                if ("SC".equals(dto.getItemType()) || "SCI".equals(dto.getItemType())) {
-                    SCItemDTO scItem = new SCItemDTO();
-                    scItem.setNroItem((long) (i + 1));
-                    scItem.setProductoId(dto.getProductoId());
-                    scItem.setDescripcionProducto(dto.getModelo() + " (" + dto.getColor() + ")");
-                    scItem.setCantidad(dto.getCantidad());
-                    scItem.setPrecioEstimadoUnitario(dto.getPrecioUnitario());
-                    scItem.setMoneda("CLP");
-                    scItem.setTipo(dto.getItemType());
-                    itemsParaAdquisicion.add(scItem);
-                }
             }
         }
 
         NotaVenta guardada = nvRepository.save(nv);
 
-        // Automaticaly generate SolicitudCompra if items are marked
-        if (!itemsParaAdquisicion.isEmpty()) {
-            CrearSCCommand scCommand = new CrearSCCommand();
-            scCommand.setNotaVentaId(guardada.getIdNV());
-            scCommand.setTenantId(1L); // Standard for now
-            scCommand.setItems(itemsParaAdquisicion);
-            crearSCUseCase.ejecutar(scCommand);
-        }
 
         // Automaticaly generate OrdenProduccion
         crearOPUseCase.execute(guardada);

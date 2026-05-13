@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import {
+  Home,
   ShoppingCart,
   Factory,
   Package,
@@ -29,7 +30,7 @@ export default function ModernSidebar({ isOpen, setIsOpen }) {
   const [openSubmenu, setOpenSubmenu] = useState(null);
 
   const menuItems = [
-    { path: '/', label: 'Dashboard', icon: BarChart3, color: 'text-blue-600' },
+    { path: '/', label: 'Inicio', icon: Home, color: 'text-blue-600' },
     {
       id: 'comercial',
       label: 'Comercial',
@@ -38,16 +39,15 @@ export default function ModernSidebar({ isOpen, setIsOpen }) {
       submenu: [
         { path: '/comercial/tablero', label: 'Tablero Comercial', icon: LayoutDashboard },
         { path: '/comercial/solicitudes-costos', label: 'Solicitudes Costos', icon: DollarSign },
-        { path: '/comercial/solicitudes-cotizaciones', label: 'Solicitudes Cotizaciones', icon: DollarSign },
         { path: '/comercial/administracion-negocios', label: 'Admin Negocios', icon: Target },
         { path: '/registros-nv', label: 'Notas de Venta', icon: FileText },
-        { path: '/comercial/registros-sc', label: 'Solicitudes (SC)', icon: ClipboardList },
         { path: '/comercial/gestion-proyectos', label: 'Gestión Proyectos', icon: Briefcase },
         { path: '/detalle-nv', label: 'Seguimiento NV', icon: Activity },
         { path: '/comercial/gestion-plantillas', label: 'Biblioteca Plantillas', icon: Settings },
         { path: '/comercial/ordenes-produccion', label: 'Ordenes de Produccion', icon: DollarSign },
       ]
     },
+    { path: '#', label: 'Adquisiciones', icon: ShoppingCart, color: 'text-indigo-600' },
     {
       id: 'produccion',
       label: 'Producción',
@@ -63,6 +63,8 @@ export default function ModernSidebar({ isOpen, setIsOpen }) {
         { path: '/produccion/compras', label: 'Ordenes de Compra', icon: ShoppingCart },
       ]
     },
+    { path: '#', label: 'Bodega', icon: Package, color: 'text-green-600' },
+    { path: '#', label: 'Contabilidad', icon: Wallet, color: 'text-indigo-600' },
     {
       id: 'usuarios',
       label: 'Gestión de Usuarios',
@@ -74,6 +76,16 @@ export default function ModernSidebar({ isOpen, setIsOpen }) {
         { path: '/admin/roles', label: 'Gestión Roles', icon: Shield },
         { path: '/gestion-usuarios/clientes', label: 'Clientes', icon: Users },
         { path: '/gestion-usuarios/proveedores', label: 'Proveedores', icon: Truck },
+      ]
+    },
+    {
+      id: 'trazabilidad',
+      label: 'Trazabilidad',
+      icon: Activity,
+      color: 'text-red-600',
+      submenu: [
+        { path: '/trazabilidad/completa', label: 'Trazabilidad Comercial-Producción', icon: Activity },
+        { path: '/trazabilidad/global', label: 'Timeline de Pedidos', icon: Truck },
       ]
     },
   ];

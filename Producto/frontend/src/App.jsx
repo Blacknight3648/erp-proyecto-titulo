@@ -14,15 +14,12 @@ import Login from "./components/pages/6. LOGIN/Login";
 import Welcome from "./components/pages/7. HOME PAGE/Welcome";
 
 
-
 /* COMERCIAL */
 import NotaDeVenta from "./components/pages/2. COMERCIAL/NOTA DE VENTA/NotaDeVenta";
 import SolicitudCostosContainer from "./components/pages/2. COMERCIAL/COSTEOS/components/SCOS/SolicitudCostosContainer.jsx";
-import SolicitudCotizacionesContainer from "./components/pages/2. COMERCIAL/COSTEOS/components/SCOT/SolicitudCotizacionesContainer.jsx";
 import AdministracionNegocios from "./components/pages/2. COMERCIAL/ADMINISTRACION/AdministracionNegocios";
 import GestionPlantillas from "./components/pages/2. COMERCIAL/ADMINISTRACION/GestionPlantillas";
 import TableroComercial from "./components/pages/2. COMERCIAL/TableroComercial";
-import RegistrosSC from "./components/pages/2. COMERCIAL/SOLICITUD DE COMPRA/RegistrosSC";
 import GestionProyectos from "./components/pages/2. COMERCIAL/GESTION PROYECTO/GestionProyectos";
 import OrdenesProduccion from "./components/pages/2. COMERCIAL/ORDENES DE PRODUCCION/OrdenesProduccion";
 
@@ -37,7 +34,6 @@ import GestionRoles from "./components/pages/admin/GestionRoles";
 import GestionPermisosRol from "./components/pages/admin/GestionPermisosRol";
 
 
-
 /* PRODUCCION */
 import DashboardOP from "./components/pages/4. PRODUCCION/DashboardOP";
 import TableroOP from "./components/pages/4. PRODUCCION/TableroOP";
@@ -48,6 +44,9 @@ import OrdenProduccionContainer from "./components/pages/4. PRODUCCION/ORDENES_P
 import CompraProduccionContainer from "./components/pages/4. PRODUCCION/COMPRAS/CompraProduccionContainer";
 import HojaCompra from "./components/pages/4. PRODUCCION/HOJA DE COMPRA/HojaCompra";
 
+/* TRAZABILIDAD */
+import TrazabilidadNV from "./components/pages/5. TRAZABILIDAD/TrazabilidadNV";
+import TimelineGlobal from "./components/pages/5. TRAZABILIDAD/TimelineGlobal";
 
 
 
@@ -173,7 +172,6 @@ function App() {
             />
 
 
-
             {/* COMERCIAL */}
             <Route
               path="/registros-nv"
@@ -185,19 +183,12 @@ function App() {
               element={<PrivateRoute><MainLayout><NotaDeVenta /></MainLayout></PrivateRoute>}
             />
 
-            <Route
-              path="/comercial/registros-sc"
-              element={<PrivateRoute><MainLayout><RegistrosSC /></MainLayout></PrivateRoute>}
-            />
 
             <Route
               path="/comercial/solicitudes-costos"
               element={<PrivateRoute><MainLayout><SolicitudCostosContainer /></MainLayout></PrivateRoute>}
             />
-            <Route
-              path="/comercial/solicitudes-cotizaciones"
-              element={<PrivateRoute><MainLayout><SolicitudCotizacionesContainer /></MainLayout></PrivateRoute>}
-            />
+
             <Route
               path="/comercial/administracion-negocios"
               element={<PrivateRoute><MainLayout><AdministracionNegocios /></MainLayout></PrivateRoute>}
@@ -223,6 +214,16 @@ function App() {
               element={<PrivateRoute><MainLayout><OrdenesProduccion /></MainLayout></PrivateRoute>}
             />
 
+            {/* TRAZABILIDAD */}
+            <Route
+              path="/trazabilidad/completa"
+              element={<PrivateRoute><MainLayout><TrazabilidadNV /></MainLayout></PrivateRoute>}
+            />
+
+            <Route
+              path="/trazabilidad/global"
+              element={<PrivateRoute><MainLayout><TimelineGlobal /></MainLayout></PrivateRoute>}
+            />
 
 
             {/* GESTION USUARIOS */}
@@ -256,7 +257,6 @@ function App() {
               path="/admin/roles/:id/permisos"
               element={<PrivateRoute><MainLayout><GestionPermisosRol /></MainLayout></PrivateRoute>}
             />
-
 
 
             {/* DEFAULT */}

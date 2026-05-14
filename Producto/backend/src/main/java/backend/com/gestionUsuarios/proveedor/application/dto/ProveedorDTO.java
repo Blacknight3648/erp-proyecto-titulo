@@ -1,14 +1,19 @@
 package backend.com.gestionUsuarios.proveedor.application.dto;
 
+import backend.com.shared.application.dto.GiroDTO;
+import backend.com.shared.application.dto.SiglaDTO;
 import backend.com.shared.validations.email.ValidEmail;
 import backend.com.shared.validations.run.ValidRun;
 import backend.com.shared.validations.telefono.ValidPhone;
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-@Getter
-@Setter
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -16,32 +21,35 @@ public class ProveedorDTO {
 
     private Long proveedorId;
 
-    @NotBlank(message = "El nombre del proveedor es obligatorio")
-    @Size(max = 100)
-    private String nombreProveedor;
-
+    @NotBlank(message = "El RUN del proveedor es obligatorio")
     @ValidRun
-    @NotBlank(message = "El RUN del cliente es obligatorio")
-    private String rutProveedor;
+    @Size(max = 12, message = "El RUN no puede exceder 12 caracteres")
+    private String runProveedor;
 
-    @Size(max = 150)
-    @NotBlank(message = "La dirección del proveedor no puede estar vacía")
+    @NotBlank(message = "La razón social del proveedor es obligatoria")
+    @Size(max = 255, message = "La razón social no puede exceder 255 caracteres")
+    private String razonSocialProveedor;
+
+    @Size(max = 500, message = "La dirección no puede exceder 500 caracteres")
     private String direccionProveedor;
 
-    @ValidPhone
-    @NotBlank(message = "El número de télefono del proveedor no puede estar vacío")
-    private String telefonoProveedor;
-
-    @ValidEmail
-    private String emailProveedor;
-
-    @Size(max = 100)
+    @Size(max = 150, message = "El contacto no puede exceder 150 caracteres")
     private String contactoProveedor;
 
-    @Size(max = 100)
-    @NotBlank(message = "Debes seleccionar una categoría")
-    private String categoria;
+    @Email(message = "El correo debe ser válido")
+    @ValidEmail
+    @Size(max = 150, message = "El correo no puede exceder 150 caracteres")
+    private String emailProveedor;
+
+    @ValidPhone
+    @Size(max = 20, message = "El teléfono no puede exceder 20 caracteres")
+    private String telefonoProveedor;
+
+    @Size(max = 30, message = "El tipo de proveedor no puede exceder 30 caracteres")
+    private String tipoProveedor;
 
     private boolean activo;
 
+    private SiglaDTO sigla;
+    private GiroDTO giro;
 }

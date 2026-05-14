@@ -19,9 +19,22 @@ export function useClientes() {
       }
    };
 
+   const buildPayload = (cliente) => ({
+      clienteId: cliente.clienteId,
+      runCliente: cliente.runCliente,
+      razonSocial: cliente.razonSocial,
+      correoCliente: cliente.correoCliente || "",
+      telefonoCliente: cliente.telefonoCliente || "",
+      direccionCliente: cliente.direccionCliente || "",
+      contactoCliente: cliente.contactoCliente || "",
+      activo: cliente.activo ?? true,
+      giro: cliente.giro?.giroId ? { giroId: cliente.giro.giroId } : null,
+      sigla: cliente.sigla?.siglaId ? { siglaId: cliente.sigla.siglaId } : null,
+   });
+
    const createCliente = async (cliente) => {
       try {
-         await api.post("/clientes", cliente);
+         await api.post("/clientes", buildPayload(cliente));
          await loadClientes();
          toast.success("Cliente registrado con éxito");
       } catch (error) {
@@ -33,26 +46,12 @@ export function useClientes() {
 
    const updateCliente = async (cliente) => {
       const id = cliente.clienteId || cliente.id;
-      if (!id || id === "undefined") {
-         console.error("Error: Intentando actualizar cliente sin ID válido", cliente);
+      if (!id) {
          toast.error("No se puede actualizar: ID de cliente no encontrado");
          return;
       }
-
       try {
-         const cleanCliente = {
-            clienteId: id,
-            nombreCliente: cliente.nombreCliente,
-            apellidoCliente: cliente.apellidoCliente || "",
-            runCliente: cliente.runCliente,
-            correoCliente: cliente.correoCliente || "",
-            telefonoCliente: cliente.telefonoCliente || "",
-            direccionCliente: cliente.direccionCliente || "",
-            segmento: cliente.segmento || "SIN SEGMENTO",
-            contacto: cliente.contacto || "",
-            activo: cliente.activo ?? true
-         };
-         await api.put(`/clientes/${id}`, cleanCliente);
+         await api.put(`/clientes/${id}`, buildPayload({ ...cliente, clienteId: id }));
          await loadClientes();
          toast.success("Información del cliente actualizada");
       } catch (error) {
@@ -63,12 +62,10 @@ export function useClientes() {
    };
 
    const deleteCliente = async (id) => {
-      if (!id || id === "undefined") {
-         console.error("Error: Intentando eliminar cliente sin ID válido");
+      if (!id) {
          toast.error("No se puede eliminar: ID de cliente no encontrado");
          return;
       }
-
       try {
          await api.delete(`/clientes/${id}`);
          setClientes(prev => prev.filter(c => c.clienteId !== id));
@@ -81,29 +78,14 @@ export function useClientes() {
 
    const toggleCliente = async (cliente) => {
       const id = cliente.clienteId || cliente.id;
-      if (!id || id === "undefined") {
-         console.error("Error: Intentando cambiar estado de cliente sin ID válido", cliente);
+      if (!id) {
          toast.error("No se puede cambiar estado: ID de cliente no encontrado");
          return;
       }
-
       try {
-         const cleanCliente = {
-            clienteId: id,
-            nombreCliente: cliente.nombreCliente,
-            apellidoCliente: cliente.apellidoCliente || "",
-            runCliente: cliente.runCliente,
-            correoCliente: cliente.correoCliente || "",
-            telefonoCliente: cliente.telefonoCliente || "",
-            direccionCliente: cliente.direccionCliente || "",
-            segmento: cliente.segmento || "SIN SEGMENTO",
-            contacto: cliente.contacto || "",
-            activo: !cliente.activo
-         };
-         
-         await api.put(`/clientes/${id}`, cleanCliente);
+         await api.put(`/clientes/${id}`, buildPayload({ ...cliente, clienteId: id, activo: !cliente.activo }));
          await loadClientes();
-         toast.success(`Cliente ${!cliente.activo ? 'activado' : 'desactivado'} correctamente`);
+         toast.success(`Cliente ${!cliente.activo ? "activado" : "desactivado"} correctamente`);
       } catch (error) {
          console.error("Error al cambiar estado del cliente:", error);
          toast.error("Error al cambiar el estado de activación del cliente");
@@ -120,6 +102,6 @@ export function useClientes() {
       createCliente,
       updateCliente,
       deleteCliente,
-      toggleCliente
+      toggleCliente,
    };
 }

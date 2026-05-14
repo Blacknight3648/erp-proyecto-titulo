@@ -1,9 +1,9 @@
 package backend.com.gestionUsuarios.proveedor.infrastructure.api;
 
 import backend.com.gestionUsuarios.proveedor.application.dto.ProveedorDTO;
-import backend.com.gestionUsuarios.proveedor.application.dto.ProveedorDtoMapper;
-import backend.com.gestionUsuarios.proveedor.domain.model.Proveedor;
 import backend.com.gestionUsuarios.proveedor.application.service.ProveedorService;
+import backend.com.gestionUsuarios.proveedor.domain.model.Proveedor;
+import backend.com.gestionUsuarios.proveedor.infrastructure.mapper.ProveedorMapper;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -18,52 +18,89 @@ import java.util.List;
 public class ProveedorController {
 
     private final ProveedorService proveedorService;
-    private final ProveedorDtoMapper dtoMapper;
+    private final ProveedorMapper proveedorMapper;
 
     @GetMapping
-    public ResponseEntity<List<ProveedorDTO>> getAll() {
-
-        List<Proveedor> proveedores = proveedorService.listarProveedores();
-
-        return ResponseEntity.ok(dtoMapper.toDtoList(proveedores));
+    public ResponseEntity<List<ProveedorDTO>> listarTodos() {
+        return ResponseEntity.ok(proveedorMapper.toDTOList(proveedorService.listarTodos()));
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<ProveedorDTO> getById(@PathVariable Long id) {
+    @GetMapping("/{proveedorId}")
+    public ResponseEntity<ProveedorDTO> obtenerPorId(@PathVariable Long proveedorId) {
+        return proveedorService.obtenerPorId(proveedorId)
+                .map(proveedorMapper::toDTO)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
 
-        Proveedor proveedor = proveedorService.obtenerProveedor(id);
+    @GetMapping("/run/{runProveedor}")
+    public ResponseEntity<ProveedorDTO> obtenerPorRun(@PathVariable String runProveedor) {
+        return proveedorService.obtenerPorRun(runProveedor)
+                .map(proveedorMapper::toDTO)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
 
-        return ResponseEntity.ok(dtoMapper.toDto(proveedor));
+    @GetMapping("/razon-social/{razonSocial}")
+    public ResponseEntity<List<ProveedorDTO>> buscarPorRazonSocial(@PathVariable String razonSocial) {
+        return ResponseEntity.ok(proveedorMapper.toDTOList(proveedorService.buscarPorRazonSocial(razonSocial)));
+    }
+
+    @GetMapping("/activos")
+    public ResponseEntity<List<ProveedorDTO>> obtenerActivos() {
+        return ResponseEntity.ok(proveedorMapper.toDTOList(proveedorService.obtenerActivos()));
+    }
+
+    @GetMapping("/inactivos")
+    public ResponseEntity<List<ProveedorDTO>> obtenerInactivos() {
+        return ResponseEntity.ok(proveedorMapper.toDTOList(proveedorService.obtenerInactivos()));
+    }
+
+    @GetMapping("/sigla/{siglaId}")
+    public ResponseEntity<List<ProveedorDTO>> obtenerPorSiglaId(@PathVariable Long siglaId) {
+        return ResponseEntity.ok(proveedorMapper.toDTOList(proveedorService.obtenerPorSiglaId(siglaId)));
+    }
+
+    @GetMapping("/giro/{giroId}")
+    public ResponseEntity<List<ProveedorDTO>> obtenerPorGiroId(@PathVariable Long giroId) {
+        return ResponseEntity.ok(proveedorMapper.toDTOList(proveedorService.obtenerPorGiroId(giroId)));
+    }
+
+    @GetMapping("/sigla/abreviatura/{siglaAbreviatura}")
+    public ResponseEntity<List<ProveedorDTO>> obtenerPorSiglaAbreviatura(@PathVariable String siglaAbreviatura) {
+        return ResponseEntity.ok(proveedorMapper.toDTOList(proveedorService.obtenerPorSiglaAbreviatura(siglaAbreviatura)));
+    }
+
+    @GetMapping("/giro/descripcion/{descripcionGiro}")
+    public ResponseEntity<List<ProveedorDTO>> obtenerPorDescripcionGiro(@PathVariable String descripcionGiro) {
+        return ResponseEntity.ok(proveedorMapper.toDTOList(proveedorService.obtenerPorDescripcionGiro(descripcionGiro)));
+    }
+
+    @GetMapping("/activos/sigla/{siglaId}")
+    public ResponseEntity<List<ProveedorDTO>> obtenerActivosPorSigla(@PathVariable Long siglaId) {
+        return ResponseEntity.ok(proveedorMapper.toDTOList(proveedorService.obtenerActivosPorSigla(siglaId)));
+    }
+
+    @GetMapping("/activos/giro/{giroId}")
+    public ResponseEntity<List<ProveedorDTO>> obtenerActivosPorGiro(@PathVariable Long giroId) {
+        return ResponseEntity.ok(proveedorMapper.toDTOList(proveedorService.obtenerActivosPorGiro(giroId)));
     }
 
     @PostMapping
-    public ResponseEntity<ProveedorDTO> create(
-            @Valid @RequestBody ProveedorDTO proveedorDTO) {
-
-        Proveedor proveedor = dtoMapper.toDomain(proveedorDTO);
-        Proveedor creado = proveedorService.crearProveedor(proveedor);
-
-        return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body(dtoMapper.toDto(creado));
+    public ResponseEntity<ProveedorDTO> crear(@Valid @RequestBody ProveedorDTO dto) {
+        Proveedor creado = proveedorService.crear(proveedorMapper.toDomain(dto));
+        return ResponseEntity.status(HttpStatus.CREATED).body(proveedorMapper.toDTO(creado));
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<ProveedorDTO> update(
-            @PathVariable Long id,
-            @Valid @RequestBody ProveedorDTO proveedorDTO) {
-
-        Proveedor proveedor = dtoMapper.toDomain(proveedorDTO);
-        Proveedor actualizado = proveedorService.actualizarProveedor(id, proveedor);
-
-        return ResponseEntity.ok(dtoMapper.toDto(actualizado));
+    @PutMapping("/{proveedorId}")
+    public ResponseEntity<ProveedorDTO> actualizar(@PathVariable Long proveedorId, @Valid @RequestBody ProveedorDTO dto) {
+        Proveedor actualizado = proveedorService.actualizar(proveedorId, proveedorMapper.toDomain(dto));
+        return ResponseEntity.ok(proveedorMapper.toDTO(actualizado));
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
-
-        proveedorService.eliminarProveedor(id);
-
+    @DeleteMapping("/{proveedorId}")
+    public ResponseEntity<Void> eliminar(@PathVariable Long proveedorId) {
+        proveedorService.eliminar(proveedorId);
         return ResponseEntity.noContent().build();
     }
 }

@@ -33,9 +33,12 @@ export default function ProveedoresView() {
         const search = searchTerm.toLowerCase();
 
         const matchesSearch =
-            p.nombreProveedor?.toLowerCase()?.includes(search) ||
-            p.rutProveedor?.toLowerCase()?.includes(search) ||
-            p.categoria?.toLowerCase()?.includes(search);
+            p.razonSocialProveedor?.toLowerCase()?.includes(search) ||
+            p.runProveedor?.toLowerCase()?.includes(search) ||
+            p.tipoProveedor?.toLowerCase()?.includes(search) ||
+            p.sigla?.descripcionSigla?.toLowerCase()?.includes(search) ||
+            p.sigla?.siglaAbreviatura?.toLowerCase()?.includes(search) ||
+            p.giro?.descripcionGiro?.toLowerCase()?.includes(search);
 
         const status = p.activo ? "Activo" : "Suspendido";
 
@@ -95,7 +98,7 @@ export default function ProveedoresView() {
                 icon={Truck}
                 createLabel="Registrar Nuevo Proveedor"
                 onCreateClick={handleCreate}
-                searchPlaceholder="Buscar por nombre, RUT o categoría..."
+                searchPlaceholder="Buscar por razón social, RUN, sigla o giro..."
                 searchTerm={searchTerm}
                 onSearchChange={(value) => setSearchTerm(value)}
                 filterStatus={filterStatus}

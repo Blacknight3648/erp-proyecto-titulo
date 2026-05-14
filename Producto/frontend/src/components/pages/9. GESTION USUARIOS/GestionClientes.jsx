@@ -33,9 +33,11 @@ export default function GestionClientes() {
     const search = searchTerm.toLowerCase();
 
     const matchesSearch =
-      c.nombreCliente?.toLowerCase()?.includes(search) ||
+      c.razonSocial?.toLowerCase()?.includes(search) ||
       c.runCliente?.toLowerCase()?.includes(search) ||
-      c.segmento?.toLowerCase()?.includes(search);
+      c.sigla?.descripcionSigla?.toLowerCase()?.includes(search) ||
+      c.sigla?.siglaAbreviatura?.toLowerCase()?.includes(search) ||
+      c.giro?.descripcionGiro?.toLowerCase()?.includes(search);
 
     const status = c.activo ? "Activo" : "Suspendido";
 
@@ -99,7 +101,7 @@ export default function GestionClientes() {
         icon={Users}
         createLabel="Registrar Nuevo Cliente"
         onCreateClick={handleCreate}
-        searchPlaceholder="Buscar por nombre, RUT o segmento..."
+        searchPlaceholder="Buscar por razón social, RUN, sigla o giro..."
         searchTerm={searchTerm}
         onSearchChange={(value) => setSearchTerm(value)}
         filterStatus={filterStatus}

@@ -14,7 +14,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -40,7 +39,6 @@ public class CrearNVUseCase {
                 command.getEsKit(),
                 command.getDetalleKit(),
                 command.getFechaEntregaEstimada());
-
 
         if (command.getItems() != null) {
             for (int i = 0; i < command.getItems().size(); i++) {
@@ -76,7 +74,6 @@ public class CrearNVUseCase {
         }
 
         NotaVenta guardada = nvRepository.save(nv);
-
 
         // Automaticaly generate OrdenProduccion
         crearOPUseCase.execute(guardada);

@@ -1,92 +1,173 @@
 package backend.com.gestionUsuarios.cliente.application.service;
 
-import backend.com.gestionUsuarios.cliente.infrastructure.mapper.ClienteMapper;
 import backend.com.gestionUsuarios.cliente.domain.model.Cliente;
-import backend.com.gestionUsuarios.cliente.infrastructure.persistence.repository.ClienteRepository;
+import backend.com.gestionUsuarios.cliente.infrastructure.exception.ClienteNotFoundException;
+import backend.com.gestionUsuarios.cliente.infrastructure.mapper.ClienteMapper;
 import backend.com.gestionUsuarios.cliente.infrastructure.persistence.entity.ClienteJpaEntity;
+import backend.com.gestionUsuarios.cliente.infrastructure.persistence.repository.ClienteRepository;
+import backend.com.shared.exception.EntityNotFoundException;
+import backend.com.shared.infrastructure.persistence.entity.GiroJpaEntity;
+import backend.com.shared.infrastructure.persistence.entity.SiglaJpaEntity;
+import backend.com.shared.infrastructure.persistence.repository.GiroRepository;
+import backend.com.shared.infrastructure.persistence.repository.SiglaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class ClienteServiceImpl implements ClienteService {
 
     private final ClienteRepository clienteRepository;
+    private final SiglaRepository siglaRepository;
+    private final GiroRepository giroRepository;
     private final ClienteMapper clienteMapper;
     private final ClienteValidator clienteValidator;
 
     @Override
-    @Transactional
-    public Cliente crearCliente(Cliente cliente) {
-
-        clienteValidator.validateUniqueness(cliente.getRunCliente());
-
-        ClienteJpaEntity entity = clienteMapper.toEntity(cliente);
-        @SuppressWarnings("null")
-        ClienteJpaEntity saved = clienteRepository.save(entity);
-        return clienteMapper.toDomain(saved);
-    }
-
-    @SuppressWarnings("null")
-    @Override
-    @Transactional
-    public Cliente actualizarCliente(Long id, Cliente clienteActualizado) {
-
-        return clienteRepository.findById(id)
-                .map(entity -> {
-
-                    entity.setNombreCliente(clienteActualizado.getNombreCliente());
-                    entity.setApellidoCliente(clienteActualizado.getApellidoCliente());
-                    entity.setRunCliente(clienteActualizado.getRunCliente());
-                    entity.setCorreoCliente(clienteActualizado.getCorreoCliente());
-                    entity.setTelefonoCliente(clienteActualizado.getTelefonoCliente());
-                    entity.setDireccionCliente(clienteActualizado.getDireccionCliente());
-                    entity.setSegmento(clienteActualizado.getSegmento());
-                    entity.setContacto(clienteActualizado.getContacto());
-                    entity.setActivo(clienteActualizado.isActivo());
-
-                    ClienteJpaEntity saved = clienteRepository.save(entity);
-                    return clienteMapper.toDomain(saved);
-
-                })
-                .orElseThrow(() -> new IllegalArgumentException("Cliente no encontrado con ID: " + id));
-    }
-
-    @SuppressWarnings("null")
-    @Override
     @Transactional(readOnly = true)
-    public Optional<Cliente> obtenerClientePorId(Long id) {
-        return clienteRepository.findById(id).map(clienteMapper::toDomain);
+    public List<Cliente> listarTodos() {
+        return clienteRepository.findAll().stream().map(clienteMapper::toDomain).toList();
     }
 
     @Override
     @Transactional(readOnly = true)
-    public Optional<Cliente> obtenerClientePorRun(String runCliente) {
+    public Optional<Cliente> obtenerPorId(Long clienteId) {
+        return clienteRepository.findById(clienteId).map(clienteMapper::toDomain);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Optional<Cliente> obtenerPorRun(String runCliente) {
         return clienteRepository.findByRunCliente(runCliente).map(clienteMapper::toDomain);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<Cliente> listarClientes() {
-        return clienteRepository.findAll().stream()
-                .map(clienteMapper::toDomain)
-                .collect(Collectors.toList());
+    public List<Cliente> buscarPorRazonSocial(String razonSocial) {
+        return clienteRepository.buscarPorRazonSocial(razonSocial).stream().map(clienteMapper::toDomain).toList();
     }
 
-    @SuppressWarnings("null")
     @Override
-    @Transactional
-    public void eliminarCliente(Long id) {
+    @Transactional(readOnly = true)
+    public List<Cliente> obtenerActivos() {
+        return clienteRepository.findByActivoTrue().stream().map(clienteMapper::toDomain).toList();
+    }
 
-        if (!clienteRepository.existsById(id)) {
-            throw new IllegalArgumentException("Cliente no encontrado con ID: " + id);
+    @Override
+    @Transactional(readOnly = true)
+    public List<Cliente> obtenerInactivos() {
+        return clienteRepository.findByActivoFalse().stream().map(clienteMapper::toDomain).toList();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<Cliente> obtenerPorSiglaId(Long siglaId) {
+        return clienteRepository.obtenerPorSiglaId(siglaId).stream().map(clienteMapper::toDomain).toList();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<Cliente> obtenerPorGiroId(Long giroId) {
+        return clienteRepository.obtenerPorGiroId(giroId).stream().map(clienteMapper::toDomain).toList();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<Cliente> obtenerPorDescripcionSigla(String descripcionSigla) {
+        return clienteRepository.obtenerPorDescripcionSigla(descripcionSigla)
+                .stream().map(clienteMapper::toDomain).toList();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<Cliente> obtenerPorDescripcionGiro(String descripcionGiro) {
+        return clienteRepository.obtenerPorDescripcionGiro(descripcionGiro)
+                .stream().map(clienteMapper::toDomain).toList();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<Cliente> obtenerActivosPorSigla(Long siglaId) {
+        return clienteRepository.obtenerActivosPorSigla(siglaId).stream().map(clienteMapper::toDomain).toList();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<Cliente> obtenerActivosPorGiro(Long giroId) {
+        return clienteRepository.obtenerActivosPorGiro(giroId).stream().map(clienteMapper::toDomain).toList();
+    }
+
+    @Override
+    public Cliente crear(Cliente cliente) {
+        clienteValidator.validateUniqueness(cliente.getRunCliente());
+
+        SiglaJpaEntity sigla = resolverSigla(cliente);
+        GiroJpaEntity giro = resolverGiro(cliente);
+
+        ClienteJpaEntity entity = ClienteJpaEntity.builder()
+                .runCliente(cliente.getRunCliente())
+                .razonSocial(cliente.getRazonSocial())
+                .direccionCliente(cliente.getDireccionCliente())
+                .contactoCliente(cliente.getContactoCliente())
+                .correoCliente(cliente.getCorreoCliente())
+                .telefonoCliente(cliente.getTelefonoCliente())
+                .activo(cliente.isActivo())
+                .sigla(sigla)
+                .giro(giro)
+                .build();
+
+        return clienteMapper.toDomain(clienteRepository.save(entity));
+    }
+
+    @Override
+    public Cliente actualizar(Long clienteId, Cliente cliente) {
+        ClienteJpaEntity entity = clienteRepository.findById(clienteId)
+                .orElseThrow(() -> new ClienteNotFoundException(clienteId));
+
+        if (cliente.getRunCliente() != null && !cliente.getRunCliente().equals(entity.getRunCliente())) {
+            clienteValidator.validateUniqueness(cliente.getRunCliente());
+            entity.setRunCliente(cliente.getRunCliente());
         }
+        if (cliente.getRazonSocial() != null) entity.setRazonSocial(cliente.getRazonSocial());
+        if (cliente.getDireccionCliente() != null) entity.setDireccionCliente(cliente.getDireccionCliente());
+        if (cliente.getContactoCliente() != null) entity.setContactoCliente(cliente.getContactoCliente());
+        if (cliente.getCorreoCliente() != null) entity.setCorreoCliente(cliente.getCorreoCliente());
+        if (cliente.getTelefonoCliente() != null) entity.setTelefonoCliente(cliente.getTelefonoCliente());
+        entity.setActivo(cliente.isActivo());
 
-        clienteRepository.deleteById(id);
+        SiglaJpaEntity sigla = resolverSigla(cliente);
+        if (sigla != null) entity.setSigla(sigla);
+
+        GiroJpaEntity giro = resolverGiro(cliente);
+        if (giro != null) entity.setGiro(giro);
+
+        return clienteMapper.toDomain(clienteRepository.save(entity));
+    }
+
+    @Override
+    public void eliminar(Long clienteId) {
+        if (!clienteRepository.existsById(clienteId)) {
+            throw new ClienteNotFoundException(clienteId);
+        }
+        clienteRepository.deleteById(clienteId);
+    }
+
+    private SiglaJpaEntity resolverSigla(Cliente cliente) {
+        if (cliente.getSigla() == null || cliente.getSigla().getSiglaId() == null) return null;
+        Long siglaId = cliente.getSigla().getSiglaId();
+        return siglaRepository.findById(siglaId)
+                .orElseThrow(() -> new EntityNotFoundException("Sigla no encontrada con ID: " + siglaId));
+    }
+
+    private GiroJpaEntity resolverGiro(Cliente cliente) {
+        if (cliente.getGiro() == null || cliente.getGiro().getGiroId() == null) return null;
+        Long giroId = cliente.getGiro().getGiroId();
+        return giroRepository.findById(giroId)
+                .orElseThrow(() -> new EntityNotFoundException("Giro no encontrado con ID: " + giroId));
     }
 }

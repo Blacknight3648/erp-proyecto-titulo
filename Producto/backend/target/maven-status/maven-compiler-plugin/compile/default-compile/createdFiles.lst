@@ -11,7 +11,6 @@ backend\com\produccion\domain\repository\OrdenTrabajoRepository.class
 backend\com\comercial\infrastructure\persistence\entity\SCOSTelaJpaEntity.class
 backend\com\produccion\domain\model\OrdenTrabajo.class
 backend\com\comercial\infrastructure\persistence\entity\SCOSLogotipoJpaEntity.class
-backend\com\gestionUsuarios\proveedor\application\dto\ProveedorDtoMapper.class
 backend\com\comercial\domain\model\PlantillaAccesorio.class
 backend\com\gestionUsuarios\usuario\infrastructure\mapper\UserMapper.class
 backend\com\shared\exception\ValidationException.class
@@ -20,7 +19,6 @@ backend\com\gestionUsuarios\vendedor\application\dto\VendedorDTO$VendedorDTOBuil
 backend\com\shared\infrastructure\api\PermisoController.class
 backend\com\shared\infrastructure\persistence\entity\Accesorio.class
 backend\com\gestionUsuarios\exception\UserGlobalExceptionHandler.class
-backend\com\gestionUsuarios\proveedor\application\service\ProveedorValidator.class
 backend\com\comercial\application\service\CrearEVNUseCase.class
 backend\com\comercial\domain\model\SCOSTela.class
 backend\com\gestionUsuarios\role\infrastructure\exception\RoleNotFoundException.class
@@ -38,7 +36,6 @@ backend\com\comercial\application\dto\SCOSLogotipoDTO$SCOSLogotipoDTOBuilder.cla
 backend\com\comercial\infrastructure\persistence\repository\EvaluacionNegocioJpaRepository.class
 backend\com\produccion\application\service\GestionarCosteoUseCase.class
 backend\com\shared\infrastructure\persistence\entity\CatalogoProveedor.class
-backend\com\gestionUsuarios\proveedor\infrastructure\exception\ProveedorNotFoundException.class
 backend\com\gestionUsuarios\vendedor\application\dto\VendedorCreateDTO.class
 backend\com\comercial\application\dto\PlantillaTelaDTO$PlantillaTelaDTOBuilder.class
 backend\com\shared\exception\EVNBusinessException.class
@@ -58,7 +55,6 @@ backend\com\comercial\infrastructure\persistence\entity\PlantillaAccesorio.class
 backend\com\shared\domain\model\Producto.class
 backend\com\produccion\infrastructure\api\OrdenProduccionController.class
 backend\com\shared\events\DomainEvent.class
-backend\com\gestionUsuarios\proveedor\infrastructure\exception\ProveedorDuplicadoException.class
 backend\com\gestionUsuarios\vendedor\application\service\VendedorServiceImpl.class
 backend\com\gestionUsuarios\usuario\domain\model\User.class
 backend\com\gestionUsuarios\area\application\dto\AreaDTO.class
@@ -116,7 +112,6 @@ backend\com\comercial\infrastructure\persistence\entity\SCOSPlantillaJpaEntity.c
 backend\com\comercial\application\service\SolicitudCotizacionesService.class
 backend\com\comercial\application\dto\SCOSTelaDTO.class
 backend\com\gestionUsuarios\cliente\infrastructure\mapper\ClienteMapper.class
-backend\com\gestionUsuarios\proveedor\application\service\ProveedorServiceImpl.class
 backend\com\comercial\application\dto\SCOSCostoFijoDTO$SCOSCostoFijoDTOBuilder.class
 backend\com\comercial\infrastructure\mapper\EvaluacionNegocioMapper$1.class
 backend\com\gestionUsuarios\cliente\infrastructure\exception\ClienteDuplicadoException.class
@@ -274,7 +269,6 @@ backend\com\gestionUsuarios\vendedor\domain\model\Vendedor$VendedorBuilder.class
 backend\com\gestionUsuarios\proveedor\infrastructure\persistence\repository\ProveedorRepository.class
 backend\com\produccion\infrastructure\persistence\entity\CosteoItemJpaEntity$CosteoItemJpaEntityBuilder.class
 backend\com\gestionUsuarios\usuario\domain\model\User$UserBuilder.class
-backend\com\comercial\infrastructure\mapper\SolicitudCostosMapper.class
 backend\com\produccion\infrastructure\persistence\repository\OrdenTrabajoJpaRepository.class
 backend\com\comercial\application\dto\ItemNVDTO.class
 backend\com\comercial\domain\repository\SolicitudCotizacionRepository.class
@@ -282,7 +276,6 @@ backend\com\comercial\infrastructure\persistence\adapter\EvaluacionNegocioReposi
 backend\com\gestionUsuarios\cliente\application\service\ClienteServiceImpl.class
 backend\com\gestionUsuarios\usuario\infrastructure\persistence\repository\UserRepository.class
 backend\com\comercial\application\dto\PlantillaAccesorioDTO.class
-backend\com\comercial\infrastructure\persistence\adapter\SolicitudCostosRepositoryImpl.class
 backend\com\gestionUsuarios\vendedor\application\service\VendedorService.class
 backend\com\gestionUsuarios\cliente\domain\model\Cliente$ClienteBuilder.class
 backend\com\produccion\application\service\CrearOrdenProduccionUseCase.class

@@ -1,6 +1,12 @@
 package backend.com.gestionUsuarios.cliente.domain.model;
 
-import lombok.*;
+import backend.com.shared.domain.model.Giro;
+import backend.com.shared.domain.model.Sigla;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Getter
 @Setter
@@ -8,14 +14,16 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 public class Cliente {
+
     private Long clienteId;
-    private String nombreCliente;
-    private String apellidoCliente;
     private String runCliente;
+    private String razonSocial;
     private String correoCliente;
     private String telefonoCliente;
     private String direccionCliente;
-    private String segmento;
-    private String contacto;
+    private String contactoCliente;
     private boolean activo;
+
+    private Giro giro;
+    private Sigla sigla;
 }

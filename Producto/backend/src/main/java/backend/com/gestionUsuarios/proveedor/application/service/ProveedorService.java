@@ -3,17 +3,37 @@ package backend.com.gestionUsuarios.proveedor.application.service;
 import backend.com.gestionUsuarios.proveedor.domain.model.Proveedor;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface ProveedorService {
 
-    Proveedor crearProveedor(Proveedor proveedor);
+    List<Proveedor> listarTodos();
 
-    Proveedor actualizarProveedor(Long id, Proveedor proveedor);
+    Optional<Proveedor> obtenerPorId(Long proveedorId);
 
-    Proveedor obtenerProveedor(Long id);
+    Optional<Proveedor> obtenerPorRun(String runProveedor);
 
-    List<Proveedor> listarProveedores();
+    List<Proveedor> buscarPorRazonSocial(String razonSocial);
 
-    void eliminarProveedor(Long id);
+    List<Proveedor> obtenerActivos();
 
+    List<Proveedor> obtenerInactivos();
+
+    List<Proveedor> obtenerPorSiglaId(Long siglaId);
+
+    List<Proveedor> obtenerPorGiroId(Long giroId);
+
+    List<Proveedor> obtenerPorSiglaAbreviatura(String siglaAbreviatura);
+
+    List<Proveedor> obtenerPorDescripcionGiro(String descripcionGiro);
+
+    List<Proveedor> obtenerActivosPorSigla(Long siglaId);
+
+    List<Proveedor> obtenerActivosPorGiro(Long giroId);
+
+    Proveedor crear(Proveedor proveedor);
+
+    Proveedor actualizar(Long proveedorId, Proveedor proveedor);
+
+    void eliminar(Long proveedorId);
 }

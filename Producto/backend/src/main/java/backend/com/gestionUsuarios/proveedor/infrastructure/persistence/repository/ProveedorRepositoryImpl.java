@@ -19,21 +19,73 @@ public class ProveedorRepositoryImpl implements ProveedorRepository {
 
     @Override
     public List<Proveedor> findAll() {
-        return jpaRepository.findAll().stream()
-                .map(mapper::toDomain)
-                .collect(Collectors.toList());
+        return jpaRepository.findAll().stream().map(mapper::toDomain).collect(Collectors.toList());
     }
 
     @Override
     public Optional<Proveedor> findById(Long id) {
-        if (id == null)
-            return Optional.empty();
+        if (id == null) return Optional.empty();
         return jpaRepository.findById(id).map(mapper::toDomain);
     }
 
     @Override
-    public Optional<Proveedor> findByRutProveedor(String rutProveedor) {
-        return jpaRepository.findByRutProveedor(rutProveedor).map(mapper::toDomain);
+    public Optional<Proveedor> findByRunProveedor(String runProveedor) {
+        return jpaRepository.findByRunProveedor(runProveedor).map(mapper::toDomain);
+    }
+
+    @Override
+    public boolean existsByRunProveedor(String runProveedor) {
+        return jpaRepository.existsByRunProveedor(runProveedor);
+    }
+
+    @Override
+    public boolean existsById(Long id) {
+        return id != null && jpaRepository.existsById(id);
+    }
+
+    @Override
+    public List<Proveedor> buscarPorRazonSocial(String razonSocial) {
+        return jpaRepository.buscarPorRazonSocial(razonSocial).stream().map(mapper::toDomain).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<Proveedor> obtenerPorSiglaId(Long siglaId) {
+        return jpaRepository.obtenerPorSiglaId(siglaId).stream().map(mapper::toDomain).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<Proveedor> obtenerPorGiroId(Long giroId) {
+        return jpaRepository.obtenerPorGiroId(giroId).stream().map(mapper::toDomain).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<Proveedor> obtenerPorSiglaAbreviatura(String siglaAbreviatura) {
+        return jpaRepository.obtenerPorSiglaAbreviatura(siglaAbreviatura).stream().map(mapper::toDomain).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<Proveedor> obtenerPorDescripcionGiro(String descripcionGiro) {
+        return jpaRepository.obtenerPorDescripcionGiro(descripcionGiro).stream().map(mapper::toDomain).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<Proveedor> obtenerActivos() {
+        return jpaRepository.findByActivoTrue().stream().map(mapper::toDomain).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<Proveedor> obtenerInactivos() {
+        return jpaRepository.findByActivoFalse().stream().map(mapper::toDomain).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<Proveedor> obtenerActivosPorSigla(Long siglaId) {
+        return jpaRepository.obtenerActivosPorSigla(siglaId).stream().map(mapper::toDomain).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<Proveedor> obtenerActivosPorGiro(Long giroId) {
+        return jpaRepository.obtenerActivosPorGiro(giroId).stream().map(mapper::toDomain).collect(Collectors.toList());
     }
 
     @Override

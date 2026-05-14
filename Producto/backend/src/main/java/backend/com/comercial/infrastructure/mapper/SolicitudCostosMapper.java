@@ -24,10 +24,7 @@ public class SolicitudCostosMapper {
 
         String clienteNombre = null;
         if (entity.getCliente() != null) {
-            clienteNombre = entity.getCliente().getNombreCliente();
-            if (entity.getCliente().getApellidoCliente() != null) {
-                clienteNombre += " " + entity.getCliente().getApellidoCliente();
-            }
+            clienteNombre = entity.getCliente().getRazonSocial();
         }
 
         String vendedorNombre = null;

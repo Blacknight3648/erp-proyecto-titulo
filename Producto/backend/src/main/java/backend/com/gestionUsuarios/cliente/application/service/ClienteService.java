@@ -7,16 +7,33 @@ import java.util.Optional;
 
 public interface ClienteService {
 
-    Cliente crearCliente(Cliente cliente);
+    List<Cliente> listarTodos();
 
-    Cliente actualizarCliente(Long id, Cliente cliente);
+    Optional<Cliente> obtenerPorId(Long clienteId);
 
-    Optional<Cliente> obtenerClientePorId(Long id);
+    Optional<Cliente> obtenerPorRun(String runCliente);
 
-    Optional<Cliente> obtenerClientePorRun(String runCliente);
+    List<Cliente> buscarPorRazonSocial(String razonSocial);
 
-    List<Cliente> listarClientes();
+    List<Cliente> obtenerActivos();
 
-    void eliminarCliente(Long id);
+    List<Cliente> obtenerInactivos();
 
+    List<Cliente> obtenerPorSiglaId(Long siglaId);
+
+    List<Cliente> obtenerPorGiroId(Long giroId);
+
+    List<Cliente> obtenerPorDescripcionSigla(String descripcionSigla);
+
+    List<Cliente> obtenerPorDescripcionGiro(String descripcionGiro);
+
+    List<Cliente> obtenerActivosPorSigla(Long siglaId);
+
+    List<Cliente> obtenerActivosPorGiro(Long giroId);
+
+    Cliente crear(Cliente cliente);
+
+    Cliente actualizar(Long clienteId, Cliente cliente);
+
+    void eliminar(Long clienteId);
 }

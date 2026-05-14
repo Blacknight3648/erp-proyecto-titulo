@@ -6,13 +6,36 @@ import java.util.List;
 import java.util.Optional;
 
 public interface ProveedorRepository {
+
     List<Proveedor> findAll();
 
     Optional<Proveedor> findById(Long id);
 
-    Proveedor save(Proveedor proveedor);
+    Optional<Proveedor> findByRunProveedor(String runProveedor);
 
-    Optional<Proveedor> findByRutProveedor(String rutProveedor);
+    boolean existsByRunProveedor(String runProveedor);
+
+    boolean existsById(Long id);
+
+    List<Proveedor> buscarPorRazonSocial(String razonSocial);
+
+    List<Proveedor> obtenerPorSiglaId(Long siglaId);
+
+    List<Proveedor> obtenerPorGiroId(Long giroId);
+
+    List<Proveedor> obtenerPorSiglaAbreviatura(String siglaAbreviatura);
+
+    List<Proveedor> obtenerPorDescripcionGiro(String descripcionGiro);
+
+    List<Proveedor> obtenerActivos();
+
+    List<Proveedor> obtenerInactivos();
+
+    List<Proveedor> obtenerActivosPorSigla(Long siglaId);
+
+    List<Proveedor> obtenerActivosPorGiro(Long giroId);
+
+    Proveedor save(Proveedor proveedor);
 
     void deleteById(Long id);
 }

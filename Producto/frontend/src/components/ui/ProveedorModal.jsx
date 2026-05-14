@@ -1,19 +1,38 @@
 "use client";
 
-import React, { useState, useMemo, useEffect } from "react";
-import { X, User, Tag, Mail, Phone, MapPin, Briefcase, FileText, AlertCircle } from "lucide-react";
+import { useState, useMemo, useEffect } from "react";
+import {
+  X,
+  User,
+  Tag,
+  Mail,
+  Phone,
+  MapPin,
+  Briefcase,
+  FileText,
+  AlertCircle,
+} from "lucide-react";
 import { toast } from "sonner";
 import { validateRUN, formatRUN } from "../../utils/validations";
 
+import { useGiros } from "../../hooks/useGiros";
+import { useSiglas } from "../../hooks/useSiglas";
+
 export default function ProveedorModal({ onClose, onSave, proveedorToEdit = null }) {
+  const { giros } = useGiros();
+  const { siglas } = useSiglas();
+
   const initialForm = {
-    nombreProveedor: "",
-    rutProveedor: "",
+    razonSocialProveedor: "",
+    runProveedor: "",
     direccionProveedor: "",
     telefonoProveedor: "",
     emailProveedor: "",
     contactoProveedor: "",
-    categoria: "",
+    tipoProveedor: "",
+    siglaId: "",
+    giroId: "",
+    activo: true,
   };
 
   const [formData, setFormData] = useState(initialForm);
@@ -21,11 +40,18 @@ export default function ProveedorModal({ onClose, onSave, proveedorToEdit = null
 
   useEffect(() => {
     if (proveedorToEdit) {
-      // Al editar, formateamos el RUT y teléfono que vienen de la DB
       setFormData({
-        ...proveedorToEdit,
-        rutProveedor: formatRUN(proveedorToEdit.rutProveedor) || "",
-        telefonoProveedor: proveedorToEdit.telefonoProveedor?.replace("+56", "").trim() || "",
+        razonSocialProveedor: proveedorToEdit.razonSocialProveedor || "",
+        runProveedor: formatRUN(proveedorToEdit.runProveedor) || "",
+        direccionProveedor: proveedorToEdit.direccionProveedor || "",
+        telefonoProveedor:
+          proveedorToEdit.telefonoProveedor?.replace("+56", "").trim() || "",
+        emailProveedor: proveedorToEdit.emailProveedor || "",
+        contactoProveedor: proveedorToEdit.contactoProveedor || "",
+        tipoProveedor: proveedorToEdit.tipoProveedor || "",
+        siglaId: proveedorToEdit.sigla?.siglaId?.toString() || "",
+        giroId: proveedorToEdit.giro?.giroId?.toString() || "",
+        activo: proveedorToEdit.activo ?? true,
       });
     } else {
       setFormData(initialForm);
@@ -37,31 +63,22 @@ export default function ProveedorModal({ onClose, onSave, proveedorToEdit = null
     let finalValue = value;
     const newErrors = { ...errors };
 
-    // --- LÓGICA POR CAMPO ---
-
-    if (name === "rutProveedor") {
-      // Limpiar y formatear RUT
+    if (name === "runProveedor") {
       const clean = value.replace(/[^0-9Kk]/g, "");
       finalValue = formatRUN(clean);
-      
       if (clean.length > 0 && !validateRUN(clean)) {
-        newErrors[name] = "El RUT ingresado no es válido (DV incorrecto)";
+        newErrors[name] = "El RUN ingresado no es válido (DV incorrecto)";
       } else if (clean.length > 0 && clean.length < 8) {
-        newErrors[name] = "RUT demasiado corto";
+        newErrors[name] = "RUN demasiado corto";
       } else {
         delete newErrors[name];
       }
-    }
-
-    else if (name === "telefonoProveedor") {
-      // Solo números, máx 9 dígitos (formato chileno: 9 1234 5678)
+    } else if (name === "telefonoProveedor") {
       const clean = value.replace(/\D/g, "").slice(0, 9);
-      // Formatear visualmente: X XXXX XXXX
       finalValue = clean
         .replace(/(\d{1})(\d{4})(\d{4})/, "$1 $2 $3")
         .replace(/(\d{1})(\d{4})/, "$1 $2")
         .trim();
-
       if (clean.length > 0 && clean.length < 9) {
         newErrors[name] = "Deben ser 9 dígitos (Ej: 9 1234 5678)";
       } else if (clean.length > 0 && !clean.startsWith("9")) {
@@ -69,9 +86,7 @@ export default function ProveedorModal({ onClose, onSave, proveedorToEdit = null
       } else {
         delete newErrors[name];
       }
-    }
-
-    else if (name === "emailProveedor") {
+    } else if (name === "emailProveedor") {
       finalValue = value.toLowerCase();
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       if (value && !emailRegex.test(value)) {
@@ -79,9 +94,7 @@ export default function ProveedorModal({ onClose, onSave, proveedorToEdit = null
       } else {
         delete newErrors[name];
       }
-    }
-
-    else if (name === "nombreProveedor" || name === "categoria") {
+    } else if (name === "razonSocialProveedor") {
       if (value.trim().length > 0 && value.trim().length < 3) {
         newErrors[name] = "Debe tener al menos 3 caracteres";
       } else {
@@ -94,46 +107,65 @@ export default function ProveedorModal({ onClose, onSave, proveedorToEdit = null
   };
 
   const isValid = useMemo(() => {
-    const requiredFields = 
-      formData.nombreProveedor.length >= 3 &&
-      validateRUN(formData.rutProveedor.replace(/[^0-9Kk]/g, "")) &&
-      formData.categoria.length >= 2;
-    
+    const runClean = (formData.runProveedor || "").replace(/[^0-9Kk]/g, "");
+    const requiredFields =
+      formData.razonSocialProveedor.trim().length >= 3 &&
+      validateRUN(runClean) &&
+      !!formData.siglaId &&
+      !!formData.giroId;
     return Object.keys(errors).length === 0 && requiredFields;
   }, [errors, formData]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
-
     if (!isValid) {
       toast.error("Por favor, revisa los campos marcados en rojo");
       return;
     }
 
-    // Limpieza final para guardar
     const payload = {
-      ...formData,
-      rutProveedor: formData.rutProveedor.replace(/\./g, ""), // Guardar sin puntos para consistencia
-      telefonoProveedor: `+56${formData.telefonoProveedor.replace(/\s/g, "")}`,
+      razonSocialProveedor: formData.razonSocialProveedor,
+      runProveedor: formData.runProveedor.replace(/\./g, ""),
+      direccionProveedor: formData.direccionProveedor,
+      telefonoProveedor: formData.telefonoProveedor
+        ? `+56${formData.telefonoProveedor.replace(/\s/g, "")}`
+        : "",
+      emailProveedor: formData.emailProveedor,
+      contactoProveedor: formData.contactoProveedor,
+      tipoProveedor: formData.tipoProveedor,
+      activo: formData.activo,
+      sigla: formData.siglaId ? { siglaId: Number(formData.siglaId) } : null,
+      giro: formData.giroId ? { giroId: Number(formData.giroId) } : null,
     };
 
     onSave(payload);
     toast.success("Datos procesados correctamente");
   };
 
-  // Componente de error reutilizable
-  const ErrorMsg = ({ name }) => errors[name] ? (
-    <div className="flex items-center gap-1 mt-2 ml-2 text-rose-500">
-      <AlertCircle size={12} />
-      <span className="text-[10px] font-bold uppercase tracking-wider">{errors[name]}</span>
-    </div>
-  ) : null;
+  const ErrorMsg = ({ name }) =>
+    errors[name] ? (
+      <div className="flex items-center gap-1 mt-2 ml-2 text-rose-500">
+        <AlertCircle size={12} />
+        <span className="text-[10px] font-bold uppercase tracking-wider">
+          {errors[name]}
+        </span>
+      </div>
+    ) : null;
+
+  const inputClass = (err) =>
+    `w-full pl-14 pr-6 py-5 bg-gray-50 rounded-[1.5rem] border-2 transition-all outline-none font-bold text-sm ${
+      err
+        ? "border-rose-500 bg-rose-50/30"
+        : "border-transparent focus:bg-white focus:border-indigo-500"
+    }`;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-md">
       <div className="bg-white w-full max-w-2xl rounded-[3rem] p-10 shadow-2xl relative max-h-[90vh] overflow-y-auto">
-        
-        <button onClick={onClose} className="absolute top-8 right-8 p-3 bg-gray-50 rounded-2xl hover:bg-black hover:text-white transition">
+        <button
+          onClick={onClose}
+          className="absolute top-8 right-8 p-3 bg-gray-50 rounded-2xl hover:bg-black hover:text-white transition"
+        >
           <X size={20} />
         </button>
 
@@ -148,65 +180,114 @@ export default function ProveedorModal({ onClose, onSave, proveedorToEdit = null
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-8">
-          
           <div className="grid grid-cols-2 gap-6">
-            {/* Nombre */}
+            {/* Razón Social */}
             <div className="col-span-2 space-y-2">
-              <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Nombre Comercial *</label>
+              <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">
+                Razón Social *
+              </label>
               <div className="relative">
-                <User className={`absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 ${errors.nombreProveedor ? "text-rose-500" : "text-gray-400"}`} />
+                <User className={`absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 ${errors.razonSocialProveedor ? "text-rose-500" : "text-gray-400"}`} />
                 <input
-                  name="nombreProveedor"
-                  value={formData.nombreProveedor}
+                  name="razonSocialProveedor"
+                  value={formData.razonSocialProveedor}
                   onChange={handleChange}
-                  className={`w-full pl-14 pr-6 py-5 bg-gray-50 rounded-[1.5rem] border-2 transition-all outline-none font-bold text-sm ${
-                    errors.nombreProveedor ? "border-rose-500 bg-rose-50/30" : "border-transparent focus:bg-white focus:border-indigo-500"
-                  }`}
-                  placeholder="Ej: Transportes Integral"
+                  className={inputClass(errors.razonSocialProveedor)}
+                  placeholder="Ej: Transportes Integral SPA"
                 />
               </div>
-              <ErrorMsg name="nombreProveedor" />
+              <ErrorMsg name="razonSocialProveedor" />
             </div>
 
-            {/* RUT */}
+            {/* RUN */}
             <div className="space-y-2">
-              <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">RUT *</label>
+              <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">
+                RUN *
+              </label>
               <div className="relative">
-                <span className={`absolute left-5 top-1/2 -translate-y-1/2 text-sm font-black ${errors.rutProveedor ? "text-rose-500" : "text-gray-400"}`}>ID</span>
+                <span className={`absolute left-5 top-1/2 -translate-y-1/2 text-sm font-black ${errors.runProveedor ? "text-rose-500" : "text-gray-400"}`}>
+                  ID
+                </span>
                 <input
-                  name="rutProveedor"
-                  value={formData.rutProveedor}
+                  name="runProveedor"
+                  value={formData.runProveedor}
                   onChange={handleChange}
-                  className={`w-full pl-14 pr-6 py-5 bg-gray-50 rounded-[1.5rem] border-2 transition-all outline-none font-bold text-sm ${
-                    errors.rutProveedor ? "border-rose-500 bg-rose-50/30" : "border-transparent focus:bg-white focus:border-indigo-500"
-                  }`}
+                  disabled={!!proveedorToEdit}
+                  className={inputClass(errors.runProveedor)}
                   placeholder="12.345.678-9"
                 />
               </div>
-              <ErrorMsg name="rutProveedor" />
+              <ErrorMsg name="runProveedor" />
             </div>
 
-            {/* Categoría */}
+            {/* Sigla */}
             <div className="space-y-2">
-              <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Categoría *</label>
+              <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">
+                Sigla *
+              </label>
               <div className="relative">
-                <Tag className={`absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 ${errors.categoria ? "text-rose-500" : "text-gray-400"}`} />
-                <input
-                  name="categoria"
-                  value={formData.categoria}
+                <Tag className="absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                <select
+                  name="siglaId"
+                  value={formData.siglaId}
                   onChange={handleChange}
-                  className={`w-full pl-14 pr-6 py-5 bg-gray-50 rounded-[1.5rem] border-2 transition-all outline-none font-bold text-sm ${
-                    errors.categoria ? "border-rose-500 bg-rose-50/30" : "border-transparent focus:bg-white focus:border-indigo-500"
-                  }`}
-                  placeholder="Ej: Logística"
+                  className={inputClass(false)}
+                >
+                  <option value="">Seleccionar sigla...</option>
+                  {siglas.map((s) => (
+                    <option key={s.siglaId} value={s.siglaId}>
+                      {s.siglaAbreviatura || s.descripcionSigla}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            {/* Giro */}
+            <div className="col-span-2 space-y-2">
+              <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">
+                Giro *
+              </label>
+              <div className="relative">
+                <Briefcase className="absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                <select
+                  name="giroId"
+                  value={formData.giroId}
+                  onChange={handleChange}
+                  className={inputClass(false)}
+                >
+                  <option value="">Seleccionar giro...</option>
+                  {giros.map((g) => (
+                    <option key={g.giroId} value={g.giroId}>
+                      {g.descripcionGiro}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            {/* Tipo de Proveedor */}
+            <div className="space-y-2">
+              <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">
+                Tipo de Proveedor
+              </label>
+              <div className="relative">
+                <Tag className="absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                <input
+                  name="tipoProveedor"
+                  value={formData.tipoProveedor}
+                  onChange={handleChange}
+                  className={inputClass(false)}
+                  placeholder="Ej: Logística, Insumos..."
                 />
               </div>
-              <ErrorMsg name="categoria" />
             </div>
 
             {/* Email */}
             <div className="space-y-2">
-              <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Email</label>
+              <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">
+                Email
+              </label>
               <div className="relative">
                 <Mail className={`absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 ${errors.emailProveedor ? "text-rose-500" : "text-gray-400"}`} />
                 <input
@@ -214,21 +295,20 @@ export default function ProveedorModal({ onClose, onSave, proveedorToEdit = null
                   type="email"
                   value={formData.emailProveedor}
                   onChange={handleChange}
-                  className={`w-full pl-14 pr-6 py-5 bg-gray-50 rounded-[1.5rem] border-2 transition-all outline-none font-bold text-sm ${
-                    errors.emailProveedor ? "border-rose-500 bg-rose-50/30" : "border-transparent focus:bg-white focus:border-indigo-500"
-                  }`}
+                  className={inputClass(errors.emailProveedor)}
                   placeholder="mail@ejemplo.cl"
                 />
               </div>
               <ErrorMsg name="emailProveedor" />
             </div>
 
-            {/* Teléfono con +56 FIJO */}
+            {/* Teléfono */}
             <div className="space-y-2">
-              <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Teléfono Móvil</label>
+              <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">
+                Teléfono Móvil
+              </label>
               <div className="relative">
                 <Phone className={`absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 ${errors.telefonoProveedor ? "text-rose-500" : "text-gray-400"}`} />
-                {/* Prefijo Visual */}
                 <span className="absolute left-12 top-1/2 -translate-y-1/2 text-sm font-black text-gray-400 select-none">
                   +56
                 </span>
@@ -237,7 +317,9 @@ export default function ProveedorModal({ onClose, onSave, proveedorToEdit = null
                   value={formData.telefonoProveedor}
                   onChange={handleChange}
                   className={`w-full pl-24 pr-6 py-5 bg-gray-50 rounded-[1.5rem] border-2 transition-all outline-none font-bold text-sm ${
-                    errors.telefonoProveedor ? "border-rose-500 bg-rose-50/30" : "border-transparent focus:bg-white focus:border-indigo-500"
+                    errors.telefonoProveedor
+                      ? "border-rose-500 bg-rose-50/30"
+                      : "border-transparent focus:bg-white focus:border-indigo-500"
                   }`}
                   placeholder="9 1234 5678"
                 />
@@ -245,16 +327,18 @@ export default function ProveedorModal({ onClose, onSave, proveedorToEdit = null
               <ErrorMsg name="telefonoProveedor" />
             </div>
 
-            {/* Contacto Directo */}
+            {/* Contacto */}
             <div className="space-y-2">
-              <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Persona de Contacto</label>
+              <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">
+                Persona de Contacto
+              </label>
               <div className="relative">
                 <Briefcase className="absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                 <input
                   name="contactoProveedor"
                   value={formData.contactoProveedor}
                   onChange={handleChange}
-                  className="w-full pl-14 pr-6 py-5 bg-gray-50 rounded-[1.5rem] border-2 border-transparent focus:bg-white focus:border-indigo-500 outline-none font-bold text-sm transition-all"
+                  className={inputClass(false)}
                   placeholder="Nombre del ejecutivo"
                 />
               </div>
@@ -262,14 +346,16 @@ export default function ProveedorModal({ onClose, onSave, proveedorToEdit = null
 
             {/* Dirección */}
             <div className="space-y-2">
-              <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Dirección Física</label>
+              <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">
+                Dirección
+              </label>
               <div className="relative">
                 <MapPin className="absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                 <input
                   name="direccionProveedor"
                   value={formData.direccionProveedor}
                   onChange={handleChange}
-                  className="w-full pl-14 pr-6 py-5 bg-gray-50 rounded-[1.5rem] border-2 border-transparent focus:bg-white focus:border-indigo-500 outline-none font-bold text-sm transition-all"
+                  className={inputClass(false)}
                   placeholder="Ciudad, Calle #123"
                 />
               </div>

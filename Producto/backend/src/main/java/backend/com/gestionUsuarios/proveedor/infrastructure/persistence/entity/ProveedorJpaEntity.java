@@ -1,6 +1,8 @@
 package backend.com.gestionUsuarios.proveedor.infrastructure.persistence.entity;
 
 import backend.com.shared.infrastructure.persistence.entity.BaseEntity;
+import backend.com.shared.infrastructure.persistence.entity.GiroJpaEntity;
+import backend.com.shared.infrastructure.persistence.entity.SiglaJpaEntity;
 import backend.com.shared.validations.email.ValidEmail;
 import backend.com.shared.validations.run.ValidRun;
 import backend.com.shared.validations.telefono.ValidPhone;
@@ -13,8 +15,8 @@ import lombok.*;
 @Table(
         name = "proveedores",
         indexes = {
-                @Index(name = "idx_proveedor_rut", columnList = "rutProveedor"),
-                @Index(name = "idx_proveedor_email", columnList = "emailProveedor")
+                @Index(name = "idx_proveedor_run", columnList = "run_proveedor"),
+                @Index(name = "idx_proveedor_email", columnList = "email_proveedor")
         }
 )
 @Getter
@@ -23,6 +25,7 @@ import lombok.*;
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class ProveedorJpaEntity extends BaseEntity {
 
     @Id
@@ -30,37 +33,43 @@ public class ProveedorJpaEntity extends BaseEntity {
     @Column(name = "proveedor_id")
     private Long proveedorId;
 
-    @NotBlank(message = "El nombre del proveedor es obligatorio")
-    @Size(max = 100)
-    @Column(name = "nombreProveedor", unique = true, length = 100, nullable = false)
-    private String nombreProveedor;
+    @NotBlank(message = "La razón social del proveedor es obligatoria")
+    @Size(max = 255)
+    @Column(name = "razon_social_proveedor", length = 255, nullable = false)
+    private String razonSocialProveedor;
 
     @ValidRun
     @Size(max = 12)
-    @Column(name = "rutProveedor", length = 12)
-    private String rutProveedor;
+    @Column(name = "run_proveedor", length = 12, unique = true, nullable = false)
+    private String runProveedor;
 
-    @Size(max = 150)
-    @Column(name = "direccionProveedor", length = 150)
+    @Size(max = 500)
+    @Column(name = "direccion_proveedor", length = 500)
     private String direccionProveedor;
 
     @ValidPhone
     @Size(max = 20)
-    @Column(name = "telefonoProveedor", length = 20)
+    @Column(name = "telefono_proveedor", length = 20)
     private String telefonoProveedor;
 
     @ValidEmail
     @Size(max = 150)
-    @Column(name = "emailProveedor", length = 150)
+    @Column(name = "email_proveedor", length = 150)
     private String emailProveedor;
 
-    @Size(max = 100)
-    @Column(name = "contactoProveedor", length = 100)
+    @Size(max = 150)
+    @Column(name = "contacto_proveedor", length = 150)
     private String contactoProveedor;
 
-    @Size(max = 100)
-    @Column(name = "categoria", length = 100)
-    private String categoria;
+    @Size(max = 30)
+    @Column(name = "tipo_proveedor", length = 30)
+    private String tipoProveedor;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "fk_sigla")
+    private SiglaJpaEntity sigla;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "fk_giro")
+    private GiroJpaEntity giro;
 }

@@ -1,122 +1,107 @@
-import { useState, useEffect } from 'react';
-import { toast } from 'sonner';
-import { api } from '../remote/service/api';
+import { useState, useEffect } from "react";
+import { toast } from "sonner";
+import { api } from "../remote/service/api";
 
 export const useProveedores = () => {
-    const [proveedores, setProveedores] = useState([]);
-    const [loading, setLoading] = useState(true);
+   const [proveedores, setProveedores] = useState([]);
+   const [loading, setLoading] = useState(true);
 
-    const loadProveedores = async () => {
-        try {
-            const response = await api.get("/proveedores");
-            setProveedores(response.data);
-        } catch (error) {
-            console.error("Error al cargar proveedores:", error);
-            toast.error("Error de conexión al cargar la lista de proveedores");
-        } finally {
-            setLoading(false);
-        }
-    };
+   const loadProveedores = async () => {
+      try {
+         const response = await api.get("/proveedores");
+         setProveedores(response.data);
+      } catch (error) {
+         console.error("Error al cargar proveedores:", error);
+         toast.error("Error de conexión al cargar la lista de proveedores");
+      } finally {
+         setLoading(false);
+      }
+   };
 
-    const createProveedor = async (proveedor) => {
-        try {
-            await api.post("/proveedores", proveedor);
-            await loadProveedores();
-            toast.success("Proveedor registrado exitosamente");
-        } catch (error) {
-            console.error("Error al registrar proveedor:", error);
-            const msg = error.response?.data?.message || "Error al registrar el proveedor. Verifique los datos.";
-            toast.error(msg);
-        }
-    };
+   const buildPayload = (proveedor) => ({
+      proveedorId: proveedor.proveedorId,
+      runProveedor: proveedor.runProveedor,
+      razonSocialProveedor: proveedor.razonSocialProveedor,
+      direccionProveedor: proveedor.direccionProveedor || "",
+      contactoProveedor: proveedor.contactoProveedor || "",
+      emailProveedor: proveedor.emailProveedor || "",
+      telefonoProveedor: proveedor.telefonoProveedor || "",
+      tipoProveedor: proveedor.tipoProveedor || "",
+      activo: proveedor.activo ?? true,
+      sigla: proveedor.sigla?.siglaId ? { siglaId: proveedor.sigla.siglaId } : null,
+      giro: proveedor.giro?.giroId ? { giroId: proveedor.giro.giroId } : null,
+   });
 
-    const updateProveedor = async (proveedor) => {
-        const id = proveedor.proveedorId || proveedor.id;
-        if (!id || id === "undefined") {
-            console.error("Error: Intentando actualizar proveedor sin ID válido", proveedor);
-            toast.error("No se puede actualizar: ID de proveedor no encontrado");
-            return;
-        }
+   const createProveedor = async (proveedor) => {
+      try {
+         await api.post("/proveedores", buildPayload(proveedor));
+         await loadProveedores();
+         toast.success("Proveedor registrado exitosamente");
+      } catch (error) {
+         console.error("Error al registrar proveedor:", error);
+         const msg = error.response?.data?.message || "Error al registrar el proveedor. Verifique los datos.";
+         toast.error(msg);
+      }
+   };
 
-        try {
-            const cleanProveedor = {
-                proveedorId: id,
-                nombreProveedor: proveedor.nombreProveedor,
-                rutProveedor: proveedor.rutProveedor,
-                direccionProveedor: proveedor.direccionProveedor || "SIN DIRECCION",
-                telefonoProveedor: proveedor.telefonoProveedor || "+56900000000",
-                emailProveedor: proveedor.emailProveedor || "sin@email.cl",
-                contactoProveedor: proveedor.contactoProveedor || "",
-                categoria: proveedor.categoria || "VARIOS",
-                activo: proveedor.activo ?? true
-            };
-            await api.put(`/proveedores/${id}`, cleanProveedor);
-            await loadProveedores();
-            toast.success("Información del proveedor actualizada");
-        } catch (error) {
-            console.error("Error al actualizar proveedor:", error);
-            const msg = error.response?.data?.message || "Error al actualizar los datos del proveedor";
-            toast.error(msg);
-        }
-    };
+   const updateProveedor = async (proveedor) => {
+      const id = proveedor.proveedorId || proveedor.id;
+      if (!id) {
+         toast.error("No se puede actualizar: ID de proveedor no encontrado");
+         return;
+      }
+      try {
+         await api.put(`/proveedores/${id}`, buildPayload({ ...proveedor, proveedorId: id }));
+         await loadProveedores();
+         toast.success("Información del proveedor actualizada");
+      } catch (error) {
+         console.error("Error al actualizar proveedor:", error);
+         const msg = error.response?.data?.message || "Error al actualizar los datos del proveedor";
+         toast.error(msg);
+      }
+   };
 
-    const deleteProveedor = async (id) => {
-        if (!id || id === "undefined") {
-            console.error("Error: Intentando eliminar proveedor sin ID válido");
-            toast.error("No se puede eliminar: ID de proveedor no encontrado");
-            return;
-        }
+   const deleteProveedor = async (id) => {
+      if (!id) {
+         toast.error("No se puede eliminar: ID de proveedor no encontrado");
+         return;
+      }
+      try {
+         await api.delete(`/proveedores/${id}`);
+         setProveedores(prev => prev.filter(p => p.proveedorId !== id));
+         toast.success("Proveedor eliminado correctamente");
+      } catch (error) {
+         console.error("Error al eliminar proveedor:", error);
+         toast.error("No se pudo eliminar el proveedor");
+      }
+   };
 
-        try {
-            await api.delete(`/proveedores/${id}`);
-            setProveedores(prev => prev.filter(p => p.proveedorId !== id && p.id !== id));
-            toast.success("Proveedor eliminado correctamente");
-        } catch (error) {
-            console.error("Error al eliminar proveedor:", error);
-            toast.error("No se pudo eliminar el proveedor");
-        }
-    };
+   const toggleProveedor = async (proveedor) => {
+      const id = proveedor.proveedorId || proveedor.id;
+      if (!id) {
+         toast.error("No se puede cambiar estado: ID de proveedor no encontrado");
+         return;
+      }
+      try {
+         await api.put(`/proveedores/${id}`, buildPayload({ ...proveedor, proveedorId: id, activo: !proveedor.activo }));
+         await loadProveedores();
+         toast.success(`Proveedor ${!proveedor.activo ? "activado" : "suspendido"} con éxito`);
+      } catch (error) {
+         console.error("Error al cambiar estado del proveedor:", error);
+         toast.error("No se pudo cambiar el estado del proveedor");
+      }
+   };
 
-    const toggleProveedor = async (proveedor) => {
-        const id = proveedor.proveedorId || proveedor.id;
-        if (!id || id === "undefined") {
-            console.error("Error: Intentando cambiar estado de proveedor sin ID válido", proveedor);
-            toast.error("No se puede cambiar estado: ID de proveedor no encontrado");
-            return;
-        }
+   useEffect(() => {
+      loadProveedores();
+   }, []);
 
-        try {
-            const cleanProveedor = {
-                proveedorId: id,
-                nombreProveedor: proveedor.nombreProveedor,
-                rutProveedor: proveedor.rutProveedor,
-                direccionProveedor: proveedor.direccionProveedor || "SIN DIRECCION",
-                telefonoProveedor: proveedor.telefonoProveedor || "+56900000000",
-                emailProveedor: proveedor.emailProveedor || "sin@email.cl",
-                contactoProveedor: proveedor.contactoProveedor || "",
-                categoria: proveedor.categoria || "VARIOS",
-                activo: !proveedor.activo
-            };
-            
-            await api.put(`/proveedores/${id}`, cleanProveedor);
-            await loadProveedores();
-            toast.success(`Proveedor ${!proveedor.activo ? 'activado' : 'suspendido'} con éxito`);
-        } catch (error) {
-            console.error("Error al cambiar estado del proveedor:", error);
-            toast.error("No se pudo cambiar el estado del proveedor");
-        }
-    };
-
-    useEffect(() => {
-        loadProveedores();
-    }, []);
-
-    return {
-        proveedores,
-        loading,
-        createProveedor,
-        updateProveedor,
-        deleteProveedor,
-        toggleProveedor
-    };
+   return {
+      proveedores,
+      loading,
+      createProveedor,
+      updateProveedor,
+      deleteProveedor,
+      toggleProveedor,
+   };
 };

@@ -47,7 +47,7 @@ export default function ModernSidebar({ isOpen, setIsOpen }) {
         { path: '/comercial/ordenes-produccion', label: 'Ordenes de Produccion', icon: DollarSign },
       ]
     },
-    { path: '#', label: 'Adquisiciones', icon: ShoppingCart, color: 'text-indigo-600' },
+    { id: 'adquisiciones', path: '#', label: 'Adquisiciones', icon: ShoppingCart, color: 'text-indigo-600' },
     {
       id: 'produccion',
       label: 'Producción',
@@ -63,8 +63,8 @@ export default function ModernSidebar({ isOpen, setIsOpen }) {
         { path: '/produccion/compras', label: 'Ordenes de Compra', icon: ShoppingCart },
       ]
     },
-    { path: '#', label: 'Bodega', icon: Package, color: 'text-green-600' },
-    { path: '#', label: 'Contabilidad', icon: Wallet, color: 'text-indigo-600' },
+    { id: 'bodega', path: '#', label: 'Bodega', icon: Package, color: 'text-green-600' },
+    { id: 'contabilidad', path: '#', label: 'Contabilidad', icon: Wallet, color: 'text-indigo-600' },
     {
       id: 'usuarios',
       label: 'Gestión de Usuarios',

@@ -1,11 +1,8 @@
-import React from 'react';
 import {
-    CreditCard,
     Truck,
     ShieldAlert,
     Calendar,
-    Wallet,
-    Percent
+    Wallet
 } from 'lucide-react';
 
 export default function EvaluacionForm({ data, onChange }) {

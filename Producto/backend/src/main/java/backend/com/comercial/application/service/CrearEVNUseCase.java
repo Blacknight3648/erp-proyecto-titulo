@@ -8,6 +8,7 @@ import backend.com.comercial.domain.model.ItemEVN;
 import backend.com.comercial.domain.model.GastoAdicional;
 import backend.com.comercial.domain.model.TomaTallaje;
 import backend.com.comercial.domain.repository.EvaluacionNegocioRepository;
+import backend.com.shared.application.service.NumeroDocumentoService;
 import backend.com.shared.valueobjects.DocumentNumber;
 import backend.com.shared.valueobjects.Money;
 import lombok.RequiredArgsConstructor;
@@ -22,15 +23,12 @@ import java.math.BigDecimal;
 public class CrearEVNUseCase {
 
     private final EvaluacionNegocioRepository evnRepository;
+    private final NumeroDocumentoService numeroDocumentoService;
 
     @Transactional
     public EVNResponse ejecutar(CrearEVNCommand command) {
-
-        // Generar número correlativo si no se provee
-        Long numeroLong = command.getNumero();
-        if (numeroLong == null) {
-            numeroLong = evnRepository.findMaxNumero().orElse(0L) + 1;
-        }
+        // Número correlativo atómico desde el contador (ignora el valor del cliente).
+        Long numeroLong = numeroDocumentoService.siguiente("EVN");
 
         EvaluacionNegocio evn = EvaluacionNegocio.crear(
                 new DocumentNumber(numeroLong),

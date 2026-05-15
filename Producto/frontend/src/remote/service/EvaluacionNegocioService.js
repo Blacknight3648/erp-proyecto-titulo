@@ -1,9 +1,6 @@
 import { api } from './api';
 import { EvaluacionNegocioDTO } from '../DTO/EvaluacionNegocioDTO';
 
-/**
- * Servicio para la gestión de Evaluaciones de Negocio.
- */
 export const EvaluacionNegocioService = {
     getAll: async () => {
         try {
@@ -35,13 +32,32 @@ export const EvaluacionNegocioService = {
         }
     },
 
-    adjudicar: async (id) => {
-        try {
-            const response = await api.patch(`/comercial/evaluaciones-negocio/${id}/adjudicar`);
-            return response.data;
-        } catch (error) {
-            console.error(`Error adjudicando EVN ${id}:`, error);
-            throw error;
-        }
+    adjudicar: async (id, aprobador, observacion) => {
+        const response = await api.patch(
+            `/comercial/evaluaciones-negocio/${id}/adjudicar`,
+            { aprobador, observacion }
+        );
+        return response.data;
+    },
+
+    aprobar: async (id, aprobador, observacion) => {
+        const response = await api.patch(
+            `/comercial/evaluaciones-negocio/${id}/aprobar`,
+            { aprobador, observacion }
+        );
+        return response.data;
+    },
+
+    rechazar: async (id, aprobador, motivo) => {
+        const response = await api.patch(
+            `/comercial/evaluaciones-negocio/${id}/rechazar`,
+            { aprobador, motivo }
+        );
+        return response.data;
+    },
+
+    getHistorial: async (id) => {
+        const response = await api.get(`/comercial/evaluaciones-negocio/${id}/historial`);
+        return response.data;
     }
 };

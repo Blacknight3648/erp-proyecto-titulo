@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import java.time.LocalDateTime;
 
 @Slf4j
-@RestControllerAdvice(basePackages = "backend.com.shared")
+@RestControllerAdvice
 public class SharedGlobalExceptionHandler {
 
     @ExceptionHandler(BaseException.class)

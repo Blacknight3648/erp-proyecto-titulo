@@ -18,7 +18,7 @@ import Welcome from "./components/pages/7. HOME PAGE/Welcome";
 import NotaDeVenta from "./components/pages/2. COMERCIAL/NOTA DE VENTA/NotaDeVenta";
 import SolicitudCostosContainer from "./components/pages/2. COMERCIAL/COSTEOS/components/SCOS/SolicitudCostosContainer.jsx";
 import AdministracionNegocios from "./components/pages/2. COMERCIAL/ADMINISTRACION/AdministracionNegocios";
-import GestionPlantillas from "./components/pages/2. COMERCIAL/ADMINISTRACION/GestionPlantillas";
+import GestionPlantillas from "./components/pages/2. COMERCIAL/PLANTILLAS/GestionPlantillas";
 import TableroComercial from "./components/pages/2. COMERCIAL/TableroComercial";
 import GestionProyectos from "./components/pages/2. COMERCIAL/GESTION PROYECTO/GestionProyectos";
 import OrdenesProduccion from "./components/pages/2. COMERCIAL/ORDENES DE PRODUCCION/OrdenesProduccion";

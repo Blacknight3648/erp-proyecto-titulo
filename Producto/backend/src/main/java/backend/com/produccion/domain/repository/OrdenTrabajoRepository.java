@@ -10,4 +10,6 @@ public interface OrdenTrabajoRepository {
     Optional<OrdenTrabajo> findById(Long id);
 
     List<OrdenTrabajo> findByNotaVentaId(Long notaVentaId);
+
+    List<OrdenTrabajo> findByOrdenProduccionId(Long ordenProduccionId);
 }

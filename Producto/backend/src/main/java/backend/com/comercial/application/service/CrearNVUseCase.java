@@ -8,6 +8,7 @@ import backend.com.comercial.domain.model.ItemNV;
 import backend.com.comercial.domain.model.ItemNVTalla;
 import backend.com.comercial.domain.model.NotaVenta;
 import backend.com.comercial.domain.repository.NotaVentaRepository;
+import backend.com.shared.application.service.NumeroDocumentoService;
 import backend.com.shared.valueobjects.DocumentNumber;
 import backend.com.shared.valueobjects.Money;
 import lombok.RequiredArgsConstructor;
@@ -23,13 +24,14 @@ public class CrearNVUseCase {
 
     private final NotaVentaRepository nvRepository;
     private final CrearOrdenProduccionUseCase crearOPUseCase;
+    private final NumeroDocumentoService numeroDocumentoService;
 
     @Transactional
     public NVResponse ejecutar(CrearNVCommand command) {
-        Long numeroVal = command.getNumero();
-        if (numeroVal == null) {
-            numeroVal = nvRepository.findMaxNumero().orElse(0L) + 1;
-        }
+        // El número se asigna siempre desde el contador atómico,
+        // ignorando lo que envíe el cliente (que puede traer un valor obsoleto
+        // si dos usuarios consultaron /next-number al mismo tiempo).
+        Long numeroVal = numeroDocumentoService.siguiente("NV");
 
         NotaVenta nv = NotaVenta.crear(
                 new DocumentNumber(numeroVal),

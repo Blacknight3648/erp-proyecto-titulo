@@ -9,4 +9,6 @@ import java.util.List;
 @Repository
 public interface OrdenTrabajoJpaRepository extends JpaRepository<OrdenTrabajoJpaEntity, Long> {
     List<OrdenTrabajoJpaEntity> findByNotaVentaId(Long notaVentaId);
+
+    List<OrdenTrabajoJpaEntity> findByOrdenProduccionId(Long ordenProduccionId);
 }

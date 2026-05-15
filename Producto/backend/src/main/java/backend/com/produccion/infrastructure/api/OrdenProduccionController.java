@@ -1,5 +1,7 @@
 package backend.com.produccion.infrastructure.api;
 
+import backend.com.produccion.application.dto.AvanceOPResponse;
+import backend.com.produccion.application.service.CalcularAvanceUseCase;
 import backend.com.produccion.domain.model.OrdenProduccion;
 import backend.com.produccion.domain.repository.OrdenProduccionRepository;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +16,7 @@ import java.util.List;
 public class OrdenProduccionController {
 
     private final OrdenProduccionRepository repository;
+    private final CalcularAvanceUseCase calcularAvanceUseCase;
 
     @GetMapping
     public List<OrdenProduccion> getAll() {
@@ -35,5 +38,10 @@ public class OrdenProduccionController {
                     return ResponseEntity.ok(repository.save(op));
                 })
                 .orElse(ResponseEntity.notFound().build());
+    }
+
+    @GetMapping("/{id}/avance")
+    public ResponseEntity<AvanceOPResponse> avance(@PathVariable Long id) {
+        return ResponseEntity.ok(calcularAvanceUseCase.calcular(id));
     }
 }

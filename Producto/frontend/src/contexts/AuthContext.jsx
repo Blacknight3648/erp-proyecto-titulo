@@ -9,8 +9,10 @@ export function AuthProvider({ children }) {
     const login = (email, password) => {
         // Credenciales de prueba: admin / admin
         if (email === 'admin' && password === 'admin') {
+            const nuevoUser = { email, name: 'Administrador' };
             setIsAuthenticated(true);
-            setUser({ email, name: 'Administrador' });
+            setUser(nuevoUser);
+            localStorage.setItem('usuarioActual', nuevoUser.name);
             return true;
         }
         return false;
@@ -19,6 +21,7 @@ export function AuthProvider({ children }) {
     const logout = () => {
         setIsAuthenticated(false);
         setUser(null);
+        localStorage.removeItem('usuarioActual');
     };
 
     return (

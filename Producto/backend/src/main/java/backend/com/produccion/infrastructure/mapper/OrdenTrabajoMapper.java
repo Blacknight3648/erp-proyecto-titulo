@@ -16,9 +16,14 @@ public class OrdenTrabajoMapper {
                 entity.getIdOT(),
                 entity.getNumeroOT() != null ? new DocumentNumber(entity.getNumeroOT()) : null,
                 entity.getNotaVentaId(),
+                entity.getOrdenProduccionId(),
                 entity.getNroItem(),
                 entity.getTipoOT(),
+                entity.getFase(),
                 entity.getEstadoOT(),
+                entity.getCantidadTotal(),
+                entity.getCantidadProducida(),
+                entity.getCantidadMerma(),
                 entity.getObservaciones());
     }
 
@@ -32,9 +37,14 @@ public class OrdenTrabajoMapper {
             entity.setNumeroOT(domain.getNumeroOT().getValue());
         }
         entity.setNotaVentaId(domain.getNotaVentaId());
+        entity.setOrdenProduccionId(domain.getOrdenProduccionId());
         entity.setNroItem(domain.getNroItem());
         entity.setTipoOT(domain.getTipoOT());
+        entity.setFase(domain.getFase());
         entity.setEstadoOT(domain.getEstadoOT());
+        entity.setCantidadTotal(domain.getCantidadTotal());
+        entity.setCantidadProducida(domain.getCantidadProducida());
+        entity.setCantidadMerma(domain.getCantidadMerma());
         entity.setObservaciones(domain.getObservaciones());
 
         return entity;

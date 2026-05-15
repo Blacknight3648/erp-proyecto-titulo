@@ -1,28 +1,56 @@
 import axios from "axios";
 
-// Configuración de la instancia base de Axios
 export const api = axios.create({
-  baseURL: "http://localhost:8050/api/v1", // El puerto 8050 es el configurado en application.properties
+  baseURL: "http://localhost:8050/api/v1",
 });
 
-// Interceptor para incluir el token de autorización en cada petición
-api.interceptors.request.use((config) => {
-  const token = localStorage.getItem("token");
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-  return config;
-}, (error) => {
-  return Promise.reject(error);
-});
+const IDEMPOTENT_METHODS = new Set(["post", "patch", "put"]);
 
-// Interceptor para manejar errores globales (ej. 401 si el token expira)
-api.interceptors.response.use((response) => {
-  return response;
-}, (error) => {
-  if (error.response && error.response.status === 401) {
-    // Aquí se podría redirigir al login o limpiar el localStorage
-    console.warn("Sesión expirada o no autorizada");
+// Genera un Idempotency-Key automático en POST/PATCH/PUT si el caller no envió uno propio.
+// Esto protege contra doble-click, retries automáticos y race conditions de UI.
+// Si una llamada concreta quiere reusar un token entre reintentos manuales, debe
+// pasarlo explícitamente: api.post(url, body, { headers: { 'Idempotency-Key': miUuid } }).
+function generarIdempotencyKey() {
+  if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") {
+    return crypto.randomUUID();
   }
-  return Promise.reject(error);
-});
+  return "k-" + Date.now().toString(36) + "-" + Math.random().toString(36).slice(2, 14);
+}
+
+api.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+
+    const method = (config.method || "get").toLowerCase();
+    if (IDEMPOTENT_METHODS.has(method)) {
+      const existing =
+        config.headers?.["Idempotency-Key"] || config.headers?.["idempotency-key"];
+      if (!existing) {
+        config.headers["Idempotency-Key"] = generarIdempotencyKey();
+      }
+    }
+
+    // Header provisional de identidad mientras no hay Spring Security.
+    // El backend lo exige solo en endpoints de historial de estado.
+    const usuarioActual = localStorage.getItem("usuarioActual");
+    if (usuarioActual) {
+      config.headers["X-User"] = usuarioActual;
+    }
+
+    return config;
+  },
+  (error) => Promise.reject(error)
+);
+
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response && error.response.status === 401) {
+      console.warn("Sesión expirada o no autorizada");
+    }
+    return Promise.reject(error);
+  }
+);

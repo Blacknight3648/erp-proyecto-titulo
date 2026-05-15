@@ -46,4 +46,13 @@ public class OrdenTrabajoRepositoryImpl implements OrdenTrabajoRepository {
                 .map(mapper::toDomain)
                 .collect(Collectors.toList());
     }
+
+    @Override
+    public List<OrdenTrabajo> findByOrdenProduccionId(Long ordenProduccionId) {
+        if (ordenProduccionId == null)
+            return List.of();
+        return jpaRepository.findByOrdenProduccionId(ordenProduccionId).stream()
+                .map(mapper::toDomain)
+                .collect(Collectors.toList());
+    }
 }

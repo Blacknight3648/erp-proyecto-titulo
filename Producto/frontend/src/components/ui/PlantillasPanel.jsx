@@ -29,8 +29,19 @@ export default function PlantillasPanel({ title = "Especificaciones Técnicas", 
         }
     }, [articuloDescripcion, getCamposForArticulo, spec.camposActivos]);
 
+    // Campos top-level de la plantilla (NO van dentro de detallesPrenda).
+    const TOP_LEVEL_FIELDS = new Set(['vinculos', 'camposActivos', 'camposPersonalizados', 'nombre', 'descripcion', 'nombrePrenda', 'genero']);
+
     const handleChange = (field, value) => {
-        if (!readOnly) onUpdate(specId, field, value);
+        if (readOnly) return;
+        if (TOP_LEVEL_FIELDS.has(field)) {
+            onUpdate(specId, field, value);
+        } else {
+            // Cualquier otro campo es un atributo técnico/personalizado de la prenda:
+            // se guarda dentro del Map detallesPrenda.
+            const next = { ...(spec.detallesPrenda || {}), [field]: value };
+            onUpdate(specId, 'detallesPrenda', next);
+        }
     };
 
     const handleAddVinculo = (fieldKey, type, materialId, qty = 1) => {
@@ -86,19 +97,14 @@ export default function PlantillasPanel({ title = "Especificaciones Técnicas", 
     };
 
     useEffect(() => {
-        if (spec.customFields) {
-            try {
-                const parsed = JSON.parse(spec.customFields);
-                const labels = {};
-                Object.keys(parsed).forEach(key => {
-                    labels[key] = parsed[key].label;
-                });
-                setCustomLabels(labels);
-            } catch (e) {
-                console.error("Error parsing custom fields:", e);
-            }
+        // Los labels de los campos personalizados viven en spec.camposPersonalizados
+        // (Map<string,string>). El valor de cada campo está en spec.detallesPrenda.
+        if (spec.camposPersonalizados && typeof spec.camposPersonalizados === 'object') {
+            setCustomLabels({ ...spec.camposPersonalizados });
+        } else {
+            setCustomLabels({});
         }
-    }, [spec.customFields]);
+    }, [spec.camposPersonalizados]);
 
     const handleAddField = () => {
         const label = window.prompt("Nombre del nuevo campo:");
@@ -114,20 +120,12 @@ export default function PlantillasPanel({ title = "Especificaciones Técnicas", 
         newActive.add(key);
         setActiveFields(newActive);
 
-        // Guardar la estructura en customFields
-        const currentCustom = spec.customFields ? JSON.parse(spec.customFields) : {};
-        currentCustom[key] = { label: trimmedLabel, value: "" };
-        handleChange('customFields', JSON.stringify(currentCustom));
+        // Persistir label en camposPersonalizados; el valor se guardará vacío
+        // dentro de detallesPrenda al primer onChange del input.
+        handleChange('camposPersonalizados', newLabels);
         handleChange('camposActivos', Array.from(newActive));
 
         toast.success(`Campo "${trimmedLabel}" agregado correctamente`);
-    };
-
-    const handleCustomValueChange = (key, value) => {
-        const currentCustom = spec.customFields ? JSON.parse(spec.customFields) : {};
-        if (!currentCustom[key]) currentCustom[key] = { label: customLabels[key], value: "" };
-        currentCustom[key].value = value;
-        handleChange('customFields', JSON.stringify(currentCustom));
     };
 
     const toggleField = (key) => {
@@ -148,9 +146,9 @@ export default function PlantillasPanel({ title = "Especificaciones Técnicas", 
         const isLongText = fieldKey === 'obsModelo' || fieldKey === 'cortesAplicacion';
         const fieldVinculos = vinculos.filter(v => v.fieldName === fieldKey);
 
-        const value = isCustom
-            ? (spec.customFields ? (JSON.parse(spec.customFields)[fieldKey]?.value || "") : "")
-            : (spec[fieldKey] || "");
+        const value = (spec.detallesPrenda && spec.detallesPrenda[fieldKey] != null)
+            ? spec.detallesPrenda[fieldKey]
+            : "";
 
         return (
             <div key={fieldKey} className="group flex flex-col gap-1.5 p-4 rounded-2xl hover:bg-gray-50/50 transition-all border border-transparent hover:border-gray-100 bg-white shadow-sm mb-2">
@@ -187,7 +185,7 @@ export default function PlantillasPanel({ title = "Especificaciones Técnicas", 
                             readOnly={readOnly}
                             className={`w-full bg-white border border-gray-100 rounded-xl p-3 text-xs font-bold text-gray-700 outline-none focus:border-blue-200 focus:ring-4 focus:ring-blue-50/50 transition-all resize-none ${readOnly ? 'cursor-default' : ''}`}
                             value={value}
-                            onChange={(e) => isCustom ? handleCustomValueChange(fieldKey, e.target.value) : handleChange(fieldKey, e.target.value)}
+                            onChange={(e) => handleChange(fieldKey, e.target.value)}
                             placeholder={readOnly ? "" : `Ingrese detalles de ${label.toLowerCase()}...`}
                         />
                     ) : (
@@ -196,7 +194,7 @@ export default function PlantillasPanel({ title = "Especificaciones Técnicas", 
                             readOnly={readOnly}
                             className={`w-full bg-white border border-gray-100 rounded-xl p-3 text-xs font-bold text-gray-700 outline-none focus:border-blue-200 focus:ring-4 focus:ring-blue-50/50 transition-all ${readOnly ? 'cursor-default' : ''}`}
                             value={value}
-                            onChange={(e) => isCustom ? handleCustomValueChange(fieldKey, e.target.value) : handleChange(fieldKey, e.target.value)}
+                            onChange={(e) => handleChange(fieldKey, e.target.value)}
                             placeholder={readOnly ? "" : `Definir ${label.toLowerCase()}...`}
                         />
                     )}

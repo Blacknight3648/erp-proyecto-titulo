@@ -7,13 +7,16 @@ import backend.com.comercial.application.service.ConsultarTrazabilidadUseCase;
 import backend.com.comercial.application.service.GestionarNVUseCase;
 import backend.com.comercial.domain.repository.NotaVentaRepository;
 import backend.com.shared.application.dto.DocumentTraceDTO;
+import backend.com.shared.application.dto.FirmaAprobacionRequest;
 import backend.com.shared.application.dto.HistorialEstadoDTO;
 import backend.com.shared.application.service.HistorialEstadoService;
+import backend.com.shared.exception.EntityNotFoundException;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/v1/comercial/notas-venta")
@@ -27,17 +30,16 @@ public class NotaVentaController {
     private final HistorialEstadoService historialService;
 
     @GetMapping
-    public ResponseEntity<List<NVResponse>> listar() {
-        return ResponseEntity.ok(repository.findAll().stream()
+    public List<NVResponse> listar() {
+        return repository.findAll().stream()
                 .map(NVResponse::fromDomain)
-                .collect(java.util.stream.Collectors.toList()));
+                .collect(Collectors.toList());
     }
 
     /**
      * Devuelve un número tentativo basado en el máximo actual.
      * NO reserva el número: el valor definitivo lo asigna el backend de forma
-     * atómica al hacer POST (NumeroDocumentoService). Sirve solo para
-     * vista previa en el formulario.
+     * atómica al hacer POST (NumeroDocumentoService).
      */
     @GetMapping("/next-number")
     public Long getNextNumber() {
@@ -45,33 +47,31 @@ public class NotaVentaController {
     }
 
     @PostMapping
-    public ResponseEntity<NVResponse> crear(@RequestBody CrearNVCommand command) {
-        return ResponseEntity.ok(crearNVUseCase.ejecutar(command));
+    public NVResponse crear(@Valid @RequestBody CrearNVCommand command) {
+        return crearNVUseCase.ejecutar(command);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<NVResponse> obtenerPorId(@PathVariable Long id) {
+    public NVResponse obtenerPorId(@PathVariable Long id) {
         return repository.findById(id)
                 .map(NVResponse::fromDomain)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+                .orElseThrow(() -> new EntityNotFoundException("Nota de Venta no encontrada: " + id));
     }
 
     @GetMapping("/{id}/trazabilidad")
-    public ResponseEntity<List<DocumentTraceDTO>> getTrazabilidad(@PathVariable Long id) {
-        return ResponseEntity.ok(consultarTrazabilidadUseCase.ejecutar(id));
+    public List<DocumentTraceDTO> getTrazabilidad(@PathVariable Long id) {
+        return consultarTrazabilidadUseCase.ejecutar(id);
     }
 
     @PatchMapping("/{id}/aprobar")
-    public ResponseEntity<NVResponse> aprobar(@PathVariable Long id,
-            @RequestBody java.util.Map<String, String> body) {
-        return ResponseEntity.ok(gestionarNVUseCase.aprobar(id, body.get("aprobador"), body.get("observacion")));
+    public NVResponse aprobar(@PathVariable Long id, @Valid @RequestBody FirmaAprobacionRequest body) {
+        return gestionarNVUseCase.aprobar(id, body.getAprobador(), body.getObservacion());
     }
 
     @PatchMapping("/{id}/cancelar")
-    public ResponseEntity<NVResponse> cancelar(@PathVariable Long id,
-            @RequestBody java.util.Map<String, String> body) {
-        return ResponseEntity.ok(gestionarNVUseCase.cancelar(id, body.get("usuario"), body.get("motivo")));
+    public NVResponse cancelar(@PathVariable Long id, @Valid @RequestBody FirmaAprobacionRequest body) {
+        // En cancelar, el campo "usuario" lo aceptamos como "aprobador"
+        return gestionarNVUseCase.cancelar(id, body.getAprobador(), body.getMotivo());
     }
 
     @GetMapping("/{id}/historial")

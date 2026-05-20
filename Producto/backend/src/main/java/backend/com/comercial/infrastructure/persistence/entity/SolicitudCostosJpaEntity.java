@@ -1,5 +1,6 @@
 package backend.com.comercial.infrastructure.persistence.entity;
 
+import backend.com.comercial.domain.model.EstadoSCOS;
 import backend.com.gestionUsuarios.cliente.infrastructure.persistence.entity.ClienteJpaEntity;
 import backend.com.gestionUsuarios.vendedor.infrastructure.persistence.entity.VendedorJpaEntity;
 import backend.com.shared.infrastructure.persistence.entity.EspecificacionTecnica;
@@ -24,8 +25,9 @@ public class SolicitudCostosJpaEntity {
     @Column(unique = true, length = 20, nullable = false)
     private String numero;
 
+    @Enumerated(EnumType.STRING)
     @Column(length = 20)
-    private String estado;
+    private EstadoSCOS estado;
 
     @Column(length = 20)
     private String tipo; // COSTEO

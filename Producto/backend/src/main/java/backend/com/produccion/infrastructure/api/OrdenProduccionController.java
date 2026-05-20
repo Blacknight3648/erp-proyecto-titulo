@@ -1,14 +1,16 @@
 package backend.com.produccion.infrastructure.api;
 
 import backend.com.produccion.application.dto.AvanceOPResponse;
+import backend.com.produccion.application.dto.OPResponse;
 import backend.com.produccion.application.service.CalcularAvanceUseCase;
-import backend.com.produccion.domain.model.OrdenProduccion;
 import backend.com.produccion.domain.repository.OrdenProduccionRepository;
+import backend.com.shared.exception.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/v1/produccion/ordenes-produccion")
@@ -19,25 +21,27 @@ public class OrdenProduccionController {
     private final CalcularAvanceUseCase calcularAvanceUseCase;
 
     @GetMapping
-    public List<OrdenProduccion> getAll() {
-        return repository.findAll();
+    public List<OPResponse> getAll() {
+        return repository.findAll().stream()
+                .map(OPResponse::fromDomain)
+                .collect(Collectors.toList());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<OrdenProduccion> getById(@PathVariable Long id) {
+    public OPResponse getById(@PathVariable Long id) {
         return repository.findById(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+                .map(OPResponse::fromDomain)
+                .orElseThrow(() -> new EntityNotFoundException("Orden de Producción no encontrada: " + id));
     }
 
     @PostMapping("/recepcionar/{id}")
-    public ResponseEntity<OrdenProduccion> recepcionar(@PathVariable Long id) {
+    public OPResponse recepcionar(@PathVariable Long id) {
         return repository.findById(id)
                 .map(op -> {
                     op.recepcionar();
-                    return ResponseEntity.ok(repository.save(op));
+                    return OPResponse.fromDomain(repository.save(op));
                 })
-                .orElse(ResponseEntity.notFound().build());
+                .orElseThrow(() -> new EntityNotFoundException("Orden de Producción no encontrada: " + id));
     }
 
     @GetMapping("/{id}/avance")

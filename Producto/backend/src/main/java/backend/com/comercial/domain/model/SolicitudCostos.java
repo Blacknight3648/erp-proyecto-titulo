@@ -14,7 +14,7 @@ import java.math.BigDecimal;
 public class SolicitudCostos {
     private Long idSCOS;
     private DocumentNumber numeroSCOS;
-    private String estado;
+    private EstadoSCOS estado;
     private String tipo;
     private Long clienteId;
     private String clienteNombre;
@@ -54,12 +54,12 @@ public class SolicitudCostos {
         this.cantidad = cantidad != null ? cantidad : 0;
         this.genero = genero;
         this.tallaje = tallaje;
-        this.estado = "PENDIENTE";
+        this.estado = EstadoSCOS.PENDIENTE;
         this.fecha = LocalDate.now();
         this.costoTotal = BigDecimal.ZERO;
     }
 
-    public SolicitudCostos(Long idSCOS, DocumentNumber numeroSCOS, String estado, String tipo, Long clienteId,
+    public SolicitudCostos(Long idSCOS, DocumentNumber numeroSCOS, EstadoSCOS estado, String tipo, Long clienteId,
             String clienteNombre, Long vendedorId, String vendedorNombre, Long especificacionTecnicaId, 
             String articuloDescripcion, String nombrePrenda,
             Boolean esMuestra, Boolean hasLogo, Integer cantidad, String genero, String tallaje, LocalDate fecha,
@@ -123,7 +123,10 @@ public class SolicitudCostos {
     }
 
     public void aprobar() {
-        this.estado = "APROBADA";
+        if (this.estado != EstadoSCOS.PENDIENTE) {
+            throw new IllegalStateException("Solo las Solicitudes de Costos en estado PENDIENTE pueden ser aprobadas");
+        }
+        this.estado = EstadoSCOS.APROBADA;
     }
 
     protected void addDomainEvent(DomainEvent event) {

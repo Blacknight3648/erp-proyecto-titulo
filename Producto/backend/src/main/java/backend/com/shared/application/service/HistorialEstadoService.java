@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class HistorialEstadoService {
 
     private final HistorialEstadoRepository repository;

@@ -47,7 +47,9 @@ public class ConsultarTrazabilidadUseCase {
                         if (costeo.getSolicitudCostosId() != null) {
                             scosRepository.findById(costeo.getSolicitudCostosId()).ifPresent(scos -> {
                                 trazabilidad.add(mapToDto("Solicitud Costos", scos.getIdSCOS(),
-                                        scos.getNumeroSCOS().getValue().toString(), scos.getEstado(), scos.getFecha()));
+                                        scos.getNumeroSCOS().getValue().toString(),
+                                        scos.getEstado() != null ? scos.getEstado().name() : null,
+                                        scos.getFecha()));
                             });
                         }
 

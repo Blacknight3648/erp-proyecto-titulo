@@ -142,23 +142,13 @@ public class SolicitudCostosMapper {
                 entity.getNombre(),
                 entity.getDescripcion(),
                 entity.getNombrePrenda(),
-                entity.getForro(),
-                entity.getRelleno(),
-                entity.getGorro(),
-                entity.getCuello(),
-                entity.getAbotonaduraCierre(),
-                entity.getCortesAplicaciones(),
-                entity.getFuelles(),
-                entity.getMangas(),
-                entity.getPretinasRuedo(),
-                entity.getBolsillos(),
-                entity.getCintaDetalle(),
-                entity.getLogoDetalle(),
-                entity.getColorForro(),
-                entity.getAccesoriosDetalle(),
-                entity.getObsModelo(),
                 entity.getGenero(),
-                entity.getCustomFields(),
+                entity.getDetallesPrenda() != null
+                        ? new java.util.HashMap<String, Object>(entity.getDetallesPrenda())
+                        : new java.util.HashMap<String, Object>(),
+                entity.getCamposPersonalizados() != null
+                        ? new java.util.HashMap<String, String>(entity.getCamposPersonalizados())
+                        : new java.util.HashMap<String, String>(),
                 entity.getCamposActivos() != null ? new ArrayList<String>(entity.getCamposActivos())
                         : new ArrayList<String>(),
                 telasDom,
@@ -217,21 +207,12 @@ public class SolicitudCostosMapper {
         entity.setNombre(domain.getNombre());
         entity.setDescripcion(domain.getDescripcion());
         entity.setNombrePrenda(domain.getNombrePrenda());
-        entity.setForro(domain.getForro());
-        entity.setRelleno(domain.getRelleno());
-        entity.setGorro(domain.getGorro());
-        entity.setCuello(domain.getCuello());
-        entity.setAbotonaduraCierre(domain.getAbotonaduraCierre());
-        entity.setCortesAplicaciones(domain.getCortesAplicaciones());
-        entity.setFuelles(domain.getFuelles());
-        entity.setMangas(domain.getMangas());
-        entity.setPretinasRuedo(domain.getPretinasRuedo());
-        entity.setBolsillos(domain.getBolsillos());
-        entity.setCintaDetalle(domain.getCintaDetalle());
-        entity.setLogoDetalle(domain.getLogoDetalle());
-        entity.setColorForro(domain.getColorForro());
-        entity.setAccesoriosDetalle(domain.getAccesoriosDetalle());
-        entity.setObsModelo(domain.getObsModelo());
+        entity.setDetallesPrenda(domain.getDetallesPrenda() != null
+                ? new java.util.HashMap<String, Object>(domain.getDetallesPrenda())
+                : new java.util.HashMap<String, Object>());
+        entity.setCamposPersonalizados(domain.getCamposPersonalizados() != null
+                ? new java.util.HashMap<String, String>(domain.getCamposPersonalizados())
+                : new java.util.HashMap<String, String>());
 
         if (domain.getPlantillaTelas() != null) {
             entity.setPlantillaTelas(domain.getPlantillaTelas().stream()

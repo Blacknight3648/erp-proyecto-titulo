@@ -65,7 +65,7 @@ public class SolicitudCostosServiceImpl implements SolicitudCostosService {
                 SolicitudCostos updated = new SolicitudCostos(
                                 existing.getIdSCOS(),
                                 existing.getNumeroSCOS(),
-                                dto.getEstado() != null ? dto.getEstado() : existing.getEstado(),
+                                dto.getEstado() != null ? EstadoSCOS.valueOf(dto.getEstado()) : existing.getEstado(),
                                 dto.getTipo() != null ? dto.getTipo() : existing.getTipo(),
                                 dto.getClienteId() != null ? dto.getClienteId() : existing.getClienteId(),
                                 null, // clienteNombre (transient for persistence)
@@ -166,11 +166,13 @@ public class SolicitudCostosServiceImpl implements SolicitudCostosService {
 
                                 domain.addPlantilla(new SCOSPlantilla(
                                         p.getId(), p.getNombre(), p.getDescripcion(), p.getNombrePrenda(),
-                                        p.getForro(), p.getRelleno(), p.getGorro(), p.getCuello(),
-                                        p.getAbotonaduraCierre(), p.getCortesAplicaciones(), p.getFuelles(), p.getMangas(),
-                                        p.getPretinasRuedo(), p.getBolsillos(), p.getCintaDetalle(), p.getLogoDetalle(),
-                                        p.getColorForro(), p.getAccesoriosDetalle(), p.getObsModelo(), p.getGenero(),
-                                        p.getCustomFields(),
+                                        p.getGenero(),
+                                        p.getDetallesPrenda() != null
+                                                ? new java.util.HashMap<String, Object>(p.getDetallesPrenda())
+                                                : new java.util.HashMap<String, Object>(),
+                                        p.getCamposPersonalizados() != null
+                                                ? new java.util.HashMap<String, String>(p.getCamposPersonalizados())
+                                                : new java.util.HashMap<String, String>(),
                                         p.getCamposActivos() != null ? new ArrayList<String>(p.getCamposActivos()) : new ArrayList<String>(),
                                         pTelas, pAccesorios, pLogos, pVinculos,
                                         p.getMoPrenda(), p.getMoCosturaSellada(), p.getMoAcolchado()
@@ -205,7 +207,7 @@ public class SolicitudCostosServiceImpl implements SolicitudCostosService {
                 return SolicitudCostosDTO.builder()
                                 .id(domain.getIdSCOS())
                                 .numero(domain.getNumeroSCOS() != null ? domain.getNumeroSCOS().getValue() : null)
-                                .estado(domain.getEstado())
+                                .estado(domain.getEstado() != null ? domain.getEstado().name() : null)
                                 .tipo(domain.getTipo())
                                 .clienteId(domain.getClienteId())
                                 .clienteNombre(domain.getClienteNombre())
@@ -247,18 +249,13 @@ public class SolicitudCostosServiceImpl implements SolicitudCostosService {
                                                 .id(p.getId())
                                                 .nombre(p.getNombre()).descripcion(p.getDescripcion())
                                                 .nombrePrenda(p.getNombrePrenda())
-                                                .forro(p.getForro()).relleno(p.getRelleno()).gorro(p.getGorro())
-                                                .cuello(p.getCuello())
-                                                .abotonaduraCierre(p.getAbotonaduraCierre())
-                                                .cortesAplicaciones(p.getCortesAplicaciones())
-                                                .fuelles(p.getFuelles()).mangas(p.getMangas())
-                                                .pretinasRuedo(p.getPretinasRuedo())
-                                                .bolsillos(p.getBolsillos()).cintaDetalle(p.getCintaDetalle())
-                                                .logoDetalle(p.getLogoDetalle())
-                                                .colorForro(p.getColorForro())
-                                                .accesoriosDetalle(p.getAccesoriosDetalle())
-                                                .obsModelo(p.getObsModelo())
                                                 .genero(p.getGenero())
+                                                .detallesPrenda(p.getDetallesPrenda() != null
+                                                        ? new java.util.HashMap<String, Object>(p.getDetallesPrenda())
+                                                        : new java.util.HashMap<String, Object>())
+                                                .camposPersonalizados(p.getCamposPersonalizados() != null
+                                                        ? new java.util.HashMap<String, String>(p.getCamposPersonalizados())
+                                                        : new java.util.HashMap<String, String>())
                                                 .camposActivos(p.getCamposActivos() != null ? new ArrayList<>(p.getCamposActivos()) : new ArrayList<>())
                                                 .telas(p.getPlantillaTelas() != null ? p.getPlantillaTelas().stream()
                                                         .map(t -> PlantillaTelaDTO.builder()

@@ -2,6 +2,7 @@ package backend.com.comercial.infrastructure.persistence.entity;
 
 import backend.com.gestionUsuarios.cliente.infrastructure.persistence.entity.ClienteJpaEntity;
 import backend.com.gestionUsuarios.vendedor.infrastructure.persistence.entity.VendedorJpaEntity;
+import backend.com.shared.infrastructure.persistence.entity.AuditableJpaEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -15,7 +16,7 @@ import java.util.List;
 @Table(name = "notas_venta")
 @Getter
 @Setter
-public class NotaVentaJpaEntity {
+public class NotaVentaJpaEntity extends AuditableJpaEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

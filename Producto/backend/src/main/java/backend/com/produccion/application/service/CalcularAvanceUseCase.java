@@ -5,6 +5,7 @@ import backend.com.produccion.domain.model.OrdenTrabajo;
 import backend.com.produccion.domain.repository.OrdenTrabajoRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -13,6 +14,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class CalcularAvanceUseCase {
 
     private final OrdenTrabajoRepository otRepository;

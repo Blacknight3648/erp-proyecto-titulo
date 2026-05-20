@@ -3,9 +3,13 @@ package backend.com.comercial.infrastructure.persistence.entity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Entity
 @Table(name = "scos_plantilla")
@@ -29,44 +33,27 @@ public class SCOSPlantillaJpaEntity {
 
     private String nombrePrenda;
 
-    private String forro;
-    private String relleno;
-    private String gorro;
-    private String cuello;
-
-    @Column(name = "abotonadura_cierre")
-    private String abotonaduraCierre;
-
-    @Column(name = "cortes_aplicaciones")
-    private String cortesAplicaciones;
-
-    private String fuelles;
-    private String mangas;
-
-    @Column(name = "pretinas_ruedo")
-    private String pretinasRuedo;
-
-    private String bolsillos;
-
-    @Column(name = "cinta_detalle")
-    private String cintaDetalle;
-
-    @Column(name = "logo_detalle")
-    private String logoDetalle;
-
-    @Column(name = "color_forro")
-    private String colorForro;
-
-    @Column(name = "accesorios_detalle")
-    private String accesoriosDetalle;
-
-    @Column(name = "obs_modelo", columnDefinition = "TEXT")
-    private String obsModelo;
-
-    @Column(name = "custom_fields", columnDefinition = "TEXT")
-    private String customFields;
-
     private String genero;
+
+    /**
+     * Schema dinámico de la prenda. Todos los atributos técnicos (gorro, cuello,
+     * forro, etc.) y los campos personalizados creados por el usuario viven aquí
+     * como pares clave/valor. La lista de claves activas se controla mediante
+     * {@link #camposActivos}.
+     */
+    @JdbcTypeCode(SqlTypes.JSON)
+    @Column(name = "detalles_prenda")
+    private Map<String, Object> detallesPrenda = new HashMap<>();
+
+    /**
+     * Catálogo de labels para los campos personalizados creados por el usuario
+     * en runtime. clave = identificador (`cf_xxx`), valor = label legible.
+     * Los valores de esos campos viven en {@link #detallesPrenda} bajo la misma
+     * clave.
+     */
+    @JdbcTypeCode(SqlTypes.JSON)
+    @Column(name = "campos_personalizados")
+    private Map<String, String> camposPersonalizados = new HashMap<>();
 
     @ElementCollection
     @CollectionTable(name = "scos_plantilla_campos_activos", joinColumns = @JoinColumn(name = "plantilla_id"))

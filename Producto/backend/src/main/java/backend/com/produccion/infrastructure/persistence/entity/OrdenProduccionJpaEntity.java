@@ -1,6 +1,7 @@
 package backend.com.produccion.infrastructure.persistence.entity;
 
 import backend.com.produccion.domain.model.EstadoOP;
+import backend.com.shared.infrastructure.persistence.entity.AuditableJpaEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -13,7 +14,7 @@ import java.util.List;
 @Table(name = "produccion_ordenes")
 @Getter
 @Setter
-public class OrdenProduccionJpaEntity {
+public class OrdenProduccionJpaEntity extends AuditableJpaEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

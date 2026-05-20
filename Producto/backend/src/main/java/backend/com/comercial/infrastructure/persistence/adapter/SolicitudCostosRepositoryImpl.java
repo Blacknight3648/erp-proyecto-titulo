@@ -53,7 +53,14 @@ public class SolicitudCostosRepositoryImpl implements SolicitudCostosRepository 
             savedEntity = jpaRepository.save(savedEntity);
         }
 
-        return mapper.toDomain(savedEntity);
+        // Recargar para que las asociaciones @ManyToOne (cliente, vendedor,
+        // especificacionTecnica) devuelvan entidades managed con todos sus
+        // campos (razonSocial, nombre del vendedor, etc.), no los stubs
+        // detached que se construyen en syncEntityWithDomain.
+        SolicitudCostosJpaEntity reloaded = jpaRepository.findById(savedEntity.getIdSCOS())
+                .orElse(savedEntity);
+
+        return mapper.toDomain(reloaded);
     }
 
     private boolean resolveVinculosCorrelation(SolicitudCostosJpaEntity entity) {
@@ -183,22 +190,13 @@ public class SolicitudCostosRepositoryImpl implements SolicitudCostosRepository 
                 pe.setNombre(p.getNombre());
                 pe.setDescripcion(p.getDescripcion());
                 pe.setNombrePrenda(p.getNombrePrenda());
-                pe.setForro(p.getForro());
-                pe.setRelleno(p.getRelleno());
-                pe.setGorro(p.getGorro());
-                pe.setCuello(p.getCuello());
-                pe.setAbotonaduraCierre(p.getAbotonaduraCierre());
-                pe.setCortesAplicaciones(p.getCortesAplicaciones());
-                pe.setFuelles(p.getFuelles());
-                pe.setMangas(p.getMangas());
-                pe.setPretinasRuedo(p.getPretinasRuedo());
-                pe.setBolsillos(p.getBolsillos());
-                pe.setCintaDetalle(p.getCintaDetalle());
-                pe.setLogoDetalle(p.getLogoDetalle());
-                pe.setColorForro(p.getColorForro());
-                pe.setAccesoriosDetalle(p.getAccesoriosDetalle());
-                pe.setObsModelo(p.getObsModelo());
                 pe.setGenero(p.getGenero());
+                pe.setDetallesPrenda(p.getDetallesPrenda() != null
+                        ? new java.util.HashMap<String, Object>(p.getDetallesPrenda())
+                        : new java.util.HashMap<String, Object>());
+                pe.setCamposPersonalizados(p.getCamposPersonalizados() != null
+                        ? new java.util.HashMap<String, String>(p.getCamposPersonalizados())
+                        : new java.util.HashMap<String, String>());
                 pe.setCamposActivos(
                         p.getCamposActivos() != null ? new ArrayList<>(p.getCamposActivos()) : new ArrayList<>());
 

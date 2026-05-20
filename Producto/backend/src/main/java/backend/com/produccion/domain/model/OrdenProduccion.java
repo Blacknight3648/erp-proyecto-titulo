@@ -11,6 +11,7 @@ import java.util.List;
 @Getter
 public class OrdenProduccion {
     private Long idOP;
+    private Long costeoVersionId;
     private DocumentNumber numeroOP;
     private Long notaVentaId;
     private EstadoOP estado;
@@ -19,10 +20,11 @@ public class OrdenProduccion {
     private String observaciones;
     private List<OrdenProduccionItem> items = new ArrayList<>();
 
-    public OrdenProduccion(Long id, DocumentNumber numero, Long notaVentaId, EstadoOP estado,
+    public OrdenProduccion(Long id, Long costeoVersionId, DocumentNumber numero, Long notaVentaId, EstadoOP estado,
             LocalDate fechaInicio, LocalDate fechaEntregaProgramada, String observaciones,
             List<OrdenProduccionItem> items) {
         this.idOP = id;
+        this.costeoVersionId = costeoVersionId;
         this.numeroOP = numero;
         this.notaVentaId = notaVentaId;
         this.estado = estado != null ? estado : EstadoOP.PENDIENTE;
@@ -35,8 +37,15 @@ public class OrdenProduccion {
     }
 
     public static OrdenProduccion crearNueva(DocumentNumber numero, Long notaVentaId, LocalDate fechaEntrega) {
-        return new OrdenProduccion(null, numero, notaVentaId, EstadoOP.PENDIENTE, null, fechaEntrega, null,
+        return new OrdenProduccion(null, null, numero, notaVentaId, EstadoOP.PENDIENTE, null, fechaEntrega, null,
                 new ArrayList<>());
+    }
+
+    public void vincularCosteoVersion(Long costeoVersionId) {
+        if (this.costeoVersionId != null) {
+            throw new IllegalStateException("La OP ya tiene un costeo asignado");
+        }
+        this.costeoVersionId = costeoVersionId;
     }
 
     public void recepcionar() {

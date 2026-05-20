@@ -4,13 +4,19 @@ import backend.com.produccion.domain.model.OrdenProduccion;
 import backend.com.produccion.domain.model.OrdenProduccionItem;
 import backend.com.produccion.infrastructure.persistence.entity.OrdenProduccionItemJpaEntity;
 import backend.com.produccion.infrastructure.persistence.entity.OrdenProduccionJpaEntity;
+import backend.com.produccion.infrastructure.persistence.entity.CosteoVersionJpaEntity;
 import backend.com.shared.valueobjects.DocumentNumber;
 import org.springframework.stereotype.Component;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import java.util.stream.Collectors;
 
 @Component
 public class OrdenProduccionMapper {
+
+    @PersistenceContext
+    private EntityManager em;
 
     public OrdenProduccion toDomain(OrdenProduccionJpaEntity entity) {
         if (entity == null)
@@ -18,6 +24,8 @@ public class OrdenProduccionMapper {
 
         return new OrdenProduccion(
                 entity.getIdOP(),
+                entity.getCosteoVersion() != null ? entity.getCosteoVersion().getIdCosteoVersion()
+                        : null,
                 entity.getNumeroOP() != null ? new DocumentNumber(entity.getNumeroOP()) : null,
                 entity.getNotaVentaId(),
                 entity.getEstado(),
@@ -33,6 +41,9 @@ public class OrdenProduccionMapper {
 
         OrdenProduccionJpaEntity entity = new OrdenProduccionJpaEntity();
         entity.setIdOP(domain.getIdOP());
+        if (domain.getCosteoVersionId() != null) {
+            entity.setCosteoVersion(em.getReference(CosteoVersionJpaEntity.class, domain.getCosteoVersionId()));
+        }
         if (domain.getNumeroOP() != null) {
             entity.setNumeroOP(domain.getNumeroOP().getValue());
         }
@@ -85,4 +96,5 @@ public class OrdenProduccionMapper {
         entity.setCantidad(domain.getCantidad());
         return entity;
     }
+
 }

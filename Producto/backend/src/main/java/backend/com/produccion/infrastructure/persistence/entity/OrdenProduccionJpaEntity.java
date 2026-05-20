@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name = "produccion_ordenes")
+@Table(name = "orden_produccion")
 @Getter
 @Setter
 public class OrdenProduccionJpaEntity extends AuditableJpaEntity {
@@ -19,6 +19,10 @@ public class OrdenProduccionJpaEntity extends AuditableJpaEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idOP;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "costeo_version_id", foreignKey = @ForeignKey(name = "fk_op_costeo_version"))
+    private CosteoVersionJpaEntity costeoVersion;
 
     @Column(unique = true, length = 20, nullable = false)
     private String numeroOP;

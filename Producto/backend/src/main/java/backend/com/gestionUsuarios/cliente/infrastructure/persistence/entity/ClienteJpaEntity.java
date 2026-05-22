@@ -1,7 +1,6 @@
 package backend.com.gestionUsuarios.cliente.infrastructure.persistence.entity;
 
 import backend.com.shared.infrastructure.persistence.entity.GiroJpaEntity;
-import backend.com.shared.infrastructure.persistence.entity.SiglaJpaEntity;
 import backend.com.shared.validations.email.ValidEmail;
 import backend.com.shared.validations.run.ValidRun;
 import backend.com.shared.validations.telefono.ValidPhone;
@@ -47,13 +46,12 @@ public class ClienteJpaEntity {
     @Column(name = "contacto_cliente")
     private String contactoCliente;
 
+    @Column(name = "sigla")
+    private String sigla;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "fk_giro")
     private GiroJpaEntity giro;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "fk_sigla")
-    private SiglaJpaEntity sigla;
 
     @Column(name = "activo", nullable = false)
     private boolean activo;

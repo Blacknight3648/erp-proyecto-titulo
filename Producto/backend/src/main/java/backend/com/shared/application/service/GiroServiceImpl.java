@@ -6,6 +6,7 @@ import backend.com.shared.exception.EntityNotFoundException;
 import backend.com.shared.infrastructure.mapper.GiroMapper;
 import backend.com.shared.infrastructure.persistence.entity.GiroJpaEntity;
 import backend.com.shared.infrastructure.persistence.repository.GiroRepository;
+import backend.com.shared.infrastructure.persistence.entity.RubroJpaEntity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
@@ -37,43 +38,30 @@ public class GiroServiceImpl implements GiroService {
 
     @Override
     @Transactional(readOnly = true)
-    public Optional<Giro> obtenerPorCodigoActividad(String codigoActividad) {
-        return giroRepository.findByCodigoActividad(codigoActividad).map(giroMapper::toDomain);
+    public Optional<Giro> obtenerPorCodigoSii(String codigoSii) {
+        return giroRepository.findByCodigoSii(codigoSii).map(giroMapper::toDomain);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<Giro> buscarPorDescripcion(String descripcionGiro) {
+    public List<Giro> buscarPorNombreGiro(String nombreGiro) {
+        return giroRepository.findByNombreGiroContainingIgnoreCase(nombreGiro)
+                .stream().map(giroMapper::toDomain).toList();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<Giro> obtenerPorDescripcionGiro(String descripcionGiro) {
         return giroRepository.findByDescripcionGiroContainingIgnoreCase(descripcionGiro)
                 .stream().map(giroMapper::toDomain).toList();
     }
 
     @Override
-    @Transactional(readOnly = true)
-    public List<Giro> obtenerPorTipoActividad(String tipoActividad) {
-        return giroRepository.findByTipoActividad(tipoActividad).stream().map(giroMapper::toDomain).toList();
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public List<Giro> obtenerPorCategoriaTributaria(String categoriaTributaria) {
-        return giroRepository.findByCategoriaTributaria(categoriaTributaria)
-                .stream().map(giroMapper::toDomain).toList();
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public List<Giro> obtenerPorRegimenTributario(String regimenTributario) {
-        return giroRepository.findByRegimenTributario(regimenTributario)
-                .stream().map(giroMapper::toDomain).toList();
-    }
-
-    @Override
     public Giro crear(Giro giro) {
-        if (giro.getCodigoActividad() != null
-                && giroRepository.existsByCodigoActividad(giro.getCodigoActividad())) {
+        if (giro.getCodigoSii() != null
+                && giroRepository.existsByCodigoSii(giro.getCodigoSii())) {
             throw new BusinessRuleException(
-                    "Ya existe un giro con código de actividad: " + giro.getCodigoActividad());
+                    "Ya existe un giro con código de actividad: " + giro.getCodigoSii());
         }
         GiroJpaEntity entity = giroMapper.toEntity(giro);
         entity.setGiroId(null);
@@ -85,12 +73,10 @@ public class GiroServiceImpl implements GiroService {
         GiroJpaEntity entity = giroRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Giro no encontrado con ID: " + id));
 
+        entity.setCodigoSii(giro.getCodigoSii());
+        entity.setNombreGiro(giro.getNombreGiro());
         entity.setDescripcionGiro(giro.getDescripcionGiro());
-        entity.setCodigoActividad(giro.getCodigoActividad());
-        entity.setTipoActividad(giro.getTipoActividad());
-        entity.setCategoriaTributaria(giro.getCategoriaTributaria());
-        entity.setAfectoIva(giro.getAfectoIva());
-        entity.setRegimenTributario(giro.getRegimenTributario());
+        entity.setRubro(RubroJpaEntity.builder().rubroId(giro.getRubro().getRubroId()).build());
 
         return giroMapper.toDomain(giroRepository.save(entity));
     }
@@ -105,22 +91,22 @@ public class GiroServiceImpl implements GiroService {
 
     @Override
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public Optional<Giro> obtenerOCrearPorDescripcion(String descripcionGiro) {
-        if (descripcionGiro == null || descripcionGiro.isBlank()) {
+    public Optional<Giro> obtenerOCrearPorNombreGiro(String nombreGiro) {
+        if (nombreGiro == null || nombreGiro.isBlank()) {
             return Optional.empty();
         }
-        String descripcion = descripcionGiro.trim();
+        String nombre = nombreGiro.trim();
 
-        Optional<GiroJpaEntity> existente = giroRepository.findByDescripcionGiroIgnoreCase(descripcion);
+        Optional<GiroJpaEntity> existente = giroRepository.findByNombreGiroIgnoreCase(nombre);
         if (existente.isPresent()) {
             return existente.map(giroMapper::toDomain);
         }
 
-        GiroJpaEntity nuevo = GiroJpaEntity.builder().descripcionGiro(descripcion).build();
+        GiroJpaEntity nuevo = GiroJpaEntity.builder().nombreGiro(nombre).build();
         try {
             return Optional.of(giroMapper.toDomain(giroRepository.save(nuevo)));
         } catch (DataIntegrityViolationException e) {
-            return giroRepository.findByDescripcionGiroIgnoreCase(descripcion).map(giroMapper::toDomain);
+            return giroRepository.findByNombreGiroIgnoreCase(nombre).map(giroMapper::toDomain);
         }
     }
 }

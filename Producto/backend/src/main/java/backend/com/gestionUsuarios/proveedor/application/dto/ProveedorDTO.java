@@ -1,7 +1,6 @@
 package backend.com.gestionUsuarios.proveedor.application.dto;
 
 import backend.com.shared.application.dto.GiroDTO;
-import backend.com.shared.application.dto.SiglaDTO;
 import backend.com.shared.validations.email.ValidEmail;
 import backend.com.shared.validations.run.ValidRun;
 import backend.com.shared.validations.telefono.ValidPhone;
@@ -30,26 +29,16 @@ public class ProveedorDTO {
     @Size(max = 255, message = "La razón social no puede exceder 255 caracteres")
     private String razonSocialProveedor;
 
-    @Size(max = 500, message = "La dirección no puede exceder 500 caracteres")
-    private String direccionProveedor;
-
-    @Size(max = 150, message = "El contacto no puede exceder 150 caracteres")
-    private String contactoProveedor;
-
-    @Email(message = "El correo debe ser válido")
-    @ValidEmail
-    @Size(max = 150, message = "El correo no puede exceder 150 caracteres")
-    private String emailProveedor;
-
-    @ValidPhone
-    @Size(max = 20, message = "El teléfono no puede exceder 20 caracteres")
-    private String telefonoProveedor;
-
     @Size(max = 30, message = "El tipo de proveedor no puede exceder 30 caracteres")
     private String tipoProveedor;
 
+    @Size(max = 30, message = "El horario de atención no puede exceder 30 caracteres")
+    private String horarioAtencion;
+
+    @Size(max = 100, message = "La sigla del proveedor no puede exceder 100 caracteres")
+    private String sigla;
+
     private boolean activo;
 
-    private SiglaDTO sigla;
     private GiroDTO giro;
 }

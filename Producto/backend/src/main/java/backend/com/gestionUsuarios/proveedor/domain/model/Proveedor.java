@@ -1,7 +1,6 @@
 package backend.com.gestionUsuarios.proveedor.domain.model;
 
 import backend.com.shared.domain.model.Giro;
-import backend.com.shared.domain.model.Sigla;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -18,13 +17,10 @@ public class Proveedor {
     private Long proveedorId;
     private String runProveedor;
     private String razonSocialProveedor;
-    private String direccionProveedor;
-    private String contactoProveedor;
-    private String emailProveedor;
-    private String telefonoProveedor;
+    private String sigla;
     private String tipoProveedor;
+    private String horarioAtencion;
     private boolean activo;
 
-    private Sigla sigla;
     private Giro giro;
 }

@@ -4,12 +4,9 @@ import backend.com.gestionUsuarios.proveedor.domain.model.Proveedor;
 import backend.com.gestionUsuarios.proveedor.infrastructure.exception.ProveedorNotFoundException;
 import backend.com.gestionUsuarios.proveedor.infrastructure.persistence.repository.ProveedorRepository;
 import backend.com.shared.domain.model.Giro;
-import backend.com.shared.domain.model.Sigla;
 import backend.com.shared.exception.EntityNotFoundException;
 import backend.com.shared.infrastructure.mapper.GiroMapper;
-import backend.com.shared.infrastructure.mapper.SiglaMapper;
 import backend.com.shared.infrastructure.persistence.repository.GiroRepository;
-import backend.com.shared.infrastructure.persistence.repository.SiglaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,9 +20,8 @@ import java.util.Optional;
 public class ProveedorServiceImpl implements ProveedorService {
 
     private final ProveedorRepository proveedorRepository;
-    private final SiglaRepository siglaRepository;
+
     private final GiroRepository giroRepository;
-    private final SiglaMapper siglaMapper;
     private final GiroMapper giroMapper;
     private final ProveedorValidator proveedorValidator;
 
@@ -67,20 +63,14 @@ public class ProveedorServiceImpl implements ProveedorService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<Proveedor> obtenerPorSiglaId(Long siglaId) {
-        return proveedorRepository.obtenerPorSiglaId(siglaId);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
     public List<Proveedor> obtenerPorGiroId(Long giroId) {
         return proveedorRepository.obtenerPorGiroId(giroId);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<Proveedor> obtenerPorSiglaAbreviatura(String siglaAbreviatura) {
-        return proveedorRepository.obtenerPorSiglaAbreviatura(siglaAbreviatura);
+    public List<Proveedor> obtenerPorSigla(String sigla) {
+        return proveedorRepository.obtenerPorSigla(sigla);
     }
 
     @Override
@@ -91,8 +81,8 @@ public class ProveedorServiceImpl implements ProveedorService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<Proveedor> obtenerActivosPorSigla(Long siglaId) {
-        return proveedorRepository.obtenerActivosPorSigla(siglaId);
+    public List<Proveedor> obtenerActivosPorSigla(String sigla) {
+        return proveedorRepository.obtenerActivosPorSigla(sigla);
     }
 
     @Override
@@ -105,7 +95,6 @@ public class ProveedorServiceImpl implements ProveedorService {
     public Proveedor crear(Proveedor proveedor) {
         proveedorValidator.validateUniqueness(proveedor.getRunProveedor());
 
-        proveedor.setSigla(resolverSigla(proveedor.getSigla()));
         proveedor.setGiro(resolverGiro(proveedor.getGiro()));
         proveedor.setProveedorId(null);
 
@@ -121,19 +110,19 @@ public class ProveedorServiceImpl implements ProveedorService {
             proveedorValidator.validateUniqueness(proveedor.getRunProveedor());
             existente.setRunProveedor(proveedor.getRunProveedor());
         }
-        if (proveedor.getRazonSocialProveedor() != null) existente.setRazonSocialProveedor(proveedor.getRazonSocialProveedor());
-        if (proveedor.getDireccionProveedor() != null) existente.setDireccionProveedor(proveedor.getDireccionProveedor());
-        if (proveedor.getContactoProveedor() != null) existente.setContactoProveedor(proveedor.getContactoProveedor());
-        if (proveedor.getEmailProveedor() != null) existente.setEmailProveedor(proveedor.getEmailProveedor());
-        if (proveedor.getTelefonoProveedor() != null) existente.setTelefonoProveedor(proveedor.getTelefonoProveedor());
-        if (proveedor.getTipoProveedor() != null) existente.setTipoProveedor(proveedor.getTipoProveedor());
+        if (proveedor.getRazonSocialProveedor() != null)
+            existente.setRazonSocialProveedor(proveedor.getRazonSocialProveedor());
+        if (proveedor.getTipoProveedor() != null)
+            existente.setTipoProveedor(proveedor.getTipoProveedor());
+        if (proveedor.getHorarioAtencion() != null)
+            existente.setHorarioAtencion(proveedor.getHorarioAtencion());
+        if (proveedor.getSigla() != null)
+            existente.setSigla(proveedor.getSigla());
         existente.setActivo(proveedor.isActivo());
 
-        Sigla sigla = resolverSigla(proveedor.getSigla());
-        if (sigla != null) existente.setSigla(sigla);
-
         Giro giro = resolverGiro(proveedor.getGiro());
-        if (giro != null) existente.setGiro(giro);
+        if (giro != null)
+            existente.setGiro(giro);
 
         return proveedorRepository.save(existente);
     }
@@ -146,16 +135,9 @@ public class ProveedorServiceImpl implements ProveedorService {
         proveedorRepository.deleteById(proveedorId);
     }
 
-    private Sigla resolverSigla(Sigla sigla) {
-        if (sigla == null || sigla.getSiglaId() == null) return null;
-        Long siglaId = sigla.getSiglaId();
-        return siglaRepository.findById(siglaId)
-                .map(siglaMapper::toDomain)
-                .orElseThrow(() -> new EntityNotFoundException("Sigla no encontrada con ID: " + siglaId));
-    }
-
     private Giro resolverGiro(Giro giro) {
-        if (giro == null || giro.getGiroId() == null) return null;
+        if (giro == null || giro.getGiroId() == null)
+            return null;
         Long giroId = giro.getGiroId();
         return giroRepository.findById(giroId)
                 .map(giroMapper::toDomain)

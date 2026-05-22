@@ -1,7 +1,6 @@
 package backend.com.gestionUsuarios.cliente.application.dto;
 
 import backend.com.shared.application.dto.GiroDTO;
-import backend.com.shared.application.dto.SiglaDTO;
 import backend.com.shared.validations.email.ValidEmail;
 import backend.com.shared.validations.run.ValidRun;
 import backend.com.shared.validations.telefono.ValidPhone;
@@ -45,8 +44,10 @@ public class ClienteDTO {
     @Size(max = 100, message = "El contacto no puede exceder 100 caracteres")
     private String contactoCliente;
 
+    @Size(max = 50, message = "La sigla no puede exceder 50 caracteres")
+    private String sigla;
+
     private boolean activo;
 
     private GiroDTO giro;
-    private SiglaDTO sigla;
 }

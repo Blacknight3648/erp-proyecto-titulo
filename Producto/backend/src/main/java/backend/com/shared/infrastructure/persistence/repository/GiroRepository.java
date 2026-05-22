@@ -10,17 +10,13 @@ import java.util.Optional;
 @Repository
 public interface GiroRepository extends JpaRepository<GiroJpaEntity, Long> {
 
-    Optional<GiroJpaEntity> findByCodigoActividad(String codigoActividad);
+    Optional<GiroJpaEntity> findByCodigoSii(String codigoSii);
+
+    List<GiroJpaEntity> findByNombreGiroContainingIgnoreCase(String nombreGiro);
+
+    Optional<GiroJpaEntity> findByNombreGiroIgnoreCase(String nombreGiro);
 
     List<GiroJpaEntity> findByDescripcionGiroContainingIgnoreCase(String descripcionGiro);
 
-    Optional<GiroJpaEntity> findByDescripcionGiroIgnoreCase(String descripcionGiro);
-
-    List<GiroJpaEntity> findByTipoActividad(String tipoActividad);
-
-    List<GiroJpaEntity> findByCategoriaTributaria(String categoriaTributaria);
-
-    List<GiroJpaEntity> findByRegimenTributario(String regimenTributario);
-
-    boolean existsByCodigoActividad(String codigoActividad);
+    boolean existsByCodigoSii(String codigoSii);
 }

@@ -24,7 +24,8 @@ public class ProveedorRepositoryImpl implements ProveedorRepository {
 
     @Override
     public Optional<Proveedor> findById(Long id) {
-        if (id == null) return Optional.empty();
+        if (id == null)
+            return Optional.empty();
         return jpaRepository.findById(id).map(mapper::toDomain);
     }
 
@@ -45,12 +46,13 @@ public class ProveedorRepositoryImpl implements ProveedorRepository {
 
     @Override
     public List<Proveedor> buscarPorRazonSocial(String razonSocial) {
-        return jpaRepository.buscarPorRazonSocial(razonSocial).stream().map(mapper::toDomain).collect(Collectors.toList());
+        return jpaRepository.buscarPorRazonSocial(razonSocial).stream().map(mapper::toDomain)
+                .collect(Collectors.toList());
     }
 
     @Override
-    public List<Proveedor> obtenerPorSiglaId(Long siglaId) {
-        return jpaRepository.obtenerPorSiglaId(siglaId).stream().map(mapper::toDomain).collect(Collectors.toList());
+    public List<Proveedor> obtenerPorSigla(String sigla) {
+        return jpaRepository.obtenerPorSigla(sigla).stream().map(mapper::toDomain).collect(Collectors.toList());
     }
 
     @Override
@@ -59,13 +61,9 @@ public class ProveedorRepositoryImpl implements ProveedorRepository {
     }
 
     @Override
-    public List<Proveedor> obtenerPorSiglaAbreviatura(String siglaAbreviatura) {
-        return jpaRepository.obtenerPorSiglaAbreviatura(siglaAbreviatura).stream().map(mapper::toDomain).collect(Collectors.toList());
-    }
-
-    @Override
     public List<Proveedor> obtenerPorDescripcionGiro(String descripcionGiro) {
-        return jpaRepository.obtenerPorDescripcionGiro(descripcionGiro).stream().map(mapper::toDomain).collect(Collectors.toList());
+        return jpaRepository.obtenerPorDescripcionGiro(descripcionGiro).stream().map(mapper::toDomain)
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -79,8 +77,8 @@ public class ProveedorRepositoryImpl implements ProveedorRepository {
     }
 
     @Override
-    public List<Proveedor> obtenerActivosPorSigla(Long siglaId) {
-        return jpaRepository.obtenerActivosPorSigla(siglaId).stream().map(mapper::toDomain).collect(Collectors.toList());
+    public List<Proveedor> obtenerActivosPorSigla(String sigla) {
+        return jpaRepository.obtenerActivosPorSigla(sigla).stream().map(mapper::toDomain).collect(Collectors.toList());
     }
 
     @Override

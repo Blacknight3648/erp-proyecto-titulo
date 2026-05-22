@@ -1,7 +1,7 @@
 package backend.com.gestionUsuarios.cliente.domain.model;
 
 import backend.com.shared.domain.model.Giro;
-import backend.com.shared.domain.model.Sigla;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -23,7 +23,8 @@ public class Cliente {
     private String direccionCliente;
     private String contactoCliente;
     private boolean activo;
+    private String sigla;
 
     private Giro giro;
-    private Sigla sigla;
+
 }

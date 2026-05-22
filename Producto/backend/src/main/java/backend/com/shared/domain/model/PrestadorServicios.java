@@ -11,9 +11,13 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Sigla {
+public class PrestadorServicios {
 
-    private Long siglaId;
-    private String descripcionSigla;
-    private String siglaAbreviatura;
+    private long prestadorServiciosId;
+    private String runPrestadorServicios;
+    private String razonSocialPrestador;
+
+    private Contacto contacto;
+    private TipoServicio tipoServicio;
+
 }

@@ -19,15 +19,13 @@ public interface ProveedorService {
 
     List<Proveedor> obtenerInactivos();
 
-    List<Proveedor> obtenerPorSiglaId(Long siglaId);
-
     List<Proveedor> obtenerPorGiroId(Long giroId);
 
-    List<Proveedor> obtenerPorSiglaAbreviatura(String siglaAbreviatura);
+    List<Proveedor> obtenerPorSigla(String sigla);
 
     List<Proveedor> obtenerPorDescripcionGiro(String descripcionGiro);
 
-    List<Proveedor> obtenerActivosPorSigla(Long siglaId);
+    List<Proveedor> obtenerActivosPorSigla(String sigla);
 
     List<Proveedor> obtenerActivosPorGiro(Long giroId);
 

@@ -7,9 +7,7 @@ import backend.com.gestionUsuarios.cliente.infrastructure.persistence.entity.Cli
 import backend.com.gestionUsuarios.cliente.infrastructure.persistence.repository.ClienteRepository;
 import backend.com.shared.exception.EntityNotFoundException;
 import backend.com.shared.infrastructure.persistence.entity.GiroJpaEntity;
-import backend.com.shared.infrastructure.persistence.entity.SiglaJpaEntity;
 import backend.com.shared.infrastructure.persistence.repository.GiroRepository;
-import backend.com.shared.infrastructure.persistence.repository.SiglaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,7 +21,6 @@ import java.util.Optional;
 public class ClienteServiceImpl implements ClienteService {
 
     private final ClienteRepository clienteRepository;
-    private final SiglaRepository siglaRepository;
     private final GiroRepository giroRepository;
     private final ClienteMapper clienteMapper;
     private final ClienteValidator clienteValidator;
@@ -106,7 +103,6 @@ public class ClienteServiceImpl implements ClienteService {
     public Cliente crear(Cliente cliente) {
         clienteValidator.validateUniqueness(cliente.getRunCliente());
 
-        SiglaJpaEntity sigla = resolverSigla(cliente);
         GiroJpaEntity giro = resolverGiro(cliente);
 
         ClienteJpaEntity entity = ClienteJpaEntity.builder()
@@ -116,8 +112,8 @@ public class ClienteServiceImpl implements ClienteService {
                 .contactoCliente(cliente.getContactoCliente())
                 .correoCliente(cliente.getCorreoCliente())
                 .telefonoCliente(cliente.getTelefonoCliente())
+                .sigla(cliente.getSigla())
                 .activo(cliente.isActivo())
-                .sigla(sigla)
                 .giro(giro)
                 .build();
 
@@ -133,18 +129,23 @@ public class ClienteServiceImpl implements ClienteService {
             clienteValidator.validateUniqueness(cliente.getRunCliente());
             entity.setRunCliente(cliente.getRunCliente());
         }
-        if (cliente.getRazonSocial() != null) entity.setRazonSocial(cliente.getRazonSocial());
-        if (cliente.getDireccionCliente() != null) entity.setDireccionCliente(cliente.getDireccionCliente());
-        if (cliente.getContactoCliente() != null) entity.setContactoCliente(cliente.getContactoCliente());
-        if (cliente.getCorreoCliente() != null) entity.setCorreoCliente(cliente.getCorreoCliente());
-        if (cliente.getTelefonoCliente() != null) entity.setTelefonoCliente(cliente.getTelefonoCliente());
+        if (cliente.getRazonSocial() != null)
+            entity.setRazonSocial(cliente.getRazonSocial());
+        if (cliente.getDireccionCliente() != null)
+            entity.setDireccionCliente(cliente.getDireccionCliente());
+        if (cliente.getContactoCliente() != null)
+            entity.setContactoCliente(cliente.getContactoCliente());
+        if (cliente.getCorreoCliente() != null)
+            entity.setCorreoCliente(cliente.getCorreoCliente());
+        if (cliente.getTelefonoCliente() != null)
+            entity.setTelefonoCliente(cliente.getTelefonoCliente());
+        if (cliente.getSigla() != null)
+            entity.setSigla(cliente.getSigla());
         entity.setActivo(cliente.isActivo());
 
-        SiglaJpaEntity sigla = resolverSigla(cliente);
-        if (sigla != null) entity.setSigla(sigla);
-
         GiroJpaEntity giro = resolverGiro(cliente);
-        if (giro != null) entity.setGiro(giro);
+        if (giro != null)
+            entity.setGiro(giro);
 
         return clienteMapper.toDomain(clienteRepository.save(entity));
     }
@@ -157,15 +158,9 @@ public class ClienteServiceImpl implements ClienteService {
         clienteRepository.deleteById(clienteId);
     }
 
-    private SiglaJpaEntity resolverSigla(Cliente cliente) {
-        if (cliente.getSigla() == null || cliente.getSigla().getSiglaId() == null) return null;
-        Long siglaId = cliente.getSigla().getSiglaId();
-        return siglaRepository.findById(siglaId)
-                .orElseThrow(() -> new EntityNotFoundException("Sigla no encontrada con ID: " + siglaId));
-    }
-
     private GiroJpaEntity resolverGiro(Cliente cliente) {
-        if (cliente.getGiro() == null || cliente.getGiro().getGiroId() == null) return null;
+        if (cliente.getGiro() == null || cliente.getGiro().getGiroId() == null)
+            return null;
         Long giroId = cliente.getGiro().getGiroId();
         return giroRepository.findById(giroId)
                 .orElseThrow(() -> new EntityNotFoundException("Giro no encontrado con ID: " + giroId));

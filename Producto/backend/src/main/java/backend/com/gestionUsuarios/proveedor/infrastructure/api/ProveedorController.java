@@ -56,29 +56,25 @@ public class ProveedorController {
         return ResponseEntity.ok(proveedorMapper.toDTOList(proveedorService.obtenerInactivos()));
     }
 
-    @GetMapping("/sigla/{siglaId}")
-    public ResponseEntity<List<ProveedorDTO>> obtenerPorSiglaId(@PathVariable Long siglaId) {
-        return ResponseEntity.ok(proveedorMapper.toDTOList(proveedorService.obtenerPorSiglaId(siglaId)));
-    }
-
     @GetMapping("/giro/{giroId}")
     public ResponseEntity<List<ProveedorDTO>> obtenerPorGiroId(@PathVariable Long giroId) {
         return ResponseEntity.ok(proveedorMapper.toDTOList(proveedorService.obtenerPorGiroId(giroId)));
     }
 
-    @GetMapping("/sigla/abreviatura/{siglaAbreviatura}")
-    public ResponseEntity<List<ProveedorDTO>> obtenerPorSiglaAbreviatura(@PathVariable String siglaAbreviatura) {
-        return ResponseEntity.ok(proveedorMapper.toDTOList(proveedorService.obtenerPorSiglaAbreviatura(siglaAbreviatura)));
+    @GetMapping("/sigla/abreviatura/{sigla}")
+    public ResponseEntity<List<ProveedorDTO>> obtenerPorSigla(@PathVariable String sigla) {
+        return ResponseEntity.ok(proveedorMapper.toDTOList(proveedorService.obtenerPorSigla(sigla)));
     }
 
     @GetMapping("/giro/descripcion/{descripcionGiro}")
     public ResponseEntity<List<ProveedorDTO>> obtenerPorDescripcionGiro(@PathVariable String descripcionGiro) {
-        return ResponseEntity.ok(proveedorMapper.toDTOList(proveedorService.obtenerPorDescripcionGiro(descripcionGiro)));
+        return ResponseEntity
+                .ok(proveedorMapper.toDTOList(proveedorService.obtenerPorDescripcionGiro(descripcionGiro)));
     }
 
-    @GetMapping("/activos/sigla/{siglaId}")
-    public ResponseEntity<List<ProveedorDTO>> obtenerActivosPorSigla(@PathVariable Long siglaId) {
-        return ResponseEntity.ok(proveedorMapper.toDTOList(proveedorService.obtenerActivosPorSigla(siglaId)));
+    @GetMapping("/activos/sigla/{sigla}")
+    public ResponseEntity<List<ProveedorDTO>> obtenerActivosPorSigla(@PathVariable String sigla) {
+        return ResponseEntity.ok(proveedorMapper.toDTOList(proveedorService.obtenerActivosPorSigla(sigla)));
     }
 
     @GetMapping("/activos/giro/{giroId}")
@@ -93,7 +89,8 @@ public class ProveedorController {
     }
 
     @PutMapping("/{proveedorId}")
-    public ResponseEntity<ProveedorDTO> actualizar(@PathVariable Long proveedorId, @Valid @RequestBody ProveedorDTO dto) {
+    public ResponseEntity<ProveedorDTO> actualizar(@PathVariable Long proveedorId,
+            @Valid @RequestBody ProveedorDTO dto) {
         Proveedor actualizado = proveedorService.actualizar(proveedorId, proveedorMapper.toDomain(dto));
         return ResponseEntity.ok(proveedorMapper.toDTO(actualizado));
     }

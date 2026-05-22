@@ -11,15 +11,11 @@ public interface GiroService {
 
     Optional<Giro> obtenerPorId(Long giroId);
 
-    Optional<Giro> obtenerPorCodigoActividad(String codigoActividad);
+    Optional<Giro> obtenerPorCodigoSii(String codigoSii);
 
-    List<Giro> buscarPorDescripcion(String descripcionGiro);
+    List<Giro> buscarPorNombreGiro(String nombreGiro);
 
-    List<Giro> obtenerPorTipoActividad(String tipoActividad);
-
-    List<Giro> obtenerPorCategoriaTributaria(String categoriaTributaria);
-
-    List<Giro> obtenerPorRegimenTributario(String regimenTributario);
+    List<Giro> obtenerPorDescripcionGiro(String descripcionGiro);
 
     Giro crear(Giro giro);
 
@@ -27,5 +23,5 @@ public interface GiroService {
 
     void eliminar(Long id);
 
-    Optional<Giro> obtenerOCrearPorDescripcion(String descripcionGiro);
+    Optional<Giro> obtenerOCrearPorNombreGiro(String nombreGiro);
 }

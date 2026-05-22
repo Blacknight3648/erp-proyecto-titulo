@@ -23,7 +23,8 @@ public class GiroController {
     @GetMapping
     public ResponseEntity<List<GiroDTO>> listarTodos() {
         List<Giro> giros = giroService.listarTodos();
-        if (giros.isEmpty()) return ResponseEntity.notFound().build();
+        if (giros.isEmpty())
+            return ResponseEntity.notFound().build();
         return ResponseEntity.ok(giroMapper.toDTOList(giros));
     }
 
@@ -35,32 +36,30 @@ public class GiroController {
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    @GetMapping("/codigo/{codigoActividad}")
-    public ResponseEntity<GiroDTO> obtenerPorCodigoActividad(@PathVariable String codigoActividad) {
-        return giroService.obtenerPorCodigoActividad(codigoActividad)
+    @GetMapping("/codigo/{codigoSii}")
+    public ResponseEntity<GiroDTO> obtenerPorCodigoSii(@PathVariable String codigoSii) {
+        return giroService.obtenerPorCodigoSii(codigoSii)
                 .map(giroMapper::toDTO)
                 .map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
+    @GetMapping("/nombre/{nombreGiro}")
+    public ResponseEntity<List<GiroDTO>> buscarPorNombreGiro(@PathVariable String nombreGiro) {
+        return ResponseEntity.ok(giroMapper.toDTOList(giroService.buscarPorNombreGiro(nombreGiro)));
+    }
+
     @GetMapping("/descripcion/{descripcionGiro}")
-    public ResponseEntity<List<GiroDTO>> buscarPorDescripcion(@PathVariable String descripcionGiro) {
-        return ResponseEntity.ok(giroMapper.toDTOList(giroService.buscarPorDescripcion(descripcionGiro)));
+    public ResponseEntity<List<GiroDTO>> obtenerPorDescripcionGiro(@PathVariable String descripcionGiro) {
+        return ResponseEntity.ok(giroMapper.toDTOList(giroService.obtenerPorDescripcionGiro(descripcionGiro)));
     }
 
-    @GetMapping("/tipo/{tipoActividad}")
-    public ResponseEntity<List<GiroDTO>> obtenerPorTipoActividad(@PathVariable String tipoActividad) {
-        return ResponseEntity.ok(giroMapper.toDTOList(giroService.obtenerPorTipoActividad(tipoActividad)));
-    }
-
-    @GetMapping("/categoria/{categoriaTributaria}")
-    public ResponseEntity<List<GiroDTO>> obtenerPorCategoriaTributaria(@PathVariable String categoriaTributaria) {
-        return ResponseEntity.ok(giroMapper.toDTOList(giroService.obtenerPorCategoriaTributaria(categoriaTributaria)));
-    }
-
-    @GetMapping("/regimen/{regimenTributario}")
-    public ResponseEntity<List<GiroDTO>> obtenerPorRegimenTributario(@PathVariable String regimenTributario) {
-        return ResponseEntity.ok(giroMapper.toDTOList(giroService.obtenerPorRegimenTributario(regimenTributario)));
+    @GetMapping("/obtenerocrear/{nombreGiro}")
+    public ResponseEntity<GiroDTO> obtenerOCrearPorNombreGiro(@PathVariable String nombreGiro) {
+        return giroService.obtenerOCrearPorNombreGiro(nombreGiro)
+                .map(giroMapper::toDTO)
+                .map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @PostMapping

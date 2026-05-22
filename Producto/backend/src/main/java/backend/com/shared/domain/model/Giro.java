@@ -14,10 +14,9 @@ import lombok.Setter;
 public class Giro {
 
     private Long giroId;
+    private String codigoSii;
+    private String nombreGiro;
     private String descripcionGiro;
-    private String codigoActividad;
-    private String tipoActividad;
-    private String categoriaTributaria;
-    private String afectoIva;
-    private String regimenTributario;
+
+    private Rubro rubro;
 }

@@ -228,7 +228,7 @@ export default function ModernSidebar({ isOpen, setIsOpen }) {
         <div className="p-3 border-t border-gray-100">
           <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl">
             <div className="w-9 h-9 bg-gradient-to-br from-indigo-600 to-blue-500 rounded-full flex items-center justify-center shadow-md">
-              <span className="font-bold text-white text-xs">JS</span>
+              <span className="font-bold text-white text-xs">AJ</span>
             </div>
             <div className="flex-1 min-w-0">
               <p className="text-xs font-bold text-gray-900 truncate">Antuan Andrés Jury</p>

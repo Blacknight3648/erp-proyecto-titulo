@@ -1,13 +1,12 @@
 import { useState } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
-import {
-  Home,
-  ShoppingCart,
-  Factory,
-  Package,
-  Users,
-  Activity,
-  ChevronLeft,
+import { 
+  ShoppingCart, 
+  Factory, 
+  Package, 
+  Users, 
+  Activity, 
+  ChevronLeft, 
   ChevronRight,
   BarChart3,
   Wallet,
@@ -30,28 +29,42 @@ export default function ModernSidebar({ isOpen, setIsOpen }) {
   const [openSubmenu, setOpenSubmenu] = useState(null);
 
   const menuItems = [
-    { path: '/', label: 'Inicio', icon: Home, color: 'text-blue-600' },
-    {
+    { path: '/', label: 'Dashboard', icon: BarChart3, color: 'text-blue-600' },
+    { 
       id: 'comercial',
-      label: 'Comercial',
-      icon: Users,
-      color: 'text-blue-500',
+      label: 'Comercial', 
+      icon: Users, 
+      color: 'text-blue-500', 
       submenu: [
         { path: '/comercial/tablero', label: 'Tablero Comercial', icon: LayoutDashboard },
-        { path: '/comercial/solicitudes-costos', label: 'Solicitudes Costos', icon: DollarSign },
+        { path: '/comercial/solicitudes-costos', label: 'Solicitudes Costos', icon: DollarSign},
+        { path: '/comercial/solicitudes-cotizaciones', label: 'Solicitudes Cotizaciones', icon: DollarSign },
         { path: '/comercial/administracion-negocios', label: 'Admin Negocios', icon: Target },
         { path: '/registros-nv', label: 'Notas de Venta', icon: FileText },
+        { path: '/comercial/registros-sc', label: 'Solicitudes (SC)', icon: ClipboardList },
         { path: '/comercial/gestion-proyectos', label: 'Gestión Proyectos', icon: Briefcase },
         { path: '/detalle-nv', label: 'Seguimiento NV', icon: Activity },
         { path: '/comercial/gestion-plantillas', label: 'Biblioteca Plantillas', icon: Settings },
-        { path: '/comercial/ordenes-produccion', label: 'Ordenes de Produccion', icon: DollarSign },
       ]
     },
-    { id: 'adquisiciones', path: '#', label: 'Adquisiciones', icon: ShoppingCart, color: 'text-indigo-600' },
-    {
+    { 
+      id: 'adquisiciones',
+      label: 'Adquisiciones', 
+      icon: ShoppingCart, 
+      color: 'text-indigo-600',
+      submenu: [
+        { path: '/dashboard-sc', label: 'Dashboard SC', icon: LayoutDashboard },
+        { path: '/adquisiciones/tablero-sc', label: 'Tablero SC', icon: LayoutDashboard },
+        { path: '/adquisiciones/cotizaciones', label: 'Gestión Cotizaciones', icon: FileText },
+        { path: '/adquisiciones/estado-sc', label: 'Estado SC', icon: Activity },
+        { path: '/adquisiciones/emitir-oc', label: 'Emitir OC (SC)', icon: FileText },
+        { path: '/recepcionar-oc', label: 'Recepción OC', icon: Truck },
+      ]
+    },
+    { 
       id: 'produccion',
-      label: 'Producción',
-      icon: Factory,
+      label: 'Producción', 
+      icon: Factory, 
       color: 'text-orange-600',
       submenu: [
         { path: '/dashboard-op', label: 'Control Planta', icon: LayoutDashboard },
@@ -59,16 +72,15 @@ export default function ModernSidebar({ isOpen, setIsOpen }) {
         { path: '/produccion/ordenes', label: 'Ficha Técnica OP', icon: FileText },
         { path: '/op-registro', label: 'Registro OPs', icon: ClipboardList },
         { path: '/produccion/costeo-mp', label: 'Costeos OP', icon: DollarSign },
-        { path: '/produccion/hoja-compra', label: 'Hoja de Compra', icon: ClipboardList },
         { path: '/produccion/compras', label: 'Ordenes de Compra', icon: ShoppingCart },
       ]
     },
-    { id: 'bodega', path: '#', label: 'Bodega', icon: Package, color: 'text-green-600' },
-    { id: 'contabilidad', path: '#', label: 'Contabilidad', icon: Wallet, color: 'text-indigo-600' },
-    {
+    { path: '/bodega', label: 'Bodega', icon: Package, color: 'text-green-600' },
+    { path: '/contabilidad', label: 'Contabilidad', icon: Wallet, color: 'text-indigo-600' },
+    { 
       id: 'usuarios',
-      label: 'Gestión de Usuarios',
-      icon: Users,
+      label: 'Gestión de Usuarios', 
+      icon: Users, 
       color: 'text-violet-600',
       submenu: [
         { path: '/gestion-usuarios/colaboradores', label: 'Colaboradores', icon: Users },
@@ -78,14 +90,16 @@ export default function ModernSidebar({ isOpen, setIsOpen }) {
         { path: '/gestion-usuarios/proveedores', label: 'Proveedores', icon: Truck },
       ]
     },
-    {
+    { 
       id: 'trazabilidad',
-      label: 'Trazabilidad',
-      icon: Activity,
+      label: 'Trazabilidad', 
+      icon: Activity, 
       color: 'text-red-600',
       submenu: [
-        { path: '/trazabilidad/completa', label: 'Trazabilidad Comercial-Producción', icon: Activity },
-        { path: '/trazabilidad/global', label: 'Timeline de Pedidos', icon: Truck },
+        { path: '/trazabilidad/completa', label: 'Trazabilidad NV', icon: Activity },
+        { path: '/trazabilidad/global', label: 'Pipeline Global', icon: Truck },
+        { path: '/trazabilidad/alertas', label: 'Monitor de Alertas', icon: AlertCircle },
+        { path: '/trazabilidad/historial', label: 'Historial NV', icon: History },
       ]
     },
   ];
@@ -109,7 +123,7 @@ export default function ModernSidebar({ isOpen, setIsOpen }) {
             </div>
           </div>
         )}
-        <button
+        <button 
           onClick={() => setIsOpen(!isOpen)}
           className={`p-1 hover:bg-gray-100 rounded-lg transition-colors ${!isOpen ? 'mx-auto' : ''}`}
         >
@@ -137,10 +151,11 @@ export default function ModernSidebar({ isOpen, setIsOpen }) {
                       handleToggleSubmenu(item.id);
                     }
                   }}
-                  className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all ${isSubmenuOpen || isActive
-                    ? 'bg-indigo-50 text-indigo-600'
-                    : 'text-gray-700 hover:bg-gray-50'
-                    }`}
+                  className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all ${
+                    isSubmenuOpen || isActive
+                      ? 'bg-indigo-50 text-indigo-600' 
+                      : 'text-gray-700 hover:bg-gray-50'
+                  }`}
                 >
                   <Icon className={`w-5 h-5 flex-shrink-0 ${isActive || isSubmenuOpen ? item.color : 'text-gray-400'}`} />
                   {isOpen && (
@@ -155,8 +170,8 @@ export default function ModernSidebar({ isOpen, setIsOpen }) {
                   to={item.path}
                   className={({ isActive }) => `
                     flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all
-                    ${isActive
-                      ? 'bg-indigo-50 text-indigo-600'
+                    ${isActive 
+                      ? 'bg-indigo-50 text-indigo-600' 
                       : 'text-gray-700 hover:bg-gray-50'}
                   `}
                 >

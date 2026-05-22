@@ -39,7 +39,7 @@ export default function Navbar({ isSidebarOpen = true }) {
         <nav className="hidden md:flex items-center gap-3">
           <button className="flex items-center gap-2 text-sm font-semibold text-slate-600 hover:text-blue-700 bg-slate-50 hover:bg-blue-50 border border-slate-100 hover:border-blue-200 px-4 py-2 rounded-xl transition-all shadow-sm hover:shadow">
             <Box className="w-4 h-4 text-slate-400" />
-            <span>Materias Primas</span>
+            <span>Gestión de Datos Maestros</span>
           </button>
           <button className="flex items-center gap-2 text-sm font-semibold text-slate-600 hover:text-blue-700 bg-slate-50 hover:bg-blue-50 border border-slate-100 hover:border-blue-200 px-4 py-2 rounded-xl transition-all shadow-sm hover:shadow">
             <History className="w-4 h-4 text-slate-400" />

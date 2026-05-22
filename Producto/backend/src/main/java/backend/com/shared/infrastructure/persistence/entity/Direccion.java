@@ -1,27 +1,34 @@
 package backend.com.shared.infrastructure.persistence.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Embeddable;
+import jakarta.persistence.*;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
-@Embeddable
+@Entity
+@Table(name = "direccion")
 @Data
+@NoArgsConstructor
 public class Direccion {
 
-    private String direccionId;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "direccion_id")
+    private Long direccionId;
 
-    @Column(nullable = false, length = 150)
+    @Column(name = "calle", nullable = false, length = 150)
     private String calle;
 
-    @Column(nullable = false, length = 20)
+    @Column(name = "numero", nullable = false, length = 20)
     private String numero;
 
-    @Column(length = 20)
+    @Column(name = "depto", length = 20)
     private String depto;
 
-    @Column(nullable = false)
-    private Long comunaId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "tipo_direccion_id", nullable = false)
+    private TipoDireccion tipoDireccion;
 
-    @Column(nullable = false)
-    private Long regionId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "comuna_id", nullable = false)
+    private Comuna comuna;
 }

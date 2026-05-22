@@ -15,9 +15,15 @@ public class Region extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "region_id")
     private Long regionId;
 
-    @NotBlank
+    @NotBlank(message = "El nombre de la region no puede estar en blanco")
     @Column(unique = true, length = 100, nullable = false)
     private String nombreRegion;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "pais_id", nullable = false)
+    private Pais pais;
+
 }

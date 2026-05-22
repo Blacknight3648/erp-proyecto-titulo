@@ -15,10 +15,11 @@ public class Comuna extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "comuna_id")
     private Long comunaId;
 
-    @NotBlank
-    @Column(length = 100, nullable = false)
+    @NotBlank(message = "El nombre de la comuuna no puede estar en blanco")
+    @Column(name = "nombre_comuna", length = 100, nullable = false)
     private String nombreComuna;
 
     @ManyToOne(fetch = FetchType.LAZY)

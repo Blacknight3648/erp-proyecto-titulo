@@ -1,10 +1,15 @@
-package backend.com.maestros.repository;
+package backend.com.shared.domain.repository;
 
-import backend.com.maestros.domain.entity.Banco;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
+import backend.com.shared.domain.model.Banco;
 
-@Repository
-public interface BancoRepository
-        extends JpaRepository<Banco, Integer> {
+import java.util.List;
+import java.util.Optional;
+
+public interface BancoRepository {
+    List<Banco> findAll();
+    Optional<Banco> findById(Integer id);
+    Optional<Banco> findByCodigoBanco(String codigoBanco);
+    Banco save(Banco banco);
+    void deleteById(Integer id);
+    boolean existsById(Integer id);
 }

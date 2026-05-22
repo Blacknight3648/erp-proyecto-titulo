@@ -5,8 +5,14 @@ import backend.com.gestionUsuarios.cliente.infrastructure.exception.ClienteNotFo
 import backend.com.gestionUsuarios.cliente.infrastructure.mapper.ClienteMapper;
 import backend.com.gestionUsuarios.cliente.infrastructure.persistence.entity.ClienteJpaEntity;
 import backend.com.gestionUsuarios.cliente.infrastructure.persistence.repository.ClienteRepository;
+import backend.com.shared.exception.BancoNotFoundException;
+import backend.com.shared.exception.DatoBancarioNotFoundException;
 import backend.com.shared.exception.EntityNotFoundException;
+import backend.com.shared.infrastructure.persistence.entity.DatoBancarioJpaEntity;
+import backend.com.shared.infrastructure.persistence.entity.Direccion;
 import backend.com.shared.infrastructure.persistence.entity.GiroJpaEntity;
+import backend.com.shared.infrastructure.persistence.repository.DatoBancarioJpaRepository;
+import backend.com.shared.infrastructure.persistence.repository.DireccionJpaRepository;
 import backend.com.shared.infrastructure.persistence.repository.GiroRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -22,6 +28,8 @@ public class ClienteServiceImpl implements ClienteService {
 
     private final ClienteRepository clienteRepository;
     private final GiroRepository giroRepository;
+    private final DireccionJpaRepository direccionJpaRepository;
+    private final DatoBancarioJpaRepository datoBancarioJpaRepository;
     private final ClienteMapper clienteMapper;
     private final ClienteValidator clienteValidator;
 
@@ -103,18 +111,17 @@ public class ClienteServiceImpl implements ClienteService {
     public Cliente crear(Cliente cliente) {
         clienteValidator.validateUniqueness(cliente.getRunCliente());
 
-        GiroJpaEntity giro = resolverGiro(cliente);
-
         ClienteJpaEntity entity = ClienteJpaEntity.builder()
                 .runCliente(cliente.getRunCliente())
                 .razonSocial(cliente.getRazonSocial())
-                .direccionCliente(cliente.getDireccionCliente())
                 .contactoCliente(cliente.getContactoCliente())
                 .correoCliente(cliente.getCorreoCliente())
                 .telefonoCliente(cliente.getTelefonoCliente())
                 .sigla(cliente.getSigla())
                 .activo(cliente.isActivo())
-                .giro(giro)
+                .giro(resolverGiro(cliente))
+                .direccion(resolverDireccion(cliente))
+                .datoBancario(resolverDatoBancario(cliente))
                 .build();
 
         return clienteMapper.toDomain(clienteRepository.save(entity));
@@ -131,8 +138,6 @@ public class ClienteServiceImpl implements ClienteService {
         }
         if (cliente.getRazonSocial() != null)
             entity.setRazonSocial(cliente.getRazonSocial());
-        if (cliente.getDireccionCliente() != null)
-            entity.setDireccionCliente(cliente.getDireccionCliente());
         if (cliente.getContactoCliente() != null)
             entity.setContactoCliente(cliente.getContactoCliente());
         if (cliente.getCorreoCliente() != null)
@@ -144,8 +149,13 @@ public class ClienteServiceImpl implements ClienteService {
         entity.setActivo(cliente.isActivo());
 
         GiroJpaEntity giro = resolverGiro(cliente);
-        if (giro != null)
-            entity.setGiro(giro);
+        if (giro != null) entity.setGiro(giro);
+
+        Direccion direccion = resolverDireccion(cliente);
+        if (direccion != null) entity.setDireccion(direccion);
+
+        DatoBancarioJpaEntity datoBancario = resolverDatoBancario(cliente);
+        if (datoBancario != null) entity.setDatoBancario(datoBancario);
 
         return clienteMapper.toDomain(clienteRepository.save(entity));
     }
@@ -164,5 +174,21 @@ public class ClienteServiceImpl implements ClienteService {
         Long giroId = cliente.getGiro().getGiroId();
         return giroRepository.findById(giroId)
                 .orElseThrow(() -> new EntityNotFoundException("Giro no encontrado con ID: " + giroId));
+    }
+
+    private Direccion resolverDireccion(Cliente cliente) {
+        if (cliente.getDireccion() == null || cliente.getDireccion().getDireccionId() == null)
+            return null;
+        Long direccionId = cliente.getDireccion().getDireccionId();
+        return direccionJpaRepository.findById(direccionId)
+                .orElseThrow(() -> new EntityNotFoundException("Dirección no encontrada con ID: " + direccionId));
+    }
+
+    private DatoBancarioJpaEntity resolverDatoBancario(Cliente cliente) {
+        if (cliente.getDatoBancario() == null || cliente.getDatoBancario().getDatoBancarioId() == null)
+            return null;
+        Integer datoBancarioId = cliente.getDatoBancario().getDatoBancarioId();
+        return datoBancarioJpaRepository.findById(datoBancarioId)
+                .orElseThrow(() -> new DatoBancarioNotFoundException(datoBancarioId));
     }
 }

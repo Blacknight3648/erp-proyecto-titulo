@@ -1,5 +1,7 @@
 package backend.com.gestionUsuarios.cliente.domain.model;
 
+import backend.com.shared.domain.model.DatoBancario;
+import backend.com.shared.domain.model.Direccion;
 import backend.com.shared.domain.model.Giro;
 
 import lombok.AllArgsConstructor;
@@ -20,11 +22,12 @@ public class Cliente {
     private String razonSocial;
     private String correoCliente;
     private String telefonoCliente;
-    private String direccionCliente;
     private String contactoCliente;
     private boolean activo;
     private String sigla;
 
     private Giro giro;
+    private Direccion direccion;
+    private DatoBancario datoBancario;
 
 }

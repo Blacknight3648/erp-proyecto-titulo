@@ -1,5 +1,7 @@
 package backend.com.gestionUsuarios.cliente.infrastructure.persistence.entity;
 
+import backend.com.shared.infrastructure.persistence.entity.DatoBancarioJpaEntity;
+import backend.com.shared.infrastructure.persistence.entity.Direccion;
 import backend.com.shared.infrastructure.persistence.entity.GiroJpaEntity;
 import backend.com.shared.validations.email.ValidEmail;
 import backend.com.shared.validations.run.ValidRun;
@@ -40,19 +42,24 @@ public class ClienteJpaEntity {
     @ValidPhone
     private String telefonoCliente;
 
-    @Column(name = "direccion_cliente")
-    private String direccionCliente;
-
     @Column(name = "contacto_cliente")
     private String contactoCliente;
 
     @Column(name = "sigla")
     private String sigla;
 
+    @Column(name = "activo", nullable = false)
+    private boolean activo;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "fk_giro")
     private GiroJpaEntity giro;
 
-    @Column(name = "activo", nullable = false)
-    private boolean activo;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "fk_direccion")
+    private Direccion direccion;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "fk_dato_bancario")
+    private DatoBancarioJpaEntity datoBancario;
 }

@@ -1,5 +1,7 @@
 package backend.com.gestionUsuarios.cliente.application.dto;
 
+import backend.com.shared.application.dto.DatoBancarioResponse;
+import backend.com.shared.application.dto.DireccionResponse;
 import backend.com.shared.application.dto.GiroDTO;
 import backend.com.shared.validations.email.ValidEmail;
 import backend.com.shared.validations.run.ValidRun;
@@ -38,9 +40,6 @@ public class ClienteDTO {
     @Size(max = 20, message = "El teléfono no puede exceder 20 caracteres")
     private String telefonoCliente;
 
-    @Size(max = 500, message = "La dirección no puede exceder 500 caracteres")
-    private String direccionCliente;
-
     @Size(max = 100, message = "El contacto no puede exceder 100 caracteres")
     private String contactoCliente;
 
@@ -50,4 +49,12 @@ public class ClienteDTO {
     private boolean activo;
 
     private GiroDTO giro;
+
+    // Para requests: poblar solo con { "direccionId": X }
+    // Para responses: objeto completo mapeado desde dominio
+    private DireccionResponse direccion;
+
+    // Para requests: poblar solo con { "datoBancarioId": X }
+    // Para responses: objeto completo mapeado desde dominio
+    private DatoBancarioResponse datoBancario;
 }

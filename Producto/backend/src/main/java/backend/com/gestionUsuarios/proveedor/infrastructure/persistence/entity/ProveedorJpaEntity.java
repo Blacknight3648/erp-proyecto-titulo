@@ -2,9 +2,7 @@ package backend.com.gestionUsuarios.proveedor.infrastructure.persistence.entity;
 
 import backend.com.shared.infrastructure.persistence.entity.BaseEntity;
 import backend.com.shared.infrastructure.persistence.entity.GiroJpaEntity;
-import backend.com.shared.validations.email.ValidEmail;
 import backend.com.shared.validations.run.ValidRun;
-import backend.com.shared.validations.telefono.ValidPhone;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;

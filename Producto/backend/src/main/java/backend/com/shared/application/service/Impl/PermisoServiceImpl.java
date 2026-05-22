@@ -1,8 +1,9 @@
-package backend.com.shared.application.service;
+package backend.com.shared.application.service.Impl;
 
 import backend.com.shared.infrastructure.mapper.PermisoMapper;
 import backend.com.shared.domain.model.Permiso;
 import backend.com.shared.application.dto.PermisoDTO;
+import backend.com.shared.application.service.PermisoService;
 import backend.com.shared.infrastructure.persistence.repository.PermisoRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.lang.NonNull;

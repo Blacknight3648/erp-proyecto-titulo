@@ -1,5 +1,6 @@
-package backend.com.shared.application.service;
+package backend.com.shared.application.service.Impl;
 
+import backend.com.shared.application.service.GiroService;
 import backend.com.shared.domain.model.Giro;
 import backend.com.shared.exception.BusinessRuleException;
 import backend.com.shared.exception.EntityNotFoundException;

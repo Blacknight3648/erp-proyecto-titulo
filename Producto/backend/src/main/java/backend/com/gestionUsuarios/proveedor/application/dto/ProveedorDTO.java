@@ -1,10 +1,7 @@
 package backend.com.gestionUsuarios.proveedor.application.dto;
 
 import backend.com.shared.application.dto.GiroDTO;
-import backend.com.shared.validations.email.ValidEmail;
 import backend.com.shared.validations.run.ValidRun;
-import backend.com.shared.validations.telefono.ValidPhone;
-import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;

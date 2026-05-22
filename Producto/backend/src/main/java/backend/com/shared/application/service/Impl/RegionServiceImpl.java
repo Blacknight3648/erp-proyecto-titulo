@@ -1,7 +1,8 @@
-package backend.com.shared.application.service;
+package backend.com.shared.application.service.Impl;
 
 import backend.com.shared.application.dto.RegionRequest;
 import backend.com.shared.application.dto.RegionResponse;
+import backend.com.shared.application.service.RegionService;
 import backend.com.shared.domain.model.Pais;
 import backend.com.shared.domain.model.Region;
 import backend.com.shared.domain.repository.PaisRepository;

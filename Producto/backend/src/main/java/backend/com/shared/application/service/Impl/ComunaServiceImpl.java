@@ -1,7 +1,8 @@
-package backend.com.shared.application.service;
+package backend.com.shared.application.service.Impl;
 
 import backend.com.shared.application.dto.ComunaRequest;
 import backend.com.shared.application.dto.ComunaResponse;
+import backend.com.shared.application.service.ComunaService;
 import backend.com.shared.domain.model.Comuna;
 import backend.com.shared.domain.model.Region;
 import backend.com.shared.domain.repository.ComunaRepository;

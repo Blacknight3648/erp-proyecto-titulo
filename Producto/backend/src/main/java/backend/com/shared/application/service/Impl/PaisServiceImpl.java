@@ -1,7 +1,8 @@
-package backend.com.shared.application.service;
+package backend.com.shared.application.service.Impl;
 
 import backend.com.shared.application.dto.PaisRequest;
 import backend.com.shared.application.dto.PaisResponse;
+import backend.com.shared.application.service.PaisService;
 import backend.com.shared.domain.model.Pais;
 import backend.com.shared.domain.repository.PaisRepository;
 import backend.com.shared.exception.BusinessRuleException;

@@ -4,7 +4,6 @@ import backend.com.shared.application.dto.GiroDTO;
 import backend.com.shared.domain.model.Giro;
 import backend.com.shared.infrastructure.persistence.entity.GiroJpaEntity;
 import org.springframework.stereotype.Component;
-import backend.com.shared.infrastructure.mapper.RubroMapper;
 
 import java.util.List;
 import java.util.stream.Collectors;

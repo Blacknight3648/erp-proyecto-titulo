@@ -1,15 +1,12 @@
-package backend.com.shared.application.service;
+package backend.com.shared.application.service.Impl;
 
 import backend.com.shared.application.dto.RubroDTO;
-
+import backend.com.shared.application.service.RubroService;
 import backend.com.shared.domain.model.Rubro;
 import backend.com.shared.infrastructure.mapper.RubroMapper;
 import backend.com.shared.infrastructure.persistence.repository.RubroRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -63,6 +60,20 @@ public class RubroServiceImpl implements RubroService {
                     Rubro updatedRubro = rubroRepository.save(existingRubro);
                     return rubroMapper.toDTO(updatedRubro);
                 });
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Optional<RubroDTO> getRubroByCodigoSii(String codigoSii) {
+        return rubroRepository.findByCodigoSii(codigoSii)
+                .map(rubroMapper::toDTO);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Optional<RubroDTO> getRubroByNombreRubro(String nombreRubro) {
+        return rubroRepository.findByNombreRubro(nombreRubro)
+                .map(rubroMapper::toDTO);
     }
 
     @Override

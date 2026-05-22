@@ -1,7 +1,8 @@
-package backend.com.shared.application.service;
+package backend.com.shared.application.service.Impl;
 
 import backend.com.shared.application.dto.TipoDireccionRequest;
 import backend.com.shared.application.dto.TipoDireccionResponse;
+import backend.com.shared.application.service.TipoDireccionService;
 import backend.com.shared.domain.model.TipoDireccion;
 import backend.com.shared.domain.repository.TipoDireccionRepository;
 import backend.com.shared.exception.BusinessRuleException;
@@ -40,7 +41,8 @@ public class TipoDireccionServiceImpl implements TipoDireccionService {
                 .anyMatch(t -> t.getDescripcion().equalsIgnoreCase(request.getDescripcion().trim()));
 
         if (descripcionDuplicada) {
-            throw new BusinessRuleException("Ya existe un tipo de dirección con la descripción: " + request.getDescripcion());
+            throw new BusinessRuleException(
+                    "Ya existe un tipo de dirección con la descripción: " + request.getDescripcion());
         }
 
         TipoDireccion tipoDireccion = TipoDireccion.builder()
@@ -60,7 +62,8 @@ public class TipoDireccionServiceImpl implements TipoDireccionService {
                 .anyMatch(t -> t.getDescripcion().equalsIgnoreCase(request.getDescripcion().trim()));
 
         if (descripcionDuplicada) {
-            throw new BusinessRuleException("Ya existe un tipo de dirección con la descripción: " + request.getDescripcion());
+            throw new BusinessRuleException(
+                    "Ya existe un tipo de dirección con la descripción: " + request.getDescripcion());
         }
 
         existente.setDescripcion(request.getDescripcion().trim());

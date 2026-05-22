@@ -1,7 +1,8 @@
-package backend.com.shared.application.service;
+package backend.com.shared.application.service.Impl;
 
 import backend.com.shared.application.dto.DireccionRequest;
 import backend.com.shared.application.dto.DireccionResponse;
+import backend.com.shared.application.service.DireccionService;
 import backend.com.shared.domain.model.Comuna;
 import backend.com.shared.domain.model.Direccion;
 import backend.com.shared.domain.model.TipoDireccion;

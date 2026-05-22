@@ -11,6 +11,10 @@ public interface RubroService {
 
     Optional<RubroDTO> getRubroById(Long id);
 
+    Optional<RubroDTO> getRubroByCodigoSii(String codigoSii);
+
+    Optional<RubroDTO> getRubroByNombreRubro(String nombreRubro);
+
     RubroDTO createRubro(RubroDTO rubroDTO);
 
     Optional<RubroDTO> updateRubro(Long id, RubroDTO rubroDTO);

@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @Table(name = "direccion")
 @Data
 @NoArgsConstructor
-public class Direccion {
+public class DireccionJpaEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,9 +26,17 @@ public class Direccion {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "tipo_direccion_id", nullable = false)
-    private TipoDireccion tipoDireccion;
+    private TipoDireccionJpaEntity tipoDireccion;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "region_id", nullable = false)
+    private RegionJpaEntity region;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "comuna_id", nullable = false)
-    private Comuna comuna;
+    private ComunaJpaEntity comuna;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "pais_id", nullable = false)
+    private PaisJpaEntity pais;
 }

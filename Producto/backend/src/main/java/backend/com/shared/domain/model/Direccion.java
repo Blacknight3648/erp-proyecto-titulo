@@ -15,5 +15,6 @@ public class Direccion {
     private String depto;
     private TipoDireccion tipoDireccion;
     private Comuna comuna;
-
+    private Region region;
+    private Pais pais;
 }

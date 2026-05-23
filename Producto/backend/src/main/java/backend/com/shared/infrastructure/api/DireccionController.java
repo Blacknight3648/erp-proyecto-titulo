@@ -1,7 +1,6 @@
 package backend.com.shared.infrastructure.api;
 
-import backend.com.shared.application.dto.DireccionRequest;
-import backend.com.shared.application.dto.DireccionResponse;
+import backend.com.shared.application.dto.DireccionDTO;
 import backend.com.shared.application.service.DireccionService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -19,31 +18,31 @@ public class DireccionController {
     private final DireccionService direccionService;
 
     @GetMapping
-    public ResponseEntity<List<DireccionResponse>> listarTodos() {
+    public ResponseEntity<List<DireccionDTO>> listarTodos() {
         return ResponseEntity.ok(direccionService.listarTodos());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<DireccionResponse> obtenerPorId(@PathVariable Long id) {
+    public ResponseEntity<DireccionDTO> obtenerPorId(@PathVariable Long id) {
         return direccionService.obtenerPorId(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
     @GetMapping("/comuna/{comunaId}")
-    public ResponseEntity<List<DireccionResponse>> listarPorComuna(@PathVariable Long comunaId) {
+    public ResponseEntity<List<DireccionDTO>> listarPorComuna(@PathVariable Long comunaId) {
         return ResponseEntity.ok(direccionService.listarPorComuna(comunaId));
     }
 
     @PostMapping
-    public ResponseEntity<DireccionResponse> crear(@Valid @RequestBody DireccionRequest request) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(direccionService.crear(request));
+    public ResponseEntity<DireccionDTO> crear(@Valid @RequestBody DireccionDTO dto) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(direccionService.crear(dto));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<DireccionResponse> actualizar(@PathVariable Long id,
-                                                         @Valid @RequestBody DireccionRequest request) {
-        return ResponseEntity.ok(direccionService.actualizar(id, request));
+    public ResponseEntity<DireccionDTO> actualizar(@PathVariable Long id,
+                                                   @Valid @RequestBody DireccionDTO dto) {
+        return ResponseEntity.ok(direccionService.actualizar(id, dto));
     }
 
     @DeleteMapping("/{id}")

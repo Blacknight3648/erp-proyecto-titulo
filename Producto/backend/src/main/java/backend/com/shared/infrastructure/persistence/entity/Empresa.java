@@ -27,5 +27,5 @@ public class Empresa extends BaseEntity {
     private String rutEmpresa;
 
     @Embedded
-    private Direccion direccion;
+    private DireccionJpaEntity direccion;
 }

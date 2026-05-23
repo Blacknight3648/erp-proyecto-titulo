@@ -1,7 +1,6 @@
 package backend.com.shared.infrastructure.api;
 
-import backend.com.shared.application.dto.ComunaRequest;
-import backend.com.shared.application.dto.ComunaResponse;
+import backend.com.shared.application.dto.ComunaDTO;
 import backend.com.shared.application.service.ComunaService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -19,31 +18,31 @@ public class ComunaController {
     private final ComunaService comunaService;
 
     @GetMapping
-    public ResponseEntity<List<ComunaResponse>> listarTodos() {
+    public ResponseEntity<List<ComunaDTO>> listarTodos() {
         return ResponseEntity.ok(comunaService.listarTodos());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ComunaResponse> obtenerPorId(@PathVariable Long id) {
+    public ResponseEntity<ComunaDTO> obtenerPorId(@PathVariable Long id) {
         return comunaService.obtenerPorId(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
     @GetMapping("/region/{regionId}")
-    public ResponseEntity<List<ComunaResponse>> listarPorRegion(@PathVariable Long regionId) {
+    public ResponseEntity<List<ComunaDTO>> listarPorRegion(@PathVariable Long regionId) {
         return ResponseEntity.ok(comunaService.listarPorRegion(regionId));
     }
 
     @PostMapping
-    public ResponseEntity<ComunaResponse> crear(@Valid @RequestBody ComunaRequest request) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(comunaService.crear(request));
+    public ResponseEntity<ComunaDTO> crear(@Valid @RequestBody ComunaDTO dto) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(comunaService.crear(dto));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ComunaResponse> actualizar(@PathVariable Long id,
-                                                      @Valid @RequestBody ComunaRequest request) {
-        return ResponseEntity.ok(comunaService.actualizar(id, request));
+    public ResponseEntity<ComunaDTO> actualizar(@PathVariable Long id,
+                                                @Valid @RequestBody ComunaDTO dto) {
+        return ResponseEntity.ok(comunaService.actualizar(id, dto));
     }
 
     @DeleteMapping("/{id}")

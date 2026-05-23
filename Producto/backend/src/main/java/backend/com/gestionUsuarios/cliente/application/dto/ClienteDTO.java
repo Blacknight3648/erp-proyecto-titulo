@@ -1,7 +1,7 @@
 package backend.com.gestionUsuarios.cliente.application.dto;
 
-import backend.com.shared.application.dto.DatoBancarioResponse;
-import backend.com.shared.application.dto.DireccionResponse;
+import backend.com.shared.application.dto.DatoBancarioDTO;
+import backend.com.shared.application.dto.DireccionDTO;
 import backend.com.shared.application.dto.GiroDTO;
 import backend.com.shared.validations.email.ValidEmail;
 import backend.com.shared.validations.run.ValidRun;
@@ -50,11 +50,7 @@ public class ClienteDTO {
 
     private GiroDTO giro;
 
-    // Para requests: poblar solo con { "direccionId": X }
-    // Para responses: objeto completo mapeado desde dominio
-    private DireccionResponse direccion;
+    private DireccionDTO direccion;
 
-    // Para requests: poblar solo con { "datoBancarioId": X }
-    // Para responses: objeto completo mapeado desde dominio
-    private DatoBancarioResponse datoBancario;
+    private DatoBancarioDTO datoBancario;
 }

@@ -1,7 +1,6 @@
 package backend.com.shared.application.service.Impl;
 
-import backend.com.shared.application.dto.ComunaRequest;
-import backend.com.shared.application.dto.ComunaResponse;
+import backend.com.shared.application.dto.ComunaDTO;
 import backend.com.shared.application.service.ComunaService;
 import backend.com.shared.domain.model.Comuna;
 import backend.com.shared.domain.model.Region;
@@ -10,6 +9,7 @@ import backend.com.shared.domain.repository.RegionRepository;
 import backend.com.shared.exception.BusinessRuleException;
 import backend.com.shared.exception.ComunaNotFoundException;
 import backend.com.shared.exception.RegionNotFoundException;
+import backend.com.shared.infrastructure.mapper.ComunaMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,67 +24,70 @@ public class ComunaServiceImpl implements ComunaService {
 
     private final ComunaRepository comunaRepository;
     private final RegionRepository regionRepository;
+    private final ComunaMapper comunaMapper;
 
     @Override
     @Transactional(readOnly = true)
-    public List<ComunaResponse> listarTodos() {
+    public List<ComunaDTO> listarTodos() {
         return comunaRepository.findAll().stream()
-                .map(ComunaResponse::fromDomain)
+                .map(comunaMapper::toDTO)
                 .toList();
     }
 
     @Override
     @Transactional(readOnly = true)
-    public Optional<ComunaResponse> obtenerPorId(Long id) {
-        return comunaRepository.findById(id).map(ComunaResponse::fromDomain);
+    public Optional<ComunaDTO> obtenerPorId(Long id) {
+        return comunaRepository.findById(id).map(comunaMapper::toDTO);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<ComunaResponse> listarPorRegion(Long regionId) {
+    public List<ComunaDTO> listarPorRegion(Long regionId) {
         if (!regionRepository.existsById(regionId)) {
             throw new RegionNotFoundException(regionId);
         }
         return comunaRepository.findByRegionId(regionId).stream()
-                .map(ComunaResponse::fromDomain)
+                .map(comunaMapper::toDTO)
                 .toList();
     }
 
     @Override
-    public ComunaResponse crear(ComunaRequest request) {
-        Region region = regionRepository.findById(request.getRegionId())
-                .orElseThrow(() -> new RegionNotFoundException(request.getRegionId()));
+    public ComunaDTO crear(ComunaDTO dto) {
+        Long regionId = extraerRegionId(dto);
+        Region region = regionRepository.findById(regionId)
+                .orElseThrow(() -> new RegionNotFoundException(regionId));
 
-        comunaRepository.findByNombreComuna(request.getNombreComuna()).ifPresent(c -> {
-            throw new BusinessRuleException("Ya existe una comuna con el nombre: " + request.getNombreComuna());
+        comunaRepository.findByNombreComuna(dto.getNombreComuna()).ifPresent(c -> {
+            throw new BusinessRuleException("Ya existe una comuna con el nombre: " + dto.getNombreComuna());
         });
 
         Comuna comuna = Comuna.builder()
-                .nombreComuna(request.getNombreComuna().trim())
+                .nombreComuna(dto.getNombreComuna().trim())
                 .region(region)
                 .build();
 
-        return ComunaResponse.fromDomain(comunaRepository.save(comuna));
+        return comunaMapper.toDTO(comunaRepository.save(comuna));
     }
 
     @Override
-    public ComunaResponse actualizar(Long id, ComunaRequest request) {
+    public ComunaDTO actualizar(Long id, ComunaDTO dto) {
         Comuna existente = comunaRepository.findById(id)
                 .orElseThrow(() -> new ComunaNotFoundException(id));
 
-        Region region = regionRepository.findById(request.getRegionId())
-                .orElseThrow(() -> new RegionNotFoundException(request.getRegionId()));
+        Long regionId = extraerRegionId(dto);
+        Region region = regionRepository.findById(regionId)
+                .orElseThrow(() -> new RegionNotFoundException(regionId));
 
-        comunaRepository.findByNombreComuna(request.getNombreComuna())
+        comunaRepository.findByNombreComuna(dto.getNombreComuna())
                 .filter(c -> !c.getComunaId().equals(id))
                 .ifPresent(c -> {
-                    throw new BusinessRuleException("Ya existe una comuna con el nombre: " + request.getNombreComuna());
+                    throw new BusinessRuleException("Ya existe una comuna con el nombre: " + dto.getNombreComuna());
                 });
 
-        existente.setNombreComuna(request.getNombreComuna().trim());
+        existente.setNombreComuna(dto.getNombreComuna().trim());
         existente.setRegion(region);
 
-        return ComunaResponse.fromDomain(comunaRepository.save(existente));
+        return comunaMapper.toDTO(comunaRepository.save(existente));
     }
 
     @Override
@@ -93,5 +96,12 @@ public class ComunaServiceImpl implements ComunaService {
             throw new ComunaNotFoundException(id);
         }
         comunaRepository.deleteById(id);
+    }
+
+    private Long extraerRegionId(ComunaDTO dto) {
+        if (dto.getRegion() == null || dto.getRegion().getRegionId() == null) {
+            throw new BusinessRuleException("La región de la comuna es obligatoria");
+        }
+        return dto.getRegion().getRegionId();
     }
 }

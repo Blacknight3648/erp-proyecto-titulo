@@ -9,12 +9,12 @@ import lombok.NoArgsConstructor;
 @Table(name = "pais")
 @Data
 @NoArgsConstructor
-public class Pais {
+public class PaisJpaEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "pais_id")
-    private Integer paisId;
+    private Long paisId;
 
     @NotBlank(message = "El nombre del país no puede estar en blanco")
     @Column(name = "nombre_pais", unique = true, length = 100, nullable = false)

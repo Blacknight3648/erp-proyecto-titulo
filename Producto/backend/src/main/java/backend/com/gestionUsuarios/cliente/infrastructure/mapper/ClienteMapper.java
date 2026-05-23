@@ -3,8 +3,6 @@ package backend.com.gestionUsuarios.cliente.infrastructure.mapper;
 import backend.com.gestionUsuarios.cliente.application.dto.ClienteDTO;
 import backend.com.gestionUsuarios.cliente.domain.model.Cliente;
 import backend.com.gestionUsuarios.cliente.infrastructure.persistence.entity.ClienteJpaEntity;
-import backend.com.shared.application.dto.DatoBancarioResponse;
-import backend.com.shared.application.dto.DireccionResponse;
 import backend.com.shared.infrastructure.mapper.DatoBancarioMapper;
 import backend.com.shared.infrastructure.mapper.DireccionMapper;
 import backend.com.shared.infrastructure.mapper.GiroMapper;
@@ -71,8 +69,8 @@ public class ClienteMapper {
                 .activo(domain.isActivo())
                 .sigla(domain.getSigla())
                 .giro(giroMapper.toDTO(domain.getGiro()))
-                .direccion(DireccionResponse.fromDomain(domain.getDireccion()))
-                .datoBancario(DatoBancarioResponse.fromDomain(domain.getDatoBancario()))
+                .direccion(direccionMapper.toDTO(domain.getDireccion()))
+                .datoBancario(datoBancarioMapper.toDTO(domain.getDatoBancario()))
                 .build();
     }
 
@@ -89,16 +87,8 @@ public class ClienteMapper {
                 .activo(dto.isActivo())
                 .sigla(dto.getSigla())
                 .giro(giroMapper.toDomain(dto.getGiro()))
-                .direccion(dto.getDireccion() != null
-                        ? backend.com.shared.domain.model.Direccion.builder()
-                                .direccionId(dto.getDireccion().getDireccionId())
-                                .build()
-                        : null)
-                .datoBancario(dto.getDatoBancario() != null
-                        ? backend.com.shared.domain.model.DatoBancario.builder()
-                                .datoBancarioId(dto.getDatoBancario().getDatoBancarioId())
-                                .build()
-                        : null)
+                .direccion(direccionMapper.toDomain(dto.getDireccion()))
+                .datoBancario(datoBancarioMapper.toDomain(dto.getDatoBancario()))
                 .build();
     }
 

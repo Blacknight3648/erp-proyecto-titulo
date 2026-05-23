@@ -1,15 +1,14 @@
 package backend.com.shared.application.service;
 
-import backend.com.shared.application.dto.PaisRequest;
-import backend.com.shared.application.dto.PaisResponse;
+import backend.com.shared.application.dto.PaisDTO;
 
 import java.util.List;
 import java.util.Optional;
 
 public interface PaisService {
-    List<PaisResponse> listarTodos();
-    Optional<PaisResponse> obtenerPorId(Integer id);
-    PaisResponse crear(PaisRequest request);
-    PaisResponse actualizar(Integer id, PaisRequest request);
+    List<PaisDTO> listarTodos();
+    Optional<PaisDTO> obtenerPorId(Integer id);
+    PaisDTO crear(PaisDTO dto);
+    PaisDTO actualizar(Integer id, PaisDTO dto);
     void eliminar(Integer id);
 }

@@ -1,7 +1,6 @@
 package backend.com.shared.infrastructure.api;
 
-import backend.com.shared.application.dto.DatoBancarioRequest;
-import backend.com.shared.application.dto.DatoBancarioResponse;
+import backend.com.shared.application.dto.DatoBancarioDTO;
 import backend.com.shared.application.service.DatoBancarioService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -19,31 +18,31 @@ public class DatoBancarioController {
     private final DatoBancarioService datoBancarioService;
 
     @GetMapping
-    public ResponseEntity<List<DatoBancarioResponse>> listarTodos() {
+    public ResponseEntity<List<DatoBancarioDTO>> listarTodos() {
         return ResponseEntity.ok(datoBancarioService.listarTodos());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<DatoBancarioResponse> obtenerPorId(@PathVariable Integer id) {
+    public ResponseEntity<DatoBancarioDTO> obtenerPorId(@PathVariable Integer id) {
         return datoBancarioService.obtenerPorId(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
     @GetMapping("/banco/{bancoId}")
-    public ResponseEntity<List<DatoBancarioResponse>> listarPorBanco(@PathVariable Integer bancoId) {
+    public ResponseEntity<List<DatoBancarioDTO>> listarPorBanco(@PathVariable Integer bancoId) {
         return ResponseEntity.ok(datoBancarioService.listarPorBanco(bancoId));
     }
 
     @PostMapping
-    public ResponseEntity<DatoBancarioResponse> crear(@Valid @RequestBody DatoBancarioRequest request) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(datoBancarioService.crear(request));
+    public ResponseEntity<DatoBancarioDTO> crear(@Valid @RequestBody DatoBancarioDTO dto) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(datoBancarioService.crear(dto));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<DatoBancarioResponse> actualizar(@PathVariable Integer id,
-                                                            @Valid @RequestBody DatoBancarioRequest request) {
-        return ResponseEntity.ok(datoBancarioService.actualizar(id, request));
+    public ResponseEntity<DatoBancarioDTO> actualizar(@PathVariable Integer id,
+                                                      @Valid @RequestBody DatoBancarioDTO dto) {
+        return ResponseEntity.ok(datoBancarioService.actualizar(id, dto));
     }
 
     @DeleteMapping("/{id}")

@@ -11,7 +11,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Banco {
+public class BancoJpaEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -1,16 +1,15 @@
 package backend.com.shared.application.service;
 
-import backend.com.shared.application.dto.DireccionRequest;
-import backend.com.shared.application.dto.DireccionResponse;
+import backend.com.shared.application.dto.DireccionDTO;
 
 import java.util.List;
 import java.util.Optional;
 
 public interface DireccionService {
-    List<DireccionResponse> listarTodos();
-    Optional<DireccionResponse> obtenerPorId(Long id);
-    List<DireccionResponse> listarPorComuna(Long comunaId);
-    DireccionResponse crear(DireccionRequest request);
-    DireccionResponse actualizar(Long id, DireccionRequest request);
+    List<DireccionDTO> listarTodos();
+    Optional<DireccionDTO> obtenerPorId(Long id);
+    List<DireccionDTO> listarPorComuna(Long comunaId);
+    DireccionDTO crear(DireccionDTO dto);
+    DireccionDTO actualizar(Long id, DireccionDTO dto);
     void eliminar(Long id);
 }

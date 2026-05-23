@@ -1,5 +1,6 @@
 package backend.com.shared.infrastructure.mapper;
 
+import backend.com.shared.application.dto.DatoBancarioDTO;
 import backend.com.shared.domain.model.DatoBancario;
 import backend.com.shared.infrastructure.persistence.entity.DatoBancarioJpaEntity;
 import lombok.RequiredArgsConstructor;
@@ -30,5 +31,25 @@ public class DatoBancarioMapper {
         entity.setBanco(bancoMapper.toEntity(domain.getBanco()));
         entity.setTipoCuentaBancaria(tipoCuentaBancariaMapper.toEntity(domain.getTipoCuentaBancaria()));
         return entity;
+    }
+
+    public DatoBancarioDTO toDTO(DatoBancario domain) {
+        if (domain == null) return null;
+        return DatoBancarioDTO.builder()
+                .datoBancarioId(domain.getDatoBancarioId())
+                .numeroCuenta(domain.getNumeroCuenta())
+                .banco(bancoMapper.toDTO(domain.getBanco()))
+                .tipoCuentaBancaria(tipoCuentaBancariaMapper.toDTO(domain.getTipoCuentaBancaria()))
+                .build();
+    }
+
+    public DatoBancario toDomain(DatoBancarioDTO dto) {
+        if (dto == null) return null;
+        return DatoBancario.builder()
+                .datoBancarioId(dto.getDatoBancarioId())
+                .numeroCuenta(dto.getNumeroCuenta())
+                .banco(bancoMapper.toDomain(dto.getBanco()))
+                .tipoCuentaBancaria(tipoCuentaBancariaMapper.toDomain(dto.getTipoCuentaBancaria()))
+                .build();
     }
 }

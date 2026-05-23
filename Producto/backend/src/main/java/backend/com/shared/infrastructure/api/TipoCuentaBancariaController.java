@@ -1,7 +1,6 @@
 package backend.com.shared.infrastructure.api;
 
-import backend.com.shared.application.dto.TipoCuentaBancariaRequest;
-import backend.com.shared.application.dto.TipoCuentaBancariaResponse;
+import backend.com.shared.application.dto.TipoCuentaBancariaDTO;
 import backend.com.shared.application.service.TipoCuentaBancariaService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -19,29 +18,29 @@ public class TipoCuentaBancariaController {
     private final TipoCuentaBancariaService tipoCuentaBancariaService;
 
     @GetMapping
-    public ResponseEntity<List<TipoCuentaBancariaResponse>> listarTodos() {
+    public ResponseEntity<List<TipoCuentaBancariaDTO>> listarTodos() {
         return ResponseEntity.ok(tipoCuentaBancariaService.listarTodos());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<TipoCuentaBancariaResponse> obtenerPorId(@PathVariable Integer id) {
+    public ResponseEntity<TipoCuentaBancariaDTO> obtenerPorId(@PathVariable Integer id) {
         return tipoCuentaBancariaService.obtenerPorId(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
     @PostMapping
-    public ResponseEntity<TipoCuentaBancariaResponse> crear(
-            @Valid @RequestBody TipoCuentaBancariaRequest request) {
+    public ResponseEntity<TipoCuentaBancariaDTO> crear(
+            @Valid @RequestBody TipoCuentaBancariaDTO dto) {
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(tipoCuentaBancariaService.crear(request));
+                .body(tipoCuentaBancariaService.crear(dto));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<TipoCuentaBancariaResponse> actualizar(
+    public ResponseEntity<TipoCuentaBancariaDTO> actualizar(
             @PathVariable Integer id,
-            @Valid @RequestBody TipoCuentaBancariaRequest request) {
-        return ResponseEntity.ok(tipoCuentaBancariaService.actualizar(id, request));
+            @Valid @RequestBody TipoCuentaBancariaDTO dto) {
+        return ResponseEntity.ok(tipoCuentaBancariaService.actualizar(id, dto));
     }
 
     @DeleteMapping("/{id}")

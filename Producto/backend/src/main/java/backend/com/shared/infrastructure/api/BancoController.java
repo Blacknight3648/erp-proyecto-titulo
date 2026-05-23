@@ -1,7 +1,6 @@
 package backend.com.shared.infrastructure.api;
 
-import backend.com.shared.application.dto.BancoRequest;
-import backend.com.shared.application.dto.BancoResponse;
+import backend.com.shared.application.dto.BancoDTO;
 import backend.com.shared.application.service.BancoService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -19,26 +18,26 @@ public class BancoController {
     private final BancoService bancoService;
 
     @GetMapping
-    public ResponseEntity<List<BancoResponse>> listarTodos() {
+    public ResponseEntity<List<BancoDTO>> listarTodos() {
         return ResponseEntity.ok(bancoService.listarTodos());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<BancoResponse> obtenerPorId(@PathVariable Integer id) {
+    public ResponseEntity<BancoDTO> obtenerPorId(@PathVariable Integer id) {
         return bancoService.obtenerPorId(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
     @PostMapping
-    public ResponseEntity<BancoResponse> crear(@Valid @RequestBody BancoRequest request) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(bancoService.crear(request));
+    public ResponseEntity<BancoDTO> crear(@Valid @RequestBody BancoDTO dto) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(bancoService.crear(dto));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<BancoResponse> actualizar(@PathVariable Integer id,
-                                                     @Valid @RequestBody BancoRequest request) {
-        return ResponseEntity.ok(bancoService.actualizar(id, request));
+    public ResponseEntity<BancoDTO> actualizar(@PathVariable Integer id,
+                                               @Valid @RequestBody BancoDTO dto) {
+        return ResponseEntity.ok(bancoService.actualizar(id, dto));
     }
 
     @DeleteMapping("/{id}")

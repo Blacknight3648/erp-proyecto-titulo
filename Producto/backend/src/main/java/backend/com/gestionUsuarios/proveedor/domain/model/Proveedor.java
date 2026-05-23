@@ -1,11 +1,12 @@
 package backend.com.gestionUsuarios.proveedor.domain.model;
 
 import backend.com.shared.domain.model.Giro;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import backend.com.shared.domain.model.Contacto;
+import backend.com.shared.domain.model.Direccion;
+import backend.com.shared.domain.model.DatoBancario;
+import lombok.*;
+
+import java.util.List;
 
 @Getter
 @Setter
@@ -22,5 +23,8 @@ public class Proveedor {
     private String horarioAtencion;
     private boolean activo;
 
+    private List<Contacto> contactos;
+    private List<Direccion> direccion;
+    private List<DatoBancario> datosBancarios;
     private Giro giro;
 }

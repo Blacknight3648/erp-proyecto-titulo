@@ -1,7 +1,6 @@
 package backend.com.shared.infrastructure.api;
 
-import backend.com.shared.application.dto.RegionRequest;
-import backend.com.shared.application.dto.RegionResponse;
+import backend.com.shared.application.dto.RegionDTO;
 import backend.com.shared.application.service.RegionService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -19,31 +18,31 @@ public class RegionController {
     private final RegionService regionService;
 
     @GetMapping
-    public ResponseEntity<List<RegionResponse>> listarTodos() {
+    public ResponseEntity<List<RegionDTO>> listarTodos() {
         return ResponseEntity.ok(regionService.listarTodos());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<RegionResponse> obtenerPorId(@PathVariable Long id) {
+    public ResponseEntity<RegionDTO> obtenerPorId(@PathVariable Long id) {
         return regionService.obtenerPorId(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
     @GetMapping("/pais/{paisId}")
-    public ResponseEntity<List<RegionResponse>> listarPorPais(@PathVariable Integer paisId) {
+    public ResponseEntity<List<RegionDTO>> listarPorPais(@PathVariable Integer paisId) {
         return ResponseEntity.ok(regionService.listarPorPais(paisId));
     }
 
     @PostMapping
-    public ResponseEntity<RegionResponse> crear(@Valid @RequestBody RegionRequest request) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(regionService.crear(request));
+    public ResponseEntity<RegionDTO> crear(@Valid @RequestBody RegionDTO dto) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(regionService.crear(dto));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<RegionResponse> actualizar(@PathVariable Long id,
-                                                      @Valid @RequestBody RegionRequest request) {
-        return ResponseEntity.ok(regionService.actualizar(id, request));
+    public ResponseEntity<RegionDTO> actualizar(@PathVariable Long id,
+                                                @Valid @RequestBody RegionDTO dto) {
+        return ResponseEntity.ok(regionService.actualizar(id, dto));
     }
 
     @DeleteMapping("/{id}")

@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Table(name = "tipo_direccion")
 @Data
 @NoArgsConstructor
-public class TipoDireccion {
+public class TipoDireccionJpaEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

@@ -24,7 +24,7 @@ public class DatoBancarioJpaEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "banco_id", nullable = false)
-    private Banco banco;
+    private BancoJpaEntity banco;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "tipo_cuenta_id", nullable = false)

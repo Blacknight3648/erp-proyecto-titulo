@@ -1,7 +1,6 @@
 package backend.com.shared.application.service.Impl;
 
-import backend.com.shared.application.dto.RegionRequest;
-import backend.com.shared.application.dto.RegionResponse;
+import backend.com.shared.application.dto.RegionDTO;
 import backend.com.shared.application.service.RegionService;
 import backend.com.shared.domain.model.Pais;
 import backend.com.shared.domain.model.Region;
@@ -10,6 +9,7 @@ import backend.com.shared.domain.repository.RegionRepository;
 import backend.com.shared.exception.BusinessRuleException;
 import backend.com.shared.exception.PaisNotFoundException;
 import backend.com.shared.exception.RegionNotFoundException;
+import backend.com.shared.infrastructure.mapper.RegionMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,67 +24,70 @@ public class RegionServiceImpl implements RegionService {
 
     private final RegionRepository regionRepository;
     private final PaisRepository paisRepository;
+    private final RegionMapper regionMapper;
 
     @Override
     @Transactional(readOnly = true)
-    public List<RegionResponse> listarTodos() {
+    public List<RegionDTO> listarTodos() {
         return regionRepository.findAll().stream()
-                .map(RegionResponse::fromDomain)
+                .map(regionMapper::toDTO)
                 .toList();
     }
 
     @Override
     @Transactional(readOnly = true)
-    public Optional<RegionResponse> obtenerPorId(Long id) {
-        return regionRepository.findById(id).map(RegionResponse::fromDomain);
+    public Optional<RegionDTO> obtenerPorId(Long id) {
+        return regionRepository.findById(id).map(regionMapper::toDTO);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<RegionResponse> listarPorPais(Integer paisId) {
+    public List<RegionDTO> listarPorPais(Integer paisId) {
         if (!paisRepository.existsById(paisId)) {
             throw new PaisNotFoundException(paisId);
         }
         return regionRepository.findByPaisId(paisId).stream()
-                .map(RegionResponse::fromDomain)
+                .map(regionMapper::toDTO)
                 .toList();
     }
 
     @Override
-    public RegionResponse crear(RegionRequest request) {
-        Pais pais = paisRepository.findById(request.getPaisId())
-                .orElseThrow(() -> new PaisNotFoundException(request.getPaisId()));
+    public RegionDTO crear(RegionDTO dto) {
+        Integer paisId = extraerPaisId(dto);
+        Pais pais = paisRepository.findById(paisId)
+                .orElseThrow(() -> new PaisNotFoundException(paisId));
 
-        regionRepository.findByNombreRegion(request.getNombreRegion()).ifPresent(r -> {
-            throw new BusinessRuleException("Ya existe una región con el nombre: " + request.getNombreRegion());
+        regionRepository.findByNombreRegion(dto.getNombreRegion()).ifPresent(r -> {
+            throw new BusinessRuleException("Ya existe una región con el nombre: " + dto.getNombreRegion());
         });
 
         Region region = Region.builder()
-                .nombreRegion(request.getNombreRegion().trim())
+                .nombreRegion(dto.getNombreRegion().trim())
                 .pais(pais)
                 .build();
 
-        return RegionResponse.fromDomain(regionRepository.save(region));
+        return regionMapper.toDTO(regionRepository.save(region));
     }
 
     @Override
-    public RegionResponse actualizar(Long id, RegionRequest request) {
+    public RegionDTO actualizar(Long id, RegionDTO dto) {
         Region existente = regionRepository.findById(id)
                 .orElseThrow(() -> new RegionNotFoundException(id));
 
-        Pais pais = paisRepository.findById(request.getPaisId())
-                .orElseThrow(() -> new PaisNotFoundException(request.getPaisId()));
+        Integer paisId = extraerPaisId(dto);
+        Pais pais = paisRepository.findById(paisId)
+                .orElseThrow(() -> new PaisNotFoundException(paisId));
 
-        regionRepository.findByNombreRegion(request.getNombreRegion())
+        regionRepository.findByNombreRegion(dto.getNombreRegion())
                 .filter(r -> !r.getRegionId().equals(id))
                 .ifPresent(r -> {
-                    throw new BusinessRuleException("Ya existe una región con el nombre: " + request.getNombreRegion());
+                    throw new BusinessRuleException("Ya existe una región con el nombre: " + dto.getNombreRegion());
                 });
 
-        existente.setNombreRegion(request.getNombreRegion().trim());
+        existente.setNombreRegion(dto.getNombreRegion().trim());
         existente.setPais(pais);
 
-        return RegionResponse.fromDomain(regionRepository.save(existente));
+        return regionMapper.toDTO(regionRepository.save(existente));
     }
 
     @Override
@@ -93,5 +96,12 @@ public class RegionServiceImpl implements RegionService {
             throw new RegionNotFoundException(id);
         }
         regionRepository.deleteById(id);
+    }
+
+    private Integer extraerPaisId(RegionDTO dto) {
+        if (dto.getPais() == null || dto.getPais().getIdPais() == null) {
+            throw new BusinessRuleException("El país de la región es obligatorio");
+        }
+        return dto.getPais().getIdPais().intValue();
     }
 }

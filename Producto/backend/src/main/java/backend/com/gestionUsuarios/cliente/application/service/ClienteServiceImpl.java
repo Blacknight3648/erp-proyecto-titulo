@@ -9,7 +9,7 @@ import backend.com.shared.exception.BancoNotFoundException;
 import backend.com.shared.exception.DatoBancarioNotFoundException;
 import backend.com.shared.exception.EntityNotFoundException;
 import backend.com.shared.infrastructure.persistence.entity.DatoBancarioJpaEntity;
-import backend.com.shared.infrastructure.persistence.entity.Direccion;
+import backend.com.shared.infrastructure.persistence.entity.DireccionJpaEntity;
 import backend.com.shared.infrastructure.persistence.entity.GiroJpaEntity;
 import backend.com.shared.infrastructure.persistence.repository.DatoBancarioJpaRepository;
 import backend.com.shared.infrastructure.persistence.repository.DireccionJpaRepository;
@@ -149,13 +149,16 @@ public class ClienteServiceImpl implements ClienteService {
         entity.setActivo(cliente.isActivo());
 
         GiroJpaEntity giro = resolverGiro(cliente);
-        if (giro != null) entity.setGiro(giro);
+        if (giro != null)
+            entity.setGiro(giro);
 
-        Direccion direccion = resolverDireccion(cliente);
-        if (direccion != null) entity.setDireccion(direccion);
+        DireccionJpaEntity direccion = resolverDireccion(cliente);
+        if (direccion != null)
+            entity.setDireccion(direccion);
 
         DatoBancarioJpaEntity datoBancario = resolverDatoBancario(cliente);
-        if (datoBancario != null) entity.setDatoBancario(datoBancario);
+        if (datoBancario != null)
+            entity.setDatoBancario(datoBancario);
 
         return clienteMapper.toDomain(clienteRepository.save(entity));
     }
@@ -176,7 +179,7 @@ public class ClienteServiceImpl implements ClienteService {
                 .orElseThrow(() -> new EntityNotFoundException("Giro no encontrado con ID: " + giroId));
     }
 
-    private Direccion resolverDireccion(Cliente cliente) {
+    private DireccionJpaEntity resolverDireccion(Cliente cliente) {
         if (cliente.getDireccion() == null || cliente.getDireccion().getDireccionId() == null)
             return null;
         Long direccionId = cliente.getDireccion().getDireccionId();

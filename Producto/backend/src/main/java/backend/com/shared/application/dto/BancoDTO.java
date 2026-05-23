@@ -2,10 +2,15 @@ package backend.com.shared.application.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
-import lombok.Data;
+import lombok.*;
 
 @Data
-public class BancoRequest {
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
+public class BancoDTO {
+
+    private Integer bancoId;
 
     @NotBlank(message = "El nombre del banco es obligatorio")
     @Size(max = 150, message = "El nombre del banco no puede superar 150 caracteres")

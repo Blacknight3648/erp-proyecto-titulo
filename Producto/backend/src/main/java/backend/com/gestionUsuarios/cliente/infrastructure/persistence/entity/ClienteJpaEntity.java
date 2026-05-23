@@ -1,7 +1,7 @@
 package backend.com.gestionUsuarios.cliente.infrastructure.persistence.entity;
 
 import backend.com.shared.infrastructure.persistence.entity.DatoBancarioJpaEntity;
-import backend.com.shared.infrastructure.persistence.entity.Direccion;
+import backend.com.shared.infrastructure.persistence.entity.DireccionJpaEntity;
 import backend.com.shared.infrastructure.persistence.entity.GiroJpaEntity;
 import backend.com.shared.validations.email.ValidEmail;
 import backend.com.shared.validations.run.ValidRun;
@@ -57,7 +57,7 @@ public class ClienteJpaEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "fk_direccion")
-    private Direccion direccion;
+    private DireccionJpaEntity direccion;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "fk_dato_bancario")

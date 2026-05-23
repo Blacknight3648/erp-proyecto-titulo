@@ -1,11 +1,11 @@
 package backend.com.shared.application.service;
 
-import backend.com.shared.application.dto.TipoCuentaBancariaRequest;
-import backend.com.shared.application.dto.TipoCuentaBancariaResponse;
+import backend.com.shared.application.dto.TipoCuentaBancariaDTO;
 import backend.com.shared.domain.model.TipoCuentaBancaria;
 import backend.com.shared.domain.repository.TipoCuentaBancariaRepository;
 import backend.com.shared.exception.BusinessRuleException;
 import backend.com.shared.exception.TipoCuentaBancariaNotFoundException;
+import backend.com.shared.infrastructure.mapper.TipoCuentaBancariaMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,24 +19,25 @@ import java.util.Optional;
 public class TipoCuentaBancariaServiceImpl implements TipoCuentaBancariaService {
 
     private final TipoCuentaBancariaRepository tipoCuentaBancariaRepository;
+    private final TipoCuentaBancariaMapper tipoCuentaBancariaMapper;
 
     @Override
     @Transactional(readOnly = true)
-    public List<TipoCuentaBancariaResponse> listarTodos() {
+    public List<TipoCuentaBancariaDTO> listarTodos() {
         return tipoCuentaBancariaRepository.findAll().stream()
-                .map(TipoCuentaBancariaResponse::fromDomain)
+                .map(tipoCuentaBancariaMapper::toDTO)
                 .toList();
     }
 
     @Override
     @Transactional(readOnly = true)
-    public Optional<TipoCuentaBancariaResponse> obtenerPorId(Integer id) {
-        return tipoCuentaBancariaRepository.findById(id).map(TipoCuentaBancariaResponse::fromDomain);
+    public Optional<TipoCuentaBancariaDTO> obtenerPorId(Integer id) {
+        return tipoCuentaBancariaRepository.findById(id).map(tipoCuentaBancariaMapper::toDTO);
     }
 
     @Override
-    public TipoCuentaBancariaResponse crear(TipoCuentaBancariaRequest request) {
-        String denominacion = request.getDenominacionCuenta().trim();
+    public TipoCuentaBancariaDTO crear(TipoCuentaBancariaDTO dto) {
+        String denominacion = dto.getDenominacionCuenta().trim();
 
         boolean duplicado = tipoCuentaBancariaRepository.findAll().stream()
                 .anyMatch(t -> t.getDenominacionCuenta().equalsIgnoreCase(denominacion));
@@ -49,15 +50,15 @@ public class TipoCuentaBancariaServiceImpl implements TipoCuentaBancariaService 
                 .denominacionCuenta(denominacion)
                 .build();
 
-        return TipoCuentaBancariaResponse.fromDomain(tipoCuentaBancariaRepository.save(tipo));
+        return tipoCuentaBancariaMapper.toDTO(tipoCuentaBancariaRepository.save(tipo));
     }
 
     @Override
-    public TipoCuentaBancariaResponse actualizar(Integer id, TipoCuentaBancariaRequest request) {
+    public TipoCuentaBancariaDTO actualizar(Integer id, TipoCuentaBancariaDTO dto) {
         TipoCuentaBancaria existente = tipoCuentaBancariaRepository.findById(id)
                 .orElseThrow(() -> new TipoCuentaBancariaNotFoundException(id));
 
-        String denominacion = request.getDenominacionCuenta().trim();
+        String denominacion = dto.getDenominacionCuenta().trim();
 
         boolean duplicado = tipoCuentaBancariaRepository.findAll().stream()
                 .anyMatch(t -> t.getDenominacionCuenta().equalsIgnoreCase(denominacion)
@@ -69,7 +70,7 @@ public class TipoCuentaBancariaServiceImpl implements TipoCuentaBancariaService 
 
         existente.setDenominacionCuenta(denominacion);
 
-        return TipoCuentaBancariaResponse.fromDomain(tipoCuentaBancariaRepository.save(existente));
+        return tipoCuentaBancariaMapper.toDTO(tipoCuentaBancariaRepository.save(existente));
     }
 
     @Override

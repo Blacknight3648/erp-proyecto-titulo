@@ -1,12 +1,12 @@
 package backend.com.shared.application.service.Impl;
 
-import backend.com.shared.application.dto.TipoDireccionRequest;
-import backend.com.shared.application.dto.TipoDireccionResponse;
+import backend.com.shared.application.dto.TipoDireccionDTO;
 import backend.com.shared.application.service.TipoDireccionService;
 import backend.com.shared.domain.model.TipoDireccion;
 import backend.com.shared.domain.repository.TipoDireccionRepository;
 import backend.com.shared.exception.BusinessRuleException;
 import backend.com.shared.exception.TipoDireccionNotFoundException;
+import backend.com.shared.infrastructure.mapper.TipoDireccionMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,55 +20,56 @@ import java.util.Optional;
 public class TipoDireccionServiceImpl implements TipoDireccionService {
 
     private final TipoDireccionRepository tipoDireccionRepository;
+    private final TipoDireccionMapper tipoDireccionMapper;
 
     @Override
     @Transactional(readOnly = true)
-    public List<TipoDireccionResponse> listarTodos() {
+    public List<TipoDireccionDTO> listarTodos() {
         return tipoDireccionRepository.findAll().stream()
-                .map(TipoDireccionResponse::fromDomain)
+                .map(tipoDireccionMapper::toDTO)
                 .toList();
     }
 
     @Override
     @Transactional(readOnly = true)
-    public Optional<TipoDireccionResponse> obtenerPorId(Integer id) {
-        return tipoDireccionRepository.findById(id).map(TipoDireccionResponse::fromDomain);
+    public Optional<TipoDireccionDTO> obtenerPorId(Integer id) {
+        return tipoDireccionRepository.findById(id).map(tipoDireccionMapper::toDTO);
     }
 
     @Override
-    public TipoDireccionResponse crear(TipoDireccionRequest request) {
+    public TipoDireccionDTO crear(TipoDireccionDTO dto) {
         boolean descripcionDuplicada = tipoDireccionRepository.findAll().stream()
-                .anyMatch(t -> t.getDescripcion().equalsIgnoreCase(request.getDescripcion().trim()));
+                .anyMatch(t -> t.getDescripcion().equalsIgnoreCase(dto.getDescripcion().trim()));
 
         if (descripcionDuplicada) {
             throw new BusinessRuleException(
-                    "Ya existe un tipo de dirección con la descripción: " + request.getDescripcion());
+                    "Ya existe un tipo de dirección con la descripción: " + dto.getDescripcion());
         }
 
         TipoDireccion tipoDireccion = TipoDireccion.builder()
-                .descripcion(request.getDescripcion().trim())
+                .descripcion(dto.getDescripcion().trim())
                 .build();
 
-        return TipoDireccionResponse.fromDomain(tipoDireccionRepository.save(tipoDireccion));
+        return tipoDireccionMapper.toDTO(tipoDireccionRepository.save(tipoDireccion));
     }
 
     @Override
-    public TipoDireccionResponse actualizar(Integer id, TipoDireccionRequest request) {
+    public TipoDireccionDTO actualizar(Integer id, TipoDireccionDTO dto) {
         TipoDireccion existente = tipoDireccionRepository.findById(id)
                 .orElseThrow(() -> new TipoDireccionNotFoundException(id));
 
         boolean descripcionDuplicada = tipoDireccionRepository.findAll().stream()
                 .filter(t -> !t.getTipoDireccionId().equals(id))
-                .anyMatch(t -> t.getDescripcion().equalsIgnoreCase(request.getDescripcion().trim()));
+                .anyMatch(t -> t.getDescripcion().equalsIgnoreCase(dto.getDescripcion().trim()));
 
         if (descripcionDuplicada) {
             throw new BusinessRuleException(
-                    "Ya existe un tipo de dirección con la descripción: " + request.getDescripcion());
+                    "Ya existe un tipo de dirección con la descripción: " + dto.getDescripcion());
         }
 
-        existente.setDescripcion(request.getDescripcion().trim());
+        existente.setDescripcion(dto.getDescripcion().trim());
 
-        return TipoDireccionResponse.fromDomain(tipoDireccionRepository.save(existente));
+        return tipoDireccionMapper.toDTO(tipoDireccionRepository.save(existente));
     }
 
     @Override

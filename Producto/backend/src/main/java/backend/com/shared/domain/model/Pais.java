@@ -9,7 +9,7 @@ import lombok.*;
 @Builder
 public class Pais {
 
-    private Integer idPais;
+    private Long idPais;
     private String nombrePais;
 
 }

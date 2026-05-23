@@ -1,12 +1,12 @@
 package backend.com.shared.application.service.Impl;
 
-import backend.com.shared.application.dto.PaisRequest;
-import backend.com.shared.application.dto.PaisResponse;
+import backend.com.shared.application.dto.PaisDTO;
 import backend.com.shared.application.service.PaisService;
 import backend.com.shared.domain.model.Pais;
 import backend.com.shared.domain.repository.PaisRepository;
 import backend.com.shared.exception.BusinessRuleException;
 import backend.com.shared.exception.PaisNotFoundException;
+import backend.com.shared.infrastructure.mapper.PaisMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,48 +20,49 @@ import java.util.Optional;
 public class PaisServiceImpl implements PaisService {
 
     private final PaisRepository paisRepository;
+    private final PaisMapper paisMapper;
 
     @Override
     @Transactional(readOnly = true)
-    public List<PaisResponse> listarTodos() {
+    public List<PaisDTO> listarTodos() {
         return paisRepository.findAll().stream()
-                .map(PaisResponse::fromDomain)
+                .map(paisMapper::toDTO)
                 .toList();
     }
 
     @Override
     @Transactional(readOnly = true)
-    public Optional<PaisResponse> obtenerPorId(Integer id) {
-        return paisRepository.findById(id).map(PaisResponse::fromDomain);
+    public Optional<PaisDTO> obtenerPorId(Integer id) {
+        return paisRepository.findById(id).map(paisMapper::toDTO);
     }
 
     @Override
-    public PaisResponse crear(PaisRequest request) {
-        paisRepository.findByNombrePais(request.getNombrePais()).ifPresent(p -> {
-            throw new BusinessRuleException("Ya existe un país con el nombre: " + request.getNombrePais());
+    public PaisDTO crear(PaisDTO dto) {
+        paisRepository.findByNombrePais(dto.getNombrePais()).ifPresent(p -> {
+            throw new BusinessRuleException("Ya existe un país con el nombre: " + dto.getNombrePais());
         });
 
         Pais pais = Pais.builder()
-                .nombrePais(request.getNombrePais().trim())
+                .nombrePais(dto.getNombrePais().trim())
                 .build();
 
-        return PaisResponse.fromDomain(paisRepository.save(pais));
+        return paisMapper.toDTO(paisRepository.save(pais));
     }
 
     @Override
-    public PaisResponse actualizar(Integer id, PaisRequest request) {
+    public PaisDTO actualizar(Integer id, PaisDTO dto) {
         Pais existente = paisRepository.findById(id)
                 .orElseThrow(() -> new PaisNotFoundException(id));
 
-        paisRepository.findByNombrePais(request.getNombrePais())
-                .filter(p -> !p.getIdPais().equals(id))
+        paisRepository.findByNombrePais(dto.getNombrePais())
+                .filter(p -> !p.getIdPais().equals(id.longValue()))
                 .ifPresent(p -> {
-                    throw new BusinessRuleException("Ya existe un país con el nombre: " + request.getNombrePais());
+                    throw new BusinessRuleException("Ya existe un país con el nombre: " + dto.getNombrePais());
                 });
 
-        existente.setNombrePais(request.getNombrePais().trim());
+        existente.setNombrePais(dto.getNombrePais().trim());
 
-        return PaisResponse.fromDomain(paisRepository.save(existente));
+        return paisMapper.toDTO(paisRepository.save(existente));
     }
 
     @Override

@@ -1,13 +1,15 @@
 package backend.com.gestionUsuarios.proveedor.application.dto;
 
+import backend.com.shared.application.dto.ContactoDTO;
+import backend.com.shared.application.dto.DatoBancarioDTO;
+import backend.com.shared.application.dto.DireccionDTO;
 import backend.com.shared.application.dto.GiroDTO;
+
 import backend.com.shared.validations.run.ValidRun;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -36,6 +38,10 @@ public class ProveedorDTO {
     private String sigla;
 
     private boolean activo;
+
+    private List<ContactoDTO> contactos;
+    private List<DireccionDTO> direccion;
+    private List<DatoBancarioDTO> datosBancarios;
 
     private GiroDTO giro;
 }

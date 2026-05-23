@@ -1,7 +1,6 @@
 package backend.com.shared.infrastructure.api;
 
-import backend.com.shared.application.dto.PaisRequest;
-import backend.com.shared.application.dto.PaisResponse;
+import backend.com.shared.application.dto.PaisDTO;
 import backend.com.shared.application.service.PaisService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -19,26 +18,26 @@ public class PaisController {
     private final PaisService paisService;
 
     @GetMapping
-    public ResponseEntity<List<PaisResponse>> listarTodos() {
+    public ResponseEntity<List<PaisDTO>> listarTodos() {
         return ResponseEntity.ok(paisService.listarTodos());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<PaisResponse> obtenerPorId(@PathVariable Integer id) {
+    public ResponseEntity<PaisDTO> obtenerPorId(@PathVariable Integer id) {
         return paisService.obtenerPorId(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
     @PostMapping
-    public ResponseEntity<PaisResponse> crear(@Valid @RequestBody PaisRequest request) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(paisService.crear(request));
+    public ResponseEntity<PaisDTO> crear(@Valid @RequestBody PaisDTO dto) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(paisService.crear(dto));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<PaisResponse> actualizar(@PathVariable Integer id,
-                                                    @Valid @RequestBody PaisRequest request) {
-        return ResponseEntity.ok(paisService.actualizar(id, request));
+    public ResponseEntity<PaisDTO> actualizar(@PathVariable Integer id,
+                                              @Valid @RequestBody PaisDTO dto) {
+        return ResponseEntity.ok(paisService.actualizar(id, dto));
     }
 
     @DeleteMapping("/{id}")

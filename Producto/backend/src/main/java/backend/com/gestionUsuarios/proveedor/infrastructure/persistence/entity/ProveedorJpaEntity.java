@@ -3,10 +3,15 @@ package backend.com.gestionUsuarios.proveedor.infrastructure.persistence.entity;
 import backend.com.shared.infrastructure.persistence.entity.BaseEntity;
 import backend.com.shared.infrastructure.persistence.entity.GiroJpaEntity;
 import backend.com.shared.validations.run.ValidRun;
+import backend.com.shared.infrastructure.persistence.entity.ContactoJpaEntity;
+import backend.com.shared.infrastructure.persistence.entity.DireccionJpaEntity;
+import backend.com.shared.infrastructure.persistence.entity.DatoBancarioJpaEntity;
+
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.*;
+import java.util.List;
 
 @Entity
 @Table(name = "proveedores", indexes = {
@@ -49,7 +54,19 @@ public class ProveedorJpaEntity extends BaseEntity {
         @Column(name = "tipo_proveedor", length = 30)
         private String tipoProveedor;
 
+        @OneToMany(mappedBy = "proveedor", cascade = CascadeType.ALL, orphanRemoval = true)
+        @JoinColumn(name = "fk_provee_contacto")
+        private List<ContactoJpaEntity> contactos;
+
+        @OneToMany(mappedBy = "proveedor", cascade = CascadeType.ALL, orphanRemoval = true)
+        @JoinColumn(name = "fk_provee_direccion")
+        private List<DireccionJpaEntity> direcciones;
+
+        @OneToMany(mappedBy = "proveedor", cascade = CascadeType.ALL, orphanRemoval = true)
+        @JoinColumn(name = "fk_provee_dato_bancario")
+        private List<DatoBancarioJpaEntity> datosBancarios;
+
         @ManyToOne(fetch = FetchType.LAZY)
-        @JoinColumn(name = "fk_giro")
+        @JoinColumn(name = "fk_provee_giro")
         private GiroJpaEntity giro;
 }

@@ -29,14 +29,7 @@ public class DireccionJpaEntity {
     private TipoDireccionJpaEntity tipoDireccion;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "region_id", nullable = false)
-    private RegionJpaEntity region;
-
-    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "comuna_id", nullable = false)
     private ComunaJpaEntity comuna;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "pais_id", nullable = false)
-    private PaisJpaEntity pais;
 }

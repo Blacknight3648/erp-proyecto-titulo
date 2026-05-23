@@ -19,14 +19,11 @@ public interface ClienteRepository extends JpaRepository<ClienteJpaEntity, Long>
     @Query("SELECT c FROM ClienteJpaEntity c WHERE LOWER(c.razonSocial) LIKE LOWER(CONCAT('%', :razonSocial, '%'))")
     List<ClienteJpaEntity> buscarPorRazonSocial(@Param("razonSocial") String razonSocial);
 
-    @Query("SELECT c FROM ClienteJpaEntity c WHERE c.sigla.siglaId = :siglaId")
-    List<ClienteJpaEntity> obtenerPorSiglaId(@Param("siglaId") Long siglaId);
+    @Query("SELECT c FROM ClienteJpaEntity c WHERE LOWER(c.sigla) = LOWER(:sigla)")
+    List<ClienteJpaEntity> obtenerPorSigla(@Param("sigla") String sigla);
 
     @Query("SELECT c FROM ClienteJpaEntity c WHERE c.giro.giroId = :giroId")
     List<ClienteJpaEntity> obtenerPorGiroId(@Param("giroId") Long giroId);
-
-    @Query("SELECT c FROM ClienteJpaEntity c WHERE LOWER(c.sigla.descripcionSigla) = LOWER(:descripcionSigla)")
-    List<ClienteJpaEntity> obtenerPorDescripcionSigla(@Param("descripcionSigla") String descripcionSigla);
 
     @Query("SELECT c FROM ClienteJpaEntity c WHERE LOWER(c.giro.descripcionGiro) = LOWER(:descripcionGiro)")
     List<ClienteJpaEntity> obtenerPorDescripcionGiro(@Param("descripcionGiro") String descripcionGiro);
@@ -35,8 +32,8 @@ public interface ClienteRepository extends JpaRepository<ClienteJpaEntity, Long>
 
     List<ClienteJpaEntity> findByActivoFalse();
 
-    @Query("SELECT c FROM ClienteJpaEntity c WHERE c.activo = true AND c.sigla.siglaId = :siglaId")
-    List<ClienteJpaEntity> obtenerActivosPorSigla(@Param("siglaId") Long siglaId);
+    @Query("SELECT c FROM ClienteJpaEntity c WHERE c.activo = true AND LOWER(c.sigla) = LOWER(:sigla)")
+    List<ClienteJpaEntity> obtenerActivosPorSigla(@Param("sigla") String sigla);
 
     @Query("SELECT c FROM ClienteJpaEntity c WHERE c.activo = true AND c.giro.giroId = :giroId")
     List<ClienteJpaEntity> obtenerActivosPorGiro(@Param("giroId") Long giroId);

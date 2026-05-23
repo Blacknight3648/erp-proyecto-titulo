@@ -56,19 +56,14 @@ public class ClienteController {
         return ResponseEntity.ok(clienteMapper.toDTOList(clienteService.obtenerInactivos()));
     }
 
-    @GetMapping("/sigla/{siglaId}")
-    public ResponseEntity<List<ClienteDTO>> obtenerPorSiglaId(@PathVariable Long siglaId) {
-        return ResponseEntity.ok(clienteMapper.toDTOList(clienteService.obtenerPorSiglaId(siglaId)));
-    }
-
     @GetMapping("/giro/{giroId}")
     public ResponseEntity<List<ClienteDTO>> obtenerPorGiroId(@PathVariable Long giroId) {
         return ResponseEntity.ok(clienteMapper.toDTOList(clienteService.obtenerPorGiroId(giroId)));
     }
 
-    @GetMapping("/sigla/descripcion/{descripcionSigla}")
-    public ResponseEntity<List<ClienteDTO>> obtenerPorDescripcionSigla(@PathVariable String descripcionSigla) {
-        return ResponseEntity.ok(clienteMapper.toDTOList(clienteService.obtenerPorDescripcionSigla(descripcionSigla)));
+    @GetMapping("/sigla/{sigla}")
+    public ResponseEntity<List<ClienteDTO>> obtenerPorSigla(@PathVariable String sigla) {
+        return ResponseEntity.ok(clienteMapper.toDTOList(clienteService.obtenerPorSigla(sigla)));
     }
 
     @GetMapping("/giro/descripcion/{descripcionGiro}")
@@ -76,9 +71,9 @@ public class ClienteController {
         return ResponseEntity.ok(clienteMapper.toDTOList(clienteService.obtenerPorDescripcionGiro(descripcionGiro)));
     }
 
-    @GetMapping("/activos/sigla/{siglaId}")
-    public ResponseEntity<List<ClienteDTO>> obtenerActivosPorSigla(@PathVariable Long siglaId) {
-        return ResponseEntity.ok(clienteMapper.toDTOList(clienteService.obtenerActivosPorSigla(siglaId)));
+    @GetMapping("/activos/sigla/{sigla}")
+    public ResponseEntity<List<ClienteDTO>> obtenerActivosPorSigla(@PathVariable String sigla) {
+        return ResponseEntity.ok(clienteMapper.toDTOList(clienteService.obtenerActivosPorSigla(sigla)));
     }
 
     @GetMapping("/activos/giro/{giroId}")

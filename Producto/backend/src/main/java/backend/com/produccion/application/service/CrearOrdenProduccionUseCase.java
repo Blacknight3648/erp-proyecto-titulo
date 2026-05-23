@@ -5,6 +5,7 @@ import backend.com.comercial.domain.model.ItemNV;
 import backend.com.comercial.domain.model.NotaVenta;
 import backend.com.comercial.domain.repository.EvaluacionNegocioRepository;
 import backend.com.produccion.domain.model.Costeo;
+import backend.com.produccion.domain.model.CosteoVersion;
 import backend.com.produccion.domain.model.FaseProduccion;
 import backend.com.produccion.domain.model.OrdenProduccion;
 import backend.com.produccion.domain.model.OrdenProduccionItem;
@@ -27,6 +28,7 @@ public class CrearOrdenProduccionUseCase {
     private final EvaluacionNegocioRepository evnRepository;
     private final CosteoRepository costeoRepository;
     private final OrdenTrabajoRepository otRepository;
+    private final CrearVersionCosteoUseCase crearVersionCosteoUseCase;
 
     @Transactional
     public OrdenProduccion execute(NotaVenta notaVenta) {
@@ -35,6 +37,7 @@ public class CrearOrdenProduccionUseCase {
 
         // Regla: El Nro de la OP se hereda del Nro de Costeo
         DocumentNumber numeroOP = notaVenta.getNumeroNV(); // Fallback por defecto
+        Long costeoVersionId = null;
 
         if (notaVenta.getEvaluacionNegocioId() != null) {
             EvaluacionNegocio evn = evnRepository.findById(notaVenta.getEvaluacionNegocioId())
@@ -48,6 +51,13 @@ public class CrearOrdenProduccionUseCase {
                 if (costeo.getNumeroCosteo() != null) {
                     numeroOP = costeo.getNumeroCosteo();
                 }
+
+                // Snapshot inicial del Costeo: la OP queda anclada a esta versión
+                CosteoVersion versionInicial = crearVersionCosteoUseCase.ejecutar(
+                        costeo.getIdCosteo(),
+                        "Versión inicial al crear OP",
+                        "SYSTEM");
+                costeoVersionId = versionInicial.getIdCosteoVersion();
             }
         }
 
@@ -55,6 +65,10 @@ public class CrearOrdenProduccionUseCase {
                 numeroOP,
                 notaVenta.getIdNV(),
                 notaVenta.getFechaEntregaEstimada());
+
+        if (costeoVersionId != null) {
+            op.vincularCosteoVersion(costeoVersionId);
+        }
 
         // Mapear ítems de la NV a la OP (solo los que requieren producción)
         if (notaVenta.getItems() != null) {

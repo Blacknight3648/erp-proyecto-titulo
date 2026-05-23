@@ -24,7 +24,8 @@ public class RegistroAvanceRepositoryImpl implements RegistroAvanceRepository {
 
     @Override
     public List<RegistroAvance> findByOrdenTrabajoId(Long ordenTrabajoId) {
-        if (ordenTrabajoId == null) return List.of();
+        if (ordenTrabajoId == null)
+            return List.of();
         return jpaRepository.findByOrdenTrabajoIdOrderByFechaAsc(ordenTrabajoId).stream()
                 .map(mapper::toDomain)
                 .collect(Collectors.toList());

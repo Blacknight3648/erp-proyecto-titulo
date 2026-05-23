@@ -31,6 +31,7 @@ public class ProveedorMapper {
                                 .runProveedor(entity.getRunProveedor())
                                 .razonSocialProveedor(entity.getRazonSocialProveedor())
                                 .horarioAtencion(entity.getHorarioAtencion())
+                                .sigla(entity.getSigla())
                                 .tipoProveedor(entity.getTipoProveedor())
                                 .activo(entity.getActivo() != null && entity.getActivo())
                                 .contactos(entity.getContactos() != null ? entity.getContactos().stream()
@@ -55,6 +56,7 @@ public class ProveedorMapper {
                 entity.setRazonSocialProveedor(domain.getRazonSocialProveedor());
                 entity.setHorarioAtencion(domain.getHorarioAtencion());
                 entity.setTipoProveedor(domain.getTipoProveedor());
+                entity.setSigla(domain.getSigla());
                 entity.setActivo(domain.isActivo());
                 entity.setGiro(giroMapper.toEntity(domain.getGiro()));
                 entity.setContactos(domain.getContactos() != null ? domain.getContactos().stream()
@@ -78,6 +80,7 @@ public class ProveedorMapper {
                                 .razonSocialProveedor(domain.getRazonSocialProveedor())
                                 .horarioAtencion(domain.getHorarioAtencion())
                                 .tipoProveedor(domain.getTipoProveedor())
+                                .sigla(domain.getSigla())
                                 .activo(domain.isActivo())
                                 .giro(giroMapper.toDTO(domain.getGiro()))
                                 .contactos(domain.getContactos() != null ? domain.getContactos().stream()
@@ -101,6 +104,7 @@ public class ProveedorMapper {
                                 .razonSocialProveedor(dto.getRazonSocialProveedor())
                                 .horarioAtencion(dto.getHorarioAtencion())
                                 .tipoProveedor(dto.getTipoProveedor())
+                                .sigla(dto.getSigla())
                                 .activo(dto.isActivo())
                                 .giro(giroMapper.toDomain(dto.getGiro()))
                                 .contactos(dto.getContactos() != null ? dto.getContactos().stream()

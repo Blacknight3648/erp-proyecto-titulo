@@ -61,7 +61,7 @@ public class ProveedorController {
         return ResponseEntity.ok(proveedorMapper.toDTOList(proveedorService.obtenerPorGiroId(giroId)));
     }
 
-    @GetMapping("/sigla/abreviatura/{sigla}")
+    @GetMapping("/sigla/{sigla}")
     public ResponseEntity<List<ProveedorDTO>> obtenerPorSigla(@PathVariable String sigla) {
         return ResponseEntity.ok(proveedorMapper.toDTOList(proveedorService.obtenerPorSigla(sigla)));
     }

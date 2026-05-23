@@ -19,7 +19,7 @@ public interface ProveedorJpaRepository extends JpaRepository<ProveedorJpaEntity
     @Query("SELECT p FROM ProveedorJpaEntity p WHERE LOWER(p.razonSocialProveedor) LIKE LOWER(CONCAT('%', :razonSocial, '%'))")
     List<ProveedorJpaEntity> buscarPorRazonSocial(@Param("razonSocial") String razonSocial);
 
-    @Query("SELECT p FROM ProveedorJpaEntity p WHERE p.sigla.siglaId = :siglaId")
+    @Query("SELECT p FROM ProveedorJpaEntity p WHERE LOWER(p.sigla) = LOWER(:sigla)")
     List<ProveedorJpaEntity> obtenerPorSigla(@Param("sigla") String sigla);
 
     @Query("SELECT p FROM ProveedorJpaEntity p WHERE p.giro.giroId = :giroId")
@@ -32,7 +32,7 @@ public interface ProveedorJpaRepository extends JpaRepository<ProveedorJpaEntity
 
     List<ProveedorJpaEntity> findByActivoFalse();
 
-    @Query("SELECT p FROM ProveedorJpaEntity p WHERE p.activo = true AND p.sigla.siglaId = :siglaId")
+    @Query("SELECT p FROM ProveedorJpaEntity p WHERE p.activo = true AND LOWER(p.sigla) = LOWER(:sigla)")
     List<ProveedorJpaEntity> obtenerActivosPorSigla(@Param("sigla") String sigla);
 
     @Query("SELECT p FROM ProveedorJpaEntity p WHERE p.activo = true AND p.giro.giroId = :giroId")

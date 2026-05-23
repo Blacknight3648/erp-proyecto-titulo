@@ -19,15 +19,13 @@ public interface ClienteService {
 
     List<Cliente> obtenerInactivos();
 
-    List<Cliente> obtenerPorSiglaId(Long siglaId);
+    List<Cliente> obtenerPorSigla(String sigla);
 
     List<Cliente> obtenerPorGiroId(Long giroId);
 
-    List<Cliente> obtenerPorDescripcionSigla(String descripcionSigla);
-
     List<Cliente> obtenerPorDescripcionGiro(String descripcionGiro);
 
-    List<Cliente> obtenerActivosPorSigla(Long siglaId);
+    List<Cliente> obtenerActivosPorSigla(String sigla);
 
     List<Cliente> obtenerActivosPorGiro(Long giroId);
 

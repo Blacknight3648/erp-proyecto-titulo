@@ -3,8 +3,8 @@ package backend.com.shared.application.service.Impl;
 import backend.com.shared.application.dto.RubroDTO;
 import backend.com.shared.application.service.RubroService;
 import backend.com.shared.domain.model.Rubro;
+import backend.com.shared.domain.repository.RubroRepository;
 import backend.com.shared.infrastructure.mapper.RubroMapper;
-import backend.com.shared.infrastructure.persistence.repository.RubroRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.stereotype.Service;

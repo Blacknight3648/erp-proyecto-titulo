@@ -15,8 +15,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "proveedores", indexes = {
-                @Index(name = "idx_proveedor_run", columnList = "run_proveedor"),
-                @Index(name = "idx_proveedor_email", columnList = "email_proveedor")
+                @Index(name = "idx_proveedor_run", columnList = "run_proveedor")
 })
 @Getter
 @Setter
@@ -54,15 +53,15 @@ public class ProveedorJpaEntity extends BaseEntity {
         @Column(name = "tipo_proveedor", length = 30)
         private String tipoProveedor;
 
-        @OneToMany(mappedBy = "proveedor", cascade = CascadeType.ALL, orphanRemoval = true)
+        @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
         @JoinColumn(name = "fk_provee_contacto")
         private List<ContactoJpaEntity> contactos;
 
-        @OneToMany(mappedBy = "proveedor", cascade = CascadeType.ALL, orphanRemoval = true)
+        @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
         @JoinColumn(name = "fk_provee_direccion")
         private List<DireccionJpaEntity> direcciones;
 
-        @OneToMany(mappedBy = "proveedor", cascade = CascadeType.ALL, orphanRemoval = true)
+        @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
         @JoinColumn(name = "fk_provee_dato_bancario")
         private List<DatoBancarioJpaEntity> datosBancarios;
 

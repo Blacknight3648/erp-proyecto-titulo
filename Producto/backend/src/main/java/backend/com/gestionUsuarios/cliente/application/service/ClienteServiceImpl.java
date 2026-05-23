@@ -5,7 +5,6 @@ import backend.com.gestionUsuarios.cliente.infrastructure.exception.ClienteNotFo
 import backend.com.gestionUsuarios.cliente.infrastructure.mapper.ClienteMapper;
 import backend.com.gestionUsuarios.cliente.infrastructure.persistence.entity.ClienteJpaEntity;
 import backend.com.gestionUsuarios.cliente.infrastructure.persistence.repository.ClienteRepository;
-import backend.com.shared.exception.BancoNotFoundException;
 import backend.com.shared.exception.DatoBancarioNotFoundException;
 import backend.com.shared.exception.EntityNotFoundException;
 import backend.com.shared.infrastructure.persistence.entity.DatoBancarioJpaEntity;
@@ -59,6 +58,18 @@ public class ClienteServiceImpl implements ClienteService {
 
     @Override
     @Transactional(readOnly = true)
+    public List<Cliente> obtenerPorSigla(String sigla) {
+        return clienteRepository.obtenerPorSigla(sigla).stream().map(clienteMapper::toDomain).toList();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<Cliente> obtenerActivosPorSigla(String sigla) {
+        return clienteRepository.obtenerActivosPorSigla(sigla).stream().map(clienteMapper::toDomain).toList();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public List<Cliente> obtenerActivos() {
         return clienteRepository.findByActivoTrue().stream().map(clienteMapper::toDomain).toList();
     }
@@ -71,21 +82,8 @@ public class ClienteServiceImpl implements ClienteService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<Cliente> obtenerPorSiglaId(Long siglaId) {
-        return clienteRepository.obtenerPorSiglaId(siglaId).stream().map(clienteMapper::toDomain).toList();
-    }
-
-    @Override
-    @Transactional(readOnly = true)
     public List<Cliente> obtenerPorGiroId(Long giroId) {
         return clienteRepository.obtenerPorGiroId(giroId).stream().map(clienteMapper::toDomain).toList();
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public List<Cliente> obtenerPorDescripcionSigla(String descripcionSigla) {
-        return clienteRepository.obtenerPorDescripcionSigla(descripcionSigla)
-                .stream().map(clienteMapper::toDomain).toList();
     }
 
     @Override
@@ -93,12 +91,6 @@ public class ClienteServiceImpl implements ClienteService {
     public List<Cliente> obtenerPorDescripcionGiro(String descripcionGiro) {
         return clienteRepository.obtenerPorDescripcionGiro(descripcionGiro)
                 .stream().map(clienteMapper::toDomain).toList();
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public List<Cliente> obtenerActivosPorSigla(Long siglaId) {
-        return clienteRepository.obtenerActivosPorSigla(siglaId).stream().map(clienteMapper::toDomain).toList();
     }
 
     @Override

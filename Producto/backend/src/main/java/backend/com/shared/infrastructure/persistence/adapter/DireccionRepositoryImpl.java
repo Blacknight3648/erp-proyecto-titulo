@@ -1,9 +1,9 @@
 package backend.com.shared.infrastructure.persistence.adapter;
 
 import backend.com.shared.domain.model.Direccion;
-import backend.com.shared.domain.repository.DireccionRepository;
+import backend.com.shared.infrastructure.persistence.repository.DireccionRepository;
 import backend.com.shared.infrastructure.mapper.DireccionMapper;
-import backend.com.shared.infrastructure.persistence.repository.DireccionJpaRepository;
+import backend.com.shared.infrastructure.persistence.repository.Jpa.DireccionJpaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -25,13 +25,15 @@ public class DireccionRepositoryImpl implements DireccionRepository {
 
     @Override
     public Optional<Direccion> findById(Long id) {
-        if (id == null) return Optional.empty();
+        if (id == null)
+            return Optional.empty();
         return jpaRepository.findById(id).map(mapper::toDomain);
     }
 
     @Override
     public List<Direccion> findByComunaId(Long comunaId) {
-        return jpaRepository.findByComuna_ComunaId(comunaId).stream().map(mapper::toDomain).collect(Collectors.toList());
+        return jpaRepository.findByComuna_ComunaId(comunaId).stream().map(mapper::toDomain)
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -41,7 +43,8 @@ public class DireccionRepositoryImpl implements DireccionRepository {
 
     @Override
     public void deleteById(Long id) {
-        if (id != null) jpaRepository.deleteById(id);
+        if (id != null)
+            jpaRepository.deleteById(id);
     }
 
     @Override

@@ -15,7 +15,7 @@
 --   * No agregamos FK a `clientes` por ahora; queda como migration futura.
 -- =============================================================================
 
-ALTER TABLE produccion_ordenes
+ALTER TABLE orden_produccion
     ADD CONSTRAINT fk_op_nota_venta
     FOREIGN KEY (nota_venta_id) REFERENCES notas_venta (idnv);
 
@@ -25,7 +25,7 @@ ALTER TABLE produccion_orden_trabajo
 
 ALTER TABLE produccion_orden_trabajo
     ADD CONSTRAINT fk_ot_orden_produccion
-    FOREIGN KEY (orden_produccion_id) REFERENCES produccion_ordenes (idop);
+    FOREIGN KEY (orden_produccion_id) REFERENCES orden_produccion (idop);
 
 ALTER TABLE produccion_costeos
     ADD CONSTRAINT fk_costeo_solicitud_costos

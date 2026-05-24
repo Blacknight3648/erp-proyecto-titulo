@@ -3,7 +3,7 @@ package backend.com.shared.application.service.Impl;
 import backend.com.shared.application.dto.TipoDireccionDTO;
 import backend.com.shared.application.service.TipoDireccionService;
 import backend.com.shared.domain.model.TipoDireccion;
-import backend.com.shared.domain.repository.TipoDireccionRepository;
+import backend.com.shared.infrastructure.persistence.repository.TipoDireccionRepository;
 import backend.com.shared.exception.BusinessRuleException;
 import backend.com.shared.exception.TipoDireccionNotFoundException;
 import backend.com.shared.infrastructure.mapper.TipoDireccionMapper;

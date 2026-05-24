@@ -1,4 +1,4 @@
-package backend.com.shared.domain.repository;
+package backend.com.shared.infrastructure.persistence.repository;
 
 import backend.com.shared.domain.model.HistorialEstado;
 

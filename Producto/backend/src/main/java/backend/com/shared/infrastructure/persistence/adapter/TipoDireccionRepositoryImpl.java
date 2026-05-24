@@ -1,9 +1,9 @@
 package backend.com.shared.infrastructure.persistence.adapter;
 
 import backend.com.shared.domain.model.TipoDireccion;
-import backend.com.shared.domain.repository.TipoDireccionRepository;
+import backend.com.shared.infrastructure.persistence.repository.TipoDireccionRepository;
 import backend.com.shared.infrastructure.mapper.TipoDireccionMapper;
-import backend.com.shared.infrastructure.persistence.repository.TipoDireccionJpaRepository;
+import backend.com.shared.infrastructure.persistence.repository.Jpa.TipoDireccionJpaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -25,7 +25,8 @@ public class TipoDireccionRepositoryImpl implements TipoDireccionRepository {
 
     @Override
     public Optional<TipoDireccion> findById(Integer id) {
-        if (id == null) return Optional.empty();
+        if (id == null)
+            return Optional.empty();
         return jpaRepository.findById(id).map(mapper::toDomain);
     }
 
@@ -36,7 +37,8 @@ public class TipoDireccionRepositoryImpl implements TipoDireccionRepository {
 
     @Override
     public void deleteById(Integer id) {
-        if (id != null) jpaRepository.deleteById(id);
+        if (id != null)
+            jpaRepository.deleteById(id);
     }
 
     @Override

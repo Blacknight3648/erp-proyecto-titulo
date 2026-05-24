@@ -1,4 +1,4 @@
-package backend.com.shared.domain.repository;
+package backend.com.shared.infrastructure.persistence.repository;
 
 import java.util.List;
 import java.util.Optional;
@@ -9,8 +9,6 @@ public interface RubroRepository {
     List<Rubro> findAll();
 
     Optional<Rubro> findById(Long id);
-
-    Optional<Rubro> findByCodigoSii(String codigoSii);
 
     Optional<Rubro> findByNombreRubro(String nombreRubro);
 

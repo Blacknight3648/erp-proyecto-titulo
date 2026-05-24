@@ -2,7 +2,7 @@ package backend.com.shared.application.service;
 
 import backend.com.shared.application.dto.HistorialEstadoDTO;
 import backend.com.shared.domain.model.HistorialEstado;
-import backend.com.shared.domain.repository.HistorialEstadoRepository;
+import backend.com.shared.infrastructure.persistence.repository.HistorialEstadoRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

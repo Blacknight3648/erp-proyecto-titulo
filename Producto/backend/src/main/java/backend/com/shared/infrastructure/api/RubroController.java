@@ -28,11 +28,6 @@ public class RubroController {
         return rubroService.getRubroById(id).orElse(null);
     }
 
-    @GetMapping("/codigo/{codigoSii}")
-    public RubroDTO getRubroByCodigoSii(@PathVariable String codigoSii) {
-        return rubroService.getRubroByCodigoSii(codigoSii).orElse(null);
-    }
-
     @GetMapping("/nombre/{nombreRubro}")
     public RubroDTO getRubroByNombreRubro(@PathVariable String nombreRubro) {
         return rubroService.getRubroByNombreRubro(nombreRubro).orElse(null);

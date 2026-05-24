@@ -65,36 +65,28 @@ MERGE INTO giros (giro_id, descripcion_giro)
     (3, 'LOGÍSTICA Y TRANSPORTE'),
     (4, 'CONSTRUCCIÓN Y FERRETERÍA');
 
--- ============================================================
--- 4.2. SIGLAS (Formas Jurídicas)
--- ============================================================
-MERGE INTO siglas (sigla_id, descripcion_sigla, sigla_abreviatura)
-    KEY (sigla_id)
-    VALUES
-    (1, 'SOCIEDAD ANÓNIMA', 'S.A.'),
-    (2, 'LIMITADA', 'LTDA.'),
-    (3, 'SOCIEDAD POR ACCIONES', 'SpA');
+
 
 -- ============================================================
 -- 5. CLIENTES (RUTs de empresas reales y teléfonos fijos +562...)
 -- ============================================================
-MERGE INTO clientes (cliente_id, razon_social, run_cliente, correo_cliente, telefono_cliente, activo, fk_giro, fk_sigla)
+MERGE INTO clientes (cliente_id, activo, razon_social, run_cliente, correo_cliente, telefono_cliente, sigla, fk_giro)
     KEY (cliente_id)
     VALUES
-    (1, 'HITES S.A.', '96947020-9', 'contacto.hites@hites.cl', '+56227275000', true, 1, 1),
-    (2, 'LABORATORIO MEDCELL', '96706320-7', 'compras@medcell.cl', '+56224396000', true, 2, 2),
-    (3, 'GEODIS WILSON', '79699520-3', 'info.chile@geodis.com', '+56223816500', true, 3, 1);
+    (1, true, 'HITES S.A.', '96947020-9', 'contacto.hites@hites.cl', '+56227275000', 'S.A.', 1),
+    (2, true, 'LABORATORIO MEDCELL', '96706320-7', 'compras@medcell.cl', '+56224396000', 'LTDA.', 2),
+    (3, true, 'GEODIS WILSON', '79699520-3', 'info.chile@geodis.com', '+56223816500', 'S.A.', 3);
 
 -- ============================================================
--- 6. PROVEEDORES (RUTs de empresas reales y teléfonos fijos +562...)
+-- 6. PROVEEDORES (RUTs de empresas reales)
 -- ============================================================
-MERGE INTO proveedores (proveedor_id, razon_social_proveedor, run_proveedor, contacto_proveedor, telefono_proveedor, direccion_proveedor, activo, creado_en, actualizado_en, fk_giro, fk_sigla)
+MERGE INTO proveedores (proveedor_id, activo, creado_en, actualizado_en, horario_atencion, razon_social_proveedor, run_proveedor, sigla, tipo_proveedor, fk_provee_giro)
     KEY (proveedor_id)
     VALUES
-    (1, 'PARQUE ARAUCO S.A.', '99581960-0', 'Ricardo Muñoz', '+56222990503', 'Av. Kennedy 5413, Las Condes', true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1, 1),
-    (2, 'C.C. LOS HEROES', '70016330-K', 'Carolina Díaz', '+56223927000', 'Holanda 64, Providencia', true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1, 2),
-    (3, 'MEDIPHARM LTDA.', '96599510-2', 'Felipe Torres', '+56223700000', 'Lo Boza 110, Quilicura', true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 2, 2),
-    (4, 'SODIMAC S.A.', '96792430-K', 'Patricio Leiva', '+56227381000', 'Av. Presidente Eduardo Frei M. 3092', true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 4, 1);
+    (1, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'PARQUE ARAUCO S.A.', '99581960-0', 'S.A.', 'NACIONAL', 1),
+    (2, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'C.C. LOS HEROES', '70016330-K', 'LTDA.', 'NACIONAL', 1),
+    (3, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'MEDIPHARM LTDA.', '96599510-2', 'LTDA.', 'NACIONAL', 2),
+    (4, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'SODIMAC S.A.', '96792430-K', 'S.A.', 'NACIONAL', 4);
 
 -- ============================================================
 -- 7. CONFIGURACIÓN DE PLANTILLAS (SCOS)
@@ -123,7 +115,6 @@ ALTER TABLE clientes ALTER COLUMN cliente_id RESTART WITH 100;
 ALTER TABLE vendedores ALTER COLUMN id_vendedor RESTART WITH 200;
 ALTER TABLE proveedores ALTER COLUMN proveedor_id RESTART WITH 100;
 ALTER TABLE giros ALTER COLUMN giro_id RESTART WITH 100;
-ALTER TABLE siglas ALTER COLUMN sigla_id RESTART WITH 100;
 ALTER TABLE solicitudes_costos ALTER COLUMN idscos RESTART WITH 2000;
 ALTER TABLE produccion_costeos ALTER COLUMN id_costeo RESTART WITH 2000;
 ALTER TABLE produccion_costeo_items ALTER COLUMN id_costeo_item RESTART WITH 5000;

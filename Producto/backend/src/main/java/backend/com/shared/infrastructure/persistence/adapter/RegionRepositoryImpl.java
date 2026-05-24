@@ -1,9 +1,9 @@
 package backend.com.shared.infrastructure.persistence.adapter;
 
 import backend.com.shared.domain.model.Region;
-import backend.com.shared.domain.repository.RegionRepository;
+import backend.com.shared.infrastructure.persistence.repository.RegionRepository;
 import backend.com.shared.infrastructure.mapper.RegionMapper;
-import backend.com.shared.infrastructure.persistence.repository.RegionJpaRepository;
+import backend.com.shared.infrastructure.persistence.repository.Jpa.RegionJpaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -25,7 +25,8 @@ public class RegionRepositoryImpl implements RegionRepository {
 
     @Override
     public Optional<Region> findById(Long id) {
-        if (id == null) return Optional.empty();
+        if (id == null)
+            return Optional.empty();
         return jpaRepository.findById(id).map(mapper::toDomain);
     }
 
@@ -46,7 +47,8 @@ public class RegionRepositoryImpl implements RegionRepository {
 
     @Override
     public void deleteById(Long id) {
-        if (id != null) jpaRepository.deleteById(id);
+        if (id != null)
+            jpaRepository.deleteById(id);
     }
 
     @Override

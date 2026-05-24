@@ -1,9 +1,9 @@
 package backend.com.shared.infrastructure.persistence.adapter;
 
 import backend.com.shared.domain.model.Comuna;
-import backend.com.shared.domain.repository.ComunaRepository;
+import backend.com.shared.infrastructure.persistence.repository.ComunaRepository;
 import backend.com.shared.infrastructure.mapper.ComunaMapper;
-import backend.com.shared.infrastructure.persistence.repository.ComunaJpaRepository;
+import backend.com.shared.infrastructure.persistence.repository.Jpa.ComunaJpaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -25,13 +25,15 @@ public class ComunaRepositoryImpl implements ComunaRepository {
 
     @Override
     public Optional<Comuna> findById(Long id) {
-        if (id == null) return Optional.empty();
+        if (id == null)
+            return Optional.empty();
         return jpaRepository.findById(id).map(mapper::toDomain);
     }
 
     @Override
     public List<Comuna> findByRegionId(Long regionId) {
-        return jpaRepository.findByRegion_RegionId(regionId).stream().map(mapper::toDomain).collect(Collectors.toList());
+        return jpaRepository.findByRegion_RegionId(regionId).stream().map(mapper::toDomain)
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -46,7 +48,8 @@ public class ComunaRepositoryImpl implements ComunaRepository {
 
     @Override
     public void deleteById(Long id) {
-        if (id != null) jpaRepository.deleteById(id);
+        if (id != null)
+            jpaRepository.deleteById(id);
     }
 
     @Override

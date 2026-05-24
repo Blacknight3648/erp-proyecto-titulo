@@ -2,7 +2,7 @@ package backend.com.shared.application.service;
 
 import backend.com.shared.application.dto.TipoCuentaBancariaDTO;
 import backend.com.shared.domain.model.TipoCuentaBancaria;
-import backend.com.shared.domain.repository.TipoCuentaBancariaRepository;
+import backend.com.shared.infrastructure.persistence.repository.TipoCuentaBancariaRepository;
 import backend.com.shared.exception.BusinessRuleException;
 import backend.com.shared.exception.TipoCuentaBancariaNotFoundException;
 import backend.com.shared.infrastructure.mapper.TipoCuentaBancariaMapper;

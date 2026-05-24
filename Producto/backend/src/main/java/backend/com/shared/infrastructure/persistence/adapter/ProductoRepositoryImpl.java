@@ -1,10 +1,10 @@
 package backend.com.shared.infrastructure.persistence.adapter;
 
 import backend.com.shared.infrastructure.persistence.entity.ProductoJpaEntity;
+import backend.com.shared.infrastructure.persistence.repository.Jpa.ProductoJpaRepository;
 import backend.com.shared.infrastructure.mapper.ProductoMapper;
 import backend.com.shared.domain.model.Producto;
-import backend.com.shared.domain.repository.ProductoRepository;
-import backend.com.shared.infrastructure.persistence.repository.ProductoJpaRepository;
+import backend.com.shared.infrastructure.persistence.repository.ProductoRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 

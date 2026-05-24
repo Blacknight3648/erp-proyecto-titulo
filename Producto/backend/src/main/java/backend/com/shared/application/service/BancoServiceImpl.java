@@ -2,7 +2,7 @@ package backend.com.shared.application.service;
 
 import backend.com.shared.application.dto.BancoDTO;
 import backend.com.shared.domain.model.Banco;
-import backend.com.shared.domain.repository.BancoRepository;
+import backend.com.shared.infrastructure.persistence.repository.BancoRepository;
 import backend.com.shared.exception.BancoNotFoundException;
 import backend.com.shared.exception.BusinessRuleException;
 import backend.com.shared.infrastructure.mapper.BancoMapper;

@@ -1,9 +1,9 @@
 package backend.com.shared.infrastructure.persistence.adapter;
 
 import backend.com.shared.domain.model.DatoBancario;
-import backend.com.shared.domain.repository.DatoBancarioRepository;
+import backend.com.shared.infrastructure.persistence.repository.DatoBancarioRepository;
 import backend.com.shared.infrastructure.mapper.DatoBancarioMapper;
-import backend.com.shared.infrastructure.persistence.repository.DatoBancarioJpaRepository;
+import backend.com.shared.infrastructure.persistence.repository.Jpa.DatoBancarioJpaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -25,7 +25,8 @@ public class DatoBancarioRepositoryImpl implements DatoBancarioRepository {
 
     @Override
     public Optional<DatoBancario> findById(Integer id) {
-        if (id == null) return Optional.empty();
+        if (id == null)
+            return Optional.empty();
         return jpaRepository.findById(id).map(mapper::toDomain);
     }
 
@@ -43,7 +44,8 @@ public class DatoBancarioRepositoryImpl implements DatoBancarioRepository {
 
     @Override
     public void deleteById(Integer id) {
-        if (id != null) jpaRepository.deleteById(id);
+        if (id != null)
+            jpaRepository.deleteById(id);
     }
 
     @Override

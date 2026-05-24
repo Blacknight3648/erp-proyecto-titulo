@@ -1,7 +1,7 @@
 package backend.com.shared.infrastructure.api.filter;
 
 import backend.com.shared.infrastructure.persistence.entity.IdempotencyTokenJpaEntity;
-import backend.com.shared.infrastructure.persistence.repository.IdempotencyTokenJpaRepository;
+import backend.com.shared.infrastructure.persistence.repository.Jpa.IdempotencyTokenJpaRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -25,8 +25,10 @@ import java.util.Set;
  * Filtro de Idempotencia HTTP.
  *
  * Aplica a cualquier POST/PATCH/PUT que traiga el header `Idempotency-Key`.
- * - Si el token ya fue procesado: devuelve la respuesta cacheada (incluye header `Idempotency-Replay: true`).
- * - Si el token es nuevo: ejecuta la request, y si la respuesta es 2xx la cachea en la tabla `idempotency_token`.
+ * - Si el token ya fue procesado: devuelve la respuesta cacheada (incluye
+ * header `Idempotency-Replay: true`).
+ * - Si el token es nuevo: ejecuta la request, y si la respuesta es 2xx la
+ * cachea en la tabla `idempotency_token`.
  *
  * El cliente es responsable de generar un UUID por operación (no por request).
  * Doble-click, retries y race conditions producen exactamente un efecto.
@@ -48,8 +50,8 @@ public class IdempotencyFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(@NonNull HttpServletRequest request,
-                                    @NonNull HttpServletResponse response,
-                                    @NonNull FilterChain chain) throws ServletException, IOException {
+            @NonNull HttpServletResponse response,
+            @NonNull FilterChain chain) throws ServletException, IOException {
 
         String token = request.getHeader(HEADER);
         String method = request.getMethod();

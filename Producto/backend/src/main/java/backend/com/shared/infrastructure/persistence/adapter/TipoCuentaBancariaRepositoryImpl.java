@@ -1,9 +1,9 @@
 package backend.com.shared.infrastructure.persistence.adapter;
 
 import backend.com.shared.domain.model.TipoCuentaBancaria;
-import backend.com.shared.domain.repository.TipoCuentaBancariaRepository;
+import backend.com.shared.infrastructure.persistence.repository.TipoCuentaBancariaRepository;
 import backend.com.shared.infrastructure.mapper.TipoCuentaBancariaMapper;
-import backend.com.shared.infrastructure.persistence.repository.TipoCuentaBancariaJpaRepository;
+import backend.com.shared.infrastructure.persistence.repository.Jpa.TipoCuentaBancariaJpaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -25,7 +25,8 @@ public class TipoCuentaBancariaRepositoryImpl implements TipoCuentaBancariaRepos
 
     @Override
     public Optional<TipoCuentaBancaria> findById(Integer id) {
-        if (id == null) return Optional.empty();
+        if (id == null)
+            return Optional.empty();
         return jpaRepository.findById(id).map(mapper::toDomain);
     }
 
@@ -36,7 +37,8 @@ public class TipoCuentaBancariaRepositoryImpl implements TipoCuentaBancariaRepos
 
     @Override
     public void deleteById(Integer id) {
-        if (id != null) jpaRepository.deleteById(id);
+        if (id != null)
+            jpaRepository.deleteById(id);
     }
 
     @Override

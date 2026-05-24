@@ -1,9 +1,9 @@
 package backend.com.shared.infrastructure.persistence.adapter;
 
 import backend.com.shared.domain.model.Pais;
-import backend.com.shared.domain.repository.PaisRepository;
+import backend.com.shared.infrastructure.persistence.repository.PaisRepository;
 import backend.com.shared.infrastructure.mapper.PaisMapper;
-import backend.com.shared.infrastructure.persistence.repository.PaisJpaRepository;
+import backend.com.shared.infrastructure.persistence.repository.Jpa.PaisJpaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -25,7 +25,8 @@ public class PaisRepositoryImpl implements PaisRepository {
 
     @Override
     public Optional<Pais> findById(Integer id) {
-        if (id == null) return Optional.empty();
+        if (id == null)
+            return Optional.empty();
         return jpaRepository.findById(id).map(mapper::toDomain);
     }
 
@@ -41,7 +42,8 @@ public class PaisRepositoryImpl implements PaisRepository {
 
     @Override
     public void deleteById(Integer id) {
-        if (id != null) jpaRepository.deleteById(id);
+        if (id != null)
+            jpaRepository.deleteById(id);
     }
 
     @Override

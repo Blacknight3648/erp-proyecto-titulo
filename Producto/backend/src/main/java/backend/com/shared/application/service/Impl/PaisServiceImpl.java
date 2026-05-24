@@ -3,7 +3,7 @@ package backend.com.shared.application.service.Impl;
 import backend.com.shared.application.dto.PaisDTO;
 import backend.com.shared.application.service.PaisService;
 import backend.com.shared.domain.model.Pais;
-import backend.com.shared.domain.repository.PaisRepository;
+import backend.com.shared.infrastructure.persistence.repository.PaisRepository;
 import backend.com.shared.exception.BusinessRuleException;
 import backend.com.shared.exception.PaisNotFoundException;
 import backend.com.shared.infrastructure.mapper.PaisMapper;

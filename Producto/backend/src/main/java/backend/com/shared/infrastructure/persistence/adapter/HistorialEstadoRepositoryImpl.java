@@ -1,9 +1,9 @@
 package backend.com.shared.infrastructure.persistence.adapter;
 
 import backend.com.shared.domain.model.HistorialEstado;
-import backend.com.shared.domain.repository.HistorialEstadoRepository;
+import backend.com.shared.infrastructure.persistence.repository.HistorialEstadoRepository;
 import backend.com.shared.infrastructure.mapper.HistorialEstadoMapper;
-import backend.com.shared.infrastructure.persistence.repository.HistorialEstadoJpaRepository;
+import backend.com.shared.infrastructure.persistence.repository.Jpa.HistorialEstadoJpaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 

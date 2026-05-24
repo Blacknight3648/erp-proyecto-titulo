@@ -1,7 +1,7 @@
 package backend.com.shared.application.service;
 
 import backend.com.shared.infrastructure.persistence.entity.DocumentCounterJpaEntity;
-import backend.com.shared.infrastructure.persistence.repository.DocumentCounterJpaRepository;
+import backend.com.shared.infrastructure.persistence.repository.Jpa.DocumentCounterJpaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -10,8 +10,8 @@ import org.springframework.transaction.annotation.Transactional;
  * Genera números correlativos de documentos de forma atómica.
  *
  * Uso típico desde un UseCase:
- *   Long numero = numeroDocumentoService.siguiente("NV");
- *   NotaVenta nv = NotaVenta.crear(new DocumentNumber(numero), ...);
+ * Long numero = numeroDocumentoService.siguiente("NV");
+ * NotaVenta nv = NotaVenta.crear(new DocumentNumber(numero), ...);
  *
  * El bloqueo es por TIPO de documento. Dos llamadas concurrentes con tipos
  * diferentes ("NV" y "EVN") no se bloquean entre sí; dos llamadas con el
@@ -27,7 +27,8 @@ public class NumeroDocumentoService {
 
     /**
      * Devuelve el siguiente número correlativo para el tipo dado.
-     * Se ejecuta dentro de la transacción del llamador (propagación REQUIRED por defecto)
+     * Se ejecuta dentro de la transacción del llamador (propagación REQUIRED por
+     * defecto)
      * para garantizar que, si la creación del documento falla y se revierte, el
      * incremento del contador también se revierte — sin huecos en la numeración.
      */

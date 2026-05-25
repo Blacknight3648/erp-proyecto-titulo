@@ -14,7 +14,7 @@ import java.math.BigDecimal;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/ordenes-compra")
+@RequestMapping("/api/v1/ordenes-compra")
 @RequiredArgsConstructor
 public class OrdenCompraController {
 

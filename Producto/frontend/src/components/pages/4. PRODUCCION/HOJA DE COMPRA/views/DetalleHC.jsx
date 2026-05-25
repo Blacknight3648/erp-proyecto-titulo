@@ -1,21 +1,38 @@
 import React from 'react';
 import HCVisualizacion from '../components/HCVisualizacion';
 
-export default function DetalleHC({ selectedHC, setSelectedHC, registros, setView, formatCLP }) {
-    // Buscar la HC seleccionada
+export default function DetalleHC({
+    selectedHC,
+    setSelectedHC,
+    registros,
+    setView,
+    formatCLP,
+    aprobar,
+    cerrar,
+}) {
     const hcActual = registros?.find(r => r.id === selectedHC);
+
+    const handleBack = () => {
+        setSelectedHC(null);
+        setView('list');
+    };
+
+    const handleAprobar = async (idHC) => {
+        await aprobar?.(idHC);
+        handleBack();
+    };
+
+    const handleCerrar = async (idHC) => {
+        await cerrar?.(idHC);
+        handleBack();
+    };
 
     return (
         <HCVisualizacion
-            hcId={selectedHC}
             hc={hcActual}
-            onBack={() => {
-                setSelectedHC(null);
-                setView('list');
-            }}
-            onEdit={() => {
-                setView('form');
-            }}
+            onBack={handleBack}
+            onAprobar={aprobar ? handleAprobar : undefined}
+            onCerrar={cerrar ? handleCerrar : undefined}
             formatCLP={formatCLP}
         />
     );

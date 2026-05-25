@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.stream.Stream;
 
 @RestController
-@RequestMapping("/api/reportes")
+@RequestMapping("/api/v1/reportes")
 @RequiredArgsConstructor
 public class ReportesController {
 

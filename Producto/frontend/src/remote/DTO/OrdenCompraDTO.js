@@ -1,25 +1,23 @@
-import { ItemOCDTO } from './ItemOCDTO';
+import { OrdenCompraItemDTO } from './OrdenCompraItemDTO';
 
 /**
  * DTO para representar una Orden de Compra.
- * Basado en OrdenCompra.java
+ * Espejo de OrdenCompraDTO.java del backend (modelo nuevo Fase 3).
+ *
+ * Estados: EMITIDA | ENVIADA | RECEPCIONADA_PARCIAL | RECEPCIONADA | CERRADA
  */
 export class OrdenCompraDTO {
     constructor(data = {}) {
-        this.idOC = data.idOC || null;
-        this.numeroOC = data.numeroOC ? data.numeroOC.value : '';
-        this.solicitudCompraId = data.solicitudCompraId || null;
-        this.ordenProduccionId = data.ordenProduccionId || null;
-        this.proveedorId = data.proveedorId || null;
-        this.tipo = data.tipo || 'NACIONAL';
-        this.estado = data.estado || 'EMITIDA';
-        this.montoTotal = data.montoTotal ? data.montoTotal.amount : 0;
-        this.currency = data.montoTotal ? data.montoTotal.currency : 'CLP';
-        this.fechaEmision = data.fechaEmision || null;
-        this.fechaRecepcion = data.fechaRecepcion || null;
-        
-        this.items = Array.isArray(data.items) 
-            ? data.items.map(item => new ItemOCDTO(item)) 
+        this.idOC = data.idOC ?? null;
+        this.numeroOC = data.numeroOC ?? '';
+        this.proveedorId = data.proveedorId ?? null;
+        this.estado = data.estado ?? 'EMITIDA';
+        this.fechaEmision = data.fechaEmision ?? null;
+        this.fechaEntregaEstimada = data.fechaEntregaEstimada ?? null;
+        this.observaciones = data.observaciones ?? '';
+        this.totalNeto = data.totalNeto ?? 0;
+        this.items = Array.isArray(data.items)
+            ? data.items.map(item => new OrdenCompraItemDTO(item))
             : [];
     }
 
@@ -31,5 +29,9 @@ export class OrdenCompraDTO {
     static listFromResponse(response) {
         if (!response || !Array.isArray(response.data)) return [];
         return response.data.map(item => new OrdenCompraDTO(item));
+    }
+
+    get totalItems() {
+        return this.items.length;
     }
 }

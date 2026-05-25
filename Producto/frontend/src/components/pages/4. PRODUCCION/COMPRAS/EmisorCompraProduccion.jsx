@@ -1,57 +1,73 @@
-import { useState, useMemo } from 'react';
-import { 
-    ChevronLeft, 
-    Save, 
-    Plus, 
-    Trash2, 
-    Search, 
-    Factory, 
-    Truck, 
-    FileText,
-    Package,
-    AlertCircle
-} from 'lucide-react';
-import { 
-    mockOperaciones, 
-    mockProveedores, 
-    mockTalleresExternos 
-} from '../../../../data/mockData';
-import { toast } from 'sonner';
+import { useMemo, useState } from 'react';
+import { ChevronLeft, Save, AlertCircle, Package, Layers, Truck } from 'lucide-react';
 
-export default function EmisorCompraProduccion({ onBack }) {
-    const [selectedOp, setSelectedOp] = useState('');
-    const [selectedProveedor, setSelectedProveedor] = useState('');
-    const [items, setItems] = useState([]);
-    const [tipoDocumento, setTipoDocumento] = useState('OC'); // OC u OS (Orden de Servicio)
+/**
+ * Pantalla para generar una OC consolidada desde HCs aprobadas.
+ * Flujo:
+ *   1. Elegir proveedor (numérico por ahora)
+ *   2. Marcar items de las HCs aprobadas que quieres consolidar
+ *   3. Opcional: fecha de entrega + observaciones
+ *   4. Generar → POST /api/v1/ordenes-compra/consolidar
+ */
+export default function EmisorCompraProduccion({
+    onBack,
+    hcsAprobadas,
+    onGenerar,
+    submitting,
+    error,
+    formatCLP,
+}) {
+    const [proveedorId, setProveedorId] = useState('');
+    const [fechaEntregaEstimada, setFechaEntregaEstimada] = useState('');
+    const [observaciones, setObservaciones] = useState('');
+    const [selectedItemIds, setSelectedItemIds] = useState(new Set());
 
-    const handleAddItem = () => {
-        setItems([...items, { id: crypto.randomUUID(), descripcion: '', cantidad: 0, precio: 0 }]);
+    const toggleItem = (itemId) => {
+        const next = new Set(selectedItemIds);
+        if (next.has(itemId)) next.delete(itemId);
+        else next.add(itemId);
+        setSelectedItemIds(next);
     };
 
-    const handleRemoveItem = (id) => {
-        setItems(items.filter(item => item.id !== id));
-    };
-
-    const handleUpdateItem = (id, field, value) => {
-        setItems(items.map(item => item.id === id ? { ...item, [field]: value } : item));
-    };
-
-    const totalMonto = useMemo(() => {
-        return items.reduce((acc, current) => acc + (Number(current.cantidad) * Number(current.precio)), 0);
-    }, [items]);
-
-    const handleEmitir = () => {
-        if (!selectedOp || !selectedProveedor || items.length === 0) {
-            toast.error('Faltan datos requeridos');
-            return;
+    const selectedItems = useMemo(() => {
+        const result = [];
+        for (const hc of (hcsAprobadas || [])) {
+            for (const item of (hc.items || [])) {
+                if (selectedItemIds.has(item.idHCItem)) {
+                    result.push({ ...item, hcId: hc.idHC, hcNumero: hc.numeroHC });
+                }
+            }
         }
-        toast.success(`${tipoDocumento === 'OC' ? 'Orden de Compra' : 'Orden de Servicio'} emitida con éxito`);
-        onBack();
+        return result;
+    }, [hcsAprobadas, selectedItemIds]);
+
+    const totalEstimado = useMemo(() => {
+        return selectedItems.reduce(
+            (acc, i) => acc + Number(i.cantidadRequerida || 0) * Number(i.precioUnitarioRef || 0),
+            0
+        );
+    }, [selectedItems]);
+
+    const proveedorIdNum = Number(proveedorId);
+    const canSubmit =
+        Number.isFinite(proveedorIdNum) &&
+        proveedorIdNum > 0 &&
+        selectedItemIds.size > 0 &&
+        !submitting;
+
+    const handleGenerar = async () => {
+        if (!canSubmit) return;
+        await onGenerar({
+            proveedorId: proveedorIdNum,
+            hcItemIds: Array.from(selectedItemIds),
+            fechaEntregaEstimada: fechaEntregaEstimada || null,
+            observaciones: observaciones || null,
+        });
     };
 
     return (
-        <div className="space-y-8 animate-in slide-in-from-right-8 duration-500 pb-20">
-            {/* Cabecera */}
+        <div className="space-y-8 animate-in slide-in-from-right-8 duration-500 pb-32">
+            {/* Header */}
             <div className="flex items-center justify-between">
                 <div className="flex items-center gap-6">
                     <button
@@ -61,181 +77,162 @@ export default function EmisorCompraProduccion({ onBack }) {
                         <ChevronLeft className="w-5 h-5" />
                     </button>
                     <div>
-                        <h2 className="text-2xl font-black text-gray-800 tracking-tight italic uppercase">Emitir Documento de Adquisición</h2>
-                        <p className="text-[10px] text-gray-500 font-black uppercase tracking-widest mt-1">Vínculo directo con flujo de planta</p>
+                        <h2 className="text-3xl font-black text-slate-800 tracking-tight uppercase">Generar OC Consolidada</h2>
+                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mt-1">Selecciona items de HCs aprobadas para un proveedor</p>
                     </div>
                 </div>
-                <div className="flex gap-3 bg-gray-100 p-1 rounded-2xl border border-gray-200">
-                    <button 
-                        onClick={() => setTipoDocumento('OC')}
-                        className={`px-6 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${tipoDocumento === 'OC' ? 'bg-white text-indigo-600 shadow-sm' : 'text-gray-400 hover:text-gray-600'}`}
-                    >
-                        Orden de Compra
-                    </button>
-                    <button 
-                        onClick={() => setTipoDocumento('OS')}
-                        className={`px-6 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${tipoDocumento === 'OS' ? 'bg-white text-indigo-600 shadow-sm' : 'text-gray-400 hover:text-gray-600'}`}
-                    >
-                        Orden de Servicio
-                    </button>
-                </div>
+                <button
+                    onClick={handleGenerar}
+                    disabled={!canSubmit}
+                    className="px-10 h-12 bg-indigo-600 hover:bg-slate-900 text-white rounded-2xl font-black text-xs uppercase tracking-widest shadow-2xl shadow-indigo-100 transition-all active:scale-95 flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                    <Save className="w-4 h-4" />
+                    {submitting ? 'Generando...' : 'Generar OC'}
+                </button>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-                {/* Panel de Selección */}
-                <div className="lg:col-span-1 space-y-8">
-                    <div className="bg-white p-8 rounded-[2.5rem] shadow-sm border border-gray-100 space-y-6">
-                        <div>
-                            <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3 block">1. Seleccionar OP</label>
-                            <div className="relative">
-                                <Factory className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-300 w-4 h-4" />
-                                <select 
-                                    className="w-full pl-10 pr-4 py-3 bg-gray-50 border-none rounded-2xl text-xs font-bold outline-none ring-0 focus:ring-2 focus:ring-indigo-500 transition-all appearance-none"
-                                    value={selectedOp}
-                                    onChange={(e) => setSelectedOp(e.target.value)}
-                                >
-                                    <option value="">Seleccione OP...</option>
-                                    {mockOperaciones.map(op => (
-                                        <option key={op.idOP} value={op.idOP}>{op.idOP} - {op.producto}</option>
-                                    ))}
-                                </select>
+            {error && (
+                <div className="bg-red-50 border border-red-200 text-red-700 text-xs font-bold uppercase tracking-widest p-4 rounded-2xl">
+                    {error}
+                </div>
+            )}
+
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                {/* Main: Items de HCs */}
+                <div className="lg:col-span-2 space-y-6">
+                    <div className="bg-white rounded-[2.5rem] shadow-sm border border-gray-100 overflow-hidden">
+                        <div className="p-8 border-b border-slate-50 flex items-center gap-4">
+                            <div className="bg-emerald-50 p-2 rounded-xl">
+                                <Layers className="w-5 h-5 text-emerald-600" />
+                            </div>
+                            <div>
+                                <h3 className="text-sm font-black text-slate-800 uppercase tracking-widest">Items disponibles (HCs APROBADAS)</h3>
+                                <p className="text-[9px] text-slate-400 font-bold uppercase tracking-widest mt-1">Marca los que quieres incluir en esta OC</p>
                             </div>
                         </div>
 
-                        <div>
-                            <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3 block">
-                                {tipoDocumento === 'OC' ? '2. Proveedor Materiales' : '2. Taller Externo'}
-                            </label>
-                            <div className="relative">
-                                {tipoDocumento === 'OC' ? <Truck className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-300 w-4 h-4" /> : <Package className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-300 w-4 h-4" />}
-                                <select 
-                                    className="w-full pl-10 pr-4 py-3 bg-gray-50 border-none rounded-2xl text-xs font-bold outline-none ring-0 focus:ring-2 focus:ring-indigo-500 transition-all appearance-none"
-                                    value={selectedProveedor}
-                                    onChange={(e) => setSelectedProveedor(e.target.value)}
-                                >
-                                    <option value="">Seleccione Entidad...</option>
-                                    {tipoDocumento === 'OC' ? (
-                                        mockProveedores.map(p => <option key={p.proveedorId} value={p.nombreProveedor}>{p.nombreProveedor}</option>)
-                                    ) : (
-                                        mockTalleresExternos.map(t => <option key={t.id} value={t.nombre}>{t.nombre}</option>)
-                                    )}
-                                </select>
+                        {(!hcsAprobadas || hcsAprobadas.length === 0) ? (
+                            <div className="py-16 text-center text-slate-400 font-bold uppercase tracking-widest text-xs">
+                                No hay HCs aprobadas disponibles
                             </div>
-                        </div>
-
-                        {selectedOp && (
-                            <div className="bg-indigo-50/50 p-4 rounded-3xl border border-indigo-100">
-                                <div className="flex items-center gap-2 mb-2">
-                                    <AlertCircle className="w-3.5 h-3.5 text-indigo-600" />
-                                    <span className="text-[9px] font-black text-indigo-600 uppercase tracking-tighter">Info de Contexto</span>
-                                </div>
-                                <p className="text-[11px] text-indigo-900 font-bold italic line-clamp-3">
-                                    Esta OP requiere insumos según costeo técnico. Verifique consumos antes de emitir.
-                                </p>
+                        ) : (
+                            <div className="divide-y divide-slate-50">
+                                {hcsAprobadas.map(hc => (
+                                    <div key={hc.idHC} className="p-6">
+                                        <div className="flex items-center gap-3 mb-4">
+                                            <span className="text-[10px] font-black text-indigo-600 bg-indigo-50 px-3 py-1 rounded-lg uppercase tracking-widest">HC #{hc.idHC}</span>
+                                            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{hc.numeroHC}</span>
+                                            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">· OP #{hc.opId}</span>
+                                        </div>
+                                        <table className="w-full text-left">
+                                            <thead>
+                                                <tr className="text-[9px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-100">
+                                                    <th className="py-2 w-8"></th>
+                                                    <th className="py-2">Insumo</th>
+                                                    <th className="py-2 text-center">Tipo</th>
+                                                    <th className="py-2 text-center">Cant. Requerida</th>
+                                                    <th className="py-2 text-right">Precio Ref.</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {(hc.items || []).map(item => (
+                                                    <tr key={item.idHCItem} className="hover:bg-indigo-50/30 transition-colors">
+                                                        <td className="py-2">
+                                                            <input
+                                                                type="checkbox"
+                                                                checked={selectedItemIds.has(item.idHCItem)}
+                                                                onChange={() => toggleItem(item.idHCItem)}
+                                                                className="w-4 h-4 accent-indigo-600 cursor-pointer"
+                                                            />
+                                                        </td>
+                                                        <td className="py-2 text-xs font-bold text-slate-700 uppercase">{item.nombreInsumo || '—'}</td>
+                                                        <td className="py-2 text-[10px] font-bold text-slate-500 uppercase text-center">{item.tipoInsumo || '—'}</td>
+                                                        <td className="py-2 text-xs font-black text-slate-700 text-center tabular-nums">{item.cantidadRequerida}</td>
+                                                        <td className="py-2 text-xs font-black text-indigo-600 text-right tabular-nums">{formatCLP(item.precioUnitarioRef)}</td>
+                                                    </tr>
+                                                ))}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                ))}
                             </div>
                         )}
                     </div>
                 </div>
 
-                {/* Tabla de Items */}
-                <div className="lg:col-span-3 space-y-6">
-                    <div className="bg-white rounded-[2.5rem] shadow-sm border border-gray-100 overflow-hidden min-h-[400px] flex flex-col">
-                        <div className="p-8 border-b border-gray-50 flex justify-between items-center">
-                            <h3 className="text-sm font-black text-gray-800 uppercase tracking-widest flex items-center gap-2">
-                                <FileText className="w-4 h-4 text-indigo-600" />
-                                Detalle de Líneas de {tipoDocumento === 'OC' ? 'Compra' : 'Servicio'}
-                            </h3>
-                            <button 
-                                onClick={handleAddItem}
-                                className="px-4 py-2 bg-gray-50 text-indigo-600 rounded-xl text-[10px] font-black uppercase tracking-widest border border-indigo-100 hover:bg-indigo-50 transition-all"
-                            >
-                                <Plus className="w-3 h-3 mr-2 inline" /> Agregar Línea
-                            </button>
+                {/* Sidebar: Proveedor + resumen */}
+                <div className="space-y-6">
+                    <div className="bg-white rounded-[2.5rem] shadow-sm border border-gray-100 p-8 space-y-6">
+                        <div className="flex items-center gap-3">
+                            <Truck className="w-5 h-5 text-indigo-600" />
+                            <h3 className="text-[10px] font-black text-slate-800 uppercase tracking-widest">Proveedor</h3>
                         </div>
-                        
-                        <div className="flex-1 overflow-auto">
-                            <table className="w-full text-left">
-                                <thead className="bg-gray-50/50 border-b border-gray-50">
-                                    <tr>
-                                        <th className="px-8 py-4 text-[9px] font-black text-gray-400 uppercase tracking-widest w-1/2">Descripción / Concepto</th>
-                                        <th className="px-4 py-4 text-[9px] font-black text-gray-400 uppercase tracking-widest text-center">Cant.</th>
-                                        <th className="px-4 py-4 text-[9px] font-black text-gray-400 uppercase tracking-widest text-center">P. Unitario</th>
-                                        <th className="px-4 py-4 text-[9px] font-black text-gray-400 uppercase tracking-widest text-right">Subtotal</th>
-                                        <th className="px-4 py-4 text-[9px] font-black text-gray-400 uppercase tracking-widest text-right"></th>
-                                    </tr>
-                                </thead>
-                                <tbody className="divide-y divide-gray-50">
-                                    {items.map((item) => (
-                                        <tr key={item.id} className="hover:bg-gray-50/50 transition-colors group">
-                                            <td className="px-8 py-4">
-                                                <input 
-                                                    type="text"
-                                                    placeholder="Ej: Tela Jersey Azul 24/1"
-                                                    className="w-full bg-transparent border-none text-xs font-bold text-gray-800 outline-none placeholder:text-gray-300"
-                                                    value={item.descripcion}
-                                                    onChange={(e) => handleUpdateItem(item.id, 'descripcion', e.target.value)}
-                                                />
-                                            </td>
-                                            <td className="px-4 py-4">
-                                                <input 
-                                                    type="number"
-                                                    className="w-16 mx-auto bg-transparent border-none text-xs font-black text-blue-600 text-center outline-none"
-                                                    value={item.cantidad}
-                                                    onChange={(e) => handleUpdateItem(item.id, 'cantidad', e.target.value)}
-                                                />
-                                            </td>
-                                            <td className="px-4 py-4">
-                                                <input 
-                                                    type="number"
-                                                    className="w-24 mx-auto bg-transparent border-none text-xs font-black text-gray-700 text-center outline-none"
-                                                    value={item.precio}
-                                                    onChange={(e) => handleUpdateItem(item.id, 'precio', e.target.value)}
-                                                />
-                                            </td>
-                                            <td className="px-4 py-4 text-right">
-                                                <span className="text-xs font-black text-gray-900 italic">
-                                                    ${(item.cantidad * item.precio).toLocaleString()}
-                                                </span>
-                                            </td>
-                                            <td className="px-4 py-4 text-right">
-                                                <button 
-                                                    onClick={() => handleRemoveItem(item.id)}
-                                                    className="p-2 text-gray-300 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-all"
-                                                >
-                                                    <Trash2 className="w-4 h-4" />
-                                                </button>
-                                            </td>
-                                        </tr>
-                                    ))}
-                                    {items.length === 0 && (
-                                        <tr>
-                                            <td colSpan="5" className="py-20 text-center">
-                                                <div className="flex flex-col items-center gap-3">
-                                                    <div className="bg-gray-50 p-4 rounded-3xl">
-                                                        <Search className="w-6 h-6 text-gray-300" />
-                                                    </div>
-                                                    <p className="text-[10px] font-black text-gray-300 uppercase tracking-widest italic">No hay líneas agregadas</p>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    )}
-                                </tbody>
-                            </table>
+                        <div className="space-y-2">
+                            <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest">ID Proveedor</label>
+                            <input
+                                type="number"
+                                min={1}
+                                value={proveedorId}
+                                onChange={(e) => setProveedorId(e.target.value)}
+                                placeholder="Ej: 5"
+                                className="w-full h-12 px-4 bg-slate-50 border border-slate-100 rounded-2xl text-sm font-black text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                            />
                         </div>
-
-                        <div className="p-8 bg-gray-50/50 border-t border-gray-100 flex justify-between items-center">
-                            <div>
-                                <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-1">Inversión Estimada</p>
-                                <p className="text-3xl font-black text-indigo-900 tracking-tighter italic">${totalMonto.toLocaleString()}</p>
-                            </div>
-                            <button 
-                                onClick={handleEmitir}
-                                className="flex items-center gap-3 px-10 py-4 bg-slate-900 text-white rounded-[1.5rem] font-black uppercase text-[10px] tracking-widest hover:bg-slate-800 transition-all shadow-xl shadow-slate-200 active:scale-95 border border-slate-700"
-                            >
-                                <Save className="w-4 h-4" /> Emitir {tipoDocumento}
-                            </button>
+                        <div className="space-y-2">
+                            <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Fecha Entrega Estimada</label>
+                            <input
+                                type="date"
+                                value={fechaEntregaEstimada}
+                                onChange={(e) => setFechaEntregaEstimada(e.target.value)}
+                                className="w-full h-12 px-4 bg-slate-50 border border-slate-100 rounded-2xl text-xs font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                            />
+                        </div>
+                        <div className="space-y-2">
+                            <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Observaciones</label>
+                            <textarea
+                                rows={3}
+                                value={observaciones}
+                                onChange={(e) => setObservaciones(e.target.value)}
+                                placeholder="Notas para el proveedor..."
+                                className="w-full p-4 bg-slate-50 border border-slate-100 rounded-2xl text-[11px] font-medium text-slate-600 italic resize-none focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                            />
                         </div>
                     </div>
+
+                    <div className="bg-slate-900 rounded-[2.5rem] p-8 space-y-6 text-white">
+                        <h3 className="text-[10px] font-black text-indigo-400 uppercase tracking-[0.25em]">Resumen</h3>
+                        <div className="space-y-2">
+                            <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Items seleccionados</p>
+                            <p className="text-3xl font-black tracking-tighter tabular-nums">{selectedItemIds.size}</p>
+                        </div>
+                        <div className="space-y-2">
+                            <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Total Estimado</p>
+                            <p className="text-2xl font-black tracking-tighter tabular-nums text-emerald-400">{formatCLP(totalEstimado)}</p>
+                        </div>
+                        <div className="pt-4 border-t border-slate-800 flex items-start gap-3">
+                            <AlertCircle className="w-4 h-4 text-amber-500 shrink-0 mt-0.5" />
+                            <p className="text-[9px] font-bold text-slate-400 uppercase tracking-tighter italic leading-relaxed">
+                                El precio final se puede ajustar item por item después de generar la OC, mientras esté en estado EMITIDA.
+                            </p>
+                        </div>
+                    </div>
+
+                    {selectedItems.length > 0 && (
+                        <div className="bg-white rounded-[2rem] border border-slate-100 p-6 space-y-3">
+                            <div className="flex items-center gap-2">
+                                <Package className="w-4 h-4 text-indigo-500" />
+                                <h4 className="text-[10px] font-black text-slate-800 uppercase tracking-widest">Items por incluir</h4>
+                            </div>
+                            <ul className="space-y-1.5 max-h-64 overflow-y-auto pr-2">
+                                {selectedItems.map(i => (
+                                    <li key={i.idHCItem} className="text-[10px] font-bold text-slate-600 uppercase tracking-tight flex justify-between gap-2">
+                                        <span className="truncate">{i.nombreInsumo}</span>
+                                        <span className="tabular-nums text-slate-400 shrink-0">{i.cantidadRequerida}</span>
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
+                    )}
                 </div>
             </div>
         </div>

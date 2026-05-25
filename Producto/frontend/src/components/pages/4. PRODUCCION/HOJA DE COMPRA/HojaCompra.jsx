@@ -11,6 +11,8 @@ export default function HojaCompra() {
         selectedHC, setSelectedHC,
         searchTerm, setSearchTerm,
         registros,
+        loading,
+        error,
         formData, setFormData,
         isReadOnly,
         isSubmitting,
@@ -19,6 +21,8 @@ export default function HojaCompra() {
         removeItem,
         updateItem,
         handleSave,
+        aprobar,
+        cerrar,
         formatCLP,
         totalItems,
         totalBudget,
@@ -35,6 +39,10 @@ export default function HojaCompra() {
                     searchTerm={searchTerm}
                     setSearchTerm={setSearchTerm}
                     handleOpenForm={handleOpenForm}
+                    aprobar={aprobar}
+                    cerrar={cerrar}
+                    loading={loading}
+                    error={error}
                 />
             )}
 
@@ -61,6 +69,8 @@ export default function HojaCompra() {
                     registros={registros}
                     setView={setView}
                     formatCLP={formatCLP}
+                    aprobar={aprobar}
+                    cerrar={cerrar}
                 />
             )}
         </div>

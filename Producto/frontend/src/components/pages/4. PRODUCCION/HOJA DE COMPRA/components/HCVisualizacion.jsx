@@ -16,44 +16,43 @@ import {
     TableHeader,
     TableRow
 } from "../../../../ui/table";
-import { motion, AnimatePresence } from "framer-motion";
-import { 
-    ChevronLeft, 
-    User, 
-    Calendar, 
-    Tag, 
-    ClipboardList, 
-    Package, 
+import { motion } from "framer-motion";
+import {
+    ChevronLeft,
+    Calendar,
+    Package,
     Info,
     CheckCircle2,
-    Clock,
-    DollarSign,
-    Box,
     Hash,
     Layers,
-    Edit3,
     MessageSquareQuote,
     ShoppingBag,
-    Truck,
-    FilePlus2
+    Lock,
+    Tag,
+    GitBranch
 } from 'lucide-react';
-import { toast } from 'sonner';
 
-export default function HCVisualizacion({ hcId, hc, onBack, onEdit, formatCLP }) {
+const STATUS_BADGE = {
+    BORRADOR: 'bg-amber-50 text-amber-600 border-amber-100',
+    APROBADA: 'bg-emerald-50 text-emerald-600 border-emerald-100',
+    CERRADA:  'bg-slate-100 text-slate-500 border-slate-200',
+};
+
+export default function HCVisualizacion({ hc, onBack, onAprobar, onCerrar, formatCLP }) {
     if (!hc) return (
         <div className="p-10 text-center bg-white/50 backdrop-blur-md rounded-3xl border border-dashed border-slate-200">
             <p className="text-slate-400 font-bold uppercase tracking-widest text-xs">Cargando datos de la hoja de compra...</p>
         </div>
     );
 
-    const handleGenerateOCOP = (itemId) => {
-        toast.success("Solicitud de OC generada", {
-            description: "La orden de compra ha sido enviada al módulo de Adquisiciones.",
-            className: "rounded-2xl font-black uppercase tracking-widest text-[10px] bg-slate-900 text-white border-none shadow-2xl"
-        });
-    };
-
-    const totalBudget = hc.items?.reduce((acc, curr) => acc + (parseFloat(curr.cantidadRequerida || 0) * parseFloat(curr.precioEstimado || 0)), 0) || 0;
+    const totalEstimado = (hc.items || []).reduce(
+        (acc, curr) => acc + (parseFloat(curr.cantidadRequerida || 0) * parseFloat(curr.precioEstimado || 0)),
+        0
+    );
+    const totalUnidades = (hc.items || []).reduce(
+        (acc, curr) => acc + parseFloat(curr.cantidadRequerida || 0),
+        0
+    );
 
     return (
         <motion.div
@@ -74,29 +73,37 @@ export default function HCVisualizacion({ hcId, hc, onBack, onEdit, formatCLP })
                     </Button>
                     <div>
                         <div className="flex items-center gap-3">
-                            <h2 className="text-4xl font-black text-slate-900 tracking-tighter uppercase">{hc.id}</h2>
-                            <Badge
-                                className={`
-                                    px-4 h-7 rounded-full font-black text-[9px] uppercase tracking-widest border-2
-                                    ${hc.status === 'PENDIENTE' ? 'bg-amber-50 text-amber-600 border-amber-100' : 'bg-emerald-50 text-emerald-600 border-emerald-100'}
-                                `}
-                            >
-                                {hc.status || 'PENDIENTE'}
+                            <h2 className="text-4xl font-black text-slate-900 tracking-tighter uppercase">HC #{hc.id}</h2>
+                            <Badge className={`px-4 h-7 rounded-full font-black text-[9px] uppercase tracking-widest border-2 ${STATUS_BADGE[hc.status] || ''}`}>
+                                {hc.status || '—'}
                             </Badge>
                         </div>
                         <p className="text-[10px] text-slate-400 font-black uppercase tracking-[0.2em] mt-2 italic">
-                            Reporte de Adquisiciones y Suministros
+                            {hc.numero || 'Sin número asignado'} · Generada {hc.fechaCreacion || '—'}
                         </p>
                     </div>
                 </div>
 
-                <Button
-                    onClick={onEdit}
-                    className="bg-slate-900 hover:bg-black text-white rounded-2xl px-8 h-12 font-black text-xs uppercase tracking-widest shadow-2xl shadow-slate-200 transition-all active:scale-95 flex items-center gap-2"
-                >
-                    <Edit3 className="w-4 h-4" />
-                    Solicitar Cambio
-                </Button>
+                <div className="flex gap-3">
+                    {hc.status === 'BORRADOR' && onAprobar && (
+                        <Button
+                            onClick={() => onAprobar(hc.id)}
+                            className="bg-emerald-600 hover:bg-emerald-700 text-white rounded-2xl px-8 h-12 font-black text-xs uppercase tracking-widest shadow-2xl shadow-emerald-100 transition-all active:scale-95 flex items-center gap-2"
+                        >
+                            <CheckCircle2 className="w-4 h-4" />
+                            Aprobar HC
+                        </Button>
+                    )}
+                    {hc.status === 'APROBADA' && onCerrar && (
+                        <Button
+                            onClick={() => onCerrar(hc.id)}
+                            className="bg-slate-900 hover:bg-black text-white rounded-2xl px-8 h-12 font-black text-xs uppercase tracking-widest shadow-2xl shadow-slate-200 transition-all active:scale-95 flex items-center gap-2"
+                        >
+                            <Lock className="w-4 h-4" />
+                            Cerrar HC
+                        </Button>
+                    )}
+                </div>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -110,15 +117,15 @@ export default function HCVisualizacion({ hcId, hc, onBack, onEdit, formatCLP })
                                     <Layers className="w-5 h-5 text-indigo-600" />
                                 </div>
                                 <div>
-                                    <CardTitle className="text-sm font-black text-slate-800 uppercase tracking-widest">Atributos del Negocio</CardTitle>
-                                    <CardDescription className="text-[9px] font-bold uppercase tracking-widest text-slate-400 mt-1">Estructura comercial y trazabilidad</CardDescription>
+                                    <CardTitle className="text-sm font-black text-slate-800 uppercase tracking-widest">Trazabilidad</CardTitle>
+                                    <CardDescription className="text-[9px] font-bold uppercase tracking-widest text-slate-400 mt-1">Vinculación con OP y versión del Costeo</CardDescription>
                                 </div>
                             </div>
                         </CardHeader>
                         <CardContent className="p-10 grid grid-cols-1 md:grid-cols-3 gap-8">
-                            <ReadOnlyField icon={User} label="Cliente Mandante" value={hc.cliente} />
-                            <ReadOnlyField icon={Hash} label="Folio Nota de Venta" value={hc.folioNV} />
-                            <ReadOnlyField icon={Package} label="Orden Producción" value={hc.idOP} />
+                            <ReadOnlyField icon={Package} label="Orden de Producción" value={hc.idOP != null ? `OP #${hc.idOP}` : '—'} />
+                            <ReadOnlyField icon={GitBranch} label="Versión de Costeo" value={hc.raw?.costeoVersionId ? `v${hc.raw.costeoVersionId}` : '—'} />
+                            <ReadOnlyField icon={Hash} label="Folio" value={hc.numero || '—'} />
                         </CardContent>
                     </Card>
 
@@ -130,8 +137,8 @@ export default function HCVisualizacion({ hcId, hc, onBack, onEdit, formatCLP })
                                     <ShoppingBag className="w-5 h-5 text-emerald-600" />
                                 </div>
                                 <div>
-                                    <CardTitle className="text-sm font-black text-slate-800 uppercase tracking-widest">Insumos Críticos para Procura</CardTitle>
-                                    <CardDescription className="text-[9px] font-bold uppercase tracking-widest text-slate-400 mt-1">Listado valorizado de materiales requeridos</CardDescription>
+                                    <CardTitle className="text-sm font-black text-slate-800 uppercase tracking-widest">Insumos Requeridos</CardTitle>
+                                    <CardDescription className="text-[9px] font-bold uppercase tracking-widest text-slate-400 mt-1">Calculados desde Costeo × Cantidad OP</CardDescription>
                                 </div>
                             </div>
                         </CardHeader>
@@ -139,94 +146,92 @@ export default function HCVisualizacion({ hcId, hc, onBack, onEdit, formatCLP })
                             <Table>
                                 <TableHeader className="bg-slate-50/50">
                                     <TableRow className="border-slate-100 hover:bg-transparent">
-                                        <TableHead className="pl-10 font-black text-[9px] uppercase tracking-widest text-slate-400 py-5">Insumo Requerido</TableHead>
-                                        <TableHead className="font-black text-[9px] uppercase tracking-widest text-slate-400">Proveedor</TableHead>
-                                        <TableHead className="font-black text-[9px] uppercase tracking-widest text-slate-400 text-center">Unidad</TableHead>
-                                        <TableHead className="font-black text-[9px] uppercase tracking-widest text-slate-400 text-center">Cantidad</TableHead>
-                                        <TableHead className="font-black text-[9px] uppercase tracking-widest text-slate-400 text-right">P. Unitario Est.</TableHead>
-                                        <TableHead className="font-black text-[9px] uppercase tracking-widest text-slate-400 text-center pr-10 whitespace-nowrap">Gestión de Compra</TableHead>
+                                        <TableHead className="pl-10 font-black text-[9px] uppercase tracking-widest text-slate-400 py-5">Insumo</TableHead>
+                                        <TableHead className="font-black text-[9px] uppercase tracking-widest text-slate-400">Tipo</TableHead>
+                                        <TableHead className="font-black text-[9px] uppercase tracking-widest text-slate-400 text-center">Consumo Unit.</TableHead>
+                                        <TableHead className="font-black text-[9px] uppercase tracking-widest text-slate-400 text-center">Cant. OP</TableHead>
+                                        <TableHead className="font-black text-[9px] uppercase tracking-widest text-slate-400 text-center">Cant. Requerida</TableHead>
+                                        <TableHead className="font-black text-[9px] uppercase tracking-widest text-slate-400 text-right pr-10">Precio Ref.</TableHead>
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
-                                    {hc.items?.map((item, idx) => (
-                                        <TableRow key={idx} className="border-slate-50 hover:bg-white transition-all group">
+                                    {(hc.items || []).map((item, idx) => (
+                                        <TableRow key={item.id ?? idx} className="border-slate-50 hover:bg-white transition-all group">
                                             <TableCell className="pl-10 py-6">
                                                 <div className="flex items-center gap-3">
                                                     <div className="w-1.5 h-1.5 rounded-full bg-slate-200 group-hover:bg-indigo-500 transition-colors" />
-                                                    <span className="font-bold text-slate-700 text-xs uppercase tracking-tight group-hover:text-indigo-600 transition-colors">{item.insumo}</span>
+                                                    <span className="font-bold text-slate-700 text-xs uppercase tracking-tight group-hover:text-indigo-600 transition-colors">{item.insumo || '—'}</span>
                                                 </div>
                                             </TableCell>
                                             <TableCell>
-                                                <div className="flex items-center gap-2">
-                                                    <Badge variant="outline" className="rounded-lg font-black text-[8px] uppercase tracking-widest border-slate-100 bg-white/50 text-slate-500 py-1.5">
-                                                        {item.proveedor || "Sin Asignar"}
-                                                    </Badge>
-                                                </div>
+                                                <Badge variant="outline" className="rounded-lg font-black text-[8px] uppercase tracking-widest border-slate-100 bg-white/50 text-slate-500 py-1.5">
+                                                    <Tag className="w-2.5 h-2.5 mr-1" />
+                                                    {item.tipoInsumo || '—'}
+                                                </Badge>
                                             </TableCell>
-                                            <TableCell className="text-center">
-                                                <span className="px-3 py-1 bg-slate-100 rounded-lg font-black text-[8px] text-slate-400 uppercase tracking-[0.2em] inline-block border border-slate-200/50 shadow-inner">
-                                                    {item.unidad}
-                                                </span>
+                                            <TableCell className="text-center font-bold text-xs text-slate-500 tabular-nums">
+                                                {item.consumoUnitario ?? '—'}
                                             </TableCell>
-                                            <TableCell className="text-center font-black text-xs text-slate-800">
-                                                {item.cantidadRequerida}
+                                            <TableCell className="text-center font-bold text-xs text-slate-500 tabular-nums">
+                                                {item.cantidadOP ?? '—'}
                                             </TableCell>
-                                            <TableCell className="text-right font-black text-xs text-indigo-600 tabular-nums">
-                                                {formatCLP(item.precioEstimado)}
+                                            <TableCell className="text-center font-black text-xs text-slate-800 tabular-nums">
+                                                {item.cantidadRequerida ?? '—'}
                                             </TableCell>
-                                            <TableCell className="text-center pr-10">
-                                                <Button
-                                                    variant="outline"
-                                                    onClick={(e) => {
-                                                        e.stopPropagation();
-                                                        handleGenerateOCOP(item.id);
-                                                    }}
-                                                    className="h-10 rounded-xl font-black text-[10px] uppercase tracking-widest border-indigo-100 bg-indigo-50/50 text-indigo-600 hover:bg-slate-900 hover:text-white hover:border-slate-900 transition-all active:scale-95 flex items-center gap-2 mx-auto"
-                                                >
-                                                    <FilePlus2 className="w-3.5 h-3.5" />
-                                                    Generar OC
-                                                </Button>
+                                            <TableCell className="text-right pr-10 font-black text-xs text-indigo-600 tabular-nums">
+                                                {formatCLP ? formatCLP(item.precioEstimado || 0) : (item.precioEstimado ?? '—')}
                                             </TableCell>
                                         </TableRow>
                                     ))}
                                 </TableBody>
                             </Table>
+                            {(!hc.items || hc.items.length === 0) && (
+                                <div className="py-20 text-center space-y-4">
+                                    <div className="bg-slate-50 p-6 rounded-full inline-block">
+                                        <ShoppingBag className="w-10 h-10 text-slate-200" />
+                                    </div>
+                                    <p className="text-[10px] font-black text-slate-300 uppercase tracking-widest italic">Esta HC no tiene insumos</p>
+                                </div>
+                            )}
                         </CardContent>
                     </Card>
 
                     {/* Observations */}
-                    <Card className="rounded-[2.5rem] border-white/40 bg-white/60 backdrop-blur-md shadow-2xl shadow-slate-200/50 overflow-hidden border">
-                        <CardHeader className="p-8 pb-4 border-b border-slate-50">
-                            <div className="flex items-center gap-3">
-                                <MessageSquareQuote className="w-5 h-5 text-indigo-500" />
-                                <h4 className="text-[10px] font-black text-slate-800 uppercase tracking-widest">Notas Adicionales</h4>
-                            </div>
-                        </CardHeader>
-                        <CardContent className="p-8 pt-6">
-                            <p className="text-[11px] text-slate-500 font-medium italic leading-relaxed">
-                                {hc.observaciones || "Sin observaciones adicionales registradas para este documento."}
-                            </p>
-                        </CardContent>
-                    </Card>
+                    {hc.raw?.observaciones && (
+                        <Card className="rounded-[2.5rem] border-white/40 bg-white/60 backdrop-blur-md shadow-2xl shadow-slate-200/50 overflow-hidden border">
+                            <CardHeader className="p-8 pb-4 border-b border-slate-50">
+                                <div className="flex items-center gap-3">
+                                    <MessageSquareQuote className="w-5 h-5 text-indigo-500" />
+                                    <h4 className="text-[10px] font-black text-slate-800 uppercase tracking-widest">Observaciones</h4>
+                                </div>
+                            </CardHeader>
+                            <CardContent className="p-8 pt-6">
+                                <p className="text-[11px] text-slate-500 font-medium italic leading-relaxed">
+                                    {hc.raw.observaciones}
+                                </p>
+                            </CardContent>
+                        </Card>
+                    )}
                 </div>
 
                 {/* Sidebar Summary */}
                 <div className="space-y-8">
                     <Card className="rounded-[2.5rem] bg-slate-900 border-none shadow-2xl p-4 overflow-hidden">
                         <CardHeader className="p-8 pb-4">
-                            <CardTitle className="text-[10px] font-black text-slate-400 uppercase tracking-[0.25em] mb-4">Resumen Presupuestario</CardTitle>
+                            <CardTitle className="text-[10px] font-black text-slate-400 uppercase tracking-[0.25em] mb-4">Resumen</CardTitle>
                         </CardHeader>
                         <CardContent className="p-8 pt-0 space-y-8">
                             <div className="flex flex-col gap-1">
-                                <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Inversión Estimada Total</span>
-                                <span className="text-3xl font-black text-white tracking-tighter tabular-nums">{formatCLP(totalBudget)}</span>
+                                <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Inversión Estimada</span>
+                                <span className="text-3xl font-black text-white tracking-tighter tabular-nums">{formatCLP ? formatCLP(totalEstimado) : totalEstimado}</span>
                                 <Badge variant="outline" className="w-fit mt-2 border-emerald-500/30 text-emerald-400 bg-emerald-500/5 font-black text-[9px] uppercase tracking-widest px-3">Base Imponible Est.</Badge>
                             </div>
 
                             <div className="space-y-4 pt-8 border-t border-slate-800">
-                                <StatItem icon={Calendar} label="Fecha Emisión" value={hc.fechaCreacion} />
-                                <StatItem icon={Truck} label="Proveedor Líder" value={hc.proveedorPrincipal} />
-                                <StatItem icon={CheckCircle2} label="Status Sistema" value={hc.status} />
+                                <StatItem icon={Calendar} label="Fecha Emisión" value={hc.fechaCreacion || '—'} />
+                                <StatItem icon={Package} label="Items" value={hc.items?.length ?? 0} />
+                                <StatItem icon={ShoppingBag} label="Unidades Totales" value={totalUnidades} />
+                                <StatItem icon={CheckCircle2} label="Estado" value={hc.status || '—'} />
                             </div>
                         </CardContent>
                     </Card>
@@ -234,10 +239,12 @@ export default function HCVisualizacion({ hcId, hc, onBack, onEdit, formatCLP })
                     <div className="bg-indigo-50/50 border border-indigo-100 rounded-[2rem] p-8 space-y-4">
                         <div className="flex items-center gap-3">
                             <Info className="w-4 h-4 text-indigo-500" />
-                            <h4 className="text-[9px] font-black text-indigo-600 uppercase tracking-[0.15em]">Garantía de Suministro</h4>
+                            <h4 className="text-[9px] font-black text-indigo-600 uppercase tracking-[0.15em]">Próximo Paso</h4>
                         </div>
                         <p className="text-[10px] text-indigo-500/70 font-bold uppercase tracking-tight leading-relaxed">
-                            Este documento sirve como base técnica para la emisión de las Órdenes de Compra (OC). Cualquier discrepancia en el stock debe ser reportada antes de la compra.
+                            {hc.status === 'BORRADOR' && 'Revisa los insumos y aprueba para habilitar consolidación en OCs.'}
+                            {hc.status === 'APROBADA' && 'Esta HC ya puede consolidarse en una Orden de Compra por proveedor.'}
+                            {hc.status === 'CERRADA' && 'Esta HC está cerrada. Ya no admite cambios.'}
                         </p>
                     </div>
                 </div>

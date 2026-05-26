@@ -1,11 +1,11 @@
-import DetailTable from "../Layout/DetailTable";
+import DetailTable from "../../layout/DetailTable";
 import CostosFijosPanel from "./CostosFijosPanel";
 import PlantillasPanel from "./PlantillasPanel";
 import LogotipoPanel from "./LogotipoPanel";
 import CintasPanel from "./CintasPanel";
 import ProductosCotizacionPanel from "./ProductosCotizacionPanel";
-import Articulos from "../pages/2. COMERCIAL/COSTEOS/components/items/Articulos";
-import TabButton from "./TabButton";
+import Articulos from "../../pages/commercial/costing/components/items/Articulos";
+import TabButton from "../TabButton";
 
 export default function FormTabs({
   activeTab,

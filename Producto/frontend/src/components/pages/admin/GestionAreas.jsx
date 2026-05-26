@@ -4,8 +4,8 @@ import { toast, Toaster } from "sonner";
 import { Layout } from "lucide-react";
 
 import { useAreas } from "../../../hooks/useAreas";
-import AreaCard from "../../ui/AreaCard";
-import AreaModal from "../../ui/AreaModal";
+import AreaCard from "../../ui/shared/AreaCard";
+import AreaModal from "../../ui/shared/AreaModal";
 
 const GestionAreas = () => {
   const { areas, loading, createArea, updateArea, deleteArea } = useAreas();

@@ -9,7 +9,7 @@ import {
 } from 'lucide-react';
 import { useEstadoSC } from '../../hooks/useEstadoSC';
 import { useEstadoOP } from '../../hooks/useEstadoOP';
-import { pdfService } from '../../services/pdfService';
+import { pdfService } from '../../remote/service/pdfService';
 import { FileText } from 'lucide-react';
 
 const ProgressCard = ({ item, details, stages, type = 'op' }) => {

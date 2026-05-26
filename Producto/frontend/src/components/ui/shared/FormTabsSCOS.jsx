@@ -1,4 +1,4 @@
-import TabButton from "./TabButton";
+import TabButton from "../TabButton";
 import PlantillasPanel from "./PlantillasPanel";
 import LogotipoPanel from "./LogotipoPanel";
 import TelasSCOSPanel from "./TelasSCOSPanel";

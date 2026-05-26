@@ -2,7 +2,7 @@ import { useState, useMemo, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Search, Filter, History, ChevronRight, ShoppingCart, Plus, X, CheckCircle2, Package, Calendar, Activity, Info, AlertCircle, Wrench, Clock, Truck, Factory, FileText } from 'lucide-react';
 import { mockOperaciones, mockProveedores, mockAllOCs, mockOpDetails } from '../../../data/mockData';
-import { pdfService } from '../../../services/pdfService';
+import { pdfService } from '../../../remote/service/pdfService';
 import { toast } from 'sonner';
 import { validateNumericInput } from '../../../utils/validations';
 

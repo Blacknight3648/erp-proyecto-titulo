@@ -10,7 +10,7 @@ import {
     Briefcase,
 } from 'lucide-react';
 
-import { formatRUN } from "../../utils/validations";
+import { formatRUN } from "../../../utils/validations";
 
 export default function ProveedorCard({ proveedor, onDelete, onToggle, onEdit }) {
     const isActive = proveedor.activo;

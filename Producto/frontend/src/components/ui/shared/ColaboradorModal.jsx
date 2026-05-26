@@ -3,9 +3,9 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { X, Save, User, Hash, Mail, Phone, MapPin, Shield, CheckCircle, AlertCircle } from 'lucide-react';
 import { toast } from 'sonner';
-import { validateRUN, formatRUN } from '../../utils/validations';
-import { useRoles } from '../../hooks/useRoles';
-import { useAreas } from '../../hooks/useAreas';
+import { validateRUN, formatRUN } from '../../../utils/validations';
+import { useRoles } from '../../../hooks/useRoles';
+import { useAreas } from '../../../hooks/useAreas';
 
 export default function ColaboradorModal({ onClose, onSave, collaboratorToEdit = null }) {
     const { roles = [] } = useRoles();

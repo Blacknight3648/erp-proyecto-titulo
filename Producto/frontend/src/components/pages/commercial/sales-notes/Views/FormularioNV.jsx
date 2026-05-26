@@ -1,6 +1,6 @@
 import React from 'react';
 import { FileText, ChevronRight, Save, Plus, Trash2, Wrench, CheckCircle2, AlertCircle } from 'lucide-react';
-import { pdfService } from '../../../../../services/pdfService';
+import { pdfService } from '../../../../../remote/service/pdfService';
 
 export default function FormularioNV({
     formData,

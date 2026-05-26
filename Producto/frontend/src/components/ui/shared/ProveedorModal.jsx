@@ -12,30 +12,24 @@ import {
   FileText,
   AlertCircle,
 } from "lucide-react";
-
 import { toast } from "sonner";
+import { validateRUN, formatRUN } from "../../../utils/validations";
 
-import {
-  validateRUN,
-  formatRUN,
-  validateEmail,
-  validatePhone,
-} from "../../utils/validations";
+import { useGiros } from "../../../hooks/useGiros";
+import { useSiglas } from "../../../hooks/useSiglas";
 
-import { useGiros } from "../../hooks/useGiros";
-import { useSiglas } from "../../hooks/useSiglas";
-
-export default function ClienteModal({ onClose, onSave, clienteToEdit = null }) {
+export default function ProveedorModal({ onClose, onSave, proveedorToEdit = null }) {
   const { giros } = useGiros();
   const { siglas } = useSiglas();
 
   const initialForm = {
-    razonSocial: "",
-    runCliente: "",
-    correoCliente: "",
-    telefonoCliente: "",
-    direccionCliente: "",
-    contactoCliente: "",
+    razonSocialProveedor: "",
+    runProveedor: "",
+    direccionProveedor: "",
+    telefonoProveedor: "",
+    emailProveedor: "",
+    contactoProveedor: "",
+    tipoProveedor: "",
     siglaId: "",
     giroId: "",
     activo: true,
@@ -45,56 +39,62 @@ export default function ClienteModal({ onClose, onSave, clienteToEdit = null }) 
   const [errors, setErrors] = useState({});
 
   useEffect(() => {
-    if (clienteToEdit) {
+    if (proveedorToEdit) {
       setFormData({
-        razonSocial: clienteToEdit.razonSocial || "",
-        runCliente: formatRUN(clienteToEdit.runCliente) || "",
-        correoCliente: clienteToEdit.correoCliente || "",
-        telefonoCliente:
-          clienteToEdit.telefonoCliente?.replace("+56", "").trim() || "",
-        direccionCliente: clienteToEdit.direccionCliente || "",
-        contactoCliente: clienteToEdit.contactoCliente || "",
-        siglaId: clienteToEdit.sigla?.siglaId?.toString() || "",
-        giroId: clienteToEdit.giro?.giroId?.toString() || "",
-        activo: clienteToEdit.activo ?? true,
+        razonSocialProveedor: proveedorToEdit.razonSocialProveedor || "",
+        runProveedor: formatRUN(proveedorToEdit.runProveedor) || "",
+        direccionProveedor: proveedorToEdit.direccionProveedor || "",
+        telefonoProveedor:
+          proveedorToEdit.telefonoProveedor?.replace("+56", "").trim() || "",
+        emailProveedor: proveedorToEdit.emailProveedor || "",
+        contactoProveedor: proveedorToEdit.contactoProveedor || "",
+        tipoProveedor: proveedorToEdit.tipoProveedor || "",
+        siglaId: proveedorToEdit.sigla?.siglaId?.toString() || "",
+        giroId: proveedorToEdit.giro?.giroId?.toString() || "",
+        activo: proveedorToEdit.activo ?? true,
       });
     } else {
       setFormData(initialForm);
     }
-  }, [clienteToEdit]);
+  }, [proveedorToEdit]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     let finalValue = value;
     const newErrors = { ...errors };
 
-    if (name === "runCliente") {
+    if (name === "runProveedor") {
       const clean = value.replace(/[^0-9Kk]/g, "");
       finalValue = formatRUN(clean);
       if (clean.length > 0 && !validateRUN(clean)) {
-        newErrors[name] = "El RUN ingresado no es válido";
+        newErrors[name] = "El RUN ingresado no es válido (DV incorrecto)";
       } else if (clean.length > 0 && clean.length < 8) {
         newErrors[name] = "RUN demasiado corto";
       } else {
         delete newErrors[name];
       }
-    } else if (name === "telefonoCliente") {
+    } else if (name === "telefonoProveedor") {
       const clean = value.replace(/\D/g, "").slice(0, 9);
       finalValue = clean
         .replace(/(\d{1})(\d{4})(\d{4})/, "$1 $2 $3")
         .replace(/(\d{1})(\d{4})/, "$1 $2")
         .trim();
-      const phoneError = validatePhone(clean);
-      if (phoneError) newErrors[name] = phoneError;
-      else delete newErrors[name];
-    } else if (name === "correoCliente") {
-      finalValue = value.toLowerCase();
-      if (value && !validateEmail(value)) {
-        newErrors[name] = "Formato de correo inválido";
+      if (clean.length > 0 && clean.length < 9) {
+        newErrors[name] = "Deben ser 9 dígitos (Ej: 9 1234 5678)";
+      } else if (clean.length > 0 && !clean.startsWith("9")) {
+        newErrors[name] = "El número debe comenzar con 9";
       } else {
         delete newErrors[name];
       }
-    } else if (name === "razonSocial") {
+    } else if (name === "emailProveedor") {
+      finalValue = value.toLowerCase();
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (value && !emailRegex.test(value)) {
+        newErrors[name] = "Formato de correo electrónico inválido";
+      } else {
+        delete newErrors[name];
+      }
+    } else if (name === "razonSocialProveedor") {
       if (value.trim().length > 0 && value.trim().length < 3) {
         newErrors[name] = "Debe tener al menos 3 caracteres";
       } else {
@@ -107,43 +107,39 @@ export default function ClienteModal({ onClose, onSave, clienteToEdit = null }) 
   };
 
   const isValid = useMemo(() => {
-    try {
-      const runClean = (formData.runCliente || "").replace(/[^0-9Kk]/g, "");
-      const requiredFields =
-        (formData.razonSocial?.trim().length || 0) >= 3 &&
-        validateRUN(runClean) &&
-        !!formData.siglaId &&
-        !!formData.giroId;
-      return Object.keys(errors).length === 0 && requiredFields;
-    } catch (err) {
-      console.error("Error validando ClienteModal:", err);
-      return false;
-    }
+    const runClean = (formData.runProveedor || "").replace(/[^0-9Kk]/g, "");
+    const requiredFields =
+      formData.razonSocialProveedor.trim().length >= 3 &&
+      validateRUN(runClean) &&
+      !!formData.siglaId &&
+      !!formData.giroId;
+    return Object.keys(errors).length === 0 && requiredFields;
   }, [errors, formData]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!isValid) {
-      toast.error("Revisa los campos marcados en rojo");
+      toast.error("Por favor, revisa los campos marcados en rojo");
       return;
     }
 
     const payload = {
-      razonSocial: formData.razonSocial,
-      runCliente: formData.runCliente.replace(/\./g, ""),
-      correoCliente: formData.correoCliente,
-      telefonoCliente: formData.telefonoCliente
-        ? `+56${formData.telefonoCliente.replace(/\s/g, "")}`
+      razonSocialProveedor: formData.razonSocialProveedor,
+      runProveedor: formData.runProveedor.replace(/\./g, ""),
+      direccionProveedor: formData.direccionProveedor,
+      telefonoProveedor: formData.telefonoProveedor
+        ? `+56${formData.telefonoProveedor.replace(/\s/g, "")}`
         : "",
-      direccionCliente: formData.direccionCliente,
-      contactoCliente: formData.contactoCliente,
+      emailProveedor: formData.emailProveedor,
+      contactoProveedor: formData.contactoProveedor,
+      tipoProveedor: formData.tipoProveedor,
       activo: formData.activo,
       sigla: formData.siglaId ? { siglaId: Number(formData.siglaId) } : null,
       giro: formData.giroId ? { giroId: Number(formData.giroId) } : null,
     };
 
     onSave(payload);
-    toast.success("Cliente procesado correctamente");
+    toast.success("Datos procesados correctamente");
   };
 
   const ErrorMsg = ({ name }) =>
@@ -175,11 +171,11 @@ export default function ClienteModal({ onClose, onSave, clienteToEdit = null }) 
 
         <div className="mb-10">
           <h2 className="text-4xl font-black text-gray-800 mb-3">
-            {clienteToEdit ? "Editar Cliente" : "Nuevo Cliente"}
+            {proveedorToEdit ? "Editar Proveedor" : "Nuevo Proveedor"}
           </h2>
           <div className="text-[10px] font-black text-indigo-500 uppercase tracking-[0.2em] flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-indigo-500 animate-pulse"></span>
-            Gestión de Registro de Clientes
+            Gestión de Registro de Proveedores
           </div>
         </div>
 
@@ -191,16 +187,16 @@ export default function ClienteModal({ onClose, onSave, clienteToEdit = null }) 
                 Razón Social *
               </label>
               <div className="relative">
-                <User className={`absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 ${errors.razonSocial ? "text-rose-500" : "text-gray-400"}`} />
+                <User className={`absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 ${errors.razonSocialProveedor ? "text-rose-500" : "text-gray-400"}`} />
                 <input
-                  name="razonSocial"
-                  value={formData.razonSocial}
+                  name="razonSocialProveedor"
+                  value={formData.razonSocialProveedor}
                   onChange={handleChange}
-                  className={inputClass(errors.razonSocial)}
-                  placeholder="Ej: Comercial Valparaíso SPA"
+                  className={inputClass(errors.razonSocialProveedor)}
+                  placeholder="Ej: Transportes Integral SPA"
                 />
               </div>
-              <ErrorMsg name="razonSocial" />
+              <ErrorMsg name="razonSocialProveedor" />
             </div>
 
             {/* RUN */}
@@ -209,22 +205,22 @@ export default function ClienteModal({ onClose, onSave, clienteToEdit = null }) 
                 RUN *
               </label>
               <div className="relative">
-                <span className={`absolute left-5 top-1/2 -translate-y-1/2 text-sm font-black ${errors.runCliente ? "text-rose-500" : "text-gray-400"}`}>
+                <span className={`absolute left-5 top-1/2 -translate-y-1/2 text-sm font-black ${errors.runProveedor ? "text-rose-500" : "text-gray-400"}`}>
                   ID
                 </span>
                 <input
-                  name="runCliente"
-                  value={formData.runCliente}
+                  name="runProveedor"
+                  value={formData.runProveedor}
                   onChange={handleChange}
-                  disabled={!!clienteToEdit}
-                  className={inputClass(errors.runCliente)}
+                  disabled={!!proveedorToEdit}
+                  className={inputClass(errors.runProveedor)}
                   placeholder="12.345.678-9"
                 />
               </div>
-              <ErrorMsg name="runCliente" />
+              <ErrorMsg name="runProveedor" />
             </div>
 
-            {/* Sigla (select) */}
+            {/* Sigla */}
             <div className="space-y-2">
               <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">
                 Sigla *
@@ -247,7 +243,7 @@ export default function ClienteModal({ onClose, onSave, clienteToEdit = null }) 
               </div>
             </div>
 
-            {/* Giro (select) */}
+            {/* Giro */}
             <div className="col-span-2 space-y-2">
               <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">
                 Giro *
@@ -270,47 +266,65 @@ export default function ClienteModal({ onClose, onSave, clienteToEdit = null }) 
               </div>
             </div>
 
+            {/* Tipo de Proveedor */}
+            <div className="space-y-2">
+              <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">
+                Tipo de Proveedor
+              </label>
+              <div className="relative">
+                <Tag className="absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                <input
+                  name="tipoProveedor"
+                  value={formData.tipoProveedor}
+                  onChange={handleChange}
+                  className={inputClass(false)}
+                  placeholder="Ej: Logística, Insumos..."
+                />
+              </div>
+            </div>
+
             {/* Email */}
             <div className="space-y-2">
               <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">
                 Email
               </label>
               <div className="relative">
-                <Mail className={`absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 ${errors.correoCliente ? "text-rose-500" : "text-gray-400"}`} />
+                <Mail className={`absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 ${errors.emailProveedor ? "text-rose-500" : "text-gray-400"}`} />
                 <input
-                  name="correoCliente"
-                  value={formData.correoCliente}
+                  name="emailProveedor"
+                  type="email"
+                  value={formData.emailProveedor}
                   onChange={handleChange}
-                  className={inputClass(errors.correoCliente)}
-                  placeholder="contacto@empresa.cl"
+                  className={inputClass(errors.emailProveedor)}
+                  placeholder="mail@ejemplo.cl"
                 />
               </div>
-              <ErrorMsg name="correoCliente" />
+              <ErrorMsg name="emailProveedor" />
             </div>
 
             {/* Teléfono */}
             <div className="space-y-2">
               <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">
-                Teléfono
+                Teléfono Móvil
               </label>
               <div className="relative">
-                <Phone className={`absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 ${errors.telefonoCliente ? "text-rose-500" : "text-gray-400"}`} />
-                <span className="absolute left-12 top-1/2 -translate-y-1/2 text-sm font-black text-gray-400">
+                <Phone className={`absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 ${errors.telefonoProveedor ? "text-rose-500" : "text-gray-400"}`} />
+                <span className="absolute left-12 top-1/2 -translate-y-1/2 text-sm font-black text-gray-400 select-none">
                   +56
                 </span>
                 <input
-                  name="telefonoCliente"
-                  value={formData.telefonoCliente}
+                  name="telefonoProveedor"
+                  value={formData.telefonoProveedor}
                   onChange={handleChange}
                   className={`w-full pl-24 pr-6 py-5 bg-gray-50 rounded-[1.5rem] border-2 transition-all outline-none font-bold text-sm ${
-                    errors.telefonoCliente
+                    errors.telefonoProveedor
                       ? "border-rose-500 bg-rose-50/30"
                       : "border-transparent focus:bg-white focus:border-indigo-500"
                   }`}
                   placeholder="9 1234 5678"
                 />
               </div>
-              <ErrorMsg name="telefonoCliente" />
+              <ErrorMsg name="telefonoProveedor" />
             </div>
 
             {/* Contacto */}
@@ -321,11 +335,11 @@ export default function ClienteModal({ onClose, onSave, clienteToEdit = null }) 
               <div className="relative">
                 <Briefcase className="absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                 <input
-                  name="contactoCliente"
-                  value={formData.contactoCliente}
+                  name="contactoProveedor"
+                  value={formData.contactoProveedor}
                   onChange={handleChange}
                   className={inputClass(false)}
-                  placeholder="Nombre del responsable"
+                  placeholder="Nombre del ejecutivo"
                 />
               </div>
             </div>
@@ -338,8 +352,8 @@ export default function ClienteModal({ onClose, onSave, clienteToEdit = null }) 
               <div className="relative">
                 <MapPin className="absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                 <input
-                  name="direccionCliente"
-                  value={formData.direccionCliente}
+                  name="direccionProveedor"
+                  value={formData.direccionProveedor}
                   onChange={handleChange}
                   className={inputClass(false)}
                   placeholder="Ciudad, Calle #123"
@@ -352,13 +366,11 @@ export default function ClienteModal({ onClose, onSave, clienteToEdit = null }) 
             type="submit"
             disabled={!isValid}
             className={`w-full py-6 bg-slate-800 text-white rounded-[2rem] text-xs font-black uppercase tracking-[0.3em] flex items-center justify-center transition shadow-xl ${
-              !isValid
-                ? "opacity-30 cursor-not-allowed"
-                : "hover:bg-indigo-600 hover:-translate-y-1 active:scale-95"
+              !isValid ? "opacity-30 cursor-not-allowed" : "hover:bg-indigo-600 hover:-translate-y-1 active:scale-95"
             }`}
           >
             <FileText className="w-5 h-5 mr-3" />
-            {clienteToEdit ? "Actualizar Cliente" : "Guardar Nuevo Cliente"}
+            {proveedorToEdit ? "Actualizar Proveedor" : "Guardar Nuevo Proveedor"}
           </button>
         </form>
       </div>

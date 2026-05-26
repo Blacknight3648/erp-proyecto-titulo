@@ -1,5 +1,5 @@
 import { toast } from 'sonner';
-import { validateNumericInput } from '../../utils/validations';
+import { validateNumericInput } from '../../../utils/validations';
 
 export default function CostosFijosPanel({ costos, onChange, readOnly = false }) {
   const fields = [

@@ -10,7 +10,7 @@ import {
   Edit3,
 } from "lucide-react";
 
-import { formatRUN } from "../../utils/validations";
+import { formatRUN } from "../../../utils/validations";
 
 export default function ClienteCard({ cliente, onDelete, onToggle, onEdit }) {
   const isActive = cliente.activo;

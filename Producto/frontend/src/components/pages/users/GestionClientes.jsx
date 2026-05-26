@@ -6,8 +6,8 @@ import { Toaster } from "sonner";
 
 import CrudGridLayout from "../../layout/CrudGridLayout";
 import { useClientes } from "../../../hooks/useClientes";
-import ClienteCard from "../../ui/ClienteCard";
-import ClienteModal from "../../ui/ClienteModal";
+import ClienteCard from "../../ui/shared/ClienteCard";
+import ClienteModal from "../../ui/shared/ClienteModal";
 
 import { normalizeCliente } from "../../../utils/helpers/normalizeCliente";
 

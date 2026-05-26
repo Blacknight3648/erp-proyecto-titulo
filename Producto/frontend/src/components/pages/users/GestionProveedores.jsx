@@ -6,8 +6,8 @@ import { Toaster } from "sonner";
 
 import CrudGridLayout from "../../layout/CrudGridLayout";
 import { useProveedores } from "../../../hooks/useProveedores";
-import ProveedorCard from "../../ui/ProveedorCard";
-import ProveedorModal from "../../ui/ProveedorModal";
+import ProveedorCard from "../../ui/shared/ProveedorCard";
+import ProveedorModal from "../../ui/shared/ProveedorModal";
 
 import { normalizeProveedor } from "../../../utils/helpers/normalizeProveedor";
 

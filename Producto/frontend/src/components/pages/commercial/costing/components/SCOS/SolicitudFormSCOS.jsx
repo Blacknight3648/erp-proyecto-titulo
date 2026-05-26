@@ -3,10 +3,10 @@ import SolicitudHeader from "../../../../../../components/layout/SolicitudHeader
 import { useClientes } from "../../../../../../hooks/useClientes.js";
 import { useVendedores } from "../../../../../../hooks/useVendedores.js";
 import { usePlantillas } from "../../../../../../hooks/usePlantillas.js";
-import LogotipoPanel from "../../../../../../components/ui/LogotipoPanel.jsx";
-import TelasSCOSPanel from "../../../../../../components/ui/TelasSCOSPanel.jsx";
-import AccesoriosSCOSPanel from "../../../../../../components/ui/AccesoriosSCOSPanel.jsx";
-import PlantillasPanel from "../../../../../../components/ui/PlantillasPanel.jsx";
+import LogotipoPanel from "../../../../../../components/ui/shared/LogotipoPanel.jsx";
+import TelasSCOSPanel from "../../../../../../components/ui/shared/TelasSCOSPanel.jsx";
+import AccesoriosSCOSPanel from "../../../../../../components/ui/shared/AccesoriosSCOSPanel.jsx";
+import PlantillasPanel from "../../../../../../components/ui/shared/PlantillasPanel.jsx";
 import { ClipboardList, Shirt } from "lucide-react";
 
 const generateId = () => {

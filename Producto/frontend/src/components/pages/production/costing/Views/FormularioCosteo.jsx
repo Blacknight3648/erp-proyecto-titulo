@@ -11,7 +11,7 @@ import {
     TrendingDown,
     ShieldCheck
 } from 'lucide-react';
-import CosteoTable from '../../../2. COMERCIAL/COSTEOS/components/shared/CosteoTable';
+import CosteoTable from '../../../commercial/costing/components/shared/CosteoTable';
 import { FIELD_LABELS } from '../../../../../hooks/usePlantillas';
 
 export default function FormularioCosteo({

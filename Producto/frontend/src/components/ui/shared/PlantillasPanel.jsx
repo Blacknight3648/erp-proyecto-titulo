@@ -1,6 +1,6 @@
 import { ChevronDown, ChevronUp, Settings2, Check, X, Plus, Trash2, Link as LinkIcon } from 'lucide-react';
 import { useState, useEffect } from 'react';
-import { usePlantillas, FIELD_LABELS, ALL_FIELDS } from '../../hooks/usePlantillas';
+import { usePlantillas, FIELD_LABELS, ALL_FIELDS } from '../../../hooks/usePlantillas';
 import { toast } from 'sonner';
 
 export default function PlantillasPanel({ title = "Especificaciones Técnicas", data, onUpdate, articuloDescripcion = "", readOnly = false, telas = [], accesorios = [] }) {

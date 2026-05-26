@@ -14,7 +14,7 @@ import {
     Trello
 } from 'lucide-react';
 import { useComercial } from '../../../hooks/useComercial';
-import CostoBadge from './COSTEOS/components/shared/CostoBadge';
+import CostoBadge from './costing/components/shared/CostoBadge';
 import SpecsCard from '../../ui/SpecsCard';
 import ProgressCard from '../../ui/ProgressCard';
 

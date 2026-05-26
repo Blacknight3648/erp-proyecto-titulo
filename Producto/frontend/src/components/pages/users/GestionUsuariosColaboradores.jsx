@@ -6,8 +6,8 @@ import { Toaster } from "sonner";
 import CrudGridLayout from "../../layout/CrudGridLayout";
 
 import { useColaboradores } from "../../../hooks/useColaboradores";
-import ColaboradorCard from "../../ui/ColaboradorCard";
-import ColaboradorModal from "../../ui/ColaboradorModal";
+import ColaboradorCard from "../../ui/shared/ColaboradorCard";
+import ColaboradorModal from "../../ui/shared/ColaboradorModal";
 
 export default function GestionUsuariosColaboradores() {
   const { 

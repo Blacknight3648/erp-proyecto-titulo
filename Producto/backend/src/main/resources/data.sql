@@ -129,7 +129,7 @@ MERGE INTO evaluaciones_negocio (idevn, numero, referencia, cliente_nombre, clie
 MERGE INTO notas_venta (idnv, numeronv, evaluacion_negocio_id, cliente_id, vendedor_id, estado, es_kit, fecha_emision, fecha_entrega_estimada, monto_subtotal, moneda_subtotal, monto_iva, moneda_iva, monto_total, moneda_total, created_at, updated_at)
     KEY (idnv)
     VALUES
-    (1, 'NV-2024-001', 2, 2, 2, 'APROBADA', false, CURRENT_DATE, DATEADD('DAY', 30, CURRENT_DATE), 300000.00, 'CLP', 57000.00, 'CLP', 357000.00, 'CLP', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+    (1, 'NV-2024-001', 2, 2, 2, 'BORRADOR', false, CURRENT_DATE, DATEADD('DAY', 30, CURRENT_DATE), 300000.00, 'CLP', 57000.00, 'CLP', 357000.00, 'CLP', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
     (2, 'NV-2024-002', 1, 1, 1, 'EN_PRODUCCION', false, CURRENT_DATE, DATEADD('DAY', 45, CURRENT_DATE), 850000.00, 'CLP', 161500.00, 'CLP', 1011500.00, 'CLP', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
 -- ============================================================

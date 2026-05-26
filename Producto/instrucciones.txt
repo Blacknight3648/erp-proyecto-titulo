@@ -1,0 +1,62 @@
+INSTRUCCIONES PARA LEVANTAR LOS CONTENEDORES
+============================================
+
+REQUISITOS PREVIOS
+------------------
+- Docker Desktop instalado y en ejecucion
+- Abrir una terminal en la carpeta: Producto/
+
+
+LEVANTAR TODO (primera vez o tras cambios de codigo)
+-----------------------------------------------------
+    docker compose up --build
+
+La primera vez tarda aproximadamente 3-5 minutos (descarga imagenes base y compila).
+
+
+URLS DISPONIBLES UNA VEZ LEVANTADO
+-----------------------------------
+    Frontend (ERP)  ->  http://localhost:5173
+    Backend API     ->  http://localhost:8050/api/v1
+    Swagger UI      ->  http://localhost:8050/swagger-ui/index.html
+    H2 Console      ->  http://localhost:8050/h2-console
+
+    H2 Console - datos de conexion:
+        JDBC URL : jdbc:h2:mem:antuandb
+        Usuario  : sa
+        Password : sa
+
+
+COMANDOS UTILES
+---------------
+    Levantar en background (sin ver logs):
+        docker compose up --build -d
+
+    Ver logs en tiempo real:
+        docker compose logs -f
+
+    Ver logs solo del backend:
+        docker compose logs -f backend
+
+    Detener contenedores:
+        docker compose down
+
+    Detener y eliminar volumenes:
+        docker compose down -v
+
+    Reconstruir solo el frontend:
+        docker compose up --build frontend
+
+    Reconstruir solo el backend:
+        docker compose up --build backend
+
+
+NOTAS
+-----
+- El perfil activo es "dev" (base de datos H2 en memoria).
+  Los datos se reinician cada vez que el contenedor se detiene.
+
+- El frontend espera a que el backend este saludable antes de arrancar.
+
+- Los scripts en scripts_sql/ son de referencia manual.
+  Para ejecutarlos, conectarse a H2 Console con los datos indicados arriba.

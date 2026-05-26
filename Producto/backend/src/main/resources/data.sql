@@ -120,7 +120,7 @@ MERGE INTO solicitudes_costos (idscos, numero, estado, tipo, cliente_id, vendedo
 MERGE INTO evaluaciones_negocio (idevn, numero, referencia, cliente_nombre, cliente_id, vendedor_id, estado, fecha_evaluacion, porcentaje_comision, created_at, updated_at)
     KEY (idevn)
     VALUES
-    (1, 'EVN-2024-001', 'Cotización Poleras Hites', 'HITES S.A.', 1, 1, 'EN_REVISION', CURRENT_DATE, 5.00, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+    (1, 'EVN-2024-001', 'Cotización Poleras Hites', 'HITES S.A.', 1, 1, 'EVALUACION', CURRENT_DATE, 5.00, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
     (2, 'EVN-2024-002', 'Licitación Pantalones', 'LABORATORIO MEDCELL', 2, 2, 'APROBADA', CURRENT_DATE, 3.50, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
 -- ============================================================
@@ -148,3 +148,4 @@ ALTER TABLE produccion_costeo_items ALTER COLUMN id_costeo_item RESTART WITH 500
 ALTER TABLE scos_telas ALTER COLUMN idscostela RESTART WITH 2000;
 ALTER TABLE scos_logotipos ALTER COLUMN id RESTART WITH 2000;
 ALTER TABLE evaluaciones_negocio ALTER COLUMN idevn RESTART WITH 1000;
+ALTER TABLE notas_venta ALTER COLUMN idnv RESTART WITH 1000;

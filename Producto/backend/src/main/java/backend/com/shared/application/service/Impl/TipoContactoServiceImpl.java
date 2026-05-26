@@ -41,8 +41,8 @@ public class TipoContactoServiceImpl implements TipoContactoService {
     }
 
     @Override
-    public Optional<TipoContactoDTO> obtenerPorNombreTipoContacto(String nombreTipoContacto) {
-        return tipoContactoRepository.findByDescripcionTipoContactoIgnoreCase(nombreTipoContacto)
+    public Optional<TipoContactoDTO> obtenerPorDescripcionTipoContacto(String descripcionTipoContacto) {
+        return tipoContactoRepository.findByDescripcionTipoContactoIgnoreCase(descripcionTipoContacto)
                 .map(entity -> tipoContactoMapper.toDTO(tipoContactoMapper.toDomain(entity)));
     }
 
@@ -76,14 +76,14 @@ public class TipoContactoServiceImpl implements TipoContactoService {
     }
 
     @Override
-    public Optional<TipoContactoDTO> obtenerOCrearPorNombreTipoContacto(String nombreTipoContacto) {
-        if (nombreTipoContacto == null || nombreTipoContacto.isBlank()) {
+    public Optional<TipoContactoDTO> obtenerOCrearPorDescripcionTipoContacto(String descripcionTipoContacto) {
+        if (descripcionTipoContacto == null || descripcionTipoContacto.isBlank()) {
             return Optional.empty();
         }
-        String nombre = nombreTipoContacto.trim();
+        String nombre = descripcionTipoContacto.trim();
 
-        Optional<TipoContactoJpaEntity> existente =
-                tipoContactoRepository.findByDescripcionTipoContactoIgnoreCase(nombre);
+        Optional<TipoContactoJpaEntity> existente = tipoContactoRepository
+                .findByDescripcionTipoContactoIgnoreCase(nombre);
         if (existente.isPresent()) {
             return existente.map(entity -> tipoContactoMapper.toDTO(tipoContactoMapper.toDomain(entity)));
         }

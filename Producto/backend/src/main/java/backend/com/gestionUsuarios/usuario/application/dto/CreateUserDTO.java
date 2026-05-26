@@ -20,10 +20,6 @@ public class CreateUserDTO {
     private String usuarioEmail;
     private String usuarioPassword;
     private String telefono;
-    private LocalDate fechaNacimiento;
-    private String direccion;
-    private String region;
-    private String comuna;
     private Set<String> roles; // nombres de roles
     private Set<String> areas; // nombres de áreas
 

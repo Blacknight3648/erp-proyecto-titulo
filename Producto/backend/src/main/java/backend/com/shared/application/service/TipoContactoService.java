@@ -11,7 +11,7 @@ public interface TipoContactoService {
 
     Optional<TipoContactoDTO> obtenerPorId(Long id);
 
-    Optional<TipoContactoDTO> obtenerPorNombreTipoContacto(String nombreTipoContacto);
+    Optional<TipoContactoDTO> obtenerPorDescripcionTipoContacto(String descripcionTipoContacto);
 
     TipoContactoDTO crearTipoContacto(TipoContactoDTO tipoContacto);
 
@@ -19,6 +19,6 @@ public interface TipoContactoService {
 
     void eliminarTipoContacto(Long id);
 
-    Optional<TipoContactoDTO> obtenerOCrearPorNombreTipoContacto(String nombreTipoContacto);
+    Optional<TipoContactoDTO> obtenerOCrearPorDescripcionTipoContacto(String descripcionTipoContacto);
 
 }

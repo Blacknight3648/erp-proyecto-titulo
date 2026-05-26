@@ -39,11 +39,11 @@ MERGE INTO roles (id_role, nombre, descripcion, area_id)
 -- ============================================================
 -- 3. USUARIOS (RUTs y Teléfonos validados)
 -- ============================================================
-MERGE INTO usuarios (id_usuario, run, nombre, apellidos, email, password, telefono, fecha_nacimiento, direccion, region, comuna, enabled)
+MERGE INTO usuarios (id_usuario, run, nombre, apellidos, email, password, telefono, enabled)
     KEY (id_usuario)
     VALUES
-    (1, '15342981-2', 'Carlos', 'Iturrieta Méndez', 'c.iturrieta@empresa.cl', '$2a$10$xyz1234567890123456789', '+56988223344', '1985-05-20', 'Huérfanos 1160', 'Metropolitana', 'Santiago', true),
-    (2, '17589432-K', 'Valentina', 'Lagos Espinoza', 'v.lagos@empresa.cl', '$2a$10$abc1234567890123456789', '+56977445566', '1991-11-08', 'Av. Libertad 120', 'Valparaíso', 'Viña del Mar', true);
+    (1, '15342981-2', 'Carlos', 'Iturrieta Méndez', 'c.iturrieta@empresa.cl', '$2a$10$xyz1234567890123456789', '+56988223344', true),
+    (2, '17589432-K', 'Valentina', 'Lagos Espinoza', 'v.lagos@empresa.cl', '$2a$10$abc1234567890123456789', '+56977445566', true);
 
 -- ============================================================
 -- 4. VENDEDORES

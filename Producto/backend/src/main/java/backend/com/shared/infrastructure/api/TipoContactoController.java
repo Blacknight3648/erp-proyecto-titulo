@@ -26,9 +26,9 @@ public class TipoContactoController {
         return tipoContactoService.obtenerPorId(id).orElse(null);
     }
 
-    @GetMapping("/nombre/{nombreTipoContacto}")
-    public TipoContactoDTO getTipoContactoByNombreTipoContacto(@PathVariable String nombreTipoContacto) {
-        return tipoContactoService.obtenerPorNombreTipoContacto(nombreTipoContacto).orElse(null);
+    @GetMapping("/descripcion/{descripcionTipoContacto}")
+    public TipoContactoDTO getTipoContactoByDescripcionTipoContacto(@PathVariable String descripcionTipoContacto) {
+        return tipoContactoService.obtenerPorDescripcionTipoContacto(descripcionTipoContacto).orElse(null);
     }
 
     @PostMapping

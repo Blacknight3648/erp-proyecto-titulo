@@ -16,99 +16,92 @@ import java.util.stream.Collectors;
 public class UserMapper {
 
         public UserDTO toUserDTO(User user) {
-                if (user == null) return null;
+                if (user == null)
+                        return null;
 
                 Set<RoleDTO> roles = null;
                 if (user.getRoles() != null) {
                         roles = user.getRoles()
-                                .stream()
-                                .map(role -> RoleDTO.builder()
-                                        .id(role.getId())
-                                        .nombre(role.getNombre())
-                                        .descripcion(role.getDescripcion())
-                                        .build())
-                                .collect(Collectors.toSet());
+                                        .stream()
+                                        .map(role -> RoleDTO.builder()
+                                                        .id(role.getId())
+                                                        .nombre(role.getNombre())
+                                                        .descripcion(role.getDescripcion())
+                                                        .build())
+                                        .collect(Collectors.toSet());
                 }
 
                 Set<AreaDTO> areas = null;
                 if (user.getAreas() != null) {
                         areas = user.getAreas()
-                                .stream()
-                                .map(area -> AreaDTO.builder()
-                                        .areaId(area.getAreaId())
-                                        .nombre(area.getNombre())
-                                        .descripcion(area.getDescripcion())
-                                        .build())
-                                .collect(Collectors.toSet());
+                                        .stream()
+                                        .map(area -> AreaDTO.builder()
+                                                        .areaId(area.getAreaId())
+                                                        .nombre(area.getNombre())
+                                                        .descripcion(area.getDescripcion())
+                                                        .build())
+                                        .collect(Collectors.toSet());
                 }
 
                 return UserDTO.builder()
-                        .usuarioId(user.getUsuarioId())
-                        .usuarioRun(user.getUsuarioRun())
-                        .usuarioNombre(user.getUsuarioNombre())
-                        .usuarioApellidos(user.getUsuarioApellidos())
-                        .usuarioEmail(user.getUsuarioEmail())
-                        .telefono(user.getTelefono())
-                        .fechaNacimiento(user.getFechaNacimiento())
-                        .direccion(user.getDireccion())
-                        .region(user.getRegion())
-                        .comuna(user.getComuna())
-                        .enabled(user.isEnabled())
-                        .roles(roles)
-                        .areas(areas)
-                        .build();
+                                .usuarioId(user.getUsuarioId())
+                                .usuarioRun(user.getUsuarioRun())
+                                .usuarioNombre(user.getUsuarioNombre())
+                                .usuarioApellidos(user.getUsuarioApellidos())
+                                .usuarioEmail(user.getUsuarioEmail())
+                                .telefono(user.getTelefono())
+                                .enabled(user.isEnabled())
+                                .roles(roles)
+                                .areas(areas)
+                                .build();
         }
 
         public User toUser(UserDTO dto) {
-                if (dto == null) return null;
+                if (dto == null)
+                        return null;
 
                 return User.builder()
-                        .usuarioId(dto.getUsuarioId())
-                        .usuarioRun(dto.getUsuarioRun())
-                        .usuarioNombre(dto.getUsuarioNombre())
-                        .usuarioApellidos(dto.getUsuarioApellidos())
-                        .usuarioEmail(dto.getUsuarioEmail())
-                        .usuarioPassword(dto.getUsuarioPassword())
-                        .telefono(dto.getTelefono())
-                        .fechaNacimiento(dto.getFechaNacimiento())
-                        .direccion(dto.getDireccion())
-                        .region(dto.getRegion())
-                        .comuna(dto.getComuna())
-                        .enabled(dto.isEnabled())
-                        .build();
+                                .usuarioId(dto.getUsuarioId())
+                                .usuarioRun(dto.getUsuarioRun())
+                                .usuarioNombre(dto.getUsuarioNombre())
+                                .usuarioApellidos(dto.getUsuarioApellidos())
+                                .usuarioEmail(dto.getUsuarioEmail())
+                                .usuarioPassword(dto.getUsuarioPassword())
+                                .telefono(dto.getTelefono())
+                                .enabled(dto.isEnabled())
+                                .build();
         }
 
         public User toUser(CreateUserDTO dto) {
-                if (dto == null) return null;
+                if (dto == null)
+                        return null;
 
                 return User.builder()
-                        .usuarioRun(dto.getUsuarioRun())
-                        .usuarioNombre(dto.getUsuarioNombre())
-                        .usuarioApellidos(dto.getUsuarioApellidos())
-                        .usuarioEmail(dto.getUsuarioEmail())
-                        .usuarioPassword(dto.getUsuarioPassword())
-                        .telefono(dto.getTelefono())
-                        .fechaNacimiento(dto.getFechaNacimiento())
-                        .direccion(dto.getDireccion())
-                        .region(dto.getRegion())
-                        .comuna(dto.getComuna())
-                        .enabled(true)
-                        .build();
+                                .usuarioRun(dto.getUsuarioRun())
+                                .usuarioNombre(dto.getUsuarioNombre())
+                                .usuarioApellidos(dto.getUsuarioApellidos())
+                                .usuarioEmail(dto.getUsuarioEmail())
+                                .usuarioPassword(dto.getUsuarioPassword())
+                                .telefono(dto.getTelefono())
+                                .enabled(true)
+                                .build();
         }
 
         public Set<Role> toRoleEntities(Set<String> roles) {
-                if (roles == null) return null;
+                if (roles == null)
+                        return null;
 
                 return roles.stream()
-                        .map(nombre -> Role.builder().nombre(nombre).build())
-                        .collect(Collectors.toSet());
+                                .map(nombre -> Role.builder().nombre(nombre).build())
+                                .collect(Collectors.toSet());
         }
 
         public Set<Area> toAreaEntities(Set<String> areas) {
-                if (areas == null) return null;
+                if (areas == null)
+                        return null;
 
                 return areas.stream()
-                        .map(nombre -> Area.builder().nombre(nombre).build())
-                        .collect(Collectors.toSet());
+                                .map(nombre -> Area.builder().nombre(nombre).build())
+                                .collect(Collectors.toSet());
         }
 }

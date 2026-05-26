@@ -52,20 +52,6 @@ public class User {
         @Column(name = "telefono", length = 50, nullable = false)
         private String telefono;
 
-        @Column(name = "fecha_nacimiento", nullable = false)
-        private LocalDate fechaNacimiento;
-
-        @Column(name = "direccion", length = 50, nullable = false)
-        private String direccion;
-
-        @NotBlank
-        @Column(name = "region", length = 50, nullable = false)
-        private String region;
-
-        @NotBlank
-        @Column(name = "comuna", length = 50, nullable = false)
-        private String comuna;
-
         @Builder.Default
         @Column(name = "enabled")
         private boolean enabled = true;
@@ -73,24 +59,16 @@ public class User {
         // Roles del usuario
         @Builder.Default
         @ManyToMany(fetch = FetchType.EAGER, cascade = { CascadeType.PERSIST, CascadeType.MERGE })
-        @JoinTable(
-                name = "usuarios_roles",
-                joinColumns = @JoinColumn(name = "user_id"),
-                inverseJoinColumns = @JoinColumn(name = "role_id"),
-                uniqueConstraints = @UniqueConstraint(columnNames = {"user_id", "role_id"})
-        )
+        @JoinTable(name = "usuarios_roles", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"), uniqueConstraints = @UniqueConstraint(columnNames = {
+                        "user_id", "role_id" }))
         @JsonIgnoreProperties({ "roles", "area" })
         private Set<Role> roles = new HashSet<>();
 
         // Áreas a las que pertenece
         @Builder.Default
         @ManyToMany(fetch = FetchType.EAGER, cascade = { CascadeType.PERSIST, CascadeType.MERGE })
-        @JoinTable(
-                name = "usuarios_areas",
-                joinColumns = @JoinColumn(name = "user_id"),
-                inverseJoinColumns = @JoinColumn(name = "area_id"),
-                uniqueConstraints = @UniqueConstraint(columnNames = {"user_id", "area_id"})
-        )
+        @JoinTable(name = "usuarios_areas", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "area_id"), uniqueConstraints = @UniqueConstraint(columnNames = {
+                        "user_id", "area_id" }))
         @JsonIgnoreProperties({ "roles" })
         private Set<Area> areas = new HashSet<>();
 }

@@ -29,7 +29,7 @@ public class CrearNVCommand {
     private String detalleKit;
 
     @NotNull(message = "La fecha de entrega estimada es obligatoria")
-    @JsonFormat(pattern = "dd-MM-yyyy")
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate fechaEntregaEstimada;
 
     @Valid

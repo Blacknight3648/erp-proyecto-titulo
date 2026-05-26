@@ -106,6 +106,33 @@ MERGE INTO configuracion_plantilla_campos (configuracion_id, campo)
     (3, 'pretinasRuedo');
 
 -- ============================================================
+-- 7.1. SOLICITUDES DE COSTOS (SCOS)
+-- ============================================================
+MERGE INTO solicitudes_costos (idscos, numero, estado, tipo, cliente_id, vendedor_id, articulo_descripcion, nombre_prenda, genero, tallaje, es_muestra, has_logo, cantidad, fecha, costo_total)
+    KEY (idscos)
+    VALUES
+    (1, 'SCOS-2024-001', 'PENDIENTE', 'NUEVO', 1, 1, 'Polera Pique Corporativa', 'POLERA', 'UNISEX', 'L', false, true, 100, CURRENT_DATE, 150000.00),
+    (2, 'SCOS-2024-002', 'APROBADA', 'REPETICION', 2, 2, 'Pantalón Cargo Operario', 'PANTALON', 'MASCULINO', '42', false, false, 50, CURRENT_DATE, 250000.00);
+
+-- ============================================================
+-- 7.2. EVALUACIONES DE NEGOCIO (EVN)
+-- ============================================================
+MERGE INTO evaluaciones_negocio (idevn, numero, referencia, cliente_nombre, cliente_id, vendedor_id, estado, fecha_evaluacion, porcentaje_comision, created_at, updated_at)
+    KEY (idevn)
+    VALUES
+    (1, 'EVN-2024-001', 'Cotización Poleras Hites', 'HITES S.A.', 1, 1, 'EVALUACION', CURRENT_DATE, 5.00, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+    (2, 'EVN-2024-002', 'Licitación Pantalones', 'LABORATORIO MEDCELL', 2, 2, 'APROBADA', CURRENT_DATE, 3.50, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+
+-- ============================================================
+-- 7.3. NOTAS DE VENTA (NV)
+-- ============================================================
+MERGE INTO notas_venta (idnv, numeronv, evaluacion_negocio_id, cliente_id, vendedor_id, estado, es_kit, fecha_emision, fecha_entrega_estimada, monto_subtotal, moneda_subtotal, monto_iva, moneda_iva, monto_total, moneda_total, created_at, updated_at)
+    KEY (idnv)
+    VALUES
+    (1, 'NV-2024-001', 2, 2, 2, 'APROBADA', false, CURRENT_DATE, DATEADD('DAY', 30, CURRENT_DATE), 300000.00, 'CLP', 57000.00, 'CLP', 357000.00, 'CLP', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+    (2, 'NV-2024-002', 1, 1, 1, 'EN_PRODUCCION', false, CURRENT_DATE, DATEADD('DAY', 45, CURRENT_DATE), 850000.00, 'CLP', 161500.00, 'CLP', 1011500.00, 'CLP', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+
+-- ============================================================
 -- 8. REINICIO DE SECUENCIAS (Unificado al final)
 -- ============================================================
 ALTER TABLE areas ALTER COLUMN id_area RESTART WITH 50;
@@ -121,3 +148,4 @@ ALTER TABLE produccion_costeo_items ALTER COLUMN id_costeo_item RESTART WITH 500
 ALTER TABLE scos_telas ALTER COLUMN idscostela RESTART WITH 2000;
 ALTER TABLE scos_logotipos ALTER COLUMN id RESTART WITH 2000;
 ALTER TABLE evaluaciones_negocio ALTER COLUMN idevn RESTART WITH 1000;
+ALTER TABLE notas_venta ALTER COLUMN idnv RESTART WITH 1000;

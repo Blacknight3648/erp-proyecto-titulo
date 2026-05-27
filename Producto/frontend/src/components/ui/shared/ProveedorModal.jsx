@@ -16,11 +16,9 @@ import { toast } from "sonner";
 import { validateRUN, formatRUN } from "../../../utils/validations";
 
 import { useGiros } from "../../../hooks/useGiros";
-import { useSiglas } from "../../../hooks/useSiglas";
 
 export default function ProveedorModal({ onClose, onSave, proveedorToEdit = null }) {
   const { giros } = useGiros();
-  const { siglas } = useSiglas();
 
   const initialForm = {
     razonSocialProveedor: "",
@@ -30,7 +28,7 @@ export default function ProveedorModal({ onClose, onSave, proveedorToEdit = null
     emailProveedor: "",
     contactoProveedor: "",
     tipoProveedor: "",
-    siglaId: "",
+    sigla: "",
     giroId: "",
     activo: true,
   };
@@ -49,7 +47,7 @@ export default function ProveedorModal({ onClose, onSave, proveedorToEdit = null
         emailProveedor: proveedorToEdit.emailProveedor || "",
         contactoProveedor: proveedorToEdit.contactoProveedor || "",
         tipoProveedor: proveedorToEdit.tipoProveedor || "",
-        siglaId: proveedorToEdit.sigla?.siglaId?.toString() || "",
+        sigla: typeof proveedorToEdit.sigla === "string" ? proveedorToEdit.sigla : (proveedorToEdit.sigla?.nombre || ""),
         giroId: proveedorToEdit.giro?.giroId?.toString() || "",
         activo: proveedorToEdit.activo ?? true,
       });
@@ -111,7 +109,7 @@ export default function ProveedorModal({ onClose, onSave, proveedorToEdit = null
     const requiredFields =
       formData.razonSocialProveedor.trim().length >= 3 &&
       validateRUN(runClean) &&
-      !!formData.siglaId &&
+      !!formData.sigla &&
       !!formData.giroId;
     return Object.keys(errors).length === 0 && requiredFields;
   }, [errors, formData]);
@@ -134,7 +132,7 @@ export default function ProveedorModal({ onClose, onSave, proveedorToEdit = null
       contactoProveedor: formData.contactoProveedor,
       tipoProveedor: formData.tipoProveedor,
       activo: formData.activo,
-      sigla: formData.siglaId ? { siglaId: Number(formData.siglaId) } : null,
+      sigla: formData.sigla.trim(),
       giro: formData.giroId ? { giroId: Number(formData.giroId) } : null,
     };
 
@@ -220,26 +218,19 @@ export default function ProveedorModal({ onClose, onSave, proveedorToEdit = null
               <ErrorMsg name="runProveedor" />
             </div>
 
-            {/* Sigla */}
             <div className="space-y-2">
               <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">
                 Sigla *
               </label>
               <div className="relative">
                 <Tag className="absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-                <select
-                  name="siglaId"
-                  value={formData.siglaId}
+                <input
+                  name="sigla"
+                  value={formData.sigla}
                   onChange={handleChange}
                   className={inputClass(false)}
-                >
-                  <option value="">Seleccionar sigla...</option>
-                  {siglas.map((s) => (
-                    <option key={s.siglaId} value={s.siglaId}>
-                      {s.siglaAbreviatura || s.descripcionSigla}
-                    </option>
-                  ))}
-                </select>
+                  placeholder="Ej: LTDA."
+                />
               </div>
             </div>
 

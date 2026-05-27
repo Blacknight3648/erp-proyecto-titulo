@@ -23,11 +23,9 @@ import {
 } from "../../../utils/validations";
 
 import { useGiros } from "../../../hooks/useGiros";
-import { useSiglas } from "../../../hooks/useSiglas";
 
 export default function ClienteModal({ onClose, onSave, clienteToEdit = null }) {
   const { giros } = useGiros();
-  const { siglas } = useSiglas();
 
   const initialForm = {
     razonSocial: "",
@@ -36,7 +34,7 @@ export default function ClienteModal({ onClose, onSave, clienteToEdit = null }) 
     telefonoCliente: "",
     direccionCliente: "",
     contactoCliente: "",
-    siglaId: "",
+    sigla: "",
     giroId: "",
     activo: true,
   };
@@ -54,7 +52,7 @@ export default function ClienteModal({ onClose, onSave, clienteToEdit = null }) 
           clienteToEdit.telefonoCliente?.replace("+56", "").trim() || "",
         direccionCliente: clienteToEdit.direccionCliente || "",
         contactoCliente: clienteToEdit.contactoCliente || "",
-        siglaId: clienteToEdit.sigla?.siglaId?.toString() || "",
+        sigla: typeof clienteToEdit.sigla === "string" ? clienteToEdit.sigla : (clienteToEdit.sigla?.nombre || ""),
         giroId: clienteToEdit.giro?.giroId?.toString() || "",
         activo: clienteToEdit.activo ?? true,
       });
@@ -112,7 +110,7 @@ export default function ClienteModal({ onClose, onSave, clienteToEdit = null }) 
       const requiredFields =
         (formData.razonSocial?.trim().length || 0) >= 3 &&
         validateRUN(runClean) &&
-        !!formData.siglaId &&
+        !!formData.sigla &&
         !!formData.giroId;
       return Object.keys(errors).length === 0 && requiredFields;
     } catch (err) {
@@ -138,7 +136,7 @@ export default function ClienteModal({ onClose, onSave, clienteToEdit = null }) 
       direccionCliente: formData.direccionCliente,
       contactoCliente: formData.contactoCliente,
       activo: formData.activo,
-      sigla: formData.siglaId ? { siglaId: Number(formData.siglaId) } : null,
+      sigla: formData.sigla.trim(),
       giro: formData.giroId ? { giroId: Number(formData.giroId) } : null,
     };
 
@@ -224,26 +222,19 @@ export default function ClienteModal({ onClose, onSave, clienteToEdit = null }) 
               <ErrorMsg name="runCliente" />
             </div>
 
-            {/* Sigla (select) */}
             <div className="space-y-2">
               <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">
                 Sigla *
               </label>
               <div className="relative">
                 <Tag className="absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-                <select
-                  name="siglaId"
-                  value={formData.siglaId}
+                <input
+                  name="sigla"
+                  value={formData.sigla}
                   onChange={handleChange}
                   className={inputClass(false)}
-                >
-                  <option value="">Seleccionar sigla...</option>
-                  {siglas.map((s) => (
-                    <option key={s.siglaId} value={s.siglaId}>
-                      {s.siglaAbreviatura || s.descripcionSigla}
-                    </option>
-                  ))}
-                </select>
+                  placeholder="Ej: S.P.A."
+                />
               </div>
             </div>
 

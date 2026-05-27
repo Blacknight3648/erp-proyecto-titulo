@@ -1,5 +1,9 @@
 package backend.com.gestionUsuarios.cliente.application.service;
 
+import backend.com.comercial.infrastructure.persistence.repository.EvaluacionNegocioJpaRepository;
+import backend.com.comercial.infrastructure.persistence.repository.NotaVentaJpaRepository;
+import backend.com.comercial.infrastructure.persistence.repository.SolicitudCostosJpaRepository;
+import backend.com.comercial.infrastructure.persistence.repository.SolicitudCotizacionJpaRepository;
 import backend.com.gestionUsuarios.cliente.domain.model.Cliente;
 import backend.com.gestionUsuarios.cliente.infrastructure.exception.ClienteNotFoundException;
 import backend.com.gestionUsuarios.cliente.infrastructure.mapper.ClienteMapper;
@@ -31,6 +35,10 @@ public class ClienteServiceImpl implements ClienteService {
     private final DatoBancarioJpaRepository datoBancarioJpaRepository;
     private final ClienteMapper clienteMapper;
     private final ClienteValidator clienteValidator;
+    private final EvaluacionNegocioJpaRepository evaluacionNegocioRepository;
+    private final NotaVentaJpaRepository notaVentaRepository;
+    private final SolicitudCostosJpaRepository solicitudCostosRepository;
+    private final SolicitudCotizacionJpaRepository solicitudCotizacionRepository;
 
     @Override
     @Transactional(readOnly = true)
@@ -160,6 +168,10 @@ public class ClienteServiceImpl implements ClienteService {
         if (!clienteRepository.existsById(clienteId)) {
             throw new ClienteNotFoundException(clienteId);
         }
+        notaVentaRepository.deleteByCliente_ClienteId(clienteId);
+        evaluacionNegocioRepository.deleteByCliente_ClienteId(clienteId);
+        solicitudCostosRepository.deleteByCliente_ClienteId(clienteId);
+        solicitudCotizacionRepository.deleteByCliente_ClienteId(clienteId);
         clienteRepository.deleteById(clienteId);
     }
 

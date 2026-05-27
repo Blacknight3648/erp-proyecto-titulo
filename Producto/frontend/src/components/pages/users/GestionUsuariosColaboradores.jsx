@@ -37,7 +37,8 @@ export default function GestionUsuariosColaboradores() {
       c.rol?.toLowerCase().includes(searchLower) ||
       c.area?.toLowerCase().includes(searchLower);
 
-    const status = c.activo ? "Activo" : "Suspendido";
+    const isActive = c.enabled ?? c.activo;
+    const status = isActive ? "Activo" : "Suspendido";
     const matchesFilter = filterStatus === "Todos" || filterStatus === status;
     return matchesSearch && matchesFilter;
   });

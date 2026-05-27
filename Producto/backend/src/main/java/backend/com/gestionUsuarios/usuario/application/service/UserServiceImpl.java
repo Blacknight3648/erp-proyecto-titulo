@@ -120,6 +120,23 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
+    public User actualizarUsuario(@NonNull Long id, CreateUserDTO dto) {
+        Set<Role> roles = dto.getRoles() != null ? dto.getRoles().stream()
+                .map(nombre -> roleRepository.findByNombre(nombre)
+                        .orElseThrow(() -> new RuntimeException("Rol no encontrado: " + nombre)))
+                .collect(Collectors.toSet()) : new HashSet<>();
+
+        Set<Area> areas = dto.getAreas() != null ? dto.getAreas().stream()
+                .map(nombre -> areaRepository.findByNombre(nombre)
+                        .orElseThrow(() -> new RuntimeException("Área no encontrada: " + nombre)))
+                .collect(Collectors.toSet()) : new HashSet<>();
+
+        User userToUpdate = userMapper.toUser(dto);
+        return actualizarUsuario(id, userToUpdate, roles, areas);
+    }
+
+    @Override
     public void eliminarUsuario(@NonNull Long id) {
 
         if (!userRepository.existsById(id)) {

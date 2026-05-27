@@ -60,17 +60,9 @@ public class UsuarioController {
             throw new IllegalArgumentException("El DTO no puede ser nulo");
         }
 
-        // Convertimos el DTO a entidad y traemos roles y áreas
-        User userToUpdate = userMapper.toUser(dto);
-
-        // Buscar roles y áreas
-        User updated = userService.actualizarUsuario(id, userToUpdate,
-                dto.getRoles() != null
-                        ? userService.asignarRoles(id, userMapper.toRoleEntities(dto.getRoles())).getRoles()
-                        : null,
-                dto.getAreas() != null
-                        ? userService.asignarAreas(id, userMapper.toAreaEntities(dto.getAreas())).getAreas()
-                        : null);
+        // Buscar roles y áreas e inyectarlos correctamente llamando al nuevo método del
+        // servicio
+        User updated = userService.actualizarUsuario(id, dto);
 
         return ResponseEntity.ok(userMapper.toUserDTO(updated));
     }

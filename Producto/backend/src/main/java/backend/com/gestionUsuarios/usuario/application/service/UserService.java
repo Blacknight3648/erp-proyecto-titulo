@@ -27,6 +27,8 @@ public interface UserService {
 
     User actualizarUsuario(@NonNull Long id, User userActualizado, Set<Role> roles, Set<Area> areas);
 
+    User actualizarUsuario(@NonNull Long id, CreateUserDTO dto);
+
     void eliminarUsuario(@NonNull Long id);
 
     User asignarRoles(@NonNull Long userId, Set<Role> roles);

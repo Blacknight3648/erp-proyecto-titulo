@@ -1,0 +1,39 @@
+# Dependencias de Node.js
+node_modules/
+npm-debug.log
+yarn-error.log
+yarn-debug.log
+
+# Build y directorios de salida
+dist/
+build/
+out/
+
+# Logs
+*.log
+logs/
+
+# Entornos Virtuales
+.env
+.venv/
+venv/
+env/
+
+# Control de versiones
+.git/
+.gitignore
+
+# Configuración de IDEs y Editores
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Archivos de SO
+.DS_Store
+Thumbs.db
+
+# Docker
+.dockerignore
+Dockerfile
+docker-compose.yml

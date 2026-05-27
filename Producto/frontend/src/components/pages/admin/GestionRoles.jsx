@@ -4,8 +4,8 @@ import { toast, Toaster } from "sonner";
 import { ShieldCheck } from "lucide-react";
 
 import { useRoles } from "../../../hooks/useRoles";
-import RolCard from "../../ui/RolCard";
-import RolModal from "../../ui/RolModal";
+import RolCard from "../../ui/shared/RolCard";
+import RolModal from "../../ui/shared/RolModal";
 import { useNavigate } from "react-router-dom";
 
 const GestionRoles = () => {

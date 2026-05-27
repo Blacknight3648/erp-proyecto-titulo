@@ -1,0 +1,38 @@
+# Archivos compilados y de build de Java
+target/
+*.class
+*.jar
+*.war
+*.ear
+
+# Logs
+*.log
+logs/
+
+# Entornos Virtuales
+.env
+.venv/
+venv/
+env/
+
+# Control de versiones
+.git/
+.gitignore
+
+# Configuración de IDEs y Editores
+.idea/
+.vscode/
+*.swp
+*.swo
+.settings/
+.project
+.classpath
+
+# Archivos de SO
+.DS_Store
+Thumbs.db
+
+# Docker
+.dockerignore
+Dockerfile
+docker-compose.yml

@@ -12,14 +12,15 @@ public class UserGlobalExceptionHandler {
 
         @ExceptionHandler(RuntimeException.class)
         public ResponseEntity<ApiError> handleRuntime(RuntimeException ex) {
+                ex.printStackTrace();
 
                 ApiError error = ApiError.builder()
                                 .message(ex.getMessage())
-                                .status(HttpStatus.NOT_FOUND.value())
+                                .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
                                 .timestamp(LocalDateTime.now())
                                 .build();
 
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
         }
 
         @ExceptionHandler(MethodArgumentNotValidException.class)

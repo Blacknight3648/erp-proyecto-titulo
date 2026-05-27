@@ -102,7 +102,9 @@ public class UserServiceImpl implements UserService {
         user.setUsuarioNombre(userActualizado.getUsuarioNombre());
         user.setUsuarioApellidos(userActualizado.getUsuarioApellidos());
         user.setUsuarioEmail(userActualizado.getUsuarioEmail());
-        user.setUsuarioPassword(userActualizado.getUsuarioPassword());
+        if (userActualizado.getUsuarioPassword() != null && !userActualizado.getUsuarioPassword().isBlank()) {
+            user.setUsuarioPassword(userActualizado.getUsuarioPassword());
+        }
         user.setTelefono(userActualizado.getTelefono());
         user.setUsuarioRun(userActualizado.getUsuarioRun());
         user.setEnabled(userActualizado.isEnabled());
@@ -113,6 +115,23 @@ public class UserServiceImpl implements UserService {
             user.setAreas(areas);
 
         return userRepository.save(user);
+    }
+
+    @Override
+    @Transactional
+    public User actualizarUsuario(@NonNull Long id, CreateUserDTO dto) {
+        Set<Role> roles = dto.getRoles() != null ? dto.getRoles().stream()
+                .map(nombre -> roleRepository.findByNombre(nombre)
+                        .orElseThrow(() -> new RuntimeException("Rol no encontrado: " + nombre)))
+                .collect(Collectors.toSet()) : new HashSet<>();
+
+        Set<Area> areas = dto.getAreas() != null ? dto.getAreas().stream()
+                .map(nombre -> areaRepository.findByNombre(nombre)
+                        .orElseThrow(() -> new RuntimeException("Área no encontrada: " + nombre)))
+                .collect(Collectors.toSet()) : new HashSet<>();
+
+        User userToUpdate = userMapper.toUser(dto);
+        return actualizarUsuario(id, userToUpdate, roles, areas);
     }
 
     @Override
@@ -142,6 +161,14 @@ public class UserServiceImpl implements UserService {
 
         user.setAreas(areas != null ? areas : new HashSet<>());
 
+        return userRepository.save(user);
+    }
+
+    @Override
+    @Transactional
+    public User toggleEnabled(@NonNull Long id) {
+        User user = obtenerUsuario(id);
+        user.setEnabled(!user.isEnabled());
         return userRepository.save(user);
     }
 }

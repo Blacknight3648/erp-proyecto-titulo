@@ -89,6 +89,7 @@ export default function ModernSidebar({ isOpen, setIsOpen }) {
         { path: '/admin/roles', label: 'Gestión Roles', icon: Shield },
         { path: '/gestion-usuarios/clientes', label: 'Clientes', icon: Users },
         { path: '/gestion-usuarios/proveedores', label: 'Proveedores', icon: Truck },
+        { path: '/gestion-usuarios/vendedores', label: 'Vendedores', icon: BarChart3 },
       ]
     },
     { 

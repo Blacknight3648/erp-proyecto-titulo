@@ -259,7 +259,7 @@ export const useNVState = (initialView = 'list') => {
                 vendedorId: parseInt(formData.vendedorId) || 1,
                 esKit: formData.esKit,
                 detalleKit: formData.detalleKit,
-                fechaEntregaEstimada: formatDateToBackend(formData.fechaEntregaEstimada),
+                fechaEntregaEstimada: formData.fechaEntregaEstimada,
                 evaluacionNegocioId: sourceEVN || null,
                 items: formData.items.map(item => ({
                     productoId: item.productoId ? parseInt(item.productoId) : null,

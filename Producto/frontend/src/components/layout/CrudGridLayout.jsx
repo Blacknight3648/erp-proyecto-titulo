@@ -49,7 +49,7 @@ export default function CrudGridLayout({
 
       {/* FILTROS Y BUSCADOR */}
       <div className="flex flex-col xl:flex-row gap-6 items-center justify-between bg-white/50 backdrop-blur-sm p-6 rounded-[3rem] shadow-sm border border-gray-100">
-        <StatusFilter value={filterStatus} onChange={onFilterChange} />
+        {onFilterChange && <StatusFilter value={filterStatus} onChange={onFilterChange} />}
         <SearchBar
           value={searchTerm}
           onChange={onSearchChange}

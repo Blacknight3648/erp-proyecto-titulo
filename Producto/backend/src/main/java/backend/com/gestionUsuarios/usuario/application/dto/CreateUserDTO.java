@@ -22,5 +22,6 @@ public class CreateUserDTO {
     private String telefono;
     private Set<String> roles; // nombres de roles
     private Set<String> areas; // nombres de áreas
+    private Boolean enabled;
 
 }

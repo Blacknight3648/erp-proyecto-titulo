@@ -7,46 +7,45 @@ import { NotificationProvider } from "./contexts/NotificationContext";
 import ModernSidebar from "./components/layout/ModernSidebar";
 import ModernNavbar from "./components/layout/ModernNavbar";
 
-/* LOGIN */
-import Login from "./components/pages/6. LOGIN/Login";
+/* AUTH */
+import Login from "./components/pages/auth/Login";
 
 /* HOME */
-import Welcome from "./components/pages/7. HOME PAGE/Welcome";
-
+import Welcome from "./components/pages/welcome/Welcome";
 
 /* COMERCIAL */
-import NotaDeVenta from "./components/pages/2. COMERCIAL/NOTA DE VENTA/NotaDeVenta";
-import SolicitudCostosContainer from "./components/pages/2. COMERCIAL/COSTEOS/components/SCOS/SolicitudCostosContainer.jsx";
-import AdministracionNegocios from "./components/pages/2. COMERCIAL/ADMINISTRACION/AdministracionNegocios";
-import GestionPlantillas from "./components/pages/2. COMERCIAL/PLANTILLAS/GestionPlantillas";
-import TableroComercial from "./components/pages/2. COMERCIAL/TableroComercial";
-import GestionProyectos from "./components/pages/2. COMERCIAL/GESTION PROYECTO/GestionProyectos";
-import OrdenesProduccion from "./components/pages/2. COMERCIAL/ORDENES DE PRODUCCION/OrdenesProduccion";
+import NotaDeVenta from "./components/pages/commercial/sales-notes/NotaDeVenta";
+import SolicitudCostosContainer from "./components/pages/commercial/costing/components/SCOS/SolicitudCostosContainer.jsx";
+import AdministracionNegocios from "./components/pages/commercial/administration/AdministracionNegocios";
+import GestionPlantillas from "./components/pages/commercial/templates/GestionPlantillas";
+import TableroComercial from "./components/pages/commercial/TableroComercial";
+import GestionProyectos from "./components/pages/commercial/projects/GestionProyectos";
+import OrdenesProduccion from "./components/pages/commercial/production-orders/OrdenesProduccion";
 
 /* GESTION USUARIOS */
-import GestionClientes from "./components/pages/9. GESTION USUARIOS/GestionClientes";
-import GestionProveedores from "./components/pages/9. GESTION USUARIOS/GestionProveedores";
-import GestionUsuariosColaboradores from "./components/pages/9. GESTION USUARIOS/GestionUsuariosColaboradores";
+import GestionClientes from "./components/pages/users/GestionClientes";
+import GestionProveedores from "./components/pages/users/GestionProveedores";
+import GestionUsuariosColaboradores from "./components/pages/users/GestionUsuariosColaboradores";
+import GestionVendedores from "./components/pages/users/GestionVendedores";
 
 /* ADMIN */
 import GestionAreas from "./components/pages/admin/GestionAreas";
 import GestionRoles from "./components/pages/admin/GestionRoles";
 import GestionPermisosRol from "./components/pages/admin/GestionPermisosRol";
 
-
 /* PRODUCCION */
-import DashboardOP from "./components/pages/4. PRODUCCION/DashboardOP";
-import TableroOP from "./components/pages/4. PRODUCCION/TableroOP";
-import OpRegistro from "./components/pages/4. PRODUCCION/ORDENES_PRODUCCION/OpRegistro";
-import CosteosOP from "./components/pages/4. PRODUCCION/COSTEOS/CosteosOP";
-import EmitirOC_OP from "./components/pages/4. PRODUCCION/EmitirOC_OP";
-import OrdenProduccionContainer from "./components/pages/4. PRODUCCION/ORDENES_PRODUCCION/OrdenProduccionContainer";
-import CompraProduccionContainer from "./components/pages/4. PRODUCCION/COMPRAS/CompraProduccionContainer";
-import HojaCompra from "./components/pages/4. PRODUCCION/HOJA DE COMPRA/HojaCompra";
+import DashboardOP from "./components/pages/production/DashboardOP";
+import TableroOP from "./components/pages/production/TableroOP";
+import OpRegistro from "./components/pages/production/production-orders/OpRegistro";
+import CosteosOP from "./components/pages/production/costing/CosteosOP";
+import EmitirOC_OP from "./components/pages/production/EmitirOC_OP";
+import OrdenProduccionContainer from "./components/pages/production/production-orders/OrdenProduccionContainer";
+import CompraProduccionContainer from "./components/pages/production/purchases/CompraProduccionContainer";
+import HojaCompra from "./components/pages/production/purchase-sheet/HojaCompra";
 
 /* TRAZABILIDAD */
-import TrazabilidadNV from "./components/pages/5. TRAZABILIDAD/TrazabilidadNV";
-import TimelineGlobal from "./components/pages/5. TRAZABILIDAD/TimelineGlobal";
+import TrazabilidadNV from "./components/pages/traceability/TrazabilidadNV";
+import TimelineGlobal from "./components/pages/traceability/TimelineGlobal";
 
 
 
@@ -240,6 +239,11 @@ function App() {
             <Route
               path="/gestion-usuarios/proveedores"
               element={<PrivateRoute><MainLayout><GestionProveedores /></MainLayout></PrivateRoute>}
+            />
+
+            <Route
+              path="/gestion-usuarios/vendedores"
+              element={<PrivateRoute><MainLayout><GestionVendedores /></MainLayout></PrivateRoute>}
             />
 
             {/* ADMIN */}

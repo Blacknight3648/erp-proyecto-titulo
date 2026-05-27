@@ -77,7 +77,6 @@ public class UserMapper {
                         return null;
 
                 return User.builder()
-<<<<<<< HEAD
                                 .usuarioRun(dto.getUsuarioRun())
                                 .usuarioNombre(dto.getUsuarioNombre())
                                 .usuarioApellidos(dto.getUsuarioApellidos())
@@ -86,20 +85,7 @@ public class UserMapper {
                                 .telefono(dto.getTelefono())
                                 .enabled(true)
                                 .build();
-=======
-                        .usuarioRun(dto.getUsuarioRun())
-                        .usuarioNombre(dto.getUsuarioNombre())
-                        .usuarioApellidos(dto.getUsuarioApellidos())
-                        .usuarioEmail(dto.getUsuarioEmail())
-                        .usuarioPassword(dto.getUsuarioPassword())
-                        .telefono(dto.getTelefono())
-                        .fechaNacimiento(dto.getFechaNacimiento())
-                        .direccion(dto.getDireccion())
-                        .region(dto.getRegion())
-                        .comuna(dto.getComuna())
-                        .enabled(dto.getEnabled() != null ? dto.getEnabled() : true)
-                        .build();
->>>>>>> origin/feature-docker
+
         }
 
         public Set<Role> toRoleEntities(Set<String> roles) {

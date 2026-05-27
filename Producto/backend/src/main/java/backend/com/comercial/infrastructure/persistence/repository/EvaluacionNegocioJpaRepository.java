@@ -11,6 +11,10 @@ public interface EvaluacionNegocioJpaRepository extends JpaRepository<Evaluacion
     List<EvaluacionNegocioJpaEntity> findByEstado(String estado);
     @org.springframework.data.jpa.repository.Query("SELECT MAX(CAST(e.numero AS long)) FROM EvaluacionNegocioJpaEntity e")
     java.util.Optional<Long> findMaxNumero();
+
+    @org.springframework.data.jpa.repository.Modifying
+    @org.springframework.data.jpa.repository.Query("UPDATE EvaluacionNegocioJpaEntity e SET e.vendedor = null WHERE e.vendedor.idVendedor = :vendedorId")
+    void desvincularVendedor(@org.springframework.data.repository.query.Param("vendedorId") Long vendedorId);
 }
 
 

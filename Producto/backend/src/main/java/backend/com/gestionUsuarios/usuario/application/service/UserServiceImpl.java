@@ -9,6 +9,11 @@ import backend.com.gestionUsuarios.usuario.domain.model.User;
 import backend.com.gestionUsuarios.usuario.application.dto.CreateUserDTO;
 import backend.com.gestionUsuarios.usuario.infrastructure.exception.UserNotFoundException;
 import backend.com.gestionUsuarios.usuario.infrastructure.persistence.repository.UserRepository;
+import backend.com.gestionUsuarios.vendedor.infrastructure.persistence.repository.VendedorRepository;
+import backend.com.comercial.infrastructure.persistence.repository.EvaluacionNegocioJpaRepository;
+import backend.com.comercial.infrastructure.persistence.repository.NotaVentaJpaRepository;
+import backend.com.comercial.infrastructure.persistence.repository.SolicitudCostosJpaRepository;
+import backend.com.comercial.infrastructure.persistence.repository.SolicitudCotizacionJpaRepository;
 
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
@@ -27,14 +32,27 @@ public class UserServiceImpl implements UserService {
     private final AreaRepository areaRepository;
     private final UserMapper userMapper;
     private final UserValidator userValidator;
+    private final VendedorRepository vendedorRepository;
+    private final EvaluacionNegocioJpaRepository evaluacionNegocioRepository;
+    private final NotaVentaJpaRepository notaVentaRepository;
+    private final SolicitudCostosJpaRepository solicitudCostosRepository;
+    private final SolicitudCotizacionJpaRepository solicitudCotizacionRepository;
 
     public UserServiceImpl(UserRepository userRepository, RoleRepository roleRepository,
-            AreaRepository areaRepository, UserMapper userMapper, UserValidator userValidator) {
+            AreaRepository areaRepository, UserMapper userMapper, UserValidator userValidator,
+            VendedorRepository vendedorRepository, EvaluacionNegocioJpaRepository evaluacionNegocioRepository,
+            NotaVentaJpaRepository notaVentaRepository, SolicitudCostosJpaRepository solicitudCostosRepository,
+            SolicitudCotizacionJpaRepository solicitudCotizacionRepository) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         this.areaRepository = areaRepository;
         this.userMapper = userMapper;
         this.userValidator = userValidator;
+        this.vendedorRepository = vendedorRepository;
+        this.evaluacionNegocioRepository = evaluacionNegocioRepository;
+        this.notaVentaRepository = notaVentaRepository;
+        this.solicitudCostosRepository = solicitudCostosRepository;
+        this.solicitudCotizacionRepository = solicitudCotizacionRepository;
     }
 
     @Override
@@ -135,11 +153,20 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public void eliminarUsuario(@NonNull Long id) {
 
         if (!userRepository.existsById(id)) {
             throw new UserNotFoundException(id);
         }
+
+        vendedorRepository.findByUsuario_UsuarioId(id).ifPresent(v -> {
+            evaluacionNegocioRepository.desvincularVendedor(v.getIdVendedor());
+            notaVentaRepository.desvincularVendedor(v.getIdVendedor());
+            solicitudCostosRepository.desvincularVendedor(v.getIdVendedor());
+            solicitudCotizacionRepository.desvincularVendedor(v.getIdVendedor());
+            vendedorRepository.deleteById(v.getIdVendedor());
+        });
 
         userRepository.deleteById(id);
     }

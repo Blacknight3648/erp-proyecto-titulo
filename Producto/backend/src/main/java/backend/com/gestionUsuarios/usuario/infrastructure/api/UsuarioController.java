@@ -76,6 +76,15 @@ public class UsuarioController {
         return ResponseEntity.noContent().build();
     }
 
+    @PatchMapping("/{id}/toggle-enabled")
+    public ResponseEntity<UserDTO> toggleEnabled(@PathVariable Long id) {
+        if (id == null) {
+            throw new IllegalArgumentException("El id no puede ser nulo");
+        }
+        User updated = userService.toggleEnabled(id);
+        return ResponseEntity.ok(userMapper.toUserDTO(updated));
+    }
+
     // Endpoints opcionales para asignar roles o áreas individualmente
     @PutMapping("/{id}/roles")
     public ResponseEntity<UserDTO> assignRoles(@PathVariable Long id, @RequestBody Set<String> roles) {

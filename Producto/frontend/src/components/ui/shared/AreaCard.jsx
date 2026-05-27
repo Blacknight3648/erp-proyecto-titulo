@@ -1,39 +1,53 @@
 import React from "react";
-import { Briefcase, Trash2, Edit } from "lucide-react";
+import { Briefcase, Trash2, Edit3 } from "lucide-react";
 
 const AreaCard = ({ area, onEdit, onDelete }) => {
   return (
-    <div className="group relative bg-white/80 backdrop-blur-md rounded-2xl border border-slate-200 overflow-hidden hover:shadow-2xl hover:shadow-blue-500/10 transition-all duration-500 hover:-translate-y-1">
-      <div className="p-6">
-        <div className="flex items-start justify-between">
-          <div className="flex items-center gap-4">
-            <div className="p-3 bg-blue-50 rounded-xl text-blue-600 group-hover:bg-blue-600 group-hover:text-white transition-colors duration-500">
-              <Briefcase size={24} />
-            </div>
-            <div>
-              <h3 className="text-lg font-bold text-slate-800">{area.nombre}</h3>
-              <p className="text-sm text-slate-500 mt-1">{area.descripcion}</p> {/* <-- mostramos la descripción */}
-              <p className="text-xs text-slate-400 mt-1">ID: {area.areaId}</p>
-            </div>
+    <div className="group bg-white rounded-[2.5rem] p-8 shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 border border-gray-100 flex flex-col h-full relative overflow-hidden">
+      {/* Decoración de fondo */}
+      <div className="absolute top-0 right-0 w-32 h-32 -mr-8 -mt-8 rounded-full blur-3xl opacity-10 bg-blue-500 transition-colors duration-500"></div>
+
+      <div className="flex justify-between items-start mb-6 relative z-10">
+        <div className="w-16 h-16 rounded-3xl flex items-center justify-center shadow-lg bg-blue-50 text-blue-600 shadow-blue-100 transition-transform duration-500 group-hover:scale-110">
+          <Briefcase size={32} strokeWidth={2.5} />
+        </div>
+
+        <div className="flex gap-2">
+          <button
+            onClick={() => onEdit(area)}
+            className="p-3 bg-gray-50 text-gray-400 rounded-2xl hover:bg-black hover:text-white transition-all duration-300 shadow-sm"
+            title="Editar"
+          >
+            <Edit3 size={16} />
+          </button>
+          <button
+            onClick={() => onDelete(area.areaId || area.id)}
+            className="p-3 bg-rose-50 text-rose-400 rounded-2xl hover:bg-rose-600 hover:text-white transition-all duration-300 shadow-sm"
+            title="Eliminar"
+          >
+            <Trash2 size={16} />
+          </button>
+        </div>
+      </div>
+
+      <div className="relative z-10 space-y-4 flex-1">
+        <div>
+          <h3 className="text-xl font-black text-gray-800 leading-tight mb-1 group-hover:text-blue-600 transition-colors">
+            {area.nombre}
+          </h3>
+          <div className="flex items-center text-[10px] font-black text-gray-400 uppercase tracking-widest gap-2">
+            <span className="text-blue-500">ID</span>
+            <span>{area.areaId || area.id}</span>
           </div>
         </div>
 
-        <div className="mt-6 flex items-center justify-end gap-2 border-t border-slate-100 pt-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-          <button
-            onClick={() => onEdit(area)}
-            className="flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-          >
-            <Edit size={16} />
-            Editar
-          </button>
-          <button
-            onClick={() => onDelete(area.areaId)}
-            className="flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-          >
-            <Trash2 size={16} />
-            Eliminar
-          </button>
-        </div>
+        {area.descripcion && (
+          <div className="pt-4 border-t border-gray-50">
+            <p className="text-sm font-bold text-gray-500 leading-relaxed">
+              {area.descripcion}
+            </p>
+          </div>
+        )}
       </div>
     </div>
   );

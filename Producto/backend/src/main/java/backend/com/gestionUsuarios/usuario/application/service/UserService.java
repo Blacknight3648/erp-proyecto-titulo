@@ -34,4 +34,6 @@ public interface UserService {
     User asignarRoles(@NonNull Long userId, Set<Role> roles);
 
     User asignarAreas(@NonNull Long userId, Set<Area> areas);
+
+    User toggleEnabled(@NonNull Long id);
 }

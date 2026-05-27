@@ -26,5 +26,6 @@ public class CreateUserDTO {
     private String comuna;
     private Set<String> roles; // nombres de roles
     private Set<String> areas; // nombres de áreas
+    private Boolean enabled;
 
 }

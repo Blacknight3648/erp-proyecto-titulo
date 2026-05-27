@@ -1,48 +1,54 @@
 import React from "react";
-import { Shield, Trash2, Edit, Key } from "lucide-react";
+import { Shield, Trash2, Edit3, Key } from "lucide-react";
 
 const RolCard = ({ rol, onEdit, onDelete, onManagePermissions }) => {
   return (
-    <div className="group relative bg-white/80 backdrop-blur-md rounded-2xl border border-slate-200 overflow-hidden hover:shadow-2xl hover:shadow-indigo-500/10 transition-all duration-500 hover:-translate-y-1">
-      <div className="p-6">
-        <div className="flex items-start justify-between">
-          <div className="flex items-center gap-4">
-            <div className="p-3 bg-indigo-50 rounded-xl text-indigo-600 group-hover:bg-indigo-600 group-hover:text-white transition-colors duration-500">
-              <Shield size={24} />
-            </div>
-            <div>
-              <h3 className="text-lg font-bold text-slate-800">{rol.nombre}</h3>
-              <p className="text-sm text-slate-500 mt-1">Rol de acceso al sistema</p>
-            </div>
-          </div>
+    <div className="group bg-white rounded-[2.5rem] p-8 shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 border border-gray-100 flex flex-col h-full relative overflow-hidden">
+      {/* Decoración de fondo */}
+      <div className="absolute top-0 right-0 w-32 h-32 -mr-8 -mt-8 rounded-full blur-3xl opacity-10 bg-indigo-500 transition-colors duration-500"></div>
+
+      <div className="flex justify-between items-start mb-6 relative z-10">
+        <div className="w-16 h-16 rounded-3xl flex items-center justify-center shadow-lg bg-indigo-50 text-indigo-600 shadow-indigo-100 transition-transform duration-500 group-hover:scale-110">
+          <Shield size={32} strokeWidth={2.5} />
         </div>
 
-        <div className="mt-6 flex items-center justify-between gap-2 border-t border-slate-100 pt-4">
+        <div className="flex gap-2">
           <button
-            onClick={() => onManagePermissions(rol)}
-            className="flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors"
+            onClick={() => onEdit(rol)}
+            className="p-3 bg-gray-50 text-gray-400 rounded-2xl hover:bg-black hover:text-white transition-all duration-300 shadow-sm"
+            title="Editar"
           >
-            <Key size={16} />
-            Permisos
+            <Edit3 size={16} />
           </button>
-          
-          <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-            <button
-              onClick={() => onEdit(rol)}
-              className="flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-            >
-              <Edit size={16} />
-              Editar
-            </button>
-            <button
-              onClick={() => onDelete(rol.id)}
-              className="flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-            >
-              <Trash2 size={16} />
-              Eliminar
-            </button>
-          </div>
+          <button
+            onClick={() => onDelete(rol.id)}
+            className="p-3 bg-rose-50 text-rose-400 rounded-2xl hover:bg-rose-600 hover:text-white transition-all duration-300 shadow-sm"
+            title="Eliminar"
+          >
+            <Trash2 size={16} />
+          </button>
         </div>
+      </div>
+
+      <div className="relative z-10 space-y-4 flex-1">
+        <div>
+          <h3 className="text-xl font-black text-gray-800 leading-tight mb-1 group-hover:text-indigo-600 transition-colors">
+            {rol.nombre}
+          </h3>
+          <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">
+            Rol de acceso al sistema
+          </p>
+        </div>
+      </div>
+
+      <div className="mt-8 relative z-10">
+        <button
+          onClick={() => onManagePermissions(rol)}
+          className="flex items-center gap-2 px-4 py-2 bg-indigo-50 text-indigo-600 rounded-2xl text-sm font-bold hover:bg-indigo-600 hover:text-white transition-all duration-300"
+        >
+          <Key size={16} />
+          Permisos
+        </button>
       </div>
     </div>
   );

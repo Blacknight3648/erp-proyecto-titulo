@@ -92,7 +92,7 @@ public class UserMapper {
                         .direccion(dto.getDireccion())
                         .region(dto.getRegion())
                         .comuna(dto.getComuna())
-                        .enabled(true)
+                        .enabled(dto.getEnabled() != null ? dto.getEnabled() : true)
                         .build();
         }
 

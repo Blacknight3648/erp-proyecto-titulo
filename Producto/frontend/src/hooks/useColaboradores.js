@@ -78,15 +78,9 @@ export function useColaboradores() {
     const toggleColaborador = async (colaborador) => {
         try {
             const id = colaborador.id || colaborador.usuarioId;
-            
-            // La API espera CreateUserDTO. Si hay roles/areas como objetos, pasarlos a string.
-            const payload = formatPayload(colaborador);
-            // Intentamos mantener el estado activo (aunque el backend parece forzar true)
-            payload.enabled = !(colaborador.enabled ?? colaborador.activo); // Toggle el estado actual
-            
-            await api.put(`/usuarios/${id}`, payload);
+            await api.patch(`/usuarios/${id}/toggle-enabled`);
             await loadColaboradores();
-            toast.success(`Estado actualizado`);
+            toast.success("Estado actualizado");
         } catch (error) {
             console.error("Error al cambiar estado:", error);
             toast.error("Error al cambiar estado");

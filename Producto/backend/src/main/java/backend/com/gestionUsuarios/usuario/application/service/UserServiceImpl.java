@@ -102,7 +102,9 @@ public class UserServiceImpl implements UserService {
         user.setUsuarioNombre(userActualizado.getUsuarioNombre());
         user.setUsuarioApellidos(userActualizado.getUsuarioApellidos());
         user.setUsuarioEmail(userActualizado.getUsuarioEmail());
-        user.setUsuarioPassword(userActualizado.getUsuarioPassword());
+        if (userActualizado.getUsuarioPassword() != null && !userActualizado.getUsuarioPassword().isBlank()) {
+            user.setUsuarioPassword(userActualizado.getUsuarioPassword());
+        }
         user.setTelefono(userActualizado.getTelefono());
         user.setUsuarioRun(userActualizado.getUsuarioRun());
         user.setFechaNacimiento(userActualizado.getFechaNacimiento());
@@ -163,6 +165,14 @@ public class UserServiceImpl implements UserService {
 
         user.setAreas(areas != null ? areas : new HashSet<>());
 
+        return userRepository.save(user);
+    }
+
+    @Override
+    @Transactional
+    public User toggleEnabled(@NonNull Long id) {
+        User user = obtenerUsuario(id);
+        user.setEnabled(!user.isEnabled());
         return userRepository.save(user);
     }
 }

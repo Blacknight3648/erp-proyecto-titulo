@@ -14,6 +14,8 @@ public interface SolicitudCotizacionJpaRepository extends JpaRepository<Solicitu
     @org.springframework.data.jpa.repository.Modifying
     @org.springframework.data.jpa.repository.Query("UPDATE SolicitudCotizacionJpaEntity s SET s.vendedor = null WHERE s.vendedor.idVendedor = :vendedorId")
     void desvincularVendedor(@org.springframework.data.repository.query.Param("vendedorId") Long vendedorId);
+
+    void deleteByCliente_ClienteId(Long clienteId);
 }
 
 

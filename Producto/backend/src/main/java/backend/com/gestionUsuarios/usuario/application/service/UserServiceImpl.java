@@ -76,6 +76,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public User crearUsuario(User user, Set<Role> roles, Set<Area> areas) {
 
+        userValidator.validateRun(user.getUsuarioRun());
         userValidator.validateUniqueness(user.getUsuarioEmail(), user.getUsuarioRun());
 
         user.setRoles(roles != null ? roles : new HashSet<>());
@@ -117,6 +118,7 @@ public class UserServiceImpl implements UserService {
 
         User user = obtenerUsuario(id);
 
+        userValidator.validateRun(userActualizado.getUsuarioRun());
         user.setUsuarioNombre(userActualizado.getUsuarioNombre());
         user.setUsuarioApellidos(userActualizado.getUsuarioApellidos());
         user.setUsuarioEmail(userActualizado.getUsuarioEmail());

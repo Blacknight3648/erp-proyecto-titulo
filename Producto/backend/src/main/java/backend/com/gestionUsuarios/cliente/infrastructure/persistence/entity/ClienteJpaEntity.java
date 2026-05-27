@@ -4,7 +4,6 @@ import backend.com.shared.infrastructure.persistence.entity.DatoBancarioJpaEntit
 import backend.com.shared.infrastructure.persistence.entity.DireccionJpaEntity;
 import backend.com.shared.infrastructure.persistence.entity.GiroJpaEntity;
 import backend.com.shared.validations.email.ValidEmail;
-import backend.com.shared.validations.run.ValidRun;
 import backend.com.shared.validations.telefono.ValidPhone;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
@@ -30,7 +29,6 @@ public class ClienteJpaEntity {
     private String razonSocial;
 
     @Column(name = "run_cliente", unique = true, nullable = false)
-    @ValidRun
     private String runCliente;
 
     @Column(name = "correo_cliente")

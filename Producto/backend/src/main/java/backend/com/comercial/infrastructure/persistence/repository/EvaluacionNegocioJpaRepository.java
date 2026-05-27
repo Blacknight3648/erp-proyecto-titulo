@@ -15,6 +15,8 @@ public interface EvaluacionNegocioJpaRepository extends JpaRepository<Evaluacion
     @org.springframework.data.jpa.repository.Modifying
     @org.springframework.data.jpa.repository.Query("UPDATE EvaluacionNegocioJpaEntity e SET e.vendedor = null WHERE e.vendedor.idVendedor = :vendedorId")
     void desvincularVendedor(@org.springframework.data.repository.query.Param("vendedorId") Long vendedorId);
+
+    void deleteByCliente_ClienteId(Long clienteId);
 }
 
 

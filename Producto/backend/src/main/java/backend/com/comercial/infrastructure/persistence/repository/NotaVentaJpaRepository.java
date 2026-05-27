@@ -16,4 +16,6 @@ public interface NotaVentaJpaRepository extends JpaRepository<NotaVentaJpaEntity
     @org.springframework.data.jpa.repository.Modifying
     @org.springframework.data.jpa.repository.Query("UPDATE NotaVentaJpaEntity n SET n.vendedor = null WHERE n.vendedor.idVendedor = :vendedorId")
     void desvincularVendedor(@org.springframework.data.repository.query.Param("vendedorId") Long vendedorId);
+
+    void deleteByCliente_ClienteId(Long clienteId);
 }

@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Bell, User, LogOut, ChevronDown, Search, Box, History, Settings } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useNotifications } from '../../contexts/NotificationContext';
@@ -9,6 +10,7 @@ export default function ModernNavbar({ isSidebarOpen = true }) {
     const { unreadCount } = useNotifications();
     const [isNotifOpen, setIsNotifOpen] = useState(false);
     const notifRef = useRef(null);
+    const navigate = useNavigate();
 
     // Close dropdown when clicking outside
     useEffect(() => {
@@ -42,7 +44,10 @@ export default function ModernNavbar({ isSidebarOpen = true }) {
 
                 {/* Quick Links */}
                 <nav className="hidden md:flex items-center gap-3">
-                    <button className="flex items-center gap-2 text-sm font-semibold text-slate-600 hover:text-blue-700 bg-slate-50 hover:bg-blue-50 border border-slate-100 hover:border-blue-200 px-4 py-2 rounded-xl transition-all shadow-sm hover:shadow">
+                    <button 
+                        onClick={() => navigate('/admin/datos-maestros')}
+                        className="flex items-center gap-2 text-sm font-semibold text-slate-600 hover:text-blue-700 bg-slate-50 hover:bg-blue-50 border border-slate-100 hover:border-blue-200 px-4 py-2 rounded-xl transition-all shadow-sm hover:shadow"
+                    >
                         <Box className="w-4 h-4 text-slate-400" />
                         <span>Gestión de Datos Maestros</span>
                     </button>

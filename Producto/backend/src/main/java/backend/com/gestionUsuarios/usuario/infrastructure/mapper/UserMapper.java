@@ -77,6 +77,7 @@ public class UserMapper {
                         return null;
 
                 return User.builder()
+
                                 .usuarioRun(dto.getUsuarioRun())
                                 .usuarioNombre(dto.getUsuarioNombre())
                                 .usuarioApellidos(dto.getUsuarioApellidos())

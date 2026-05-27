@@ -2,7 +2,6 @@ package backend.com.gestionUsuarios.usuario.domain.model;
 
 import backend.com.gestionUsuarios.area.domain.model.Area;
 import backend.com.gestionUsuarios.role.domain.model.Role;
-import backend.com.shared.validations.run.ValidRun;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
@@ -10,7 +9,6 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import lombok.*;
 
-import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -28,7 +26,6 @@ public class User {
         private Long usuarioId;
 
         @Column(name = "run", length = 12, nullable = false, unique = true)
-        @ValidRun
         private String usuarioRun;
 
         @NotBlank

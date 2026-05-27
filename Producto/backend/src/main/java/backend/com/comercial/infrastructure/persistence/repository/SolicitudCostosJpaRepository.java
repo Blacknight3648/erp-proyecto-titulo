@@ -12,6 +12,12 @@ public interface SolicitudCostosJpaRepository extends JpaRepository<SolicitudCos
     long countByEstado(String estado);
     long countByTipo(String tipo);
     List<SolicitudCostosJpaEntity> findByTipo(String tipo);
+
+    @org.springframework.data.jpa.repository.Modifying
+    @org.springframework.data.jpa.repository.Query("UPDATE SolicitudCostosJpaEntity s SET s.vendedor = null WHERE s.vendedor.idVendedor = :vendedorId")
+    void desvincularVendedor(@org.springframework.data.repository.query.Param("vendedorId") Long vendedorId);
+
+    void deleteByCliente_ClienteId(Long clienteId);
 }
 
 

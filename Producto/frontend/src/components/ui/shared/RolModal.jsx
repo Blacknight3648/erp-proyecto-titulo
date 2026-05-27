@@ -1,14 +1,22 @@
 import React, { useState, useEffect } from "react";
 import { X } from "lucide-react";
+import { useAreas } from "../../../hooks/useAreas";
 
 const RolModal = ({ isOpen, onClose, onSave, rol }) => {
+  const { areas } = useAreas();
   const [nombre, setNombre] = useState("");
+  const [descripcion, setDescripcion] = useState("");
+  const [areaId, setAreaId] = useState("");
 
   useEffect(() => {
     if (rol) {
       setNombre(rol.nombre || "");
+      setDescripcion(rol.descripcion || "");
+      setAreaId(rol.areaId ? String(rol.areaId) : "");
     } else {
       setNombre("");
+      setDescripcion("");
+      setAreaId("");
     }
   }, [rol, isOpen]);
 
@@ -16,7 +24,12 @@ const RolModal = ({ isOpen, onClose, onSave, rol }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    onSave({ nombre });
+    onSave({
+      nombre,
+      descripcion,
+      areaId: areaId ? Number(areaId) : null,
+      permisosIds: rol?.permisosIds || [],
+    });
     onClose();
   };
 
@@ -32,24 +45,56 @@ const RolModal = ({ isOpen, onClose, onSave, rol }) => {
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="p-6">
-          <div className="space-y-4">
-            <div>
-              <label className="block text-sm font-semibold text-slate-700 mb-2">
-                Nombre del Rol
-              </label>
-              <input
-                type="text"
-                required
-                value={nombre}
-                onChange={(e) => setNombre(e.target.value)}
-                placeholder="Ej: Administrador, Vendedor, Operador..."
-                className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all"
-              />
-            </div>
+        <form onSubmit={handleSubmit} className="p-6 space-y-4">
+          {/* Nombre */}
+          <div>
+            <label className="block text-sm font-semibold text-slate-700 mb-2">
+              Nombre del Rol <span className="text-red-500">*</span>
+            </label>
+            <input
+              type="text"
+              required
+              value={nombre}
+              onChange={(e) => setNombre(e.target.value)}
+              placeholder="Ej: Administrador, Vendedor, Operador..."
+              className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all"
+            />
           </div>
 
-          <div className="mt-8 flex gap-3">
+          {/* Descripción */}
+          <div>
+            <label className="block text-sm font-semibold text-slate-700 mb-2">
+              Descripción
+            </label>
+            <textarea
+              value={descripcion}
+              onChange={(e) => setDescripcion(e.target.value)}
+              placeholder="Descripción del rol y sus responsabilidades..."
+              rows={3}
+              className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all resize-none"
+            />
+          </div>
+
+          {/* Área */}
+          <div>
+            <label className="block text-sm font-semibold text-slate-700 mb-2">
+              Área
+            </label>
+            <select
+              value={areaId}
+              onChange={(e) => setAreaId(e.target.value)}
+              className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all"
+            >
+              <option value="">— Sin área asignada —</option>
+              {areas.map((area) => (
+                <option key={area.areaId} value={area.areaId}>
+                  {area.nombre}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className="mt-6 flex gap-3">
             <button
               type="button"
               onClick={onClose}

@@ -19,16 +19,12 @@ export const useProveedores = () => {
    };
 
    const buildPayload = (proveedor) => ({
-      proveedorId: proveedor.proveedorId,
       runProveedor: proveedor.runProveedor,
       razonSocialProveedor: proveedor.razonSocialProveedor,
-      direccionProveedor: proveedor.direccionProveedor || "",
-      contactoProveedor: proveedor.contactoProveedor || "",
-      emailProveedor: proveedor.emailProveedor || "",
-      telefonoProveedor: proveedor.telefonoProveedor || "",
       tipoProveedor: proveedor.tipoProveedor || "",
+      horarioAtencion: proveedor.horarioAtencion || "",
+      sigla: typeof proveedor.sigla === "string" ? proveedor.sigla : (proveedor.sigla?.nombre || ""),
       activo: proveedor.activo ?? true,
-      sigla: proveedor.sigla?.siglaId ? { siglaId: proveedor.sigla.siglaId } : null,
       giro: proveedor.giro?.giroId ? { giroId: proveedor.giro.giroId } : null,
    });
 

@@ -25,16 +25,17 @@ export function useColaboradores() {
         usuarioApellidos: c.usuarioApellidos,
         usuarioEmail: c.usuarioEmail,
         usuarioPassword: c.usuarioPassword || "",
-        telefono: c.telefono,
-        fechaNacimiento: c.fechaNacimiento,
-        direccion: c.direccion,
-        region: c.region,
-        comuna: c.comuna,
-        roles: Array.isArray(c.roles) && c.roles.length > 0 && typeof c.roles[0] === 'object' 
-            ? c.roles.map(r => r.nombre) 
+        telefono: c.telefono || "",
+        fechaNacimiento: c.fechaNacimiento || null,
+        direccion: c.direccion || "",
+        region: c.region || "",
+        comuna: c.comuna || "",
+        enabled: c.enabled ?? c.activo ?? true,
+        roles: Array.isArray(c.roles) 
+            ? (c.roles.length > 0 && typeof c.roles[0] === 'object' ? c.roles.map(r => r.nombre) : c.roles)
             : (c.rol ? [c.rol] : []),
-        areas: Array.isArray(c.areas) && c.areas.length > 0 && typeof c.areas[0] === 'object'
-            ? c.areas.map(a => a.nombre) 
+        areas: Array.isArray(c.areas)
+            ? (c.areas.length > 0 && typeof c.areas[0] === 'object' ? c.areas.map(a => a.nombre) : c.areas)
             : (c.area ? [c.area] : [])
     });
 
@@ -81,7 +82,7 @@ export function useColaboradores() {
             // La API espera CreateUserDTO. Si hay roles/areas como objetos, pasarlos a string.
             const payload = formatPayload(colaborador);
             // Intentamos mantener el estado activo (aunque el backend parece forzar true)
-            payload.enabled = !colaborador.activo; // Enviarlo por si el DTO cambia a futuro
+            payload.enabled = !(colaborador.enabled ?? colaborador.activo); // Toggle el estado actual
             
             await api.put(`/usuarios/${id}`, payload);
             await loadColaboradores();

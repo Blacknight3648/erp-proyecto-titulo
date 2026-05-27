@@ -20,16 +20,14 @@ export function useClientes() {
    };
 
    const buildPayload = (cliente) => ({
-      clienteId: cliente.clienteId,
       runCliente: cliente.runCliente,
       razonSocial: cliente.razonSocial,
       correoCliente: cliente.correoCliente || "",
       telefonoCliente: cliente.telefonoCliente || "",
-      direccionCliente: cliente.direccionCliente || "",
       contactoCliente: cliente.contactoCliente || "",
+      sigla: typeof cliente.sigla === "string" ? cliente.sigla : (cliente.sigla?.nombre || ""),
       activo: cliente.activo ?? true,
       giro: cliente.giro?.giroId ? { giroId: cliente.giro.giroId } : null,
-      sigla: cliente.sigla?.siglaId ? { siglaId: cliente.sigla.siglaId } : null,
    });
 
    const createCliente = async (cliente) => {

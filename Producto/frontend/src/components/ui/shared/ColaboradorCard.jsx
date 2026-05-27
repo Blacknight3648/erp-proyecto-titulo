@@ -13,8 +13,12 @@ import {
 } from 'lucide-react';
 
 export default function ColaboradorCard({ colaborador, onDelete, onToggle, onEdit }) {
-    const isActive = colaborador.activo;
-    
+    const isActive = colaborador.enabled ?? colaborador.activo;
+    const areaNombre = colaborador.areas?.[0]?.nombre || colaborador.area || 'Sin Área';
+    const rolNombre = colaborador.roles?.[0]?.nombre || colaborador.rol || 'Sin Rol';
+    const email = colaborador.usuarioEmail || colaborador.email || '—';
+    const uid = colaborador.usuarioId || colaborador.id;
+
     return (
         <div className="group bg-white rounded-[2.5rem] p-8 shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 border border-gray-100 flex flex-col h-full relative overflow-hidden">
             {/* Decoración de fondo */}
@@ -41,7 +45,7 @@ export default function ColaboradorCard({ colaborador, onDelete, onToggle, onEdi
                         {isActive ? <ToggleRight size={16} /> : <ToggleLeft size={16} />}
                     </button>
                     <button 
-                        onClick={() => onDelete(colaborador.id || colaborador.colaboradorId)}
+                        onClick={() => onDelete(uid)}
                         className="p-3 bg-rose-50 text-rose-400 rounded-2xl hover:bg-rose-600 hover:text-white transition-all duration-300 shadow-sm"
                         title="Eliminar"
                     >
@@ -64,16 +68,16 @@ export default function ColaboradorCard({ colaborador, onDelete, onToggle, onEdi
                 <div className="pt-4 border-t border-gray-50 space-y-3">
                     <div className="flex items-center text-sm font-bold text-gray-500 gap-3">
                         <Mail size={16} className="text-gray-300" />
-                        <span className="truncate">{colaborador.email}</span>
+                        <span className="truncate">{email}</span>
                     </div>
                     <div className="flex items-center text-sm font-bold text-gray-500 gap-3">
                         <MapPin size={16} className="text-gray-300" />
-                        <span>{colaborador.area || 'Sin Área'}</span>
+                        <span>{areaNombre}</span>
                     </div>
                     <div className="flex items-center text-sm font-bold text-gray-500 gap-3">
                         <Shield size={16} className="text-gray-300" />
                         <span className="px-3 py-1 bg-gray-100 rounded-lg text-[10px] uppercase tracking-widest text-gray-600">
-                             {colaborador.rol || 'Sin Rol'}
+                             {rolNombre}
                         </span>
                     </div>
                 </div>

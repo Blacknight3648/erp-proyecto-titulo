@@ -54,7 +54,11 @@ export default function GestionUsuariosColaboradores() {
 
   const handleSave = (data) => {
     if (selectedCollaborator) {
-      updateColaborador({ ...selectedCollaborator, ...data });
+      // Inject the ID so the hook can find it
+      updateColaborador({ 
+        ...data,
+        usuarioId: selectedCollaborator.usuarioId || selectedCollaborator.id
+      });
     } else {
       createColaborador(data);
     }

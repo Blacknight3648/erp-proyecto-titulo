@@ -26,6 +26,7 @@ import OrdenesProduccion from "./components/pages/commercial/production-orders/O
 import GestionClientes from "./components/pages/users/GestionClientes";
 import GestionProveedores from "./components/pages/users/GestionProveedores";
 import GestionUsuariosColaboradores from "./components/pages/users/GestionUsuariosColaboradores";
+import GestionVendedores from "./components/pages/users/GestionVendedores";
 
 /* ADMIN */
 import GestionAreas from "./components/pages/admin/GestionAreas";
@@ -238,6 +239,11 @@ function App() {
             <Route
               path="/gestion-usuarios/proveedores"
               element={<PrivateRoute><MainLayout><GestionProveedores /></MainLayout></PrivateRoute>}
+            />
+
+            <Route
+              path="/gestion-usuarios/vendedores"
+              element={<PrivateRoute><MainLayout><GestionVendedores /></MainLayout></PrivateRoute>}
             />
 
             {/* ADMIN */}

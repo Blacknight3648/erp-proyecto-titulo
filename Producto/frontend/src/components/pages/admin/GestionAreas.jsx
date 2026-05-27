@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from "react";
 import { Layout, Plus } from "lucide-react";
 import { Toaster } from "sonner";
+import { confirmDelete } from "../../../utils/confirmDelete.jsx";
 
 import CrudGridLayout from "../../layout/CrudGridLayout";
 import { useAreas } from "../../../hooks/useAreas";
@@ -28,6 +29,10 @@ const GestionAreas = () => {
   const handleCloseModal = () => {
     setIsModalOpen(false);
     setSelectedArea(null);
+  };
+
+  const handleDelete = (id) => {
+    confirmDelete("¿Está seguro de eliminar esta área?", () => deleteArea(id));
   };
 
   const handleSave = async (areaData) => {
@@ -68,7 +73,7 @@ const GestionAreas = () => {
             key={area.areaId || area.id}
             area={area}
             onEdit={() => handleOpenModal(area)}
-            onDelete={() => deleteArea(area.areaId || area.id)}
+            onDelete={() => handleDelete(area.areaId || area.id)}
           />
         )}
       />

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Truck } from "lucide-react";
 import { Toaster } from "sonner";
+import { confirmDelete } from "../../../utils/confirmDelete.jsx";
 
 import CrudGridLayout from "../../layout/CrudGridLayout";
 import { useProveedores } from "../../../hooks/useProveedores";
@@ -82,6 +83,10 @@ export default function ProveedoresView() {
         setIsModalOpen(false);
     };
 
+    const handleDelete = (id) => {
+        confirmDelete("¿Está seguro de eliminar este proveedor?", () => deleteProveedor(id));
+    };
+
     // Cerrar modal
     const handleCloseModal = () => {
         setProveedorToEdit(null);
@@ -109,7 +114,7 @@ export default function ProveedoresView() {
                     <ProveedorCard
                         key={proveedor.proveedorId}
                         proveedor={proveedor}
-                        onDelete={deleteProveedor}
+                        onDelete={handleDelete}
                         onToggle={toggleProveedor}
                         onEdit={handleEdit}
                     />

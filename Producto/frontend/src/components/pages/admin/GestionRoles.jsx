@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import CrudGridLayout from "../../layout/CrudGridLayout";
 import { toast, Toaster } from "sonner";
+import { confirmDelete } from "../../../utils/confirmDelete.jsx";
 import { ShieldCheck } from "lucide-react";
 
 import { useRoles } from "../../../hooks/useRoles";
@@ -37,10 +38,8 @@ const GestionRoles = () => {
     }
   };
 
-  const handleDelete = async (id) => {
-    if (window.confirm("¿Está seguro de eliminar este rol?")) {
-      await deleteRole(id);
-    }
+  const handleDelete = (id) => {
+    confirmDelete("¿Está seguro de eliminar este rol?", () => deleteRole(id));
   };
 
   const handleManagePermissions = (rol) => {

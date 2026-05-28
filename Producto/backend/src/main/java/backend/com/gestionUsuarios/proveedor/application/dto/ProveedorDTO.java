@@ -17,7 +17,6 @@ import java.util.List;
 @Builder
 public class ProveedorDTO {
 
-    @NotBlank
     private Long proveedorId;
 
     @NotBlank(message = "El RUN del proveedor es obligatorio")

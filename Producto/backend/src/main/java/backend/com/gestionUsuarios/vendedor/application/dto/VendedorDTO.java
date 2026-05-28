@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder
 public class VendedorDTO {
-    private Long id;
+    private Long vendedorId;
     private Long usuarioId;
     private String nombreUsuario; // For display purposes
     private String apellidosUsuario;

@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder
 public class Vendedor {
-    private Long id;
+    private Long vendedorId;
     private Long usuarioId; // Only ID to avoid circular dependencies in domain
     private String codigoVendedor;
     private Boolean activo;

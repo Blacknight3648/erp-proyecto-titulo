@@ -68,14 +68,62 @@ MERGE INTO giros (giro_id, descripcion_giro)
 
 
 -- ============================================================
--- 5. CLIENTES (RUTs de empresas reales y teléfonos fijos +562...)
+-- 5. CLIENTES (Nuevo modelo sin campos de correo/teléfono y con mappers asociados)
 -- ============================================================
-MERGE INTO clientes (cliente_id, activo, razon_social, run_cliente, correo_cliente, telefono_cliente, sigla, fk_giro)
+MERGE INTO clientes (cliente_id, activo, razon_social, run_cliente, sigla, fk_giro)
     KEY (cliente_id)
     VALUES
-    (1, true, 'HITES S.A.', '96947020-9', 'contacto.hites@hites.cl', '+56227275000', 'S.A.', 1),
-    (2, true, 'LABORATORIO MEDCELL', '96706320-7', 'compras@medcell.cl', '+56224396000', 'LTDA.', 2),
-    (3, true, 'GEODIS WILSON', '79699520-3', 'info.chile@geodis.com', '+56223816500', 'S.A.', 3);
+    (1, true, 'HITES S.A.', '96947020-9', 'S.A.', 1),
+    (2, true, 'LABORATORIO MEDCELL', '96706320-7', 'LTDA.', 2),
+    (3, true, 'GEODIS WILSON', '79699520-3', 'S.A.', 3);
+
+-- ============================================================
+-- 5.1. TIPOS DE CONTACTO Y CONTACTOS (Establece Fk_ de cliente)
+-- ============================================================
+MERGE INTO tipos_contacto (tipo_contacto_id, descripcion_tipo_contacto)
+    KEY (tipo_contacto_id)
+    VALUES
+    (1, 'GENERAL'),
+    (2, 'COMERCIAL'),
+    (3, 'FINANZAS');
+
+MERGE INTO contactos (contacto_id, nombre_contacto, telefono_contacto, email_contacto, tipo_contacto_id, fk_contacto)
+    KEY (contacto_id)
+    VALUES
+    (1, 'CONTACTO HITES', '+56227275000', 'contacto.hites@hites.cl', 1, 1),
+    (2, 'CONTACTO MEDCELL', '+56224396000', 'compras@medcell.cl', 1, 2),
+    (3, 'CONTACTO GEODIS WILSON', '+56223816500', 'info.chile@geodis.com', 1, 3);
+
+-- ============================================================
+-- 5.2. PAÍS, REGION, COMUNA, TIPO DIRECCIÓN Y DIRECCIONES (Establece Fk_ de cliente)
+-- ============================================================
+MERGE INTO pais (pais_id, nombre_pais)
+    KEY (pais_id)
+    VALUES
+    (1, 'CHILE');
+
+MERGE INTO region (region_id, nombre_region, pais_id, creado_en, actualizado_en, activo)
+    KEY (region_id)
+    VALUES
+    (1, 'METROPOLITANA', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true);
+
+MERGE INTO comuna (comuna_id, nombre_comuna, region_id, creado_en, actualizado_en, activo)
+    KEY (comuna_id)
+    VALUES
+    (1, 'SANTIAGO', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true);
+
+MERGE INTO tipo_direccion (tipo_direccion_id, descripcion)
+    KEY (tipo_direccion_id)
+    VALUES
+    (1, 'PRINCIPAL'),
+    (2, 'SUCURSAL');
+
+MERGE INTO direccion (direccion_id, calle, numero, depto, tipo_direccion_id, comuna_id, fk_direccion)
+    KEY (direccion_id)
+    VALUES
+    (1, 'AV. KENNEDY', '5413', 'OF. 201', 1, 1, 1),
+    (2, 'HOLANDA', '64', NULL, 1, 1, 2),
+    (3, 'LO BOZA', '110', NULL, 1, 1, 3);
 
 -- ============================================================
 -- 6. PROVEEDORES (RUTs de empresas reales)
@@ -149,3 +197,10 @@ ALTER TABLE scos_telas ALTER COLUMN idscostela RESTART WITH 2000;
 ALTER TABLE scos_logotipos ALTER COLUMN id RESTART WITH 2000;
 ALTER TABLE evaluaciones_negocio ALTER COLUMN idevn RESTART WITH 1000;
 ALTER TABLE notas_venta ALTER COLUMN idnv RESTART WITH 1000;
+ALTER TABLE tipos_contacto ALTER COLUMN tipo_contacto_id RESTART WITH 10;
+ALTER TABLE contactos ALTER COLUMN contacto_id RESTART WITH 10;
+ALTER TABLE pais ALTER COLUMN pais_id RESTART WITH 10;
+ALTER TABLE region ALTER COLUMN region_id RESTART WITH 10;
+ALTER TABLE comuna ALTER COLUMN comuna_id RESTART WITH 10;
+ALTER TABLE tipo_direccion ALTER COLUMN tipo_direccion_id RESTART WITH 10;
+ALTER TABLE direccion ALTER COLUMN direccion_id RESTART WITH 10;

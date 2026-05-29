@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Users } from "lucide-react";
 import { Toaster } from "sonner";
+import { confirmDelete } from "../../../utils/confirmDelete.jsx";
 
 import CrudGridLayout from "../../layout/CrudGridLayout";
 import { useClientes } from "../../../hooks/useClientes";
@@ -84,6 +85,10 @@ export default function GestionClientes() {
 
   };
 
+  const handleDelete = (id) => {
+    confirmDelete("¿Está seguro de eliminar este cliente?", () => deleteCliente(id));
+  };
+
   const handleCloseModal = () => {
 
     setClienteToEdit(null);
@@ -112,7 +117,7 @@ export default function GestionClientes() {
           <ClienteCard
             key={cliente.clienteId}
             cliente={cliente}
-            onDelete={deleteCliente}
+            onDelete={handleDelete}
             onToggle={toggleCliente}
             onEdit={handleEdit}
           />

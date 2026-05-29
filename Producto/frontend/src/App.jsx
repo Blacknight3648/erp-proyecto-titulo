@@ -29,6 +29,7 @@ import GestionUsuariosColaboradores from "./components/pages/users/GestionUsuari
 import GestionVendedores from "./components/pages/users/GestionVendedores";
 
 /* ADMIN */
+import GestionDatosMaestros from "./components/pages/admin/master-data/GestionDatosMaestros";
 import GestionAreas from "./components/pages/admin/GestionAreas";
 import GestionRoles from "./components/pages/admin/GestionRoles";
 import GestionPermisosRol from "./components/pages/admin/GestionPermisosRol";
@@ -247,6 +248,11 @@ function App() {
             />
 
             {/* ADMIN */}
+            <Route
+              path="/admin/datos-maestros"
+              element={<PrivateRoute><MainLayout><GestionDatosMaestros /></MainLayout></PrivateRoute>}
+            />
+
             <Route
               path="/admin/areas"
               element={<PrivateRoute><MainLayout><GestionAreas /></MainLayout></PrivateRoute>}

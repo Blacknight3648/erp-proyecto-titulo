@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { UserCheck } from "lucide-react";
 import { Toaster } from "sonner";
+import { confirmDelete } from "../../../utils/confirmDelete.jsx";
 
 import CrudGridLayout from "../../layout/CrudGridLayout";
 import { useVendedores } from "../../../hooks/useVendedores";
@@ -51,10 +52,8 @@ export default function GestionVendedores() {
     setIsModalOpen(false);
   };
 
-  const handleDelete = async (id) => {
-    if (window.confirm("¿Está seguro de eliminar este vendedor?")) {
-      await deleteVendedor(id);
-    }
+  const handleDelete = (id) => {
+    confirmDelete("¿Está seguro de eliminar este vendedor?", () => deleteVendedor(id));
   };
 
   const handleClose = () => {

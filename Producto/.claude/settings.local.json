@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:defontana.com)",
+      "Bash(curl -s https://defontana.com)",
+      "Bash(curl -sL https://defontana.com)",
+      "Bash(curl -sL https://defontana.com -o /tmp/defontana.html)",
+      "Read(//tmp/**)"
+    ]
+  }
+}

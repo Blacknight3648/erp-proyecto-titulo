@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Users } from "lucide-react";
 import { Toaster } from "sonner";
+import { confirmDelete } from "../../../utils/confirmDelete.jsx";
 import CrudGridLayout from "../../layout/CrudGridLayout";
 
 import { useColaboradores } from "../../../hooks/useColaboradores";
@@ -37,10 +38,15 @@ export default function GestionUsuariosColaboradores() {
       c.rol?.toLowerCase().includes(searchLower) ||
       c.area?.toLowerCase().includes(searchLower);
 
-    const status = c.activo ? "Activo" : "Suspendido";
+    const isActive = c.enabled ?? c.activo;
+    const status = isActive ? "Activo" : "Suspendido";
     const matchesFilter = filterStatus === "Todos" || filterStatus === status;
     return matchesSearch && matchesFilter;
   });
+
+  const handleDelete = (uid) => {
+    confirmDelete("¿Está seguro de eliminar este colaborador?", () => deleteColaborador(uid));
+  };
 
   const handleOpenNew = () => {
     setSelectedCollaborator(null);
@@ -85,7 +91,7 @@ export default function GestionUsuariosColaboradores() {
           <ColaboradorCard
             key={colaborador.usuarioId || colaborador.id || Math.random().toString()}
             colaborador={colaborador}
-            onDelete={deleteColaborador}
+            onDelete={handleDelete}
             onToggle={toggleColaborador}
             onEdit={handleOpenEdit}
           />

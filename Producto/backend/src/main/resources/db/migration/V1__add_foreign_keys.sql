@@ -83,6 +83,10 @@ ALTER TABLE rol_permisos
 -- =============================================================================
 -- MÓDULO: CLIENTES Y PROVEEDORES
 -- =============================================================================
+ALTER TABLE giros
+    ADD CONSTRAINT fk_giro_rubro
+    FOREIGN KEY (rubro_id) REFERENCES rubros (rubro_id);
+
 ALTER TABLE clientes
     ADD CONSTRAINT fk_cliente_giro
     FOREIGN KEY (fk_giro) REFERENCES giros (giro_id);

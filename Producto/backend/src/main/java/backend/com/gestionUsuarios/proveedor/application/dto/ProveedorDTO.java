@@ -4,7 +4,6 @@ import backend.com.shared.application.dto.ContactoDTO;
 import backend.com.shared.application.dto.DatoBancarioDTO;
 import backend.com.shared.application.dto.DireccionDTO;
 import backend.com.shared.application.dto.GiroDTO;
-
 import backend.com.shared.validations.run.ValidRun;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;

@@ -55,15 +55,26 @@ MERGE INTO vendedores (id_vendedor, id_usuario, codigo_vendedor, activo, creado_
     (2, 2, 'V-2024-002', true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
     
 -- ============================================================
--- 4.1. GIROS
+-- 4.1. RUBROS
 -- ============================================================
-MERGE INTO giros (giro_id, descripcion_giro)
+MERGE INTO rubros (rubro_id, nombre_rubro, descripcion_rubro)
+    KEY (rubro_id)
+    VALUES
+    (1, 'COMERCIO', 'Empresas dedicadas a la compra y venta de bienes y servicios'),
+    (2, 'SALUD', 'Empresas del sector salud, farmacéutico y laboratorio'),
+    (3, 'LOGÍSTICA', 'Empresas de transporte, almacenamiento y distribución'),
+    (4, 'CONSTRUCCIÓN', 'Empresas del rubro inmobiliario, infraestructura y ferretería');
+
+-- ============================================================
+-- 4.2. GIROS (referenciando el rubro correspondiente)
+-- ============================================================
+MERGE INTO giros (giro_id, codigo_sii, nombre_giro, descripcion_giro, rubro_id)
     KEY (giro_id)
     VALUES
-    (1, 'RETAIL Y VENTAS POR MENOR'),
-    (2, 'SERVICIOS MÉDICOS Y LABORATORIO'),
-    (3, 'LOGÍSTICA Y TRANSPORTE'),
-    (4, 'CONSTRUCCIÓN Y FERRETERÍA');
+    (1, '521000', 'RETAIL',          'RETAIL Y VENTAS POR MENOR',         1),
+    (2, '861000', 'SALUD',           'SERVICIOS MÉDICOS Y LABORATORIO',   2),
+    (3, '492200', 'LOGÍSTICA',       'LOGÍSTICA Y TRANSPORTE',            3),
+    (4, '410000', 'CONSTRUCCIÓN',    'CONSTRUCCIÓN Y FERRETERÍA',         4);
 
 
 
@@ -137,6 +148,42 @@ MERGE INTO proveedores (proveedor_id, activo, creado_en, actualizado_en, horario
     (4, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'SODIMAC S.A.', '96792430-K', 'S.A.', 'NACIONAL', 4);
 
 -- ============================================================
+-- 6.1. BANCOS
+-- ============================================================
+MERGE INTO banco (banco_id, nombre_banco, codigo_banco)
+    KEY (banco_id)
+    VALUES
+    (1, 'BANCO DE CHILE',         'BCH'),
+    (2, 'BANCO ESTADO',           'BEST'),
+    (3, 'SANTANDER CHILE',        'SAN'),
+    (4, 'BCI',                    'BCI'),
+    (5, 'SCOTIABANK CHILE',       'SCOT'),
+    (6, 'BANCO SECURITY',         'SEC'),
+    (7, 'ITAÚ CORPBANCA',         'ITA');
+
+-- ============================================================
+-- 6.2. TIPOS DE CUENTA BANCARIA
+-- ============================================================
+MERGE INTO tipo_cuenta_bancaria (tipo_cuenta_id, denominacion_cuenta)
+    KEY (tipo_cuenta_id)
+    VALUES
+    (1, 'CUENTA CORRIENTE'),
+    (2, 'CUENTA VISTA'),
+    (3, 'CUENTA DE AHORRO'),
+    (4, 'CUENTA RUT');
+
+-- ============================================================
+-- 6.3. DATOS BANCARIOS (Asociados a proveedores vía fk_provee_dato_bancario)
+-- ============================================================
+MERGE INTO dato_bancario (dato_bancario_id, numero_cuenta, banco_id, tipo_cuenta_id, fk_provee_dato_bancario)
+    KEY (dato_bancario_id)
+    VALUES
+    (1, '00-123-45678-09', 1, 1, 1),
+    (2, '00-234-56789-01', 2, 2, 2),
+    (3, '00-345-67890-12', 3, 1, 3),
+    (4, '00-456-78901-23', 4, 1, 4);
+
+-- ============================================================
 -- 7. CONFIGURACIÓN DE PLANTILLAS (SCOS)
 -- ============================================================
 MERGE INTO configuracion_plantillas (id, nombre_prenda)
@@ -204,3 +251,7 @@ ALTER TABLE region ALTER COLUMN region_id RESTART WITH 10;
 ALTER TABLE comuna ALTER COLUMN comuna_id RESTART WITH 10;
 ALTER TABLE tipo_direccion ALTER COLUMN tipo_direccion_id RESTART WITH 10;
 ALTER TABLE direccion ALTER COLUMN direccion_id RESTART WITH 10;
+ALTER TABLE rubros ALTER COLUMN rubro_id RESTART WITH 10;
+ALTER TABLE banco ALTER COLUMN banco_id RESTART WITH 20;
+ALTER TABLE tipo_cuenta_bancaria ALTER COLUMN tipo_cuenta_id RESTART WITH 10;
+ALTER TABLE dato_bancario ALTER COLUMN dato_bancario_id RESTART WITH 10;

@@ -3,6 +3,7 @@ package backend.com.shared.infrastructure.mapper;
 import backend.com.shared.application.dto.RegionDTO;
 import backend.com.shared.domain.model.Region;
 import backend.com.shared.infrastructure.persistence.entity.RegionJpaEntity;
+import backend.com.shared.infrastructure.persistence.repository.Jpa.RegionJpaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Component;
 public class RegionMapper {
 
     private final PaisMapper paisMapper;
+    private final RegionJpaRepository regionJpaRepository;
 
     public Region toDomain(RegionJpaEntity entity) {
         if (entity == null)
@@ -25,6 +27,18 @@ public class RegionMapper {
     public RegionJpaEntity toEntity(Region domain) {
         if (domain == null)
             return null;
+
+        if (domain.getRegionId() != null) {
+            return regionJpaRepository.findById(domain.getRegionId())
+                    .orElseGet(() -> {
+                        RegionJpaEntity entity = new RegionJpaEntity();
+                        entity.setRegionId(domain.getRegionId());
+                        entity.setNombreRegion(domain.getNombreRegion());
+                        entity.setPais(paisMapper.toEntity(domain.getPais()));
+                        return entity;
+                    });
+        }
+
         RegionJpaEntity entity = new RegionJpaEntity();
         entity.setRegionId(domain.getRegionId());
         entity.setNombreRegion(domain.getNombreRegion());

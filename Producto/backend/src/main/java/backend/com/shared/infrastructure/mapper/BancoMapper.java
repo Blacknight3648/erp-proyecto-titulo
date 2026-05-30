@@ -1,13 +1,17 @@
 package backend.com.shared.infrastructure.mapper;
 
-import org.springframework.stereotype.Component;
-
 import backend.com.shared.application.dto.BancoDTO;
 import backend.com.shared.domain.model.Banco;
 import backend.com.shared.infrastructure.persistence.entity.BancoJpaEntity;
+import backend.com.shared.infrastructure.persistence.repository.Jpa.BancoJpaRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
 
 @Component
+@RequiredArgsConstructor
 public class BancoMapper {
+
+    private final BancoJpaRepository bancoJpaRepository;
 
     public Banco toDomain(BancoJpaEntity entity) {
         if (entity == null)
@@ -22,6 +26,18 @@ public class BancoMapper {
     public BancoJpaEntity toEntity(Banco domain) {
         if (domain == null)
             return null;
+
+        if (domain.getBancoId() != null) {
+            return bancoJpaRepository.findById(domain.getBancoId())
+                    .orElseGet(() -> {
+                        BancoJpaEntity entity = new BancoJpaEntity();
+                        entity.setBancoId(domain.getBancoId());
+                        entity.setNombreBanco(domain.getNombreBanco());
+                        entity.setCodigoBanco(domain.getCodigoBanco());
+                        return entity;
+                    });
+        }
+
         BancoJpaEntity entity = new BancoJpaEntity();
         entity.setBancoId(domain.getBancoId());
         entity.setNombreBanco(domain.getNombreBanco());

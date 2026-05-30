@@ -3,6 +3,7 @@ package backend.com.shared.infrastructure.mapper;
 import backend.com.shared.application.dto.ComunaDTO;
 import backend.com.shared.domain.model.Comuna;
 import backend.com.shared.infrastructure.persistence.entity.ComunaJpaEntity;
+import backend.com.shared.infrastructure.persistence.repository.Jpa.ComunaJpaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Component;
 public class ComunaMapper {
 
     private final RegionMapper regionMapper;
+    private final ComunaJpaRepository comunaJpaRepository;
 
     public Comuna toDomain(ComunaJpaEntity entity) {
         if (entity == null)
@@ -25,6 +27,18 @@ public class ComunaMapper {
     public ComunaJpaEntity toEntity(Comuna domain) {
         if (domain == null)
             return null;
+
+        if (domain.getComunaId() != null) {
+            return comunaJpaRepository.findById(domain.getComunaId())
+                    .orElseGet(() -> {
+                        ComunaJpaEntity entity = new ComunaJpaEntity();
+                        entity.setComunaId(domain.getComunaId());
+                        entity.setNombreComuna(domain.getNombreComuna());
+                        entity.setRegion(regionMapper.toEntity(domain.getRegion()));
+                        return entity;
+                    });
+        }
+
         ComunaJpaEntity entity = new ComunaJpaEntity();
         entity.setComunaId(domain.getComunaId());
         entity.setNombreComuna(domain.getNombreComuna());

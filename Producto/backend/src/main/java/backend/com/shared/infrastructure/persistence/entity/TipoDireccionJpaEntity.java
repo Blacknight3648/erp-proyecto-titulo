@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 public class TipoDireccionJpaEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "tipo_direccion_id")
     private Integer tipoDireccionId;
 

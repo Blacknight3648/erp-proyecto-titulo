@@ -79,6 +79,17 @@ MERGE INTO giros (giro_id, codigo_sii, nombre_giro, descripcion_giro, rubro_id)
 
 
 -- ============================================================
+-- 4.3. PRODUCTOS
+-- ============================================================
+MERGE INTO producto (producto_id, codigo_producto, nombre, descripcion, genero, color, creado_en, actualizado_en, activo)
+    KEY (producto_id)
+    VALUES
+    (1, 'PROD-POL-001', 'Polerón Corporativo Premium', 'Polerón corporativo con gorro y bolsillos canguro', 'UNISEX', 'Azul Marino', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (2, 'PROD-CHA-002', 'Chaqueta Impermeable Térmica', 'Chaqueta impermeable con forro micropolar interior', 'UNISEX', 'Gris Plata', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true);
+
+
+
+-- ============================================================
 -- 5. CLIENTES (Nuevo modelo sin campos de correo/teléfono y con mappers asociados)
 -- ============================================================
 MERGE INTO clientes (cliente_id, activo, razon_social, run_cliente, sigla, fk_giro)
@@ -237,6 +248,7 @@ ALTER TABLE clientes ALTER COLUMN cliente_id RESTART WITH 100;
 ALTER TABLE vendedores ALTER COLUMN id_vendedor RESTART WITH 200;
 ALTER TABLE proveedores ALTER COLUMN proveedor_id RESTART WITH 100;
 ALTER TABLE giros ALTER COLUMN giro_id RESTART WITH 100;
+ALTER TABLE producto ALTER COLUMN producto_id RESTART WITH 100;
 ALTER TABLE solicitudes_costos ALTER COLUMN idscos RESTART WITH 2000;
 ALTER TABLE produccion_costeos ALTER COLUMN id_costeo RESTART WITH 2000;
 ALTER TABLE produccion_costeo_items ALTER COLUMN id_costeo_item RESTART WITH 5000;

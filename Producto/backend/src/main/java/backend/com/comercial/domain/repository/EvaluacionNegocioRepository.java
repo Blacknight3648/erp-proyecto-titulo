@@ -12,6 +12,5 @@ public interface EvaluacionNegocioRepository {
 
     Optional<EvaluacionNegocio> findByNumero(DocumentNumber numero);
 
-    Optional<Long> findMaxNumero();
     java.util.List<EvaluacionNegocio> findAll();
 }

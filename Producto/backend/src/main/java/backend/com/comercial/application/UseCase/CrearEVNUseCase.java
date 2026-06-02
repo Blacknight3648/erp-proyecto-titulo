@@ -30,8 +30,11 @@ public class CrearEVNUseCase {
         // Número correlativo atómico desde el contador (ignora el valor del cliente).
         Long numeroLong = numeroDocumentoService.siguiente("EVN");
 
+        String numeroFormateado = String.format("EVN-%d-%07d",
+                LocalDate.now().getYear(), numeroLong);
+
         EvaluacionNegocio evn = EvaluacionNegocio.crear(
-                new DocumentNumber(numeroLong),
+                new DocumentNumber(numeroFormateado),
                 command.getClienteId(),
                 command.getVendedorId(),
                 command.getCosteoId(),

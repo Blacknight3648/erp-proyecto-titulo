@@ -9,6 +9,7 @@ import backend.com.comercial.domain.repository.EvaluacionNegocioRepository;
 import backend.com.shared.application.dto.FirmaAprobacionRequest;
 import backend.com.shared.application.dto.HistorialEstadoDTO;
 import backend.com.shared.application.service.HistorialEstadoService;
+import backend.com.shared.application.service.NumeroDocumentoService;
 import backend.com.shared.exception.EntityNotFoundException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -30,6 +31,7 @@ public class EvaluacionNegocioController {
     private final AprobarEVNUseCase aprobarEVNUseCase;
     private final EvaluacionNegocioRepository repository;
     private final HistorialEstadoService historialService;
+    private final NumeroDocumentoService numeroDocumentoService;
 
     @GetMapping
     @Operation(summary = "Listar EVN", description = "Devuelve todas las evaluaciones de negocio.")
@@ -37,6 +39,11 @@ public class EvaluacionNegocioController {
         return repository.findAll().stream()
                 .map(EVNResponse::fromDomain)
                 .collect(Collectors.toList());
+    }
+
+    @GetMapping("/next-number")
+    public Long previsualizarProximo() {
+        return numeroDocumentoService.siguiente("EVN");
     }
 
     @PostMapping

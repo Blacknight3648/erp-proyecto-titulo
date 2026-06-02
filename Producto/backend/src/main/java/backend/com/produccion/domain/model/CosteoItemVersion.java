@@ -8,6 +8,7 @@ import java.math.BigDecimal;
 public class CosteoItemVersion {
     private Long idCosteoItemVersion;
     private Long costeoVersionId;
+    private Long costeoItemId;
     private String tipoInsumo;
     private Long insumoId;
     private String nombreInsumo;
@@ -15,10 +16,11 @@ public class CosteoItemVersion {
     private BigDecimal precioUnitario;
     private BigDecimal costoTotal;
 
-    public CosteoItemVersion(Long idCosteoItemVersion, Long costeoVersionId, String tipoInsumo,
+    public CosteoItemVersion(Long idCosteoItemVersion, Long costeoVersionId, Long costeoItemId, String tipoInsumo,
             Long insumoId, String nombreInsumo, BigDecimal consumo, BigDecimal precioUnitario, BigDecimal costoTotal) {
         this.idCosteoItemVersion = idCosteoItemVersion;
         this.costeoVersionId = costeoVersionId;
+        this.costeoItemId = costeoItemId;
         this.tipoInsumo = tipoInsumo;
         this.insumoId = insumoId;
         this.nombreInsumo = nombreInsumo;

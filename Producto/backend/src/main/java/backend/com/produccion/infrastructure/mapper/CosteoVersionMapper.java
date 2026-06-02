@@ -91,6 +91,7 @@ public class CosteoVersionMapper {
         return new CosteoItemVersion(
                 entity.getIdCosteoItemVersion(),
                 entity.getCosteoVersion() != null ? entity.getCosteoVersion().getIdCosteoVersion() : null,
+                entity.getCosteoItemId() != null ? entity.getCosteoItemId() : null,
                 entity.getTipoInsumo(),
                 entity.getInsumoId(),
                 entity.getNombreInsumo(),
@@ -102,6 +103,7 @@ public class CosteoVersionMapper {
     private CosteoItemVersionJpaEntity itemToJpaEntity(CosteoItemVersion domain) {
         CosteoItemVersionJpaEntity entity = new CosteoItemVersionJpaEntity();
         entity.setIdCosteoItemVersion(domain.getIdCosteoItemVersion());
+        entity.setCosteoItemId(domain.getCosteoItemId());
         entity.setTipoInsumo(domain.getTipoInsumo());
         entity.setInsumoId(domain.getInsumoId());
         entity.setNombreInsumo(domain.getNombreInsumo());

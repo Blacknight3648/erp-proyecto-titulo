@@ -59,11 +59,6 @@ public class EvaluacionNegocioRepositoryImpl implements EvaluacionNegocioReposit
     }
 
     @Override
-    public Optional<Long> findMaxNumero() {
-        return jpaRepository.findMaxNumero();
-    }
-
-    @Override
     public java.util.List<EvaluacionNegocio> findAll() {
         return jpaRepository.findAll().stream()
                 .map(mapper::toDomain)

@@ -11,7 +11,5 @@ public interface NotaVentaRepository {
 
     Optional<NotaVenta> findByNumero(Long numero);
 
-    java.util.Optional<Long> findMaxNumero();
-
     java.util.List<NotaVenta> findAll();
 }

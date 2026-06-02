@@ -1,18 +1,14 @@
 package backend.com.gestionUsuarios.cliente.application.dto;
 
-import backend.com.shared.application.dto.DatoBancarioDTO;
+import backend.com.shared.application.dto.ContactoDTO;
 import backend.com.shared.application.dto.DireccionDTO;
 import backend.com.shared.application.dto.GiroDTO;
-import backend.com.shared.validations.email.ValidEmail;
 import backend.com.shared.validations.run.ValidRun;
-import backend.com.shared.validations.telefono.ValidPhone;
-import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -31,18 +27,6 @@ public class ClienteDTO {
     @Size(max = 12, message = "El RUN no puede exceder 12 caracteres")
     private String runCliente;
 
-    @Email(message = "Debe ser un correo válido")
-    @ValidEmail
-    @Size(max = 100, message = "El correo no puede exceder 100 caracteres")
-    private String correoCliente;
-
-    @ValidPhone
-    @Size(max = 20, message = "El teléfono no puede exceder 20 caracteres")
-    private String telefonoCliente;
-
-    @Size(max = 100, message = "El contacto no puede exceder 100 caracteres")
-    private String contactoCliente;
-
     @Size(max = 50, message = "La sigla no puede exceder 50 caracteres")
     private String sigla;
 
@@ -50,7 +34,6 @@ public class ClienteDTO {
 
     private GiroDTO giro;
 
-    private DireccionDTO direccion;
-
-    private DatoBancarioDTO datoBancario;
+    private List<ContactoDTO> contactos;
+    private List<DireccionDTO> direcciones;
 }

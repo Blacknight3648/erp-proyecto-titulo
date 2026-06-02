@@ -22,11 +22,11 @@ public class DatoBancarioJpaEntity {
     @Column(name = "numero_cuenta", nullable = false, length = 50)
     private String numeroCuenta;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
     @JoinColumn(name = "banco_id", nullable = false)
     private BancoJpaEntity banco;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
     @JoinColumn(name = "tipo_cuenta_id", nullable = false)
     private TipoCuentaBancariaJpaEntity tipoCuentaBancaria;
 }

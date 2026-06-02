@@ -32,6 +32,14 @@ public class TipoDireccionRepositoryImpl implements TipoDireccionRepository {
 
     @Override
     public TipoDireccion save(TipoDireccion tipoDireccion) {
+        if (tipoDireccion.getTipoDireccionId() != null) {
+            return jpaRepository.findById(tipoDireccion.getTipoDireccionId())
+                    .map(entity -> {
+                        entity.setDescripcion(tipoDireccion.getDescripcion());
+                        return mapper.toDomain(jpaRepository.save(entity));
+                    })
+                    .orElseGet(() -> mapper.toDomain(jpaRepository.save(mapper.toEntity(tipoDireccion))));
+        }
         return mapper.toDomain(jpaRepository.save(mapper.toEntity(tipoDireccion)));
     }
 

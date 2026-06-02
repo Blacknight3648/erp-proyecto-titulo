@@ -3,7 +3,7 @@ package backend.com.gestionUsuarios.cliente.infrastructure.mapper;
 import backend.com.gestionUsuarios.cliente.application.dto.ClienteDTO;
 import backend.com.gestionUsuarios.cliente.domain.model.Cliente;
 import backend.com.gestionUsuarios.cliente.infrastructure.persistence.entity.ClienteJpaEntity;
-import backend.com.shared.infrastructure.mapper.DatoBancarioMapper;
+import backend.com.shared.infrastructure.mapper.ContactoMapper;
 import backend.com.shared.infrastructure.mapper.DireccionMapper;
 import backend.com.shared.infrastructure.mapper.GiroMapper;
 import lombok.RequiredArgsConstructor;
@@ -18,7 +18,7 @@ public class ClienteMapper {
 
     private final GiroMapper giroMapper;
     private final DireccionMapper direccionMapper;
-    private final DatoBancarioMapper datoBancarioMapper;
+    private final ContactoMapper contactoMapper;
 
     public Cliente toDomain(ClienteJpaEntity entity) {
         if (entity == null)
@@ -27,14 +27,12 @@ public class ClienteMapper {
                 .clienteId(entity.getClienteId())
                 .razonSocial(entity.getRazonSocial())
                 .runCliente(entity.getRunCliente())
-                .correoCliente(entity.getCorreoCliente())
-                .telefonoCliente(entity.getTelefonoCliente())
-                .contactoCliente(entity.getContactoCliente())
                 .activo(entity.isActivo())
                 .sigla(entity.getSigla())
                 .giro(giroMapper.toDomain(entity.getGiro()))
-                .direccion(direccionMapper.toDomain(entity.getDireccion()))
-                .datoBancario(datoBancarioMapper.toDomain(entity.getDatoBancario()))
+                .contactos(entity.getContacto().stream().map(contactoMapper::toDomain).collect(Collectors.toList()))
+                .direcciones(
+                        entity.getDireccion().stream().map(direccionMapper::toDomain).collect(Collectors.toList()))
                 .build();
     }
 
@@ -45,14 +43,12 @@ public class ClienteMapper {
                 .clienteId(domain.getClienteId())
                 .razonSocial(domain.getRazonSocial())
                 .runCliente(domain.getRunCliente())
-                .correoCliente(domain.getCorreoCliente())
-                .telefonoCliente(domain.getTelefonoCliente())
-                .contactoCliente(domain.getContactoCliente())
                 .activo(domain.isActivo())
                 .sigla(domain.getSigla())
                 .giro(giroMapper.toEntity(domain.getGiro()))
-                .direccion(direccionMapper.toEntity(domain.getDireccion()))
-                .datoBancario(datoBancarioMapper.toEntity(domain.getDatoBancario()))
+                .contacto(domain.getContactos().stream().map(contactoMapper::toEntity).collect(Collectors.toList()))
+                .direccion(
+                        domain.getDirecciones().stream().map(direccionMapper::toEntity).collect(Collectors.toList()))
                 .build();
     }
 
@@ -63,14 +59,11 @@ public class ClienteMapper {
                 .clienteId(domain.getClienteId())
                 .razonSocial(domain.getRazonSocial())
                 .runCliente(domain.getRunCliente())
-                .correoCliente(domain.getCorreoCliente())
-                .telefonoCliente(domain.getTelefonoCliente())
-                .contactoCliente(domain.getContactoCliente())
                 .activo(domain.isActivo())
                 .sigla(domain.getSigla())
                 .giro(giroMapper.toDTO(domain.getGiro()))
-                .direccion(direccionMapper.toDTO(domain.getDireccion()))
-                .datoBancario(datoBancarioMapper.toDTO(domain.getDatoBancario()))
+                .contactos(domain.getContactos().stream().map(contactoMapper::toDTO).collect(Collectors.toList()))
+                .direcciones(domain.getDirecciones().stream().map(direccionMapper::toDTO).collect(Collectors.toList()))
                 .build();
     }
 
@@ -81,14 +74,11 @@ public class ClienteMapper {
                 .clienteId(dto.getClienteId())
                 .razonSocial(dto.getRazonSocial())
                 .runCliente(dto.getRunCliente())
-                .correoCliente(dto.getCorreoCliente())
-                .telefonoCliente(dto.getTelefonoCliente())
-                .contactoCliente(dto.getContactoCliente())
                 .activo(dto.isActivo())
                 .sigla(dto.getSigla())
                 .giro(giroMapper.toDomain(dto.getGiro()))
-                .direccion(direccionMapper.toDomain(dto.getDireccion()))
-                .datoBancario(datoBancarioMapper.toDomain(dto.getDatoBancario()))
+                .contactos(dto.getContactos().stream().map(contactoMapper::toDomain).collect(Collectors.toList()))
+                .direcciones(dto.getDirecciones().stream().map(direccionMapper::toDomain).collect(Collectors.toList()))
                 .build();
     }
 

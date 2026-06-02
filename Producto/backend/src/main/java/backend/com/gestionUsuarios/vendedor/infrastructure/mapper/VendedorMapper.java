@@ -16,7 +16,7 @@ public class VendedorMapper {
             return null;
 
         return Vendedor.builder()
-                .id(entity.getIdVendedor())
+                .vendedorId(entity.getIdVendedor())
                 .usuarioId(entity.getUsuario() != null ? entity.getUsuario().getUsuarioId() : null)
                 .codigoVendedor(entity.getCodigoVendedor())
                 .activo(entity.getActivo())
@@ -33,7 +33,7 @@ public class VendedorMapper {
             return null;
 
         return VendedorDTO.builder()
-                .id(entity.getIdVendedor())
+                .vendedorId(entity.getIdVendedor())
                 .usuarioId(entity.getUsuario() != null ? entity.getUsuario().getUsuarioId() : null)
                 .nombreUsuario(entity.getUsuario() != null ? entity.getUsuario().getUsuarioNombre() : null)
                 .apellidosUsuario(entity.getUsuario() != null ? entity.getUsuario().getUsuarioApellidos() : null)

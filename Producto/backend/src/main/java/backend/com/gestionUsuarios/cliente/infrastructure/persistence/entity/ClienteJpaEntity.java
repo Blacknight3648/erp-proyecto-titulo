@@ -1,14 +1,12 @@
 package backend.com.gestionUsuarios.cliente.infrastructure.persistence.entity;
 
-import backend.com.shared.infrastructure.persistence.entity.DatoBancarioJpaEntity;
 import backend.com.shared.infrastructure.persistence.entity.DireccionJpaEntity;
 import backend.com.shared.infrastructure.persistence.entity.GiroJpaEntity;
-import backend.com.shared.validations.email.ValidEmail;
-import backend.com.shared.validations.telefono.ValidPhone;
+import backend.com.shared.infrastructure.persistence.entity.ContactoJpaEntity;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
+import java.util.List;
 
 @Entity
 @Table(name = "clientes")
@@ -31,18 +29,6 @@ public class ClienteJpaEntity {
     @Column(name = "run_cliente", unique = true, nullable = false)
     private String runCliente;
 
-    @Column(name = "correo_cliente")
-    @ValidEmail
-    @Email(message = "Debe ser un correo válido")
-    private String correoCliente;
-
-    @Column(name = "telefono_cliente")
-    @ValidPhone
-    private String telefonoCliente;
-
-    @Column(name = "contacto_cliente")
-    private String contactoCliente;
-
     @Column(name = "sigla")
     private String sigla;
 
@@ -53,11 +39,11 @@ public class ClienteJpaEntity {
     @JoinColumn(name = "fk_giro")
     private GiroJpaEntity giro;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "fk_direccion")
-    private DireccionJpaEntity direccion;
+    private List<DireccionJpaEntity> direccion;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "fk_dato_bancario")
-    private DatoBancarioJpaEntity datoBancario;
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "fk_contacto")
+    private List<ContactoJpaEntity> contacto;
 }

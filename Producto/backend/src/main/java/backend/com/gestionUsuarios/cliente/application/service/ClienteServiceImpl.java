@@ -9,14 +9,15 @@ import backend.com.gestionUsuarios.cliente.infrastructure.exception.ClienteNotFo
 import backend.com.gestionUsuarios.cliente.infrastructure.mapper.ClienteMapper;
 import backend.com.gestionUsuarios.cliente.infrastructure.persistence.entity.ClienteJpaEntity;
 import backend.com.gestionUsuarios.cliente.infrastructure.persistence.repository.ClienteRepository;
-import backend.com.shared.exception.DatoBancarioNotFoundException;
-import backend.com.shared.exception.EntityNotFoundException;
-import backend.com.shared.infrastructure.persistence.entity.DatoBancarioJpaEntity;
 import backend.com.shared.infrastructure.persistence.entity.DireccionJpaEntity;
 import backend.com.shared.infrastructure.persistence.entity.GiroJpaEntity;
 import backend.com.shared.infrastructure.persistence.repository.GiroRepository;
-import backend.com.shared.infrastructure.persistence.repository.Jpa.DatoBancarioJpaRepository;
+import backend.com.shared.infrastructure.persistence.entity.ContactoJpaEntity;
+import backend.com.shared.infrastructure.persistence.repository.Jpa.ContactoJpaRepository;
 import backend.com.shared.infrastructure.persistence.repository.Jpa.DireccionJpaRepository;
+import backend.com.shared.exception.EntityNotFoundException;
+import backend.com.shared.infrastructure.mapper.ContactoMapper;
+import backend.com.shared.infrastructure.mapper.DireccionMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,7 +33,9 @@ public class ClienteServiceImpl implements ClienteService {
     private final ClienteRepository clienteRepository;
     private final GiroRepository giroRepository;
     private final DireccionJpaRepository direccionJpaRepository;
-    private final DatoBancarioJpaRepository datoBancarioJpaRepository;
+    private final ContactoJpaRepository contactoJpaRepository;
+    private final ContactoMapper contactoMapper;
+    private final DireccionMapper direccionMapper;
     private final ClienteMapper clienteMapper;
     private final ClienteValidator clienteValidator;
     private final EvaluacionNegocioJpaRepository evaluacionNegocioRepository;
@@ -114,14 +117,13 @@ public class ClienteServiceImpl implements ClienteService {
         ClienteJpaEntity entity = ClienteJpaEntity.builder()
                 .runCliente(cliente.getRunCliente())
                 .razonSocial(cliente.getRazonSocial())
-                .contactoCliente(cliente.getContactoCliente())
-                .correoCliente(cliente.getCorreoCliente())
-                .telefonoCliente(cliente.getTelefonoCliente())
                 .sigla(cliente.getSigla())
                 .activo(cliente.isActivo())
                 .giro(resolverGiro(cliente))
-                .direccion(resolverDireccion(cliente))
-                .datoBancario(resolverDatoBancario(cliente))
+                .contacto(cliente.getContactos().stream().map(contactoMapper::toEntity).map(contactoJpaRepository::save)
+                        .toList())
+                .direccion(cliente.getDirecciones().stream().map(direccionMapper::toEntity)
+                        .map(direccionJpaRepository::save).toList())
                 .build();
 
         return clienteMapper.toDomain(clienteRepository.save(entity));
@@ -138,15 +140,13 @@ public class ClienteServiceImpl implements ClienteService {
         }
         if (cliente.getRazonSocial() != null)
             entity.setRazonSocial(cliente.getRazonSocial());
-        if (cliente.getContactoCliente() != null)
-            entity.setContactoCliente(cliente.getContactoCliente());
-        if (cliente.getCorreoCliente() != null)
-            entity.setCorreoCliente(cliente.getCorreoCliente());
-        if (cliente.getTelefonoCliente() != null)
-            entity.setTelefonoCliente(cliente.getTelefonoCliente());
         if (cliente.getSigla() != null)
             entity.setSigla(cliente.getSigla());
         entity.setActivo(cliente.isActivo());
+        entity.setContacto(cliente.getContactos().stream().map(contactoMapper::toEntity)
+                .map(contactoJpaRepository::save).toList());
+        entity.setDireccion(cliente.getDirecciones().stream().map(direccionMapper::toEntity)
+                .map(direccionJpaRepository::save).toList());
 
         GiroJpaEntity giro = resolverGiro(cliente);
         if (giro != null)
@@ -154,11 +154,7 @@ public class ClienteServiceImpl implements ClienteService {
 
         DireccionJpaEntity direccion = resolverDireccion(cliente);
         if (direccion != null)
-            entity.setDireccion(direccion);
-
-        DatoBancarioJpaEntity datoBancario = resolverDatoBancario(cliente);
-        if (datoBancario != null)
-            entity.setDatoBancario(datoBancario);
+            entity.setDireccion(List.of(direccion));
 
         return clienteMapper.toDomain(clienteRepository.save(entity));
     }
@@ -183,19 +179,20 @@ public class ClienteServiceImpl implements ClienteService {
                 .orElseThrow(() -> new EntityNotFoundException("Giro no encontrado con ID: " + giroId));
     }
 
-    private DireccionJpaEntity resolverDireccion(Cliente cliente) {
-        if (cliente.getDireccion() == null || cliente.getDireccion().getDireccionId() == null)
+    private ContactoJpaEntity resolverContacto(Cliente cliente) {
+        if (cliente.getContactos() == null || cliente.getContactos().get(0).getContactoId() == null)
             return null;
-        Long direccionId = cliente.getDireccion().getDireccionId();
+        Long contactoId = cliente.getContactos().get(0).getContactoId();
+        return contactoJpaRepository.findById(contactoId)
+                .orElseThrow(() -> new EntityNotFoundException("Contacto no encontrado con ID: " + contactoId));
+    }
+
+    private DireccionJpaEntity resolverDireccion(Cliente cliente) {
+        if (cliente.getDirecciones() == null || cliente.getDirecciones().get(0).getDireccionId() == null)
+            return null;
+        Long direccionId = cliente.getDirecciones().get(0).getDireccionId();
         return direccionJpaRepository.findById(direccionId)
                 .orElseThrow(() -> new EntityNotFoundException("Dirección no encontrada con ID: " + direccionId));
     }
 
-    private DatoBancarioJpaEntity resolverDatoBancario(Cliente cliente) {
-        if (cliente.getDatoBancario() == null || cliente.getDatoBancario().getDatoBancarioId() == null)
-            return null;
-        Integer datoBancarioId = cliente.getDatoBancario().getDatoBancarioId();
-        return datoBancarioJpaRepository.findById(datoBancarioId)
-                .orElseThrow(() -> new DatoBancarioNotFoundException(datoBancarioId));
-    }
 }

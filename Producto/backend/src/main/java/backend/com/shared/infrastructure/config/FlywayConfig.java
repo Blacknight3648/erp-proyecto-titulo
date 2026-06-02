@@ -5,7 +5,6 @@ import javax.sql.DataSource;
 import org.flywaydb.core.Flyway;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.DependsOn;
 
 /**
  * Configuración manual de Flyway.
@@ -32,7 +31,7 @@ public class FlywayConfig {
                     .baselineOnMigrate(true)
                     .baselineVersion("0")
                     .load();
-            
+
             flyway.migrate();
         };
     }

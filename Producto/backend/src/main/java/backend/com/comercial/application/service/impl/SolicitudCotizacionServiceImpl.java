@@ -4,6 +4,7 @@ import backend.com.comercial.domain.model.*;
 import backend.com.comercial.domain.repository.SolicitudCotizacionRepository;
 import backend.com.comercial.application.dto.*;
 import backend.com.comercial.application.service.SolicitudCotizacionesService;
+import backend.com.shared.exception.EntityNotFoundException;
 import backend.com.shared.valueobjects.DocumentNumber;
 import backend.com.shared.valueobjects.Money;
 import lombok.RequiredArgsConstructor;
@@ -48,7 +49,7 @@ public class SolicitudCotizacionServiceImpl implements SolicitudCotizacionesServ
         @Transactional
         public SolicitudCotizacionesDTO update(Long id, SolicitudCotizacionesCreateDTO dto) {
                 SolicitudCotizacion existing = repository.findById(id)
-                                .orElseThrow(() -> new RuntimeException("Cotización no encontrada con ID: " + id));
+                                .orElseThrow(() -> new EntityNotFoundException("Cotización no encontrada con ID: " + id));
 
                 SolicitudCotizacion updated = new SolicitudCotizacion(
                                 existing.getIdSCOT(),

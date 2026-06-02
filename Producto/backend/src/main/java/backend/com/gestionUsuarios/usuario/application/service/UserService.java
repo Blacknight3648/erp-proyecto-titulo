@@ -31,9 +31,9 @@ public interface UserService {
 
     void eliminarUsuario(@NonNull Long id);
 
-    User asignarRoles(@NonNull Long userId, Set<Role> roles);
+    User asignarRoles(@NonNull Long userId, Set<String> roles);
 
-    User asignarAreas(@NonNull Long userId, Set<Area> areas);
+    User asignarAreas(@NonNull Long userId, Set<String> areas);
 
     User toggleEnabled(@NonNull Long id);
 }

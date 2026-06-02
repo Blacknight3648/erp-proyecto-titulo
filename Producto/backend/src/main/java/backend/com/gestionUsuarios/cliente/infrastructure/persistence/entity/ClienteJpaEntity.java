@@ -6,6 +6,7 @@ import backend.com.shared.infrastructure.persistence.entity.ContactoJpaEntity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -41,9 +42,11 @@ public class ClienteJpaEntity {
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "fk_direccion")
-    private List<DireccionJpaEntity> direccion;
+    @Builder.Default
+    private List<DireccionJpaEntity> direccion = new ArrayList<>();
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "fk_contacto")
-    private List<ContactoJpaEntity> contacto;
+    @Builder.Default
+    private List<ContactoJpaEntity> contacto = new ArrayList<>();
 }

@@ -121,14 +121,19 @@ public class UserServiceImpl implements UserService {
         User user = obtenerUsuario(id);
 
         userValidator.validateRun(userActualizado.getUsuarioRun());
-        user.setUsuarioNombre(userActualizado.getUsuarioNombre());
-        user.setUsuarioApellidos(userActualizado.getUsuarioApellidos());
-        user.setUsuarioEmail(userActualizado.getUsuarioEmail());
+        if (userActualizado.getUsuarioNombre() != null && !userActualizado.getUsuarioNombre().isBlank()) 
+            user.setUsuarioNombre(userActualizado.getUsuarioNombre());
+        if (userActualizado.getUsuarioApellidos() != null && !userActualizado.getUsuarioApellidos().isBlank()) 
+            user.setUsuarioApellidos(userActualizado.getUsuarioApellidos());
+        if (userActualizado.getUsuarioEmail() != null && !userActualizado.getUsuarioEmail().isBlank()) 
+            user.setUsuarioEmail(userActualizado.getUsuarioEmail());
         if (userActualizado.getUsuarioPassword() != null && !userActualizado.getUsuarioPassword().isBlank()) {
             user.setUsuarioPassword(userActualizado.getUsuarioPassword());
         }
-        user.setTelefono(userActualizado.getTelefono());
-        user.setUsuarioRun(userActualizado.getUsuarioRun());
+        if (userActualizado.getTelefono() != null && !userActualizado.getTelefono().isBlank()) 
+            user.setTelefono(userActualizado.getTelefono());
+        if (userActualizado.getUsuarioRun() != null && !userActualizado.getUsuarioRun().isBlank()) 
+            user.setUsuarioRun(userActualizado.getUsuarioRun());
         user.setEnabled(userActualizado.isEnabled());
 
         if (roles != null)
@@ -176,21 +181,31 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User asignarRoles(@NonNull Long userId, Set<Role> roles) {
+    public User asignarRoles(@NonNull Long userId, Set<String> roles) {
 
         User user = obtenerUsuario(userId);
 
-        user.setRoles(roles != null ? roles : new HashSet<>());
+        Set<Role> fetchedRoles = roles != null ? roles.stream()
+                .map(nombre -> roleRepository.findByNombre(nombre)
+                        .orElseThrow(() -> new RuntimeException("Rol no encontrado: " + nombre)))
+                .collect(Collectors.toSet()) : new HashSet<>();
+
+        user.setRoles(fetchedRoles);
 
         return userRepository.save(user);
     }
 
     @Override
-    public User asignarAreas(@NonNull Long userId, Set<Area> areas) {
+    public User asignarAreas(@NonNull Long userId, Set<String> areas) {
 
         User user = obtenerUsuario(userId);
 
-        user.setAreas(areas != null ? areas : new HashSet<>());
+        Set<Area> fetchedAreas = areas != null ? areas.stream()
+                .map(nombre -> areaRepository.findByNombre(nombre)
+                        .orElseThrow(() -> new RuntimeException("Área no encontrada: " + nombre)))
+                .collect(Collectors.toSet()) : new HashSet<>();
+
+        user.setAreas(fetchedAreas);
 
         return userRepository.save(user);
     }

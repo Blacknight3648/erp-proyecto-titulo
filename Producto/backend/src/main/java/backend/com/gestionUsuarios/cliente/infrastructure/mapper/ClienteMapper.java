@@ -30,9 +30,8 @@ public class ClienteMapper {
                 .activo(entity.isActivo())
                 .sigla(entity.getSigla())
                 .giro(giroMapper.toDomain(entity.getGiro()))
-                .contactos(entity.getContacto().stream().map(contactoMapper::toDomain).collect(Collectors.toList()))
-                .direcciones(
-                        entity.getDireccion().stream().map(direccionMapper::toDomain).collect(Collectors.toList()))
+                .contactos(entity.getContacto() != null ? entity.getContacto().stream().map(contactoMapper::toDomain).collect(Collectors.toList()) : new java.util.ArrayList<>())
+                .direcciones(entity.getDireccion() != null ? entity.getDireccion().stream().map(direccionMapper::toDomain).collect(Collectors.toList()) : new java.util.ArrayList<>())
                 .build();
     }
 
@@ -46,9 +45,8 @@ public class ClienteMapper {
                 .activo(domain.isActivo())
                 .sigla(domain.getSigla())
                 .giro(giroMapper.toEntity(domain.getGiro()))
-                .contacto(domain.getContactos().stream().map(contactoMapper::toEntity).collect(Collectors.toList()))
-                .direccion(
-                        domain.getDirecciones().stream().map(direccionMapper::toEntity).collect(Collectors.toList()))
+                .contacto(domain.getContactos() != null ? domain.getContactos().stream().map(contactoMapper::toEntity).collect(Collectors.toList()) : new java.util.ArrayList<>())
+                .direccion(domain.getDirecciones() != null ? domain.getDirecciones().stream().map(direccionMapper::toEntity).collect(Collectors.toList()) : new java.util.ArrayList<>())
                 .build();
     }
 
@@ -62,8 +60,8 @@ public class ClienteMapper {
                 .activo(domain.isActivo())
                 .sigla(domain.getSigla())
                 .giro(giroMapper.toDTO(domain.getGiro()))
-                .contactos(domain.getContactos().stream().map(contactoMapper::toDTO).collect(Collectors.toList()))
-                .direcciones(domain.getDirecciones().stream().map(direccionMapper::toDTO).collect(Collectors.toList()))
+                .contactos(domain.getContactos() != null ? domain.getContactos().stream().map(contactoMapper::toDTO).collect(Collectors.toList()) : new java.util.ArrayList<>())
+                .direcciones(domain.getDirecciones() != null ? domain.getDirecciones().stream().map(direccionMapper::toDTO).collect(Collectors.toList()) : new java.util.ArrayList<>())
                 .build();
     }
 
@@ -77,8 +75,8 @@ public class ClienteMapper {
                 .activo(dto.isActivo())
                 .sigla(dto.getSigla())
                 .giro(giroMapper.toDomain(dto.getGiro()))
-                .contactos(dto.getContactos().stream().map(contactoMapper::toDomain).collect(Collectors.toList()))
-                .direcciones(dto.getDirecciones().stream().map(direccionMapper::toDomain).collect(Collectors.toList()))
+                .contactos(dto.getContactos() != null ? dto.getContactos().stream().map(contactoMapper::toDomain).collect(Collectors.toList()) : new java.util.ArrayList<>())
+                .direcciones(dto.getDirecciones() != null ? dto.getDirecciones().stream().map(direccionMapper::toDomain).collect(Collectors.toList()) : new java.util.ArrayList<>())
                 .build();
     }
 

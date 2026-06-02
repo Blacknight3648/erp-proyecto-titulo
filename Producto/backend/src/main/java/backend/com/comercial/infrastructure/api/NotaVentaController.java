@@ -1,10 +1,10 @@
 package backend.com.comercial.infrastructure.api;
 
+import backend.com.comercial.application.UseCase.ConsultarTrazabilidadUseCase;
+import backend.com.comercial.application.UseCase.CrearNVUseCase;
+import backend.com.comercial.application.UseCase.GestionarNVUseCase;
 import backend.com.comercial.application.dto.CrearNVCommand;
 import backend.com.comercial.application.dto.NVResponse;
-import backend.com.comercial.application.service.CrearNVUseCase;
-import backend.com.comercial.application.service.ConsultarTrazabilidadUseCase;
-import backend.com.comercial.application.service.GestionarNVUseCase;
 import backend.com.comercial.domain.repository.NotaVentaRepository;
 import backend.com.shared.application.dto.DocumentTraceDTO;
 import backend.com.shared.application.dto.FirmaAprobacionRequest;

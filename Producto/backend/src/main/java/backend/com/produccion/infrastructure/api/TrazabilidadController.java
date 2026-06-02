@@ -1,7 +1,7 @@
 package backend.com.produccion.infrastructure.api;
 
+import backend.com.produccion.application.UseCase.TrazabilidadOPUseCase;
 import backend.com.produccion.application.dto.TrazabilidadOPDTO;
-import backend.com.produccion.application.service.TrazabilidadOPUseCase;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

@@ -1,8 +1,8 @@
 package backend.com.produccion.infrastructure.api;
 
+import backend.com.produccion.application.UseCase.CalcularAvanceUseCase;
 import backend.com.produccion.application.dto.AvanceOPResponse;
 import backend.com.produccion.application.dto.OPResponse;
-import backend.com.produccion.application.service.CalcularAvanceUseCase;
 import backend.com.produccion.domain.repository.OrdenProduccionRepository;
 import backend.com.shared.exception.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;

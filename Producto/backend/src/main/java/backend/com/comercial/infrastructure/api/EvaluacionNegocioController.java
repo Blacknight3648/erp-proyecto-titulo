@@ -1,10 +1,10 @@
 package backend.com.comercial.infrastructure.api;
 
+import backend.com.comercial.application.UseCase.AdjudicarEVNUseCase;
+import backend.com.comercial.application.UseCase.AprobarEVNUseCase;
+import backend.com.comercial.application.UseCase.CrearEVNUseCase;
 import backend.com.comercial.application.dto.CrearEVNCommand;
 import backend.com.comercial.application.dto.EVNResponse;
-import backend.com.comercial.application.service.AprobarEVNUseCase;
-import backend.com.comercial.application.service.CrearEVNUseCase;
-import backend.com.comercial.application.service.AdjudicarEVNUseCase;
 import backend.com.comercial.domain.repository.EvaluacionNegocioRepository;
 import backend.com.shared.application.dto.FirmaAprobacionRequest;
 import backend.com.shared.application.dto.HistorialEstadoDTO;
@@ -22,8 +22,7 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/api/v1/comercial/evaluaciones-negocio")
 @RequiredArgsConstructor
-@Tag(name = "Comercial - Evaluaciones de Negocio",
-     description = "Gestión de EVN: creación, aprobación, rechazo, adjudicación e historial")
+@Tag(name = "Comercial - Evaluaciones de Negocio", description = "Gestión de EVN: creación, aprobación, rechazo, adjudicación e historial")
 public class EvaluacionNegocioController {
 
     private final CrearEVNUseCase crearEVNUseCase;
@@ -55,8 +54,7 @@ public class EvaluacionNegocioController {
     }
 
     @PatchMapping("/{id}/adjudicar")
-    @Operation(summary = "Adjudicar EVN",
-            description = "Cambia el estado a ADJUDICADA, genera Nota de Venta y registra firma en historial.")
+    @Operation(summary = "Adjudicar EVN", description = "Cambia el estado a ADJUDICADA, genera Nota de Venta y registra firma en historial.")
     public EVNResponse adjudicar(@PathVariable Long id,
             @Valid @RequestBody(required = false) FirmaAprobacionRequest body) {
         String aprobador = body != null ? body.getAprobador() : null;

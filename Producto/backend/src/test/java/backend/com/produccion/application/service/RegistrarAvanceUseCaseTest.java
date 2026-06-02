@@ -1,5 +1,6 @@
 package backend.com.produccion.application.service;
 
+import backend.com.produccion.application.UseCase.RegistrarAvanceUseCase;
 import backend.com.produccion.application.dto.RegistrarAvanceCommand;
 import backend.com.produccion.application.dto.RegistroAvanceDTO;
 import backend.com.produccion.domain.model.FaseProduccion;
@@ -37,11 +38,15 @@ import static org.mockito.Mockito.when;
 @DisplayName("RegistrarAvanceUseCase")
 class RegistrarAvanceUseCaseTest {
 
-    @Mock private OrdenTrabajoRepository otRepository;
-    @Mock private RegistroAvanceRepository avanceRepository;
-    @Mock private HistorialEstadoService historialService;
+    @Mock
+    private OrdenTrabajoRepository otRepository;
+    @Mock
+    private RegistroAvanceRepository avanceRepository;
+    @Mock
+    private HistorialEstadoService historialService;
 
-    @InjectMocks private RegistrarAvanceUseCase useCase;
+    @InjectMocks
+    private RegistrarAvanceUseCase useCase;
 
     private OrdenTrabajo otBase;
 

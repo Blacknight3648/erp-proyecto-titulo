@@ -1,7 +1,7 @@
 package backend.com.produccion.infrastructure.api;
 
+import backend.com.produccion.application.UseCase.GestionarCosteoUseCase;
 import backend.com.produccion.application.dto.CosteoDTO;
-import backend.com.produccion.application.service.GestionarCosteoUseCase;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

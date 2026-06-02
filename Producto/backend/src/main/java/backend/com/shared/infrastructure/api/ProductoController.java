@@ -1,8 +1,8 @@
 package backend.com.shared.infrastructure.api;
 
-import backend.com.shared.application.service.ConsultarProductosUseCase;
-import backend.com.shared.application.service.EliminarProductoUseCase;
-import backend.com.shared.application.service.GuardarProductoUseCase;
+import backend.com.shared.application.UseCase.ConsultarProductosUseCase;
+import backend.com.shared.application.UseCase.EliminarProductoUseCase;
+import backend.com.shared.application.UseCase.GuardarProductoUseCase;
 import backend.com.shared.domain.model.Producto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

@@ -1,10 +1,10 @@
 package backend.com.produccion.infrastructure.api;
 
+import backend.com.produccion.application.UseCase.GestionarOrdenTrabajoUseCase;
+import backend.com.produccion.application.UseCase.RegistrarAvanceUseCase;
 import backend.com.produccion.application.dto.OTResponse;
 import backend.com.produccion.application.dto.RegistrarAvanceCommand;
 import backend.com.produccion.application.dto.RegistroAvanceDTO;
-import backend.com.produccion.application.service.GestionarOrdenTrabajoUseCase;
-import backend.com.produccion.application.service.RegistrarAvanceUseCase;
 import backend.com.produccion.domain.repository.OrdenTrabajoRepository;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -19,8 +19,7 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/api/v1/produccion/ordenes-trabajo")
 @RequiredArgsConstructor
-@Tag(name = "Producción - Órdenes de Trabajo",
-     description = "OTs por fase (Corte, Confección...) — registro de avances y mermas")
+@Tag(name = "Producción - Órdenes de Trabajo", description = "OTs por fase (Corte, Confección...) — registro de avances y mermas")
 public class OrdenTrabajoController {
 
     private final GestionarOrdenTrabajoUseCase gestionarOTUseCase;

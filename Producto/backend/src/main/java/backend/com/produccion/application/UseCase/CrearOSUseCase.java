@@ -27,7 +27,7 @@ public class CrearOSUseCase {
                 .orElseThrow(() -> new EntityNotFoundException(
                         "Orden de Producción no encontrada: " + request.getOpId()));
 
-        DocumentNumber numeroOS = construirNumeroOS(op, request);
+        DocumentNumber numeroOS = construirNumeroOS(request);
 
         OrdenServicio os = OrdenServicio.emitir(
                 numeroOS,
@@ -52,9 +52,8 @@ public class CrearOSUseCase {
         }
     }
 
-    private DocumentNumber construirNumeroOS(OrdenProduccion op, CrearOSRequest request) {
-        String base = op.getNumeroOP() != null ? op.getNumeroOP().getValue() : ("OP-" + op.getIdOP());
+    private DocumentNumber construirNumeroOS(CrearOSRequest request) {
         return new DocumentNumber(
-                "OS-" + request.getTipoServicio().name() + "-" + base + "-" + System.currentTimeMillis());
+                "OS-" + System.currentTimeMillis());
     }
 }

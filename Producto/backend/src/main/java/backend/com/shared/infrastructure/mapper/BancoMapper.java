@@ -14,8 +14,7 @@ public class BancoMapper {
     private final BancoJpaRepository bancoJpaRepository;
 
     public Banco toDomain(BancoJpaEntity entity) {
-        if (entity == null)
-            return null;
+        if (entity == null) return null;
         return Banco.builder()
                 .bancoId(entity.getBancoId())
                 .nombreBanco(entity.getNombreBanco())
@@ -24,30 +23,16 @@ public class BancoMapper {
     }
 
     public BancoJpaEntity toEntity(Banco domain) {
-        if (domain == null)
-            return null;
-
+        if (domain == null) return null;
         if (domain.getBancoId() != null) {
             return bancoJpaRepository.findById(domain.getBancoId())
-                    .orElseGet(() -> {
-                        BancoJpaEntity entity = new BancoJpaEntity();
-                        entity.setBancoId(domain.getBancoId());
-                        entity.setNombreBanco(domain.getNombreBanco());
-                        entity.setCodigoBanco(domain.getCodigoBanco());
-                        return entity;
-                    });
+                    .orElseGet(() -> buildEntity(domain));
         }
-
-        BancoJpaEntity entity = new BancoJpaEntity();
-        entity.setBancoId(domain.getBancoId());
-        entity.setNombreBanco(domain.getNombreBanco());
-        entity.setCodigoBanco(domain.getCodigoBanco());
-        return entity;
+        return buildEntity(domain);
     }
 
     public BancoDTO toDTO(Banco domain) {
-        if (domain == null)
-            return null;
+        if (domain == null) return null;
         return BancoDTO.builder()
                 .bancoId(domain.getBancoId())
                 .nombreBanco(domain.getNombreBanco())
@@ -56,8 +41,7 @@ public class BancoMapper {
     }
 
     public Banco toDomain(BancoDTO dto) {
-        if (dto == null)
-            return null;
+        if (dto == null) return null;
         return Banco.builder()
                 .bancoId(dto.getBancoId())
                 .nombreBanco(dto.getNombreBanco())
@@ -65,4 +49,11 @@ public class BancoMapper {
                 .build();
     }
 
+    private BancoJpaEntity buildEntity(Banco domain) {
+        return BancoJpaEntity.builder()
+                .bancoId(domain.getBancoId())
+                .nombreBanco(domain.getNombreBanco())
+                .codigoBanco(domain.getCodigoBanco())
+                .build();
+    }
 }

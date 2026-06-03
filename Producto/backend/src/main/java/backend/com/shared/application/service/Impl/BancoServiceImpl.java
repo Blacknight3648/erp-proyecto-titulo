@@ -3,10 +3,10 @@ package backend.com.shared.application.service.impl;
 import backend.com.shared.application.dto.BancoDTO;
 import backend.com.shared.application.service.BancoService;
 import backend.com.shared.domain.model.Banco;
-import backend.com.shared.infrastructure.persistence.repository.BancoRepository;
 import backend.com.shared.exception.BancoNotFoundException;
 import backend.com.shared.exception.BusinessRuleException;
 import backend.com.shared.infrastructure.mapper.BancoMapper;
+import backend.com.shared.infrastructure.persistence.repository.BancoRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,16 +38,14 @@ public class BancoServiceImpl implements BancoService {
 
     @Override
     public BancoDTO crear(BancoDTO dto) {
-        bancoRepository.findByCodigoBanco(dto.getCodigoBanco().trim()).ifPresent(b -> {
-            throw new BusinessRuleException(
-                    "Ya existe un banco con el código: " + dto.getCodigoBanco());
+        String codigoNorm = dto.getCodigoBanco().trim().toUpperCase();
+        bancoRepository.findByCodigoBanco(codigoNorm).ifPresent(b -> {
+            throw new BusinessRuleException("Ya existe un banco con el código: " + codigoNorm);
         });
-
         Banco banco = Banco.builder()
                 .nombreBanco(dto.getNombreBanco().trim())
-                .codigoBanco(dto.getCodigoBanco().trim().toUpperCase())
+                .codigoBanco(codigoNorm)
                 .build();
-
         return bancoMapper.toDTO(bancoRepository.save(banco));
     }
 
@@ -55,17 +53,14 @@ public class BancoServiceImpl implements BancoService {
     public BancoDTO actualizar(Integer id, BancoDTO dto) {
         Banco existente = bancoRepository.findById(id)
                 .orElseThrow(() -> new BancoNotFoundException(id));
-
-        bancoRepository.findByCodigoBanco(dto.getCodigoBanco().trim())
+        String codigoNorm = dto.getCodigoBanco().trim().toUpperCase();
+        bancoRepository.findByCodigoBanco(codigoNorm)
                 .filter(b -> !b.getBancoId().equals(id))
                 .ifPresent(b -> {
-                    throw new BusinessRuleException(
-                            "Ya existe un banco con el código: " + dto.getCodigoBanco());
+                    throw new BusinessRuleException("Ya existe un banco con el código: " + codigoNorm);
                 });
-
         existente.setNombreBanco(dto.getNombreBanco().trim());
-        existente.setCodigoBanco(dto.getCodigoBanco().trim().toUpperCase());
-
+        existente.setCodigoBanco(codigoNorm);
         return bancoMapper.toDTO(bancoRepository.save(existente));
     }
 

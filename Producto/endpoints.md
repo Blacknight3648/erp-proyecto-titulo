@@ -8,7 +8,8 @@
 | Gestión Usuarios | 7 | 68 |
 | Producción | 8 | 45 |
 | Compartido (Shared) | 15 | 78 |
-| **Total** | **35** | **219** |
+| Maestros | 12 | 75 |
+| **Total** | **47** | **294** |
 
 ---
 
@@ -399,3 +400,134 @@
 | POST | `/api/v1/tipos-direccion` | Crea un tipo de dirección. | `TipoDireccionDTO { campos }` | 201 Creado |
 | PUT | `/api/v1/tipos-direccion/{id}` | Actualiza un tipo de dirección. | `TipoDireccionDTO { campos }` | 200 OK |
 | DELETE | `/api/v1/tipos-direccion/{id}` | Elimina un tipo de dirección. | N/A | 204 Sin contenido |
+
+---
+
+## Módulo Maestros
+
+> Base URL: `/api/v3/maestros/`
+
+### Artículos
+
+| Método HTTP | Ruta | Descripción | Datos de entrada | Respuestas |
+|---|---|---|---|---|
+| POST | `/api/v3/maestros/articulos` | Crea un nuevo artículo (incluye satélite según tipo). | `ArticuloCreateRequestDTO { codigoArticulo, nombreArticulo, tipoArticulo, idCategoria, idUnidadMedida, detalleTela/detallePrenda/detalleAccesorio }` | 201 Creado |
+| PUT | `/api/v3/maestros/articulos/{id}` | Actualiza un artículo existente. | `ArticuloUpdateRequestDTO { campos }` | 200 OK |
+| GET | `/api/v3/maestros/articulos/{id}` | Obtiene un artículo por ID. | N/A | 200 OK, 404 No encontrado |
+| GET | `/api/v3/maestros/articulos/codigo/{codigo}` | Obtiene un artículo por su código único. | N/A | 200 OK, 404 No encontrado |
+| GET | `/api/v3/maestros/articulos` | Lista todos los artículos. | N/A | 200 OK |
+| GET | `/api/v3/maestros/articulos/activos` | Lista solo artículos activos. | N/A | 200 OK |
+| GET | `/api/v3/maestros/articulos/tipo/{tipo}` | Filtra artículos por tipo (`TELA`, `PRENDA_LISTA`, `ACCESORIO`). | N/A | 200 OK |
+| GET | `/api/v3/maestros/articulos/buscar?nombre=` | Búsqueda parcial de artículos por nombre (case-insensitive). | `nombre` (query param) | 200 OK |
+| DELETE | `/api/v3/maestros/articulos/{id}` | Desactiva un artículo (eliminación lógica). | N/A | 204 Sin contenido |
+
+### Categorías
+
+| Método HTTP | Ruta | Descripción | Datos de entrada | Respuestas |
+|---|---|---|---|---|
+| POST | `/api/v3/maestros/categorias` | Crea una nueva categoría. | `CategoriaRequestDTO { codigoCategoria, nombreCategoria }` | 201 Creado |
+| PUT | `/api/v3/maestros/categorias/{id}` | Actualiza una categoría. | `CategoriaRequestDTO { campos }` | 200 OK |
+| GET | `/api/v3/maestros/categorias/{id}` | Obtiene una categoría por ID. | N/A | 200 OK, 404 No encontrada |
+| GET | `/api/v3/maestros/categorias` | Lista todas las categorías. | N/A | 200 OK |
+| DELETE | `/api/v3/maestros/categorias/{id}` | Elimina una categoría. | N/A | 204 Sin contenido |
+
+### SubCategorías
+
+| Método HTTP | Ruta | Descripción | Datos de entrada | Respuestas |
+|---|---|---|---|---|
+| POST | `/api/v3/maestros/subcategorias` | Crea una subcategoría vinculada a una categoría padre. | `SubCategoriaRequestDTO { codigoSubcategoria, nombreSubcategoria, idCategoria }` | 201 Creado |
+| PUT | `/api/v3/maestros/subcategorias/{id}` | Actualiza una subcategoría. | `SubCategoriaRequestDTO { campos }` | 200 OK |
+| GET | `/api/v3/maestros/subcategorias/{id}` | Obtiene una subcategoría por ID. | N/A | 200 OK, 404 No encontrada |
+| GET | `/api/v3/maestros/subcategorias` | Lista todas las subcategorías. | N/A | 200 OK |
+| GET | `/api/v3/maestros/subcategorias/por-categoria/{idCategoria}` | Lista subcategorías de una categoría padre. | N/A | 200 OK |
+| DELETE | `/api/v3/maestros/subcategorias/{id}` | Elimina una subcategoría. | N/A | 204 Sin contenido |
+
+### Unidades de Medida
+
+| Método HTTP | Ruta | Descripción | Datos de entrada | Respuestas |
+|---|---|---|---|---|
+| POST | `/api/v3/maestros/unidades-medida` | Crea una unidad de medida. | `UnidadMedidaRequestDTO { nombreUnidad, abreviatura }` | 201 Creado |
+| PUT | `/api/v3/maestros/unidades-medida/{id}` | Actualiza una unidad de medida. | `UnidadMedidaRequestDTO { campos }` | 200 OK |
+| GET | `/api/v3/maestros/unidades-medida/{id}` | Obtiene una unidad de medida por ID. | N/A | 200 OK, 404 No encontrada |
+| GET | `/api/v3/maestros/unidades-medida` | Lista todas las unidades de medida. | N/A | 200 OK |
+| DELETE | `/api/v3/maestros/unidades-medida/{id}` | Elimina una unidad de medida. | N/A | 204 Sin contenido |
+
+### Monedas
+
+| Método HTTP | Ruta | Descripción | Datos de entrada | Respuestas |
+|---|---|---|---|---|
+| POST | `/api/v3/maestros/monedas` | Crea una moneda. | `MonedaRequestDTO { codigoMoneda, nombreMoneda, simbolo }` | 201 Creado |
+| PUT | `/api/v3/maestros/monedas/{id}` | Actualiza una moneda. | `MonedaRequestDTO { campos }` | 200 OK |
+| GET | `/api/v3/maestros/monedas/{id}` | Obtiene una moneda por ID. | N/A | 200 OK, 404 No encontrada |
+| GET | `/api/v3/maestros/monedas` | Lista todas las monedas. | N/A | 200 OK |
+| DELETE | `/api/v3/maestros/monedas/{id}` | Elimina una moneda. | N/A | 204 Sin contenido |
+
+### Precios
+
+| Método HTTP | Ruta | Descripción | Datos de entrada | Respuestas |
+|---|---|---|---|---|
+| POST | `/api/v3/maestros/precios` | Registra un precio para un artículo. | `PrecioRequestDTO { idArticulo, idMoneda, tipoPrecio, valor }` | 201 Creado |
+| PUT | `/api/v3/maestros/precios/{id}` | Actualiza un precio existente. | `PrecioRequestDTO { campos }` | 200 OK |
+| GET | `/api/v3/maestros/precios/{id}` | Obtiene un precio por ID. | N/A | 200 OK, 404 No encontrado |
+| GET | `/api/v3/maestros/precios/articulo/{idArticulo}` | Lista todos los precios de un artículo. | N/A | 200 OK |
+| DELETE | `/api/v3/maestros/precios/{id}` | Elimina un precio. | N/A | 204 Sin contenido |
+
+### Familias de Tela
+
+| Método HTTP | Ruta | Descripción | Datos de entrada | Respuestas |
+|---|---|---|---|---|
+| POST | `/api/v3/maestros/familias-tela` | Crea una familia de tela. | `FamiliaTelaRequestDTO { codigoFamilia, nombreFamilia }` | 201 Creado |
+| PUT | `/api/v3/maestros/familias-tela/{id}` | Actualiza una familia de tela. | `FamiliaTelaRequestDTO { campos }` | 200 OK |
+| GET | `/api/v3/maestros/familias-tela/{id}` | Obtiene una familia de tela por ID. | N/A | 200 OK, 404 No encontrada |
+| GET | `/api/v3/maestros/familias-tela` | Lista todas las familias de tela. | N/A | 200 OK |
+| DELETE | `/api/v3/maestros/familias-tela/{id}` | Elimina una familia de tela. | N/A | 204 Sin contenido |
+
+### Clasificaciones Técnicas
+
+| Método HTTP | Ruta | Descripción | Datos de entrada | Respuestas |
+|---|---|---|---|---|
+| POST | `/api/v3/maestros/clasificaciones-tecnicas` | Crea una clasificación técnica de tela. | `ClasificacionTecnicaRequestDTO { nombreClasificacion }` | 201 Creado |
+| PUT | `/api/v3/maestros/clasificaciones-tecnicas/{id}` | Actualiza una clasificación técnica. | `ClasificacionTecnicaRequestDTO { campos }` | 200 OK |
+| GET | `/api/v3/maestros/clasificaciones-tecnicas/{id}` | Obtiene una clasificación por ID. | N/A | 200 OK, 404 No encontrada |
+| GET | `/api/v3/maestros/clasificaciones-tecnicas` | Lista todas las clasificaciones técnicas. | N/A | 200 OK |
+| DELETE | `/api/v3/maestros/clasificaciones-tecnicas/{id}` | Elimina una clasificación técnica. | N/A | 204 Sin contenido |
+
+### Composiciones
+
+| Método HTTP | Ruta | Descripción | Datos de entrada | Respuestas |
+|---|---|---|---|---|
+| POST | `/api/v3/maestros/composiciones` | Crea una composición de tela. | `ComposicionRequestDTO { codigoComposicion, descripcionComposicion, clasificacion, usoTipico }` | 201 Creado |
+| PUT | `/api/v3/maestros/composiciones/{id}` | Actualiza una composición. | `ComposicionRequestDTO { campos }` | 200 OK |
+| GET | `/api/v3/maestros/composiciones/{id}` | Obtiene una composición por ID. | N/A | 200 OK, 404 No encontrada |
+| GET | `/api/v3/maestros/composiciones` | Lista todas las composiciones. | N/A | 200 OK |
+| DELETE | `/api/v3/maestros/composiciones/{id}` | Elimina una composición. | N/A | 204 Sin contenido |
+
+### Gramajes de Tela
+
+| Método HTTP | Ruta | Descripción | Datos de entrada | Respuestas |
+|---|---|---|---|---|
+| POST | `/api/v3/maestros/gramajes-tela` | Crea un gramaje de tela. | `GramajeTelaRequestDTO { codigoGramaje, valorGramosM2, categoriaVestuario }` | 201 Creado |
+| PUT | `/api/v3/maestros/gramajes-tela/{id}` | Actualiza un gramaje. | `GramajeTelaRequestDTO { campos }` | 200 OK |
+| GET | `/api/v3/maestros/gramajes-tela/{id}` | Obtiene un gramaje por ID. | N/A | 200 OK, 404 No encontrado |
+| GET | `/api/v3/maestros/gramajes-tela` | Lista todos los gramajes. | N/A | 200 OK |
+| DELETE | `/api/v3/maestros/gramajes-tela/{id}` | Elimina un gramaje. | N/A | 204 Sin contenido |
+
+### Colores de Tela
+
+| Método HTTP | Ruta | Descripción | Datos de entrada | Respuestas |
+|---|---|---|---|---|
+| POST | `/api/v3/maestros/colores-tela` | Crea un color de tela. | `ColorTelaRequestDTO { codigoColor, descripcionColor, esPantone }` | 201 Creado |
+| PUT | `/api/v3/maestros/colores-tela/{id}` | Actualiza un color de tela. | `ColorTelaRequestDTO { campos }` | 200 OK |
+| GET | `/api/v3/maestros/colores-tela/{id}` | Obtiene un color de tela por ID. | N/A | 200 OK, 404 No encontrado |
+| GET | `/api/v3/maestros/colores-tela` | Lista todos los colores de tela. | N/A | 200 OK |
+| DELETE | `/api/v3/maestros/colores-tela/{id}` | Elimina un color de tela. | N/A | 204 Sin contenido |
+
+### Atributos Técnicos
+
+| Método HTTP | Ruta | Descripción | Datos de entrada | Respuestas |
+|---|---|---|---|---|
+| POST | `/api/v3/maestros/atributos-tecnicos` | Crea un atributo técnico de tela. | `AtributoTecnicoRequestDTO { codigoAtributo, clasificacion, descripcionTecnica, impactoErp }` | 201 Creado |
+| PUT | `/api/v3/maestros/atributos-tecnicos/{id}` | Actualiza un atributo técnico. | `AtributoTecnicoRequestDTO { campos }` | 200 OK |
+| GET | `/api/v3/maestros/atributos-tecnicos/{id}` | Obtiene un atributo técnico por ID. | N/A | 200 OK, 404 No encontrado |
+| GET | `/api/v3/maestros/atributos-tecnicos` | Lista todos los atributos técnicos. | N/A | 200 OK |
+| DELETE | `/api/v3/maestros/atributos-tecnicos/{id}` | Elimina un atributo técnico. | N/A | 204 Sin contenido |

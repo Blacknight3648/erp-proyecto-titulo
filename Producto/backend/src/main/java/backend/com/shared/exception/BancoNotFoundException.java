@@ -1,6 +1,7 @@
 package backend.com.shared.exception;
 
 public class BancoNotFoundException extends EntityNotFoundException {
+
     public BancoNotFoundException(Integer id) {
         super("Banco no encontrado con ID: " + id);
     }

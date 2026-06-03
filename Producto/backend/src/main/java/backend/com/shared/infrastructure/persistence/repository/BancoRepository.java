@@ -7,14 +7,9 @@ import java.util.Optional;
 
 public interface BancoRepository {
     List<Banco> findAll();
-
     Optional<Banco> findById(Integer id);
-
     Optional<Banco> findByCodigoBanco(String codigoBanco);
-
     Banco save(Banco banco);
-
     void deleteById(Integer id);
-
     boolean existsById(Integer id);
 }

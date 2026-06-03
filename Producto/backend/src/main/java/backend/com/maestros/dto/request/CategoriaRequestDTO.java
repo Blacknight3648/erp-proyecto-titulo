@@ -1,0 +1,24 @@
+package backend.com.maestros.dto.request;
+
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
+import lombok.*;
+
+/**
+ * Request para crear o actualizar una Categoría.
+ * Uso: POST /api/v3/maestros/categorias   PUT /api/v3/maestros/categorias/{id}
+ */
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class CategoriaRequestDTO {
+
+    @NotBlank(message = "El código de categoría es obligatorio")
+    @Size(max = 10, message = "El código no puede superar los 10 caracteres")
+    private String codigoCategoria;
+
+    @NotBlank(message = "El nombre de categoría es obligatorio")
+    @Size(max = 60, message = "El nombre no puede superar los 60 caracteres")
+    private String nombreCategoria;
+}

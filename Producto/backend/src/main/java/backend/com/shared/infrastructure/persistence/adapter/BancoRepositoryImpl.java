@@ -1,8 +1,8 @@
 package backend.com.shared.infrastructure.persistence.adapter;
 
 import backend.com.shared.domain.model.Banco;
-import backend.com.shared.infrastructure.persistence.repository.BancoRepository;
 import backend.com.shared.infrastructure.mapper.BancoMapper;
+import backend.com.shared.infrastructure.persistence.repository.BancoRepository;
 import backend.com.shared.infrastructure.persistence.repository.Jpa.BancoJpaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -20,13 +20,14 @@ public class BancoRepositoryImpl implements BancoRepository {
 
     @Override
     public List<Banco> findAll() {
-        return jpaRepository.findAll().stream().map(mapper::toDomain).collect(Collectors.toList());
+        return jpaRepository.findAll().stream()
+                .map(mapper::toDomain)
+                .collect(Collectors.toList());
     }
 
     @Override
     public Optional<Banco> findById(Integer id) {
-        if (id == null)
-            return Optional.empty();
+        if (id == null) return Optional.empty();
         return jpaRepository.findById(id).map(mapper::toDomain);
     }
 
@@ -42,8 +43,7 @@ public class BancoRepositoryImpl implements BancoRepository {
 
     @Override
     public void deleteById(Integer id) {
-        if (id != null)
-            jpaRepository.deleteById(id);
+        if (id != null) jpaRepository.deleteById(id);
     }
 
     @Override

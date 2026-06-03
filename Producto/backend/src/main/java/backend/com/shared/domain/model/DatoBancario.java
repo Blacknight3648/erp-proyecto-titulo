@@ -13,5 +13,4 @@ public class DatoBancario {
     private String numeroCuenta;
     private Banco banco;
     private TipoCuentaBancaria tipoCuentaBancaria;
-
 }

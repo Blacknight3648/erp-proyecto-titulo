@@ -94,7 +94,7 @@ public class UsuarioController {
         if (roles == null) {
             throw new IllegalArgumentException("El set de roles no puede ser nulo");
         }
-        User updated = userService.asignarRoles(id, userMapper.toRoleEntities(roles));
+        User updated = userService.asignarRoles(id, roles);
         return ResponseEntity.ok(userMapper.toUserDTO(updated));
     }
 
@@ -106,7 +106,7 @@ public class UsuarioController {
         if (areas == null) {
             throw new IllegalArgumentException("El set de áreas no puede ser nulo");
         }
-        User updated = userService.asignarAreas(id, userMapper.toAreaEntities(areas));
+        User updated = userService.asignarAreas(id, areas);
         return ResponseEntity.ok(userMapper.toUserDTO(updated));
     }
 }

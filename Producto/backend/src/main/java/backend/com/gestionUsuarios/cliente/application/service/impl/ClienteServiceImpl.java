@@ -123,9 +123,9 @@ public class ClienteServiceImpl implements ClienteService {
                 .activo(cliente.isActivo())
                 .giro(resolverGiro(cliente))
                 .contacto(cliente.getContactos().stream().map(contactoMapper::toEntity).map(contactoJpaRepository::save)
-                        .toList())
+                        .collect(java.util.stream.Collectors.toList()))
                 .direccion(cliente.getDirecciones().stream().map(direccionMapper::toEntity)
-                        .map(direccionJpaRepository::save).toList())
+                        .map(direccionJpaRepository::save).collect(java.util.stream.Collectors.toList()))
                 .build();
 
         return clienteMapper.toDomain(clienteRepository.save(entity));
@@ -145,18 +145,22 @@ public class ClienteServiceImpl implements ClienteService {
         if (cliente.getSigla() != null)
             entity.setSigla(cliente.getSigla());
         entity.setActivo(cliente.isActivo());
-        entity.setContacto(cliente.getContactos().stream().map(contactoMapper::toEntity)
-                .map(contactoJpaRepository::save).toList());
-        entity.setDireccion(cliente.getDirecciones().stream().map(direccionMapper::toEntity)
-                .map(direccionJpaRepository::save).toList());
+        entity.getContacto().clear();
+        entity.getContacto().addAll(cliente.getContactos().stream().map(contactoMapper::toEntity)
+                .map(contactoJpaRepository::save).collect(java.util.stream.Collectors.toList()));
 
         GiroJpaEntity giro = resolverGiro(cliente);
         if (giro != null)
             entity.setGiro(giro);
 
         DireccionJpaEntity direccion = resolverDireccion(cliente);
-        if (direccion != null)
-            entity.setDireccion(List.of(direccion));
+        entity.getDireccion().clear();
+        if (direccion != null) {
+            entity.getDireccion().add(direccion);
+        } else {
+            entity.getDireccion().addAll(cliente.getDirecciones().stream().map(direccionMapper::toEntity)
+                    .map(direccionJpaRepository::save).collect(java.util.stream.Collectors.toList()));
+        }
 
         return clienteMapper.toDomain(clienteRepository.save(entity));
     }
@@ -182,7 +186,7 @@ public class ClienteServiceImpl implements ClienteService {
     }
 
     private ContactoJpaEntity resolverContacto(Cliente cliente) {
-        if (cliente.getContactos() == null || cliente.getContactos().get(0).getContactoId() == null)
+        if (cliente.getContactos() == null || cliente.getContactos().isEmpty() || cliente.getContactos().get(0).getContactoId() == null)
             return null;
         Long contactoId = cliente.getContactos().get(0).getContactoId();
         return contactoJpaRepository.findById(contactoId)
@@ -190,7 +194,7 @@ public class ClienteServiceImpl implements ClienteService {
     }
 
     private DireccionJpaEntity resolverDireccion(Cliente cliente) {
-        if (cliente.getDirecciones() == null || cliente.getDirecciones().get(0).getDireccionId() == null)
+        if (cliente.getDirecciones() == null || cliente.getDirecciones().isEmpty() || cliente.getDirecciones().get(0).getDireccionId() == null)
             return null;
         Long direccionId = cliente.getDirecciones().get(0).getDireccionId();
         return direccionJpaRepository.findById(direccionId)

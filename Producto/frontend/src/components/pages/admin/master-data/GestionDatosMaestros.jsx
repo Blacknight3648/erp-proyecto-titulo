@@ -4,17 +4,70 @@ import { api } from '../../../../remote/service/api';
 import { Toaster, toast } from 'sonner';
 import { confirmDelete } from '../../../../utils/confirmDelete';
 
+// labelField: campo que muestra en la tabla como "Nombre / Descripción"
+// formFields: campos del formulario con su label y nombre de campo en el DTO del backend
 const MASTER_DATA_ENTITIES = [
-  { id: 'bancos', name: 'Bancos', icon: Building2, endpoint: '/maestros/bancos' },
-  { id: 'paises', name: 'Países', icon: MapPin, endpoint: '/maestros/paises' },
-  { id: 'regiones', name: 'Regiones', icon: MapPin, endpoint: '/maestros/regiones' },
-  { id: 'comunas', name: 'Comunas', icon: MapPin, endpoint: '/maestros/comunas' },
-  { id: 'rubros', name: 'Rubros', icon: Briefcase, endpoint: '/maestros/rubros' },
-  { id: 'giros', name: 'Giros', icon: Network, endpoint: '/maestros/giros' },
-  { id: 'tipos-contacto', name: 'Tipos de Contacto', icon: Phone, endpoint: '/maestros/tipos-contacto' },
-  { id: 'tipos-cuenta-bancaria', name: 'Tipos Cuenta Bancaria', icon: CreditCard, endpoint: '/maestros/tipos-cuenta-bancaria' },
-  { id: 'tipos-direccion', name: 'Tipos Dirección', icon: Box, endpoint: '/maestros/tipos-direccion' },
-  { id: 'tipos-servicio', name: 'Tipos Servicio', icon: FolderTree, endpoint: '/maestros/tipos-servicio' }
+  {
+    id: 'bancos', name: 'Bancos', icon: Building2, endpoint: '/bancos',
+    labelField: 'nombre',
+    formFields: [{ label: 'Nombre', field: 'nombre' }],
+  },
+  {
+    id: 'paises', name: 'Países', icon: MapPin, endpoint: '/paises',
+    labelField: 'nombre',
+    formFields: [
+      { label: 'Nombre', field: 'nombre' },
+      { label: 'Código', field: 'codigo' },
+    ],
+  },
+  {
+    id: 'regiones', name: 'Regiones', icon: MapPin, endpoint: '/regiones',
+    labelField: 'nombre',
+    formFields: [
+      { label: 'Nombre', field: 'nombre' },
+      { label: 'ID País', field: 'paisId', type: 'number' },
+    ],
+  },
+  {
+    id: 'comunas', name: 'Comunas', icon: MapPin, endpoint: '/comunas',
+    labelField: 'nombre',
+    formFields: [
+      { label: 'Nombre', field: 'nombre' },
+      { label: 'ID Región', field: 'regionId', type: 'number' },
+    ],
+  },
+  {
+    id: 'rubros', name: 'Rubros', icon: Briefcase, endpoint: '/rubros',
+    labelField: 'nombreRubro',
+    formFields: [
+      { label: 'Nombre Rubro', field: 'nombreRubro' },
+      { label: 'Descripción', field: 'descripcion' },
+    ],
+  },
+  {
+    id: 'giros', name: 'Giros', icon: Network, endpoint: '/giros',
+    labelField: 'nombreGiro',
+    formFields: [
+      { label: 'Código SII', field: 'codigoSii' },
+      { label: 'Nombre Giro', field: 'nombreGiro' },
+      { label: 'Descripción', field: 'descripcionGiro' },
+    ],
+  },
+  {
+    id: 'tipo-contacto', name: 'Tipos de Contacto', icon: Phone, endpoint: '/tipo-contacto',
+    labelField: 'descripcionTipoContacto',
+    formFields: [{ label: 'Descripción', field: 'descripcionTipoContacto' }],
+  },
+  {
+    id: 'tipos-cuenta-bancaria', name: 'Tipos Cuenta Bancaria', icon: CreditCard, endpoint: '/tipos-cuenta-bancaria',
+    labelField: 'descripcion',
+    formFields: [{ label: 'Descripción', field: 'descripcion' }],
+  },
+  {
+    id: 'tipos-direccion', name: 'Tipos Dirección', icon: Box, endpoint: '/tipos-direccion',
+    labelField: 'descripcion',
+    formFields: [{ label: 'Descripción', field: 'descripcion' }],
+  },
 ];
 
 export default function GestionDatosMaestros() {
@@ -26,8 +79,11 @@ export default function GestionDatosMaestros() {
   // Modal / Editing State
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingItem, setEditingItem] = useState(null);
-  const [formData, setFormData] = useState({ nombre: '' }); // We assume most entities just need a 'nombre'
-  
+  const [formData, setFormData] = useState({});
+
+  const emptyForm = (entity) =>
+    Object.fromEntries((entity.formFields || []).map(f => [f.field, '']));
+
   useEffect(() => {
     loadData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -36,13 +92,12 @@ export default function GestionDatosMaestros() {
   const loadData = async () => {
     setLoading(true);
     try {
-      // Usar un endpoint generico de la API o los definidos
       const res = await api.get(activeEntity.endpoint);
       setData(res.data);
     } catch (error) {
       console.error(`Error loading ${activeEntity.name}:`, error);
       toast.error(`No se pudieron cargar los datos de ${activeEntity.name}`);
-      setData([]); // fallback for now
+      setData([]);
     } finally {
       setLoading(false);
     }
@@ -50,19 +105,25 @@ export default function GestionDatosMaestros() {
 
   const handleOpenNew = () => {
     setEditingItem(null);
-    setFormData({ nombre: '' });
+    setFormData(emptyForm(activeEntity));
     setIsModalOpen(true);
   };
 
   const handleOpenEdit = (item) => {
     setEditingItem(item);
-    setFormData({ nombre: item.nombre || item.descripcion || item.name || '' });
+    const populated = Object.fromEntries(
+      (activeEntity.formFields || []).map(f => [f.field, item[f.field] ?? ''])
+    );
+    setFormData(populated);
     setIsModalOpen(true);
   };
 
   const handleSave = async (e) => {
     e.preventDefault();
-    if (!formData.nombre.trim()) return toast.error("El nombre es requerido");
+    const firstField = activeEntity.formFields?.[0]?.field;
+    if (firstField && !String(formData[firstField] ?? '').trim()) {
+      return toast.error(`El campo "${activeEntity.formFields[0].label}" es requerido`);
+    }
 
     try {
       if (editingItem) {
@@ -83,7 +144,7 @@ export default function GestionDatosMaestros() {
 
   const handleDelete = (item) => {
     const id = item.id || item.codigo;
-    confirmDelete(`¿Eliminar de forma permanente el registro "${item.nombre || item.descripcion || item.name}" de ${activeEntity.name}?`, async () => {
+    confirmDelete(`¿Eliminar de forma permanente el registro "${getLabel(item)}" de ${activeEntity.name}?`, async () => {
       try {
         await api.delete(`${activeEntity.endpoint}/${id}`);
         toast.success("Registro eliminado exitosamente");
@@ -95,11 +156,11 @@ export default function GestionDatosMaestros() {
     });
   };
 
-  const filteredData = data.filter(item => {
-    const term = searchTerm.toLowerCase();
-    const name = (item.nombre || item.descripcion || item.name || '').toLowerCase();
-    return name.includes(term);
-  });
+  const getLabel = (item) => item[activeEntity.labelField] || item.nombre || item.descripcion || item.name || 'Sin nombre';
+
+  const filteredData = data.filter(item =>
+    getLabel(item).toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   return (
     <div className="flex h-[calc(100vh-6rem)] gap-6 animate-in fade-in duration-500">
@@ -216,7 +277,7 @@ export default function GestionDatosMaestros() {
                         </span>
                       </td>
                       <td className="px-6 py-4">
-                        {item.nombre || item.descripcion || item.name || 'Sin nombre'}
+                        {getLabel(item)}
                       </td>
                       <td className="px-6 py-4">
                         <div className="flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -258,20 +319,22 @@ export default function GestionDatosMaestros() {
                 </button>
               </div>
 
-              <form onSubmit={handleSave} className="space-y-6">
-                <div>
-                  <label className="block text-sm font-bold text-slate-700 mb-2">
-                    Nombre / Descripción
-                  </label>
-                  <input
-                    type="text"
-                    value={formData.nombre}
-                    onChange={(e) => setFormData({...formData, nombre: e.target.value})}
-                    placeholder={`Ej. Nuevo registro de ${activeEntity.name}`}
-                    className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
-                    autoFocus
-                  />
-                </div>
+              <form onSubmit={handleSave} className="space-y-4">
+                {(activeEntity.formFields || []).map((f, i) => (
+                  <div key={f.field}>
+                    <label className="block text-sm font-bold text-slate-700 mb-2">
+                      {f.label}
+                    </label>
+                    <input
+                      type={f.type || 'text'}
+                      value={formData[f.field] ?? ''}
+                      onChange={(e) => setFormData({ ...formData, [f.field]: f.type === 'number' ? (e.target.value === '' ? '' : Number(e.target.value)) : e.target.value })}
+                      placeholder={f.label}
+                      className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+                      autoFocus={i === 0}
+                    />
+                  </div>
+                ))}
 
                 <div className="flex gap-3 pt-2">
                   <button 

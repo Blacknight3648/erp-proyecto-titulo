@@ -16,16 +16,10 @@ public class Articulo {
     private String descripcionArticulo;
     private String codigoBarra;
     private TipoArticulo tipoArticulo;
-    private String procedencia;
-    private Boolean lotes;
-    private Boolean seriales;
-    private Boolean compras;
-    private Integer comision;
     private Boolean activo;
 
-    private Categoria categoria;
-    private SubCategoria subCategoria;
-    private UnidadMedida unidadMedida;
+    private CategoriaTela categoriaTela;
+    private SubCategoriaTela subCategoriaTela;
 
     private ArticuloTela detalleTela;
     private ArticuloPrenda detallePrenda;

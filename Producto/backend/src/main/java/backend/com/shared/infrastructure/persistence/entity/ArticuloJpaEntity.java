@@ -1,18 +1,8 @@
 package backend.com.shared.infrastructure.persistence.entity;
 
-import backend.com.shared.domain.enums.TipoArticulo;
 import jakarta.persistence.*;
 import lombok.*;
-import backend.com.shared.infrastructure.persistence.entity.ArticuloPrendaJpaEntity;
-import backend.com.shared.infrastructure.persistence.entity.ArticuloTelaJpaEntity;
-import backend.com.shared.infrastructure.persistence.entity.ArticuloAccesorioJpaEntity;
 
-/**
- * Tabla maestra de artículos – equivalente a product.template en Odoo.
- * No usa herencia JPA. El campo {@code tipoArticulo} determina qué tabla
- * satélite (articulo_tela, articulo_prenda, articulo_accesorio) complementa al
- * registro.
- */
 @Entity
 @Table(name = "articulo")
 @Getter
@@ -39,43 +29,20 @@ public class ArticuloJpaEntity {
     @Column(name = "codigo_barra", length = 50)
     private String codigoBarra;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "tipo_articulo", nullable = false, length = 15)
-    private TipoArticulo tipoArticulo;
-
-    @Column(name = "procedencia", length = 1)
-    private String procedencia;
-
-    @Column(name = "lotes", nullable = false)
-    private Boolean lotes = false;
-
-    @Column(name = "seriales", nullable = false)
-    private Boolean seriales = false;
-
-    @Column(name = "compras", nullable = false)
-    private Boolean compras = true;
-
-    @Column(name = "comision")
-    private Integer comision;
+    @ManyToOne
+    @JoinColumn(name = "id_tipo_articulo", nullable = false)
+    private TipoArticuloJpaEntity tipoArticulo;
 
     @Column(name = "activo", nullable = false)
     private Boolean activo = true;
 
-    // ── Relaciones catálogo ──────────────────────────────────
+    @ManyToOne
+    @JoinColumn(name = "id_categoria_tela")
+    private CategoriaTelaJpaEntity categoriaTela;
 
     @ManyToOne
-    @JoinColumn(name = "id_categoria")
-    private CategoriaJpaEntity categoria;
-
-    @ManyToOne
-    @JoinColumn(name = "id_subcategoria")
-    private SubCategoriaJpaEntity subCategoria;
-
-    @ManyToOne
-    @JoinColumn(name = "id_unidad_medida", nullable = false)
-    private UnidadMedidaJpaEntity unidadMedida;
-
-    // ── Satélites opcionales (composición, no herencia) ──────
+    @JoinColumn(name = "id_subcategoria_tela")
+    private SubCategoriaTelaJpaEntity subCategoriaTela;
 
     @OneToOne(mappedBy = "articulo", cascade = CascadeType.ALL, orphanRemoval = true)
     private ArticuloTelaJpaEntity detalleTela;

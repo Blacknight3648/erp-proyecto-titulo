@@ -10,22 +10,22 @@ import lombok.*;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class SubCategoriaDTO {
+public class SubCategoriaTelaDTO {
 
-    private Integer idSubCategoria;
+    private Integer idSubCategoriaTela;
 
     @NotBlank(message = "El código de subcategoría es obligatorio")
     @Size(max = 15, message = "El código no puede superar los 15 caracteres")
-    private String codigoSubcategoria;
+    private String codigoSubCategoriaTela;
 
     @NotBlank(message = "El nombre de subcategoría es obligatorio")
     @Size(max = 80, message = "El nombre no puede superar los 80 caracteres")
-    private String nombreSubCategoria;
+    private String nombreSubCategoriaTela;
 
     @NotNull(message = "El id de categoría padre es obligatorio")
     @Positive(message = "El id de categoría debe ser positivo")
-    private Integer idCategoria;
+    private Integer idCategoriaTela;
 
-    private String codigoCategoria;
-    private String nombreCategoria;
+    private String codigoCategoriaTela;
+    private String nombreCategoriaTela;
 }

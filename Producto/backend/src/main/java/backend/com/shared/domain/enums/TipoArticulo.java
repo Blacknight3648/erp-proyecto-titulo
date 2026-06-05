@@ -9,5 +9,6 @@ package backend.com.shared.domain.enums;
 public enum TipoArticulo {
     TELA,
     PRENDA_LISTA,
+    PRENDA_CONFECCIONAR,
     ACCESORIO
 }

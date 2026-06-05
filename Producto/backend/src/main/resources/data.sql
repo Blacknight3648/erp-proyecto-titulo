@@ -1,4 +1,15 @@
 -- ============================================================
+-- 0. TIPO ARTÍCULO
+-- ============================================================
+MERGE INTO tipo_articulo (id_tipo_articulo, codigo, nombre)
+    KEY (id_tipo_articulo)
+    VALUES
+    (1, 'TELA',               'Tela'),
+    (2, 'PRENDA_LISTA',       'Prenda Lista'),
+    (3, 'PRENDA_CONFECCIONAR','Prenda Confeccionar'),
+    (4, 'ACCESORIO',          'Accesorio');
+
+-- ============================================================
 -- 1. ÁREAS
 -- ============================================================
 MERGE INTO areas (id_area, nombre_area, descripcion)

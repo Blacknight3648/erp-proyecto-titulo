@@ -8,15 +8,15 @@ import lombok.*;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class CategoriaDTO {
+public class CategoriaTelaDTO {
 
-    private Integer idCategoria;
+    private Integer idCategoriaTela;
 
     @NotBlank(message = "El código de categoría es obligatorio")
     @Size(max = 10, message = "El código no puede superar los 10 caracteres")
-    private String codigoCategoria;
+    private String codigoCategoriaTela;
 
     @NotBlank(message = "El nombre de categoría es obligatorio")
     @Size(max = 60, message = "El nombre no puede superar los 60 caracteres")
-    private String nombreCategoria;
+    private String nombreCategoriaTela;
 }

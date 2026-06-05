@@ -6,10 +6,6 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 
-/**
- * DTO unificado de Artículo. Se usa tanto para crear como para actualizar.
- * En PUT, el campo {@code codigoArticulo} se ignora (no se permite renombrar el código).
- */
 @Data
 @Builder
 @NoArgsConstructor
@@ -35,22 +31,12 @@ public class ArticuloDTO {
     @NotNull(message = "El tipo de artículo es obligatorio")
     private TipoArticulo tipoArticulo;
 
-    @Size(max = 1, message = "La procedencia debe ser un carácter")
-    private String procedencia;
-
-    private Boolean lotes;
-    private Boolean seriales;
-    private Boolean compras;
-    private Integer comision;
     private Boolean activo;
 
     @NotNull(message = "La categoría es obligatoria")
-    private Integer idCategoria;
+    private Integer idCategoriaTela;
 
-    private Integer idSubCategoria;
-
-    @NotNull(message = "La unidad de medida es obligatoria")
-    private Integer idUnidadMedida;
+    private Integer idSubCategoriaTela;
 
     private ArticuloTelaDTO detalleTela;
     private ArticuloPrendaDTO detallePrenda;

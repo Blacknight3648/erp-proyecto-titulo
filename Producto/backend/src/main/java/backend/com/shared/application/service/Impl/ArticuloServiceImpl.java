@@ -7,9 +7,8 @@ import backend.com.shared.domain.model.Articulo;
 import backend.com.shared.domain.model.ArticuloAccesorio;
 import backend.com.shared.domain.model.ArticuloPrenda;
 import backend.com.shared.domain.model.ArticuloTela;
-import backend.com.shared.domain.model.Categoria;
-import backend.com.shared.domain.model.SubCategoria;
-import backend.com.shared.domain.model.UnidadMedida;
+import backend.com.shared.domain.model.CategoriaTela;
+import backend.com.shared.domain.model.SubCategoriaTela;
 import backend.com.shared.exception.DuplicadoException;
 import backend.com.shared.exception.EntityNotFoundException;
 import backend.com.shared.infrastructure.mapper.ArticuloAccesorioMapper;
@@ -17,9 +16,8 @@ import backend.com.shared.infrastructure.mapper.ArticuloMapper;
 import backend.com.shared.infrastructure.mapper.ArticuloPrendaMapper;
 import backend.com.shared.infrastructure.mapper.ArticuloTelaMapper;
 import backend.com.shared.infrastructure.persistence.repository.ArticuloRepository;
-import backend.com.shared.infrastructure.persistence.repository.CategoriaRepository;
-import backend.com.shared.infrastructure.persistence.repository.SubCategoriaRepository;
-import backend.com.shared.infrastructure.persistence.repository.UnidadMedidaRepository;
+import backend.com.shared.infrastructure.persistence.repository.CategoriaTelaRepository;
+import backend.com.shared.infrastructure.persistence.repository.SubCategoriaTelaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,9 +30,8 @@ import java.util.List;
 public class ArticuloServiceImpl implements ArticuloService {
 
     private final ArticuloRepository articuloRepository;
-    private final CategoriaRepository categoriaRepository;
-    private final SubCategoriaRepository subCategoriaRepository;
-    private final UnidadMedidaRepository unidadMedidaRepository;
+    private final CategoriaTelaRepository categoriaTelaRepository;
+    private final SubCategoriaTelaRepository subCategoriaTelaRepository;
     private final ArticuloMapper articuloMapper;
     private final ArticuloTelaMapper articuloTelaMapper;
     private final ArticuloPrendaMapper articuloPrendaMapper;
@@ -52,15 +49,9 @@ public class ArticuloServiceImpl implements ArticuloService {
                 .descripcionArticulo(dto.getDescripcionArticulo())
                 .codigoBarra(dto.getCodigoBarra())
                 .tipoArticulo(dto.getTipoArticulo())
-                .procedencia(dto.getProcedencia())
-                .lotes(dto.getLotes() != null ? dto.getLotes() : false)
-                .seriales(dto.getSeriales() != null ? dto.getSeriales() : false)
-                .compras(dto.getCompras() != null ? dto.getCompras() : true)
-                .comision(dto.getComision())
                 .activo(true)
-                .categoria(resolverCategoria(dto.getIdCategoria()))
-                .subCategoria(resolverSubCategoria(dto.getIdSubCategoria()))
-                .unidadMedida(resolverUnidadMedida(dto.getIdUnidadMedida()))
+                .categoriaTela(resolverCategoriaTela(dto.getIdCategoriaTela()))
+                .subCategoriaTela(resolverSubCategoriaTela(dto.getIdSubCategoriaTela()))
                 .build();
 
         asignarDetalle(articulo, dto);
@@ -75,15 +66,9 @@ public class ArticuloServiceImpl implements ArticuloService {
         articulo.setDescripcionArticulo(dto.getDescripcionArticulo());
         articulo.setCodigoBarra(dto.getCodigoBarra());
         articulo.setTipoArticulo(dto.getTipoArticulo());
-        articulo.setProcedencia(dto.getProcedencia());
-        if (dto.getLotes() != null) articulo.setLotes(dto.getLotes());
-        if (dto.getSeriales() != null) articulo.setSeriales(dto.getSeriales());
-        if (dto.getCompras() != null) articulo.setCompras(dto.getCompras());
-        articulo.setComision(dto.getComision());
         if (dto.getActivo() != null) articulo.setActivo(dto.getActivo());
-        articulo.setCategoria(resolverCategoria(dto.getIdCategoria()));
-        articulo.setSubCategoria(resolverSubCategoria(dto.getIdSubCategoria()));
-        articulo.setUnidadMedida(resolverUnidadMedida(dto.getIdUnidadMedida()));
+        articulo.setCategoriaTela(resolverCategoriaTela(dto.getIdCategoriaTela()));
+        articulo.setSubCategoriaTela(resolverSubCategoriaTela(dto.getIdSubCategoriaTela()));
 
         limpiarDetallesAnteriores(articulo, dto.getTipoArticulo());
         asignarDetalle(articulo, dto);
@@ -102,7 +87,7 @@ public class ArticuloServiceImpl implements ArticuloService {
     public ArticuloDTO obtenerPorCodigo(String codigoArticulo) {
         return articuloMapper.toDTO(articuloRepository.findByCodigoArticulo(codigoArticulo)
                 .orElseThrow(() -> new EntityNotFoundException(
-                        "Articulo con código " + codigoArticulo + " no encontrado")));
+                        "Artículo con código " + codigoArticulo + " no encontrado")));
     }
 
     @Override
@@ -141,25 +126,19 @@ public class ArticuloServiceImpl implements ArticuloService {
 
     private Articulo findOrThrow(Integer id) {
         return articuloRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Articulo con id " + id + " no encontrado"));
+                .orElseThrow(() -> new EntityNotFoundException("Artículo con id " + id + " no encontrado"));
     }
 
-    private Categoria resolverCategoria(Integer id) {
+    private CategoriaTela resolverCategoriaTela(Integer id) {
         if (id == null) return null;
-        return categoriaRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Categoría con id " + id + " no encontrada"));
+        return categoriaTelaRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("CategoriaTela con id " + id + " no encontrada"));
     }
 
-    private SubCategoria resolverSubCategoria(Integer id) {
+    private SubCategoriaTela resolverSubCategoriaTela(Integer id) {
         if (id == null) return null;
-        return subCategoriaRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("SubCategoría con id " + id + " no encontrada"));
-    }
-
-    private UnidadMedida resolverUnidadMedida(Integer id) {
-        if (id == null) return null;
-        return unidadMedidaRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Unidad de medida con id " + id + " no encontrada"));
+        return subCategoriaTelaRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("SubCategoriaTela con id " + id + " no encontrada"));
     }
 
     private void asignarDetalle(Articulo articulo, ArticuloDTO dto) {
@@ -167,7 +146,8 @@ public class ArticuloServiceImpl implements ArticuloService {
         if (tipo == TipoArticulo.TELA && dto.getDetalleTela() != null) {
             ArticuloTela tela = articuloTelaMapper.toDomain(dto.getDetalleTela());
             articulo.setDetalleTela(tela);
-        } else if (tipo == TipoArticulo.PRENDA_LISTA && dto.getDetallePrenda() != null) {
+        } else if ((tipo == TipoArticulo.PRENDA_LISTA || tipo == TipoArticulo.PRENDA_CONFECCIONAR)
+                && dto.getDetallePrenda() != null) {
             ArticuloPrenda prenda = articuloPrendaMapper.toDomain(dto.getDetallePrenda());
             articulo.setDetallePrenda(prenda);
         } else if (tipo == TipoArticulo.ACCESORIO && dto.getDetalleAccesorio() != null) {
@@ -178,7 +158,8 @@ public class ArticuloServiceImpl implements ArticuloService {
 
     private void limpiarDetallesAnteriores(Articulo articulo, TipoArticulo nuevoTipo) {
         if (nuevoTipo != TipoArticulo.TELA) articulo.setDetalleTela(null);
-        if (nuevoTipo != TipoArticulo.PRENDA_LISTA) articulo.setDetallePrenda(null);
+        if (nuevoTipo != TipoArticulo.PRENDA_LISTA && nuevoTipo != TipoArticulo.PRENDA_CONFECCIONAR)
+            articulo.setDetallePrenda(null);
         if (nuevoTipo != TipoArticulo.ACCESORIO) articulo.setDetalleAccesorio(null);
     }
 }

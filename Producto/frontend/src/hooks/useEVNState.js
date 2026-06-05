@@ -115,12 +115,12 @@ export const useEVNState = (initialEval = null) => {
     // Initial hydration
     useEffect(() => {
         if (initialEval) {
-            setSolicitud({ 
+            setSolicitud({
                 clienteNombre: initialEval.clienteNombre || "Cliente #" + initialEval.clienteId,
                 clienteId: initialEval.clienteId,
                 vendedorId: initialEval.vendedorId
             });
-            
+
             setItems((initialEval.items || []).map(it => ({
                 ...DEFAULT_ITEM,
                 id: it.idItemEVN || it.id || Math.random(),
@@ -269,7 +269,7 @@ export const useEVNState = (initialEval = null) => {
                 costoCintaUnitario +
                 prorrateoLineal;
 
-            const precioVenta20MG = costoTotalUnitario / 0.8;
+            const precioVenta20MG = costoTotalUnitario / 0.75;
             const precioVentaTotal = pVentaNeto * cant;
             const costoTotalItem = costoTotalUnitario * cant;
 
@@ -511,15 +511,15 @@ export const useEVNState = (initialEval = null) => {
                 certificacion: otrosCostos.certificacion || 0,
                 muestras: otrosCostos.muestras || 0,
                 entregaPersonalizada: otrosCostos.entregaPersonalizada || 0,
-                
+
                 // Campos aplanados según CrearEVNCommand.java
                 tomaTallajeMonto: totals.totalTT || 0,
                 tomaTallajeObservaciones: otrosCostos.tomaTallaje.observaciones || '',
                 tomaTallajeMetadata: JSON.stringify(otrosCostos.tomaTallaje),
-                
+
                 pegadoCinta: (otrosCostos.pegadoCinta || []).reduce((acc, c) => acc + (c.total || 0), 0),
                 pegadoCintaMetadata: JSON.stringify(otrosCostos.pegadoCinta),
-                
+
                 costeoIds: vinculados.scos.map(s => parseId(s.id)).filter(Boolean),
                 solicitudCotizacionIds: vinculados.scot.map(s => parseId(s.id)).filter(Boolean),
                 items: (items || []).map((item, idx) => ({
@@ -593,7 +593,7 @@ export const useEVNState = (initialEval = null) => {
         availableQuotations,
         pendingSCOS,
         totals,
-        
+
         // Handlers
         handleUpdateItem,
         handleBulkLink,
@@ -603,7 +603,7 @@ export const useEVNState = (initialEval = null) => {
         resetState,
         handleGenerarPropuesta,
         handleAdjudicar,
-        
+
         // Context data needed
         proveedores,
         clientes,

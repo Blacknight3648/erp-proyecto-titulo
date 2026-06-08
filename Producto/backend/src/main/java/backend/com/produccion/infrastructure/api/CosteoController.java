@@ -13,6 +13,11 @@ public class CosteoController {
 
     private final GestionarCosteoUseCase gestionarCosteoUseCase;
 
+    @GetMapping("/scos")
+    public ResponseEntity<java.util.List<CosteoDTO>> getBySCOS() {
+        return ResponseEntity.ok(gestionarCosteoUseCase.obtenerTodos());
+    }
+
     @GetMapping("/scos/{scosId}")
     public ResponseEntity<CosteoDTO> getBySCOS(@PathVariable Long scosId) {
         return gestionarCosteoUseCase.obtenerPorSCOS(scosId)

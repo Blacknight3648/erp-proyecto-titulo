@@ -16,6 +16,9 @@ public class GestionarCosteoUseCase {
     public CosteoDTO registrarCosteo(CosteoDTO costeoDTO) {
         if (costeoDTO == null)
             throw new IllegalArgumentException("El costeo no puede ser nulo");
+        if (costeoDTO.getNumeroCosteo() == null || costeoDTO.getNumeroCosteo().isBlank()) {
+            costeoDTO.setNumeroCosteo("COSTEO-" + System.currentTimeMillis());
+        }
         return costeoService.save(costeoDTO);
     }
 
@@ -25,11 +28,18 @@ public class GestionarCosteoUseCase {
         if (costeoDTO == null)
             throw new IllegalArgumentException("El costeo no puede ser nulo");
         costeoDTO.setIdCosteo(idCosteo);
+        if (costeoDTO.getNumeroCosteo() == null || costeoDTO.getNumeroCosteo().isBlank()) {
+            costeoDTO.setNumeroCosteo("COSTEO-" + idCosteo);
+        }
         return costeoService.save(costeoDTO);
     }
 
     public Optional<CosteoDTO> obtenerPorSCOS(Long scosId) {
         return costeoService.findBySolicitudCostosId(scosId);
+    }
+
+    public java.util.List<CosteoDTO> obtenerTodos() {
+        return costeoService.findAll();
     }
 
     public java.util.List<CosteoDTO> obtenerTodosPorSCOS(Long scosId) {

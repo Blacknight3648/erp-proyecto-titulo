@@ -64,6 +64,13 @@ public class CosteoServiceImpl implements CosteoService {
     }
 
     @Override
+    public java.util.List<CosteoDTO> findAll() {
+        return repository.findAll().stream()
+                .map(this::toEnrichedDto)
+                .collect(java.util.stream.Collectors.toList());
+    }
+
+    @Override
     public Optional<CosteoDTO> findBySolicitudCostosId(Long scosId) {
         return repository.findBySolicitudCostosId(scosId)
                 .map(this::toEnrichedDto);

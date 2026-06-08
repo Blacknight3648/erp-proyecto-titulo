@@ -19,6 +19,15 @@ public class GestionarCosteoUseCase {
         return costeoService.save(costeoDTO);
     }
 
+    public CosteoDTO actualizarCosteo(Long idCosteo, CosteoDTO costeoDTO) {
+        if (idCosteo == null)
+            throw new IllegalArgumentException("El id del costeo es obligatorio para actualizar");
+        if (costeoDTO == null)
+            throw new IllegalArgumentException("El costeo no puede ser nulo");
+        costeoDTO.setIdCosteo(idCosteo);
+        return costeoService.save(costeoDTO);
+    }
+
     public Optional<CosteoDTO> obtenerPorSCOS(Long scosId) {
         return costeoService.findBySolicitudCostosId(scosId);
     }

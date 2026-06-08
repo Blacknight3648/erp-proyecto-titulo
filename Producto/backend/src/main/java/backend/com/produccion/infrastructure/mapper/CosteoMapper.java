@@ -6,15 +6,20 @@ import backend.com.produccion.domain.model.Costeo;
 import backend.com.produccion.domain.model.CosteoItem;
 import backend.com.produccion.infrastructure.persistence.entity.CosteoJpaEntity;
 import backend.com.produccion.infrastructure.persistence.entity.CosteoItemJpaEntity;
+import backend.com.shared.infrastructure.mapper.ArticuloMapper;
 import backend.com.shared.valueobjects.DocumentNumber;
 import backend.com.shared.valueobjects.Money;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.stream.Collectors;
 
 @Component
+@RequiredArgsConstructor
 public class CosteoMapper {
+
+    private final ArticuloMapper articuloMapper;
 
     public Costeo toDomain(CosteoJpaEntity entity) {
         if (entity == null)
@@ -172,6 +177,7 @@ public class CosteoMapper {
                 .consumo(domain.getConsumo())
                 .precioUnitario(domain.getPrecioUnitario())
                 .costoTotal(domain.getCostoTotal())
+                .articulo(articuloMapper.toDTO(domain.getArticulo()))
                 .build();
     }
 

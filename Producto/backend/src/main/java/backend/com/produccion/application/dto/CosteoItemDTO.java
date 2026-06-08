@@ -1,5 +1,6 @@
 package backend.com.produccion.application.dto;
 
+import backend.com.shared.application.dto.ArticuloDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -19,4 +20,7 @@ public class CosteoItemDTO {
     private BigDecimal consumo;
     private BigDecimal precioUnitario;
     private BigDecimal costoTotal;
+
+    // Datos del artículo asociado (insumoId), cargados en lectura. Solo informativo.
+    private ArticuloDTO articulo;
 }

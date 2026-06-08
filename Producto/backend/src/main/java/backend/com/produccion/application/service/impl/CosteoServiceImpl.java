@@ -6,6 +6,7 @@ import backend.com.produccion.application.service.CosteoService;
 import backend.com.produccion.domain.model.Costeo;
 import backend.com.produccion.domain.repository.CosteoRepository;
 import backend.com.produccion.infrastructure.mapper.CosteoMapper;
+import backend.com.shared.infrastructure.persistence.repository.ArticuloRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,6 +20,7 @@ public class CosteoServiceImpl implements CosteoService {
     private final CosteoRepository repository;
     private final CosteoMapper mapper;
     private final SolicitudCostosRepository scosRepository;
+    private final ArticuloRepository articuloRepository;
 
     private void enrichWithScosInfo(Costeo domain) {
         if (domain != null && domain.getSolicitudCostosId() != null) {
@@ -31,8 +33,25 @@ public class CosteoServiceImpl implements CosteoService {
         }
     }
 
+    /**
+     * Carga el Articulo asociado a cada item a partir de su insumoId.
+     * Solo lectura: si el insumo no corresponde a un artículo existente, se omite.
+     */
+    private void enrichItemsWithArticulo(Costeo domain) {
+        if (domain == null || domain.getItems() == null) {
+            return;
+        }
+        domain.getItems().forEach(item -> {
+            if (item.getInsumoId() != null) {
+                articuloRepository.findById(item.getInsumoId().intValue())
+                        .ifPresent(item::setArticulo);
+            }
+        });
+    }
+
     private CosteoDTO toEnrichedDto(Costeo domain) {
         enrichWithScosInfo(domain);
+        enrichItemsWithArticulo(domain);
         return mapper.toDto(domain);
     }
 

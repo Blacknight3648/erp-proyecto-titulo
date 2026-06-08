@@ -4,11 +4,11 @@ import backend.com.shared.events.DomainEvent;
 import backend.com.shared.valueobjects.DocumentNumber;
 import lombok.Getter;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.math.BigDecimal;
 
 @Getter
 public class SolicitudCostos {
@@ -31,9 +31,8 @@ public class SolicitudCostos {
     private LocalDate fecha;
     private List<SCOSTela> telas = new ArrayList<>();
     private List<SCOSAccesorio> accesorios = new ArrayList<>();
-    private List<SCOSPlantilla> plantillas = new ArrayList<>();
-    private List<SCOTPrendaLista> productos = new ArrayList<>();
     private List<SCOSLogotipo> logotipos = new ArrayList<>();
+    private List<DescripcionPlantilla> descripciones = new ArrayList<>();
     private BigDecimal costoTotal;
 
     private transient List<DomainEvent> domainEvents = new ArrayList<>();
@@ -60,11 +59,11 @@ public class SolicitudCostos {
     }
 
     public SolicitudCostos(Long idSCOS, DocumentNumber numeroSCOS, EstadoSCOS estado, String tipo, Long clienteId,
-            String clienteNombre, Long vendedorId, String vendedorNombre, Long especificacionTecnicaId, 
+            String clienteNombre, Long vendedorId, String vendedorNombre, Long especificacionTecnicaId,
             String articuloDescripcion, String nombrePrenda,
             Boolean esMuestra, Boolean hasLogo, Integer cantidad, String genero, String tallaje, LocalDate fecha,
-            List<SCOSTela> telas, List<SCOSAccesorio> accesorios, List<SCOSPlantilla> plantillas,
-            List<SCOTPrendaLista> productos, List<SCOSLogotipo> logotipos,
+            List<SCOSTela> telas, List<SCOSAccesorio> accesorios, List<SCOSLogotipo> logotipos,
+            List<DescripcionPlantilla> descripciones,
             BigDecimal costoTotal) {
         this.idSCOS = idSCOS;
         this.numeroSCOS = numeroSCOS;
@@ -85,9 +84,8 @@ public class SolicitudCostos {
         this.fecha = fecha;
         this.telas = telas != null ? new ArrayList<>(telas) : new ArrayList<>();
         this.accesorios = accesorios != null ? new ArrayList<>(accesorios) : new ArrayList<>();
-        this.plantillas = plantillas != null ? new ArrayList<>(plantillas) : new ArrayList<>();
-        this.productos = productos != null ? new ArrayList<>(productos) : new ArrayList<>();
         this.logotipos = logotipos != null ? new ArrayList<>(logotipos) : new ArrayList<>();
+        this.descripciones = descripciones != null ? new ArrayList<>(descripciones) : new ArrayList<>();
         this.costoTotal = costoTotal;
     }
 
@@ -108,17 +106,15 @@ public class SolicitudCostos {
         }
     }
 
-    public void addPlantilla(SCOSPlantilla plantilla) {
-        this.plantillas.add(plantilla);
-    }
-
-    public void addProducto(SCOTPrendaLista producto) {
-        this.productos.add(producto);
-    }
-
     public void addLogotipo(SCOSLogotipo logotipo) {
         if (logotipo != null) {
             this.logotipos.add(logotipo);
+        }
+    }
+
+    public void addDescripcion(DescripcionPlantilla descripcion) {
+        if (descripcion != null) {
+            this.descripciones.add(descripcion);
         }
     }
 

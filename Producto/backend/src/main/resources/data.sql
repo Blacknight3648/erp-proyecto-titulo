@@ -4,10 +4,9 @@
 MERGE INTO tipo_articulo (id_tipo_articulo, codigo, nombre)
     KEY (id_tipo_articulo)
     VALUES
-    (1, 'TELA',               'Tela'),
-    (2, 'PRENDA_LISTA',       'Prenda Lista'),
-    (3, 'PRENDA_CONFECCIONAR','Prenda Confeccionar'),
-    (4, 'ACCESORIO',          'Accesorio');
+    (1, 'TELA',         'Tela'),
+    (2, 'PRENDA_LISTA', 'Prenda Lista'),
+    (3, 'ACCESORIO',    'Accesorio');
 
 -- ============================================================
 -- 1. ÁREAS
@@ -206,30 +205,86 @@ MERGE INTO dato_bancario (dato_bancario_id, numero_cuenta, banco_id, tipo_cuenta
     (4, '00-456-78901-23', 4, 1, 4);
 
 -- ============================================================
--- 7. CONFIGURACIÓN DE PLANTILLAS (SCOS)
+-- 7. CATEGORÍAS Y SUBCATEGORÍAS DE TELA
 -- ============================================================
-MERGE INTO configuracion_plantillas (id, nombre_prenda)
-    KEY (id)
+MERGE INTO categoria_tela (id_categoria_tela, codigo_categoria_tela, nombre_categoria_tela)
+    KEY (id_categoria_tela)
     VALUES
-    (1, 'POLERÓN'),
-    (2, 'CHAQUETA'),
-    (3, 'CALZA');
+    (1, 'TEJ-PLN', 'Tejido Plano'),
+    (2, 'TEJ-PNT', 'Tejido de Punto'),
+    (3, 'NO-TEJ',  'No Tejido / Técnico');
 
-MERGE INTO configuracion_plantilla_campos (configuracion_id, campo)
-    KEY (configuracion_id, campo)
+MERGE INTO subcategoria_tela (id_subcategoria_tela, codigo_subcategoria_tela, nombre_subcategoria_tela, id_categoria_tela)
+    KEY (id_subcategoria_tela)
     VALUES
-    (1, 'gorro'), (1, 'bolsillos'), (1, 'mangas'),
-    (2, 'cuello'), (2, 'relleno'), (2, 'bolsillos'),
-    (3, 'pretinasRuedo');
+    (1, 'PLN-COTT', 'Algodón Plano',     1),
+    (2, 'PLN-SYNT', 'Sintético Plano',   1),
+    (3, 'PNT-FLEE', 'Fleece / Polar',    2),
+    (4, 'PNT-JRSY', 'Jersey',            2),
+    (5, 'TEC-IMPR', 'Impermeable Tech',  3);
 
 -- ============================================================
--- 7.1. SOLICITUDES DE COSTOS (SCOS)
+-- 7.1. ARTÍCULOS (Telas base de catálogo)
+-- ============================================================
+MERGE INTO articulo (id_articulo, codigo_articulo, nombre_articulo, descripcion_articulo, codigo_barra, id_tipo_articulo, activo, id_categoria_tela, id_subcategoria_tela)
+    KEY (id_articulo)
+    VALUES
+    (1, 'ART-FLEE-001', 'Polar Fleece 280 GSM',      'Tela polar fleece gramaje 280 g/m²',    NULL, 1, true, 2, 3),
+    (2, 'ART-IMPR-001', 'Ripstop Impermeable',        'Tejido técnico ripstop impermeabilizado', NULL, 1, true, 3, 5),
+    (3, 'ART-JRSY-001', 'Jersey Piqué Algodón',       'Jersey piqué 100% algodón peinado',      NULL, 1, true, 2, 4),
+    (4, 'ART-ACC-001',  'Cierre YKK 60cm Metálico',   'Cierre metálico YKK 60 cm',             NULL, 3, true, NULL, NULL),
+    (5, 'ART-ACC-002',  'Botón Snap 15mm Nácar',       'Botón tipo snap nacarado 15 mm',        NULL, 3, true, NULL, NULL);
+
+-- ============================================================
+-- 7.2. CATÁLOGO DE CAMPOS DE PLANTILLA
+-- ============================================================
+MERGE INTO plantilla (id_plantilla, nombre_campo)
+    KEY (id_plantilla)
+    VALUES
+    (1,  'forro'),
+    (2,  'relleno'),
+    (3,  'colorForro'),
+    (4,  'gorro'),
+    (5,  'cuello'),
+    (6,  'abotonaduraCierre'),
+    (7,  'cortesAplicaciones'),
+    (8,  'fuelles'),
+    (9,  'mangas'),
+    (10, 'pretinasRuedo'),
+    (11, 'bolsillos'),
+    (12, 'cintaDetalle'),
+    (13, 'logoDetalle'),
+    (14, 'accesoriosDetalle'),
+    (15, 'obsModelo');
+
+-- ============================================================
+-- 7.3. MODELO PLANTILLA (Campos sugeridos por artículo)
+-- ============================================================
+-- Polerón Fleece (ART-FLEE-001): gorro, bolsillos, mangas, forro
+MERGE INTO modelo_plantilla (id_modelo_plantilla, id_articulo, id_plantilla)
+    KEY (id_modelo_plantilla)
+    VALUES
+    (1,  1, 4),   -- Polar Fleece -> gorro
+    (2,  1, 11),  -- Polar Fleece -> bolsillos
+    (3,  1, 9),   -- Polar Fleece -> mangas
+    (4,  1, 1),   -- Polar Fleece -> forro
+    -- Ripstop Impermeable (ART-IMPR-001): cuello, relleno, bolsillos, abotonaduraCierre
+    (5,  2, 5),   -- Ripstop -> cuello
+    (6,  2, 2),   -- Ripstop -> relleno
+    (7,  2, 11),  -- Ripstop -> bolsillos
+    (8,  2, 6),   -- Ripstop -> abotonaduraCierre
+    -- Jersey Piqué (ART-JRSY-001): mangas, pretinasRuedo
+    (9,  3, 9),   -- Jersey  -> mangas
+    (10, 3, 10);  -- Jersey  -> pretinasRuedo
+
+-- ============================================================
+-- 7.4. SOLICITUDES DE COSTOS (SCOS)
 -- ============================================================
 MERGE INTO solicitudes_costos (idscos, numero, estado, tipo, cliente_id, vendedor_id, articulo_descripcion, nombre_prenda, genero, tallaje, es_muestra, has_logo, cantidad, fecha, costo_total)
     KEY (idscos)
     VALUES
-    (1, 'SCOS-2024-001', 'PENDIENTE', 'NUEVO', 1, 1, 'Polera Pique Corporativa', 'POLERA', 'UNISEX', 'L', false, true, 100, CURRENT_DATE, 150000.00),
-    (2, 'SCOS-2024-002', 'APROBADA', 'REPETICION', 2, 2, 'Pantalón Cargo Operario', 'PANTALON', 'MASCULINO', '42', false, false, 50, CURRENT_DATE, 250000.00);
+    (1, 'SCOS-2024-001', 'PENDIENTE', 'SCOS', 1, 1, 'POLERA', 'Polera Piqué Corporativa', 'UNISEX', 'Antuan SA', false, true,  100, CURRENT_DATE, 150000.00),
+    (2, 'SCOS-2024-002', 'APROBADA',  'SCOS', 2, 2, 'PANTALON', 'Pantalón Cargo Operario', 'MASCULINO', 'Cliente', false, false, 50, CURRENT_DATE, 250000.00);
 
 -- ============================================================
 -- 7.2. EVALUACIONES DE NEGOCIO (EVN)
@@ -260,13 +315,23 @@ ALTER TABLE vendedores ALTER COLUMN id_vendedor RESTART WITH 200;
 ALTER TABLE proveedores ALTER COLUMN proveedor_id RESTART WITH 100;
 ALTER TABLE giros ALTER COLUMN giro_id RESTART WITH 100;
 ALTER TABLE producto ALTER COLUMN producto_id RESTART WITH 100;
+-- Artículos / catálogo
+ALTER TABLE articulo ALTER COLUMN id_articulo RESTART WITH 1000;
+ALTER TABLE categoria_tela ALTER COLUMN id_categoria_tela RESTART WITH 100;
+ALTER TABLE subcategoria_tela ALTER COLUMN id_subcategoria_tela RESTART WITH 100;
+-- Plantillas
+ALTER TABLE plantilla ALTER COLUMN id_plantilla RESTART WITH 100;
+ALTER TABLE modelo_plantilla ALTER COLUMN id_modelo_plantilla RESTART WITH 1000;
+ALTER TABLE descripcion_plantilla ALTER COLUMN id_descripcion_plantilla RESTART WITH 5000;
+-- SCOS
 ALTER TABLE solicitudes_costos ALTER COLUMN idscos RESTART WITH 2000;
-ALTER TABLE produccion_costeos ALTER COLUMN id_costeo RESTART WITH 2000;
-ALTER TABLE produccion_costeo_items ALTER COLUMN id_costeo_item RESTART WITH 5000;
 ALTER TABLE scos_telas ALTER COLUMN idscostela RESTART WITH 2000;
 ALTER TABLE scos_logotipos ALTER COLUMN id RESTART WITH 2000;
+ALTER TABLE scos_plantilla_material_vinculo ALTER COLUMN id RESTART WITH 5000;
+-- EVN / NV
 ALTER TABLE evaluaciones_negocio ALTER COLUMN idevn RESTART WITH 1000;
 ALTER TABLE notas_venta ALTER COLUMN idnv RESTART WITH 1000;
+-- Contactos / Direcciones
 ALTER TABLE tipos_contacto ALTER COLUMN tipo_contacto_id RESTART WITH 10;
 ALTER TABLE contactos ALTER COLUMN contacto_id RESTART WITH 10;
 ALTER TABLE pais ALTER COLUMN pais_id RESTART WITH 10;

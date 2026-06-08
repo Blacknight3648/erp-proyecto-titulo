@@ -73,12 +73,6 @@ public class SolicitudCostosJpaEntity {
     private List<SCOSAccesorioJpaEntity> accesorios = new ArrayList<>();
 
     @OneToMany(mappedBy = "solicitudCostos", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<SCOSPlantillaJpaEntity> plantillas = new ArrayList<>();
-
-    @OneToMany(mappedBy = "solicitudCostos", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<SCOTPrendaListaJpaEntity> prendas = new ArrayList<>();
-
-    @OneToMany(mappedBy = "solicitudCostos", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<SCOSLogotipoJpaEntity> logotipos = new ArrayList<>();
 
     public void addTela(SCOSTelaJpaEntity tela) {
@@ -91,16 +85,6 @@ public class SolicitudCostosJpaEntity {
         accesorio.setSolicitudCostos(this);
     }
 
-    public void addPlantilla(SCOSPlantillaJpaEntity plantilla) {
-        plantillas.add(plantilla);
-        plantilla.setSolicitudCostos(this);
-    }
-
-    public void addPrenda(SCOTPrendaListaJpaEntity prenda) {
-        prendas.add(prenda);
-        prenda.setSolicitudCostos(this);
-    }
-
     public void addLogotipo(SCOSLogotipoJpaEntity logotipo) {
         logotipos.add(logotipo);
         logotipo.setSolicitudCostos(this);
@@ -109,8 +93,6 @@ public class SolicitudCostosJpaEntity {
     public void clearCollections() {
         telas.clear();
         accesorios.clear();
-        plantillas.clear();
-        prendas.clear();
         logotipos.clear();
     }
 }

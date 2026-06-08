@@ -20,14 +20,6 @@ public class SCOTPrendaListaJpaEntity {
     private SolicitudCotizacionJpaEntity solicitudCotizacion;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "solicitud_costos_id", nullable = true)
-    private SolicitudCostosJpaEntity solicitudCostos;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "solicitud_cotizacion_id", nullable = true)
-    private SolicitudCotizacionJpaEntity solicitudCotizacionAdicional;
-
-    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "producto_id")
     private ProductoJpaEntity producto;
 

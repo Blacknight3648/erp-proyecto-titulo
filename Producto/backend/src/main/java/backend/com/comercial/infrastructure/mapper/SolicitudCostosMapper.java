@@ -1,26 +1,31 @@
 package backend.com.comercial.infrastructure.mapper;
 
-import backend.com.comercial.domain.model.*;
-import backend.com.comercial.infrastructure.persistence.entity.*;
+import backend.com.comercial.domain.model.SCOSAccesorio;
+import backend.com.comercial.domain.model.SCOSLogotipo;
+import backend.com.comercial.domain.model.SCOSTela;
+import backend.com.comercial.domain.model.SolicitudCostos;
+import backend.com.comercial.infrastructure.persistence.entity.SCOSAccesorioJpaEntity;
+import backend.com.comercial.infrastructure.persistence.entity.SCOSLogotipoJpaEntity;
+import backend.com.comercial.infrastructure.persistence.entity.SCOSTelaJpaEntity;
+import backend.com.comercial.infrastructure.persistence.entity.SolicitudCostosJpaEntity;
+import backend.com.gestionUsuarios.cliente.infrastructure.persistence.entity.ClienteJpaEntity;
+import backend.com.gestionUsuarios.proveedor.infrastructure.persistence.entity.ProveedorJpaEntity;
+import backend.com.gestionUsuarios.vendedor.infrastructure.persistence.entity.VendedorJpaEntity;
 import backend.com.shared.infrastructure.persistence.entity.EspecificacionTecnica;
 import backend.com.shared.infrastructure.persistence.entity.Tela;
-import backend.com.gestionUsuarios.cliente.infrastructure.persistence.entity.ClienteJpaEntity;
-import backend.com.gestionUsuarios.vendedor.infrastructure.persistence.entity.VendedorJpaEntity;
-import backend.com.gestionUsuarios.proveedor.infrastructure.persistence.entity.ProveedorJpaEntity;
 import backend.com.shared.valueobjects.DocumentNumber;
 import backend.com.shared.valueobjects.Money;
 import org.springframework.stereotype.Component;
+
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.stream.Collectors;
 
 @Component
 public class SolicitudCostosMapper {
 
     public SolicitudCostos toDomain(SolicitudCostosJpaEntity entity) {
-        if (entity == null)
-            return null;
+        if (entity == null) return null;
 
         String clienteNombre = null;
         if (entity.getCliente() != null) {
@@ -61,21 +66,15 @@ public class SolicitudCostosMapper {
                 (entity.getAccesorios() != null)
                         ? entity.getAccesorios().stream().map(this::mapAccesorioToDomain).collect(Collectors.toList())
                         : new ArrayList<>(),
-                (entity.getPlantillas() != null)
-                        ? entity.getPlantillas().stream().map(this::mapPlantillaToDomain).collect(Collectors.toList())
-                        : new ArrayList<>(),
-                (entity.getPrendas() != null)
-                        ? entity.getPrendas().stream().map(this::mapPrendaToDomain).collect(Collectors.toList())
-                        : new ArrayList<>(),
                 (entity.getLogotipos() != null)
                         ? entity.getLogotipos().stream().map(this::mapLogotipoToDomain).collect(Collectors.toList())
                         : new ArrayList<>(),
+                new ArrayList<>(),  // descripciones se cargan vía DescripcionPlantillaService por idSCOS
                 entity.getCostoTotal());
     }
 
     private SCOSTela mapTelaToDomain(SCOSTelaJpaEntity entity) {
-        if (entity == null)
-            return null;
+        if (entity == null) return null;
         return new SCOSTela(
                 entity.getTela() != null ? entity.getTela().getIdTela() : null,
                 entity.getAplicacion(),
@@ -89,13 +88,11 @@ public class SolicitudCostosMapper {
                 entity.getUnidadMedida(),
                 new Money(entity.getPrecioUnitario() != null ? entity.getPrecioUnitario() : BigDecimal.ZERO,
                         entity.getMonedaPrecioUnitario() != null ? entity.getMonedaPrecioUnitario() : "CLP"),
-                null // tempId
-        );
+                null);
     }
 
     private SCOSAccesorio mapAccesorioToDomain(SCOSAccesorioJpaEntity entity) {
-        if (entity == null)
-            return null;
+        if (entity == null) return null;
         return new SCOSAccesorio(
                 entity.getAccesorio() != null ? entity.getAccesorio().getAccesorioId() : null,
                 entity.getTipo(),
@@ -107,86 +104,13 @@ public class SolicitudCostosMapper {
                 entity.getUnidadMedida(),
                 new Money(entity.getPrecioUnitario() != null ? entity.getPrecioUnitario() : BigDecimal.ZERO,
                         entity.getMonedaPrecioUnitario() != null ? entity.getMonedaPrecioUnitario() : "CLP"),
-                null // tempId
-        );
-    }
-
-    private SCOSPlantilla mapPlantillaToDomain(SCOSPlantillaJpaEntity entity) {
-        if (entity == null)
-            return null;
-
-        List<backend.com.comercial.domain.model.PlantillaTela> telasDom = (entity.getPlantillaTelas() != null)
-                ? entity.getPlantillaTelas().stream()
-                        .map(t -> new backend.com.comercial.domain.model.PlantillaTela(t.getAplicacion(), t.getNombre(),
-                                t.getComposicion(), t.getColor(), t.getPeso(), t.getUnidadMedida()))
-                        .collect(Collectors.toList())
-                : new ArrayList<>();
-
-        List<backend.com.comercial.domain.model.PlantillaAccesorio> accesoriosDom = (entity
-                .getPlantillaAccesorios() != null)
-                        ? entity.getPlantillaAccesorios().stream()
-                                .map(a -> new backend.com.comercial.domain.model.PlantillaAccesorio(a.getTipo(),
-                                        a.getNombreAccesorio(), a.getCantidad()))
-                                .collect(Collectors.toList())
-                        : new ArrayList<>();
-
-        List<SCOSLogotipo> logotiposDom = (entity.getPlantillaLogotipos() != null)
-                ? entity.getPlantillaLogotipos().stream()
-                        .map(l -> new SCOSLogotipo(null, l.getTipo(), l.getNombre(), l.getUbicacion(), l.getColor(),
-                                l.getTamano(), l.getCantidad(), l.getPrecio()))
-                        .collect(Collectors.toList())
-                : new ArrayList<>();
-
-        return new SCOSPlantilla(
-                entity.getId(),
-                entity.getNombre(),
-                entity.getDescripcion(),
-                entity.getNombrePrenda(),
-                entity.getGenero(),
-                entity.getDetallesPrenda() != null
-                        ? new java.util.HashMap<String, Object>(entity.getDetallesPrenda())
-                        : new java.util.HashMap<String, Object>(),
-                entity.getCamposPersonalizados() != null
-                        ? new java.util.HashMap<String, String>(entity.getCamposPersonalizados())
-                        : new java.util.HashMap<String, String>(),
-                entity.getCamposActivos() != null ? new ArrayList<String>(entity.getCamposActivos())
-                        : new ArrayList<String>(),
-                telasDom,
-                accesoriosDom,
-                logotiposDom,
-                (entity.getVinculos() != null)
-                        ? entity.getVinculos().stream()
-                                .map(v -> new SCOSPlantillaMaterialVinculo(v.getId(), null, v.getFieldName(),
-                                        v.getMaterialType(), v.getMaterialId(), null, v.getCantidad()))
-                                .collect(Collectors.toList())
-                        : new ArrayList<>(),
-                entity.getMoPrenda(),
-                entity.getMoCosturaSellada(),
-                entity.getMoAcolchado());
+                null);
     }
 
     private SCOSLogotipo mapLogotipoToDomain(SCOSLogotipoJpaEntity entity) {
         return new SCOSLogotipo(entity.getId(), entity.getTipo(), entity.getNombre(),
                 entity.getUbicacion(), entity.getColor(), entity.getTamano(),
                 entity.getCantidad(), entity.getPrecio());
-    }
-
-    private SCOTPrendaLista mapPrendaToDomain(SCOTPrendaListaJpaEntity entity) {
-        if (entity == null)
-            return null;
-        return new SCOTPrendaLista(
-                entity.getIdSCOTPrendaLista(),
-                entity.getNombre(),
-                entity.getCantidad(),
-                entity.getTalla(),
-                entity.getColor(),
-                entity.getProveedorReferencia(),
-                entity.getLinkReferencia(),
-                entity.getComposicion(),
-                entity.getPeso(),
-                entity.getObservaciones(),
-                new Money(entity.getPrecioUnitario() != null ? entity.getPrecioUnitario() : BigDecimal.ZERO,
-                        entity.getMonedaPrecioUnitario() != null ? entity.getMonedaPrecioUnitario() : "CLP"));
     }
 
     private SCOSLogotipoJpaEntity toLogotipoEntity(SCOSLogotipo domain) {
@@ -201,107 +125,8 @@ public class SolicitudCostosMapper {
         return entity;
     }
 
-    private SCOSPlantillaJpaEntity toPlantillaEntity(SCOSPlantilla domain) {
-        SCOSPlantillaJpaEntity entity = new SCOSPlantillaJpaEntity();
-        entity.setId(domain.getId());
-        entity.setNombre(domain.getNombre());
-        entity.setDescripcion(domain.getDescripcion());
-        entity.setNombrePrenda(domain.getNombrePrenda());
-        entity.setDetallesPrenda(domain.getDetallesPrenda() != null
-                ? new java.util.HashMap<String, Object>(domain.getDetallesPrenda())
-                : new java.util.HashMap<String, Object>());
-        entity.setCamposPersonalizados(domain.getCamposPersonalizados() != null
-                ? new java.util.HashMap<String, String>(domain.getCamposPersonalizados())
-                : new java.util.HashMap<String, String>());
-
-        if (domain.getPlantillaTelas() != null) {
-            entity.setPlantillaTelas(domain.getPlantillaTelas().stream()
-                    .map(t -> {
-                        backend.com.comercial.infrastructure.persistence.entity.PlantillaTela pt = new backend.com.comercial.infrastructure.persistence.entity.PlantillaTela();
-                        pt.setAplicacion(t.getAplicacion());
-                        pt.setNombre(t.getNombre());
-                        pt.setComposicion(t.getComposicion());
-                        pt.setColor(t.getColor());
-                        pt.setPeso(t.getPeso());
-                        pt.setUnidadMedida(t.getUnidadMedida());
-                        return pt;
-                    })
-                    .collect(Collectors.toList()));
-        }
-
-        if (domain.getPlantillaAccesorios() != null) {
-            entity.setPlantillaAccesorios(domain.getPlantillaAccesorios().stream()
-                    .map(a -> {
-                        backend.com.comercial.infrastructure.persistence.entity.PlantillaAccesorio pa = new backend.com.comercial.infrastructure.persistence.entity.PlantillaAccesorio();
-                        pa.setTipo(a.getTipo());
-                        pa.setNombreAccesorio(a.getNombreAccesorio());
-                        pa.setCantidad(a.getCantidad());
-                        return pa;
-                    })
-                    .collect(Collectors.toList()));
-        }
-
-        if (domain.getPlantillaLogotipos() != null) {
-            entity.setPlantillaLogotipos(domain.getPlantillaLogotipos().stream()
-                    .map(l -> new PlantillaLogotipo(l.getTipo(), l.getNombre(), l.getUbicacion(), l.getColor(),
-                            l.getTamano(), l.getCantidad(), l.getPrecio()))
-                    .collect(Collectors.toList()));
-        }
-
-        entity.setGenero(domain.getGenero());
-        if (domain.getCamposActivos() != null) {
-            entity.setCamposActivos(new ArrayList<>(domain.getCamposActivos()));
-        }
-
-        entity.setMoPrenda(domain.getMoPrenda());
-        entity.setMoCosturaSellada(domain.getMoCosturaSellada());
-        entity.setMoAcolchado(domain.getMoAcolchado());
-
-        if (domain.getVinculos() != null) {
-            entity.setVinculos(domain.getVinculos().stream()
-                    .map(v -> {
-                        SCOSPlantillaMaterialVinculoJpaEntity ve = new SCOSPlantillaMaterialVinculoJpaEntity();
-                        ve.setFieldName(v.getFieldName());
-                        ve.setMaterialType(v.getMaterialType());
-                        ve.setMaterialId(v.getMaterialId());
-                        ve.setCantidad(v.getCantidad());
-                        ve.setPlantilla(entity);
-                        return ve;
-                    })
-                    .collect(Collectors.toList()));
-        }
-
-        return entity;
-    }
-
-    private SCOTPrendaListaJpaEntity toPrendaEntity(SCOTPrendaLista domain) {
-        SCOTPrendaListaJpaEntity entity = new SCOTPrendaListaJpaEntity();
-        if (domain.getSCOTPrendaListaId() != null) {
-            entity.setIdSCOTPrendaLista(domain.getSCOTPrendaListaId());
-        }
-        entity.setNombre(domain.getNombre());
-        entity.setCantidad(domain.getCantidad());
-        entity.setTalla(domain.getTalla());
-        entity.setColor(domain.getColor());
-        entity.setProveedorReferencia(domain.getProveedorReferencia());
-        entity.setLinkReferencia(domain.getLinkReferencia());
-        entity.setComposicion(domain.getComposicion());
-        entity.setPeso(domain.getPeso());
-        entity.setObservaciones(domain.getObservaciones());
-
-        if (domain.getPrecioUnitario() != null) {
-            entity.setPrecioUnitario(domain.getPrecioUnitario().getAmount());
-            entity.setMonedaPrecioUnitario(domain.getPrecioUnitario().getCurrency());
-        } else {
-            entity.setPrecioUnitario(BigDecimal.ZERO);
-            entity.setMonedaPrecioUnitario("CLP");
-        }
-        return entity;
-    }
-
     public SolicitudCostosJpaEntity toEntity(SolicitudCostos domain) {
-        if (domain == null)
-            return null;
+        if (domain == null) return null;
 
         SolicitudCostosJpaEntity entity = new SolicitudCostosJpaEntity();
         if (domain.getIdSCOS() != null) {
@@ -367,9 +192,8 @@ public class SolicitudCostosMapper {
             entity.addTela(te);
         });
 
-        domain.getPlantillas().forEach(p -> entity.addPlantilla(toPlantillaEntity(p)));
-        domain.getProductos().forEach(prod -> entity.addPrenda(toPrendaEntity(prod)));
         domain.getLogotipos().forEach(l -> entity.addLogotipo(toLogotipoEntity(l)));
+
         domain.getAccesorios().forEach(a -> {
             SCOSAccesorioJpaEntity ae = new SCOSAccesorioJpaEntity();
             ae.setTipo(a.getTipo());

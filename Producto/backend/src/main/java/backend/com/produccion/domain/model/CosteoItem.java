@@ -7,6 +7,8 @@ import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 
+import backend.com.shared.domain.model.Articulo;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -19,4 +21,5 @@ public class CosteoItem {
     private BigDecimal consumo;
     private BigDecimal precioUnitario;
     private BigDecimal costoTotal;
+    private Articulo articulo;
 }

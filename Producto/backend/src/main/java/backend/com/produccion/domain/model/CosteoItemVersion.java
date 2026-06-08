@@ -1,10 +1,14 @@
 package backend.com.produccion.domain.model;
 
 import lombok.Getter;
+import lombok.Setter;
 
 import java.math.BigDecimal;
 
+import backend.com.shared.domain.model.Articulo;
+
 @Getter
+@Setter
 public class CosteoItemVersion {
     private Long idCosteoItemVersion;
     private Long costeoVersionId;
@@ -15,6 +19,7 @@ public class CosteoItemVersion {
     private BigDecimal consumo;
     private BigDecimal precioUnitario;
     private BigDecimal costoTotal;
+    private Articulo articulo;
 
     public CosteoItemVersion(Long idCosteoItemVersion, Long costeoVersionId, Long costeoItemId, String tipoInsumo,
             Long insumoId, String nombreInsumo, BigDecimal consumo, BigDecimal precioUnitario, BigDecimal costoTotal) {

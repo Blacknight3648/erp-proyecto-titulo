@@ -5,9 +5,11 @@ import backend.com.produccion.domain.model.CosteoVersion;
 import backend.com.produccion.infrastructure.persistence.entity.CosteoItemVersionJpaEntity;
 import backend.com.produccion.infrastructure.persistence.entity.CosteoJpaEntity;
 import backend.com.produccion.infrastructure.persistence.entity.CosteoVersionJpaEntity;
+import backend.com.shared.infrastructure.persistence.repository.ArticuloRepository;
 import backend.com.shared.valueobjects.Money;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
@@ -16,12 +18,15 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Component
+@RequiredArgsConstructor
 public class CosteoVersionMapper {
 
     private static final String DEFAULT_CURRENCY = "CLP";
 
     @PersistenceContext
     private EntityManager em;
+
+    private final ArticuloRepository articuloRepository;
 
     public CosteoVersion toDomain(CosteoVersionJpaEntity entity) {
         if (entity == null)
@@ -88,7 +93,7 @@ public class CosteoVersionMapper {
     }
 
     private CosteoItemVersion itemToDomain(CosteoItemVersionJpaEntity entity) {
-        return new CosteoItemVersion(
+        CosteoItemVersion domain = new CosteoItemVersion(
                 entity.getIdCosteoItemVersion(),
                 entity.getCosteoVersion() != null ? entity.getCosteoVersion().getIdCosteoVersion() : null,
                 entity.getCosteoItemId() != null ? entity.getCosteoItemId() : null,
@@ -98,6 +103,12 @@ public class CosteoVersionMapper {
                 entity.getConsumo(),
                 entity.getPrecioUnitario(),
                 entity.getCostoTotal());
+        // Lectura del artículo asociado al insumo (si existe)
+        if (entity.getInsumoId() != null) {
+            articuloRepository.findById(entity.getInsumoId().intValue())
+                    .ifPresent(domain::setArticulo);
+        }
+        return domain;
     }
 
     private CosteoItemVersionJpaEntity itemToJpaEntity(CosteoItemVersion domain) {

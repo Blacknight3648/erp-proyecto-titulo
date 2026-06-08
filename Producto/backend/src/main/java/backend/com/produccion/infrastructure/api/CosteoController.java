@@ -29,4 +29,9 @@ public class CosteoController {
     public CosteoDTO crear(@RequestBody CosteoDTO costeo) {
         return gestionarCosteoUseCase.registrarCosteo(costeo);
     }
+
+    @PutMapping("/{idCosteo}")
+    public ResponseEntity<CosteoDTO> actualizar(@PathVariable Long idCosteo, @RequestBody CosteoDTO costeo) {
+        return ResponseEntity.ok(gestionarCosteoUseCase.actualizarCosteo(idCosteo, costeo));
+    }
 }

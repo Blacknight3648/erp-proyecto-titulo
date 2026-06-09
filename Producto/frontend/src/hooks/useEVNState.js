@@ -152,6 +152,7 @@ export const useEVNState = (initialEval = null) => {
                 precioVentaNeto: it.precioUnitario || 0,
                 costeoId: it.costeoId || null,
                 solicitudCostosId: it.solicitudCostosId || null,
+                technicalSpecs: it.technicalSpecs || [],
             })));
 
             const hydratedOtrosCostos = { ...DEFAULT_OTROS_COSTOS };
@@ -186,6 +187,7 @@ export const useEVNState = (initialEval = null) => {
                     rendimiento:        tt.rendKmLt            ?? DEFAULT_OTROS_COSTOS.tomaTallaje.rendimiento,
                     cantRecintos:       tt.recintos            ?? 1,
                     observaciones:      tt.observaciones       ?? '',
+                    detalles:           tt.detalles            || []
                 };
             }
 
@@ -613,10 +615,10 @@ export const useEVNState = (initialEval = null) => {
                 tomaTallajeKmTotal:          otrosCostos.tomaTallaje.kmTotal            || null,
                 tomaTallajeRendKmLt:         otrosCostos.tomaTallaje.rendimiento        || null,
                 tomaTallajeRecintos:         otrosCostos.tomaTallaje.cantRecintos       || 1,
-                tomaTallajeDetalles:         [],  // cuadrícula tallas — pendiente
+                tomaTallajeDetalles:         otrosCostos.tomaTallaje.detalles           || [],
 
                 // Pegado de cinta — monto total + detalles [{clave, valor}] (3FN)
-                pegadoCinta: (otrosCostos.pegadoCinta || []).reduce((acc, c) => acc + (c.total || 0), 0),
+                pegadoCinta: totals.totalPC,
                 pegadoCintaDetalles: (otrosCostos.pegadoCinta || []).map(c => ({
                     clave: c.etiqueta || 'ITEM',
                     valor: JSON.stringify({ costoCinta: c.costoCinta, costoMO: c.costoMO, mtsCinta: c.mtsCinta })
@@ -636,7 +638,7 @@ export const useEVNState = (initialEval = null) => {
                     codigoInterno: item.codigoInterno || '',
                     codigoProveedor: item.codigoProveedor || '',
                     proveedorNombre: item.proveedor || '',
-                    technicalSpecs: [],  // solo specs dinámicas — los campos conocidos se envían explícitamente
+                    technicalSpecs: item.technicalSpecs || [],
                     cantidad: item.cant || 1,
                     precioUnitario: item.precioVentaNeto || 0,
                     costoUnitario: item.costoProducto || 0,

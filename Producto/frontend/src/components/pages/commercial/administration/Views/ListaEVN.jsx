@@ -21,12 +21,19 @@ const ESTADOS_ACTIVOS = new Set(['BORRADOR', 'EVALUACION', 'APROBADA']);
 const ESTADOS_CERRADOS = new Set(['ADJUDICADA', 'RECHAZADA', 'CANCELADA']);
 
 const ESTADO_STYLE = {
-    BORRADOR: 'bg-amber-100 text-amber-700',
-    EVALUACION: 'bg-amber-100 text-amber-700',
-    APROBADA: 'bg-indigo-100 text-indigo-700',
-    ADJUDICADA: 'bg-emerald-100 text-emerald-700',
-    RECHAZADA: 'bg-red-100 text-red-700',
-    CANCELADA: 'bg-gray-100 text-gray-500'
+    BORRADOR:   { badge: 'bg-amber-100 text-amber-700 border border-amber-200',   dot: 'bg-amber-500' },
+    EVALUACION: { badge: 'bg-sky-100 text-sky-700 border border-sky-200',           dot: 'bg-sky-500' },
+    APROBADA:   { badge: 'bg-indigo-100 text-indigo-700 border border-indigo-200', dot: 'bg-indigo-500' },
+    ADJUDICADA: { badge: 'bg-emerald-100 text-emerald-700 border border-emerald-200', dot: 'bg-emerald-500' },
+    RECHAZADA:  { badge: 'bg-red-100 text-red-700 border border-red-200',           dot: 'bg-red-500' },
+    CANCELADA:  { badge: 'bg-gray-100 text-gray-500 border border-gray-200',        dot: 'bg-gray-400' }
+};
+
+/** Normaliza el número de EVN eliminando prefijos duplicados y devuelve solo el número entero */
+const formatNumeroEVN = (raw) => {
+    if (!raw && raw !== 0) return '—';
+    const s = String(raw).trim().replace(/^EVN-?/i, '');
+    return s || '—';
 };
 
 export default function ListaEVN({ onNueva, onEditar, onVer }) {
@@ -157,7 +164,21 @@ export default function ListaEVN({ onNueva, onEditar, onVer }) {
                     {filteredEvaluations.map((ev) => {
                         const estado = ev.estado || 'BORRADOR';
                         const puedeAdjudicar = ESTADOS_ACTIVOS.has(estado);
-                        const estadoColor = ESTADO_STYLE[estado] || 'bg-gray-100 text-gray-500';
+                        const estadoStyle = ESTADO_STYLE[estado] || ESTADO_STYLE.CANCELADA;
+
+                        // Normalizar monto y margen desde los campos que el backend realmente devuelve
+                        const montoTotal = ev.montoTotal ?? ev.totalNeto ?? ev.totalVenta ?? 0;
+                        const margenPorc = ev.margenPorc ?? ev.margenGanancia ?? null;
+                        const margenNum  = margenPorc !== null ? parseFloat(margenPorc) : null;
+                        const margenColor = margenNum === null ? 'text-gray-400'
+                            : margenNum >= 25 ? 'text-emerald-600'
+                            : margenNum >= 15 ? 'text-amber-600'
+                            : 'text-red-600';
+                        const margenBg = margenNum === null ? 'bg-gray-50'
+                            : margenNum >= 25 ? 'bg-emerald-50'
+                            : margenNum >= 15 ? 'bg-amber-50'
+                            : 'bg-red-50';
+
                         return (
                             <div
                                 key={ev.evaluacionNegocioId}
@@ -165,9 +186,10 @@ export default function ListaEVN({ onNueva, onEditar, onVer }) {
                             >
                                 <div className="flex justify-between items-start mb-5">
                                     <span className="text-[11px] font-black text-indigo-600 bg-indigo-50 px-2.5 py-1 rounded-xl shadow-sm border border-indigo-100 uppercase tracking-widest">
-                                        EVN-{(ev.numeroEvn || ev.numero || '').toString().replace('EVN-', '')}
+                                        EVN-{formatNumeroEVN(ev.numeroEvn ?? ev.numero)}
                                     </span>
-                                    <span className={`px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest ${estadoColor}`}>
+                                    <span className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest ${estadoStyle.badge}`}>
+                                        <span className={`w-1.5 h-1.5 rounded-full ${estadoStyle.dot}`} />
                                         {estado}
                                     </span>
                                 </div>
@@ -182,13 +204,17 @@ export default function ListaEVN({ onNueva, onEditar, onVer }) {
                                 </div>
 
                                 <div className="grid grid-cols-2 gap-3 mb-5">
-                                    <div className="bg-gray-50 px-3 py-2.5 rounded-2xl">
-                                        <p className="text-[9px] font-black text-gray-400 uppercase mb-0.5">Monto Total</p>
-                                        <p className="text-sm font-black text-gray-800">${(ev.montoTotal || 0).toLocaleString('es-CL')}</p>
+                                    <div className="bg-slate-800 px-3 py-3 rounded-2xl">
+                                        <p className="text-[9px] font-black text-slate-400 uppercase mb-1">Monto Total Venta</p>
+                                        <p className="text-base font-black text-white tabular-nums">
+                                            {montoTotal > 0 ? `$${montoTotal.toLocaleString('es-CL')}` : <span className="text-slate-500 text-xs">Sin cálculo</span>}
+                                        </p>
                                     </div>
-                                    <div className="bg-indigo-50 px-3 py-2.5 rounded-2xl">
-                                        <p className="text-[9px] font-black text-indigo-400 uppercase mb-0.5">Margen</p>
-                                        <p className="text-sm font-black text-indigo-600">{ev.margenGanancia || 0}%</p>
+                                    <div className={`${margenBg} px-3 py-3 rounded-2xl`}>
+                                        <p className={`text-[9px] font-black uppercase mb-1 ${margenColor}`}>Margen s/Venta</p>
+                                        <p className={`text-base font-black tabular-nums ${margenColor}`}>
+                                            {margenNum !== null ? `${margenNum.toFixed(1)}%` : <span className="text-gray-400 text-xs">—</span>}
+                                        </p>
                                     </div>
                                 </div>
 
@@ -255,7 +281,7 @@ export default function ListaEVN({ onNueva, onEditar, onVer }) {
             <FirmaAprobacionModal
                 open={firmaModal.open}
                 title="Adjudicar Evaluación"
-                description={firmaModal.evn ? `EVN-${(firmaModal.evn.numeroEvn || firmaModal.evn.numero || '').toString().replace('EVN-', '')} — ${firmaModal.evn.clienteNombre || ''}` : ''}
+                description={firmaModal.evn ? `EVN-${formatNumeroEVN(firmaModal.evn.numeroEvn ?? firmaModal.evn.numero)} — ${firmaModal.evn.clienteNombre || ''}` : ''}
                 accion="Adjudicar y firmar"
                 accentColor="emerald"
                 defaultAprobador={user?.name || ''}

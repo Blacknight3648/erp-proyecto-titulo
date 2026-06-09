@@ -395,7 +395,7 @@ export default function DetalleEVN({ initialEval, onBack, isReadOnly }) {
                                         {totals.itemsConCostos.reduce((sum, item) => sum + (item.cant || 0), 0)}
                                     </td>
                                     <td colSpan="2" className="border-r border-slate-800"></td>
-                                    <td className="px-4 py-5 border-r border-slate-800 text-sm font-black text-green-450 bg-slate-950/20">
+                                    <td className="px-4 py-5 border-r border-slate-800 text-base font-black text-green-400 bg-slate-950/20">
                                         ${(totals.subtotalVenta || 0).toLocaleString('es-CL')}
                                     </td>
                                     <td colSpan="9" className="border-r border-slate-800"></td>
@@ -415,11 +415,14 @@ export default function DetalleEVN({ initialEval, onBack, isReadOnly }) {
                                         ${(totals.prorrateoLineal || 0).toLocaleString('es-CL', { maximumFractionDigits: 0 })}/u
                                     </td>
                                     <td colSpan="1" className="border-r border-slate-800"></td>
-                                    <td className="px-4 py-5 border-r border-slate-800 bg-slate-950/50 text-sm font-black text-white">
+                                    <td className="px-4 py-5 border-r border-slate-800 bg-slate-950/50 text-base font-black text-white">
                                         ${(totals.totalCostoGeneral || 0).toLocaleString('es-CL')}
                                     </td>
-                                    <td className="px-4 py-5 bg-orange-950/40 text-center text-orange-400 font-black border-l border-slate-800" colSpan="3">
-                                        MARGEN: {totals.margenPorc}% — P_NETO: ${(totals.margenPesos || 0).toLocaleString('es-CL')}
+                                    <td className="px-4 py-5 bg-orange-950/40 text-center font-black border-l border-slate-800" colSpan="3">
+                                        <div className="flex flex-col gap-0.5">
+                                            <span className="text-orange-300 text-xs">MARGEN: <span className="text-orange-200 text-base">{totals.margenPorc}%</span></span>
+                                            <span className="text-orange-400 text-xs">NETO: <span className="text-white font-black">${(totals.margenPesos || 0).toLocaleString('es-CL')}</span></span>
+                                        </div>
                                     </td>
                                     <td className="bg-indigo-650 hover:bg-indigo-700 flex items-center justify-center h-full transition-all">
                                         <button

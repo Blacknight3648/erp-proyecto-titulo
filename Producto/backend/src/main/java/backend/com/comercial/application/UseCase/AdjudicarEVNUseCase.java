@@ -63,14 +63,19 @@ public class AdjudicarEVNUseCase {
                 itemNv.setPrecioUnitario(itemEvn.getPrecioUnitario().getAmount());
                 itemNv.setItemType(itemEvn.getTipoItem());
 
-                // Mapear especificaciones técnicas desde el map
+                // Mapear campos descriptivos del ítem EVN → NV
+                itemNv.setModelo(itemEvn.getModelo());
+                itemNv.setTela(itemEvn.getTela());
+                itemNv.setComposicion(itemEvn.getComposicion());
+                itemNv.setGenero(itemEvn.getGenero());
+                // color y talla vienen de technicalSpecs si están presentes como specs dinámicas
                 if (itemEvn.getTechnicalSpecs() != null) {
-                    itemNv.setModelo(itemEvn.getTechnicalSpecs().get("modelo"));
-                    itemNv.setTela(itemEvn.getTechnicalSpecs().get("tela"));
-                    itemNv.setComposicion(itemEvn.getTechnicalSpecs().get("composicion"));
-                    itemNv.setColor(itemEvn.getTechnicalSpecs().get("color"));
-                    itemNv.setGenero(itemEvn.getTechnicalSpecs().get("genero"));
-                    itemNv.setTalla(itemEvn.getTechnicalSpecs().get("talla"));
+                    itemEvn.getTechnicalSpecs().stream()
+                            .filter(s -> "color".equals(s.getClave()))
+                            .findFirst().ifPresent(s -> itemNv.setColor(s.getValor()));
+                    itemEvn.getTechnicalSpecs().stream()
+                            .filter(s -> "talla".equals(s.getClave()))
+                            .findFirst().ifPresent(s -> itemNv.setTalla(s.getValor()));
                 }
 
                 itemNv.setGeneraOt(true); // Por defecto para Pre-NV

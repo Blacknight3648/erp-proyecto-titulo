@@ -86,9 +86,11 @@ public class AprobarEVNUseCase {
             if (item.getPrecioUnitario() == null) {
                 throw new EVNBusinessException("Todos los ítems deben tener precio unitario");
             }
-            if (item.getTechnicalSpecs() == null || item.getTechnicalSpecs().isEmpty()) {
+            boolean sinDescriptor = (item.getDescripcion() == null || item.getDescripcion().isBlank())
+                    && (item.getModelo() == null || item.getModelo().isBlank());
+            if (sinDescriptor) {
                 throw new EVNBusinessException(
-                        "Cada ítem debe tener su ficha técnica completa antes de aprobar");
+                        "Cada ítem debe tener al menos descripción o modelo antes de aprobar");
             }
         }
     }

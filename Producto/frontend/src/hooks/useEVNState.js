@@ -583,19 +583,21 @@ export const useEVNState = (initialEval = null) => {
         const hasCliente = solicitud.clienteId || initialEval?.clienteId || solicitud.clienteNombre || initialEval?.clienteNombre;
 
         if (!hasCliente) {
-            toast.error("Debe seleccionar un cliente para generar la propuesta.");
+            toast.error("Debe seleccionar un cliente para guardar la propuesta.");
             return;
         }
 
         setIsSaving(true);
+        const evnId = initialEval?.evaluacionNegocioId || initialEval?.id || null;
+        const isUpdate = !!evnId;
+
         try {
             const payload = {
-                // numero: Math.floor(10000 + Math.random() * 90000), // Eliminado: El backend genera el correlativo real
                 clienteId: parseId(solicitud.clienteId || initialEval?.clienteId),
                 vendedorId: parseId(solicitud.vendedorId || initialEval?.vendedorId) || user?.id || 1,
                 clienteNombre: solicitud.clienteNombre || initialEval?.clienteNombre || '',
                 referencia: evalData.referencia || '',
-                estado: 'BORRADOR',
+                estado: initialEval?.estado || 'BORRADOR',
                 porcentajeComision: otrosCostos.porcentajeComision || 0,
                 garantiaSeriedad: otrosCostos.garantiaSeriedad || 0,
                 garantiaFielCumplimiento: otrosCostos.garantiaFielCumplimiento || 0,
@@ -648,9 +650,15 @@ export const useEVNState = (initialEval = null) => {
                     tipoItem: item.tipo || 'SC',
                 })),
             };
-            await EvaluacionNegocioService.save(payload);
-            resetState();
-            toast.success("Propuesta generada correctamente");
+
+            if (isUpdate) {
+                await EvaluacionNegocioService.update(evnId, payload);
+                toast.success("EVN actualizada correctamente");
+            } else {
+                await EvaluacionNegocioService.save(payload);
+                resetState();
+                toast.success("Propuesta creada correctamente");
+            }
             return true;
         } catch (error) {
             console.error("Error al guardar la propuesta:", error);

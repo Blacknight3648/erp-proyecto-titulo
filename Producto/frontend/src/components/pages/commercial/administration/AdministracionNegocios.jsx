@@ -1,36 +1,41 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import ListaEVN from './Views/ListaEVN';
 import DetalleEVN from './Views/DetalleEVN';
 
 export default function AdministracionNegocios() {
     const [view, setView] = useState('list');
     const [selectedEval, setSelectedEval] = useState(null);
-    const [isReadOnly, setIsReadOnly] = useState(false);
+    const [mode, setMode] = useState('create'); // 'create' | 'edit' | 'view'
+    const [listKey, setListKey] = useState(0); // forces ListaEVN to reload
 
-    const handleAbrir = (ev = null, readOnly = false) => {
+    const handleAbrir = useCallback((ev = null, modeParam = 'create') => {
         setSelectedEval(ev);
-        setIsReadOnly(readOnly);
+        setMode(modeParam);
         setView('detail');
-    };
+    }, []);
 
-    const handleVolver = () => {
+    const handleVolver = useCallback((shouldRefresh = false) => {
         setSelectedEval(null);
         setView('list');
-    };
+        if (shouldRefresh) {
+            setListKey(prev => prev + 1); // remount ListaEVN → triggers loadEvaluations()
+        }
+    }, []);
 
     return (
         <div className="administracion-negocios-container">
             {view === 'list' ? (
                 <ListaEVN
-                    onNueva={() => handleAbrir(null, false)}
-                    onEditar={(ev) => handleAbrir(ev, false)}
-                    onVer={(ev) => handleAbrir(ev, true)}
+                    key={listKey}
+                    onNueva={() => handleAbrir(null, 'create')}
+                    onEditar={(ev) => handleAbrir(ev, 'edit')}
+                    onVer={(ev) => handleAbrir(ev, 'view')}
                 />
             ) : (
                 <DetalleEVN
                     initialEval={selectedEval}
                     onBack={handleVolver}
-                    isReadOnly={isReadOnly}
+                    mode={mode}
                 />
             )}
         </div>

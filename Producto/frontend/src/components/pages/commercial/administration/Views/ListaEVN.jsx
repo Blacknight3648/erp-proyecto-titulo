@@ -104,10 +104,10 @@ export default function ListaEVN({ onNueva, onEditar, onVer }) {
     };
 
     return (
-        <div className="min-h-screen bg-gray-50/50 p-8 animate-in fade-in duration-700">
+        <div className="min-h-screen bg-gray-50/50 px-4 py-6 md:p-8 animate-in fade-in duration-700">
             <div className="max-w-[1600px] mx-auto">
                 {/* Header */}
-                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-10">
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8 md:mb-10">
                     <div>
                         <div className="flex items-center space-x-3 mb-2">
                             <div className="w-10 h-10 bg-indigo-600 rounded-2xl flex items-center justify-center shadow-lg shadow-indigo-200">
@@ -148,7 +148,7 @@ export default function ListaEVN({ onNueva, onEditar, onVer }) {
                 </div>
 
                 {/* Buscador */}
-                <div className="mb-8 bg-white p-4 rounded-[2.5rem] shadow-sm border border-gray-100 relative">
+                <div className="mb-6 md:mb-8 bg-white p-4 rounded-[2.5rem] shadow-sm border border-gray-100 relative">
                     <Search className="absolute left-7 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                     <input
                         type="text"

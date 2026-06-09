@@ -28,7 +28,8 @@
       "Bash(Get-ChildItem -Recurse -Directory)",
       "Bash(Select-Object FullName)",
       "PowerShell(cd \"c:\\\\Users\\\\Ejecutivo2.ANTUAN\\\\Desktop\\\\ANTUAN SA - TRABAJO TI\\\\erp-proyecto-titulo\\\\Producto\"; Get-ChildItem -Recurse -Directory | Where-Object {$_.Name -match '\\(src|components|pages|views|frontend\\)'} | Select-Object -First 30 FullName)",
-      "PowerShell(cd \"c:\\\\Users\\\\Ejecutivo2.ANTUAN\\\\Desktop\\\\ANTUAN SA - TRABAJO TI\\\\erp-proyecto-titulo\\\\Producto\\\\frontend\\\\src\"; Get-ChildItem -Recurse -Path \"components\\\\pages\\\\commercial\\\\administration\" | Select-Object -Property FullName | ForEach-Object { $_.FullName.Replace\\(\\(Get-Location\\).Path, \".\"\\) })"
+      "PowerShell(cd \"c:\\\\Users\\\\Ejecutivo2.ANTUAN\\\\Desktop\\\\ANTUAN SA - TRABAJO TI\\\\erp-proyecto-titulo\\\\Producto\\\\frontend\\\\src\"; Get-ChildItem -Recurse -Path \"components\\\\pages\\\\commercial\\\\administration\" | Select-Object -Property FullName | ForEach-Object { $_.FullName.Replace\\(\\(Get-Location\\).Path, \".\"\\) })",
+      "Bash(npm run *)"
     ],
     "additionalDirectories": [
       "c:\\Users\\Ejecutivo2.ANTUAN\\Desktop\\ANTUAN SA - TRABAJO TI\\erp-proyecto-titulo\\Producto\\backend\\src\\main\\java\\backend\\com\\maestros\\dto"

@@ -99,11 +99,13 @@ function CampoLabel({ children, color = 'gray' }) {
 const inputCls = "w-full px-4 py-2.5 bg-white border border-gray-200 rounded-xl text-[11px] font-bold text-gray-700 focus:ring-2 focus:ring-indigo-200 focus:border-indigo-300 transition-all outline-none";
 const selectCls = "w-full px-4 py-2.5 bg-white border border-gray-200 rounded-xl text-[11px] font-bold text-gray-700 focus:ring-2 focus:ring-indigo-200 focus:border-indigo-300 transition-all outline-none cursor-pointer";
 
-export default function EvaluacionForm({ data, onChange, porcentajeComision, onComisionChange }) {
+export default function EvaluacionForm({ data, onChange, porcentajeComision, onComisionChange, disabled = false }) {
     const c = data.condiciones || {};
 
-    const set = (field, value) =>
+    const set = (field, value) => {
+        if (disabled) return;
         onChange({ ...data, condiciones: { ...c, [field]: value } });
+    };
 
     return (
         <div className="space-y-6">
@@ -121,7 +123,8 @@ export default function EvaluacionForm({ data, onChange, porcentajeComision, onC
                             type="range" min="0" max="100" step="5"
                             value={c.anticipo ?? 50}
                             onChange={(e) => set('anticipo', parseInt(e.target.value))}
-                            className="w-full h-1.5 bg-indigo-100 rounded-lg appearance-none cursor-pointer accent-indigo-600"
+                            className="w-full h-1.5 bg-indigo-100 rounded-lg appearance-none cursor-pointer accent-indigo-600 disabled:opacity-60 disabled:cursor-default"
+                            disabled={disabled}
                         />
                         <div className="mt-3 bg-white border border-indigo-100 rounded-xl px-4 py-2.5 flex justify-between items-center">
                             <span className="text-[10px] font-bold text-gray-400 uppercase">Saldo a Entrega</span>
@@ -130,7 +133,7 @@ export default function EvaluacionForm({ data, onChange, porcentajeComision, onC
                     </div>
                     <div>
                         <CampoLabel color="indigo">Forma de Pago</CampoLabel>
-                        <select className={selectCls} value={c.formaPago ?? ''} onChange={(e) => set('formaPago', e.target.value)}>
+                        <select className={selectCls} value={c.formaPago ?? ''} onChange={(e) => set('formaPago', e.target.value)} disabled={disabled}>
                             <option value="">Seleccionar...</option>
                             {OPCIONES_FORMA_PAGO.map(o => <option key={o} value={o}>{o}</option>)}
                         </select>
@@ -141,7 +144,7 @@ export default function EvaluacionForm({ data, onChange, porcentajeComision, onC
                 <SeccionCard color="blue" icon={Truck} titulo="Logística y Distribución">
                     <div>
                         <CampoLabel color="blue">Condición de Flete</CampoLabel>
-                        <select className={selectCls} value={c.flete ?? ''} onChange={(e) => set('flete', e.target.value)}>
+                        <select className={selectCls} value={c.flete ?? ''} onChange={(e) => set('flete', e.target.value)} disabled={disabled}>
                             <option value="Cliente">Flete por cuenta del Cliente</option>
                             <option value="Incluido">Flete Incluido en el precio</option>
                             <option value="Por cobrar">Envío por cobrar (Starken / Chileexpress)</option>
@@ -149,14 +152,14 @@ export default function EvaluacionForm({ data, onChange, porcentajeComision, onC
                     </div>
                     <div>
                         <CampoLabel color="blue">Lugar de Entrega</CampoLabel>
-                        <select className={selectCls} value={c.lugarEntrega ?? ''} onChange={(e) => set('lugarEntrega', e.target.value)}>
+                        <select className={selectCls} value={c.lugarEntrega ?? ''} onChange={(e) => set('lugarEntrega', e.target.value)} disabled={disabled}>
                             <option value="">Seleccionar...</option>
                             {OPCIONES_LUGAR_ENTREGA.map(o => <option key={o} value={o}>{o}</option>)}
                         </select>
                     </div>
                     <div>
                         <CampoLabel color="blue">Validez de la Oferta</CampoLabel>
-                        <select className={selectCls} value={c.validezOferta ?? ''} onChange={(e) => set('validezOferta', e.target.value)}>
+                        <select className={selectCls} value={c.validezOferta ?? ''} onChange={(e) => set('validezOferta', e.target.value)} disabled={disabled}>
                             <option value="">Seleccionar...</option>
                             {OPCIONES_VALIDEZ.map(o => <option key={o} value={o}>{o}</option>)}
                         </select>
@@ -174,6 +177,7 @@ export default function EvaluacionForm({ data, onChange, porcentajeComision, onC
                                 className={`${inputCls} pl-10`}
                                 value={c.plazoEntrega ?? ''}
                                 onChange={(e) => set('plazoEntrega', e.target.value)}
+                                disabled={disabled}
                             />
                         </div>
                     </div>
@@ -187,6 +191,7 @@ export default function EvaluacionForm({ data, onChange, porcentajeComision, onC
                                 placeholder="Ej: 30 días de corrido..."
                                 value={c.garantia ?? ''}
                                 onChange={(e) => set('garantia', e.target.value)}
+                                disabled={disabled}
                             />
                         </div>
                     </div>
@@ -203,6 +208,7 @@ export default function EvaluacionForm({ data, onChange, porcentajeComision, onC
                                     placeholder="5"
                                     value={porcentajeComision !== undefined ? (porcentajeComision * 100).toFixed(1) : ''}
                                     onChange={(e) => onComisionChange(parseFloat(e.target.value || 0) / 100)}
+                                    disabled={disabled}
                                 />
                             </div>
                         </div>

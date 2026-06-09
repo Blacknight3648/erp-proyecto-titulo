@@ -160,8 +160,8 @@ ALTER TABLE solicitudes_costos
     ADD CONSTRAINT fk_scos_vendedor
     FOREIGN KEY (vendedor_id) REFERENCES vendedores (id_vendedor);
 
-ALTER TABLE solicitudes_costos
-    ADD CONSTRAINT fk_scos_especificacion
+ALTER TABLE solicitudes_cotizacion
+    ADD CONSTRAINT fk_scot_especificacion
     FOREIGN KEY (especificacion_tecnica_id) REFERENCES especificacion_tecnica (especificacion_tecnica_id);
 
 ALTER TABLE especificacion_tecnica
@@ -171,10 +171,6 @@ ALTER TABLE especificacion_tecnica
 ALTER TABLE scos_telas
     ADD CONSTRAINT fk_scostelas_solicitud
     FOREIGN KEY (solicitud_costos_id) REFERENCES solicitudes_costos (idscos) ON DELETE CASCADE;
-
-ALTER TABLE scos_telas
-    ADD CONSTRAINT fk_scostelas_tela
-    FOREIGN KEY (tela_id) REFERENCES tela (id_tela);
 
 ALTER TABLE scos_telas
     ADD CONSTRAINT fk_scostelas_proveedor

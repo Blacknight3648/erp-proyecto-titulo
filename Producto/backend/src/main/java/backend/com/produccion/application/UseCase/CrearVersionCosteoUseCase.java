@@ -66,7 +66,7 @@ public class CrearVersionCosteoUseCase {
                                 null,
                                 origen.getIdCosteoItem(),
                                 origen.getTipoInsumo(),
-                                origen.getInsumoId(),
+                                origen.getArticuloId(),
                                 origen.getNombreInsumo(),
                                 origen.getConsumo(),
                                 origen.getPrecioUnitario(),

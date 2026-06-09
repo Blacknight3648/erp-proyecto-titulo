@@ -30,7 +30,7 @@ public class CrearOrdenProduccionUseCase {
     private final OrdenTrabajoRepository otRepository;
     private final CrearVersionCosteoUseCase crearVersionCosteoUseCase;
 
-    @Transactional
+  @Transactional
     public OrdenProduccion execute(NotaVenta notaVenta) {
         if (notaVenta == null)
             throw new ValidationException("La Nota de Venta no puede ser nula");
@@ -44,9 +44,18 @@ public class CrearOrdenProduccionUseCase {
                     .orElseThrow(() -> new EntityNotFoundException(
                             "Evaluación de Negocio no encontrada: " + notaVenta.getEvaluacionNegocioId()));
 
-            if (evn.getCosteoId() != null) {
-                Costeo costeo = costeoRepository.findById(evn.getCosteoId())
-                        .orElseThrow(() -> new EntityNotFoundException("Costeo no encontrado: " + evn.getCosteoId()));
+            // El costeo ahora vive en los ítems tipo OP de la EVN. Como se hace 1 costeo
+            // por OP, tomamos el primer ítem OP con costeo vinculado. findFirst() devuelve
+            // el valor fuera del lambda, evitando el problema de captura effectively-final.
+            Long costeoIdVinculado = evn.getItems().stream()
+                    .filter(i -> "OP".equalsIgnoreCase(i.getTipoItem()) && i.getCosteoId() != null)
+                    .map(backend.com.comercial.domain.model.ItemEVN::getCosteoId)
+                    .findFirst()
+                    .orElse(null);
+
+            if (costeoIdVinculado != null) {
+                Costeo costeo = costeoRepository.findById(costeoIdVinculado)
+                        .orElseThrow(() -> new EntityNotFoundException("Costeo no encontrado: " + costeoIdVinculado));
 
                 if (costeo.getNumeroCosteo() != null) {
                     numeroOP = costeo.getNumeroCosteo();
@@ -76,7 +85,7 @@ public class CrearOrdenProduccionUseCase {
                 if ("OP".equalsIgnoreCase(itemNV.getTipoItem())) {
                     OrdenProduccionItem itemOP = new OrdenProduccionItem(
                             null,
-                            itemNV.getProductoId(),
+                            itemNV.getArticuloId(),
                             itemNV.getNroItem(),
                             itemNV.getModelo(),
                             itemNV.getTela(),

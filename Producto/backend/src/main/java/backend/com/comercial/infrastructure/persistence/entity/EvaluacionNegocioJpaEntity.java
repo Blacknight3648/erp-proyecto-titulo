@@ -44,12 +44,6 @@ public class EvaluacionNegocioJpaEntity extends AuditableJpaEntity {
     @Column(name = "fecha_evaluacion", nullable = false)
     private LocalDate fechaEvaluacion;
 
-    @Column(name = "costeo_id")
-    private Long costeoId;
-
-    @Column(name = "solicitud_cotizacion_id")
-    private Long solicitudCotizacionId;
-
     @Column(name = "porcentaje_comision", precision = 5, scale = 2)
     private java.math.BigDecimal porcentajeComision;
 

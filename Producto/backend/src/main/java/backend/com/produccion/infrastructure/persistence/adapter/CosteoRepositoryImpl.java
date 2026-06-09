@@ -35,6 +35,13 @@ public class CosteoRepositoryImpl implements CosteoRepository {
     }
 
     @Override
+    public java.util.List<Costeo> findAll() {
+        return jpaRepository.findAll().stream()
+                .map(mapper::toDomain)
+                .collect(java.util.stream.Collectors.toList());
+    }
+
+    @Override
     public Optional<Costeo> findBySolicitudCostosId(Long solicitudCostosId) {
         if (solicitudCostosId == null)
             return Optional.empty();

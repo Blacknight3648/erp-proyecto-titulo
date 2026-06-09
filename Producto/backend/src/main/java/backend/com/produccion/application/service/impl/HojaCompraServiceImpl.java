@@ -92,7 +92,7 @@ public class HojaCompraServiceImpl implements HojaCompraService {
                 .idHCItem(item.getIdHCItem())
                 .hcId(item.getHcId())
                 .tipoInsumo(item.getTipoInsumo())
-                .insumoId(item.getInsumoId())
+                .articuloId(item.getArticuloId())
                 .nombreInsumo(item.getNombreInsumo())
                 .consumoUnitario(item.getConsumoUnitario())
                 .cantidadOP(item.getCantidadOP())

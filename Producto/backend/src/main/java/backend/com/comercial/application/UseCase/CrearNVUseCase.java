@@ -58,7 +58,7 @@ public class CrearNVUseCase {
 
                 ItemNV item = new ItemNV(
                         i + 1,
-                        dto.getProductoId(),
+                        dto.getArticuloId(),
                         dto.getModelo(),
                         dto.getTela(),
                         dto.getComposicion(),

@@ -13,4 +13,7 @@ public interface EvaluacionNegocioRepository {
     Optional<EvaluacionNegocio> findByNumero(DocumentNumber numero);
 
     java.util.List<EvaluacionNegocio> findAll();
+
+    /** IDs de costeos ya vinculados a algún ítem de cualquier EVN. */
+    java.util.List<Long> findLinkedCosteoIds();
 }

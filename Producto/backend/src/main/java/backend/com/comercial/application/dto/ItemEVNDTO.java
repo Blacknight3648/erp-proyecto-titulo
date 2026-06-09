@@ -1,15 +1,18 @@
 package backend.com.comercial.application.dto;
 
+import backend.com.comercial.domain.model.ItemEspecificacion;
 import lombok.Data;
+
 import java.math.BigDecimal;
+import java.util.List;
 
 @Data
 public class ItemEVNDTO {
     // IDs de relaciones (opcionales)
-    private Long productoId;
+    private Integer articuloId;
     private Long proveedorId;
 
-    // Datos descriptivos del ítem (enviados desde el frontend)
+    // Datos descriptivos del ítem
     private Integer nroItem;
     private String descripcion;
     private String modelo;
@@ -32,5 +35,11 @@ public class ItemEVNDTO {
 
     // Clasificación
     private String tipoItem;
-    private java.util.Map<String, String> technicalSpecs;
+
+    // Especificaciones verdaderamente dinámicas (no conocidas de antemano)
+    private List<ItemEspecificacion> technicalSpecs;
+
+    // Vínculo con costeo/SCOS — solo si tipoItem = "OP"
+    private Long costeoId;
+    private Long solicitudCostosId;
 }

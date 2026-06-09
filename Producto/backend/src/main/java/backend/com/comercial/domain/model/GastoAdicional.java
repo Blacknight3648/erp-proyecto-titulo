@@ -8,7 +8,7 @@ public class GastoAdicional {
     private Long GAid;
     private TipoGastoAdicional tipoGasto;
     private Money monto;
-    private String metadataJson;
+    private java.util.List<GastoAdicionalDetalle> detalles = new java.util.ArrayList<>();
 
     public enum TipoGastoAdicional {
         FLETE,
@@ -31,10 +31,16 @@ public class GastoAdicional {
         this(tipoGasto, monto, null);
     }
 
-    public GastoAdicional(TipoGastoAdicional tipoGasto, Money monto, String metadataJson) {
+    public GastoAdicional(TipoGastoAdicional tipoGasto, Money monto, java.util.List<GastoAdicionalDetalle> detalles) {
         this.tipoGasto = tipoGasto;
         this.monto = monto;
-        this.metadataJson = metadataJson;
+        if (detalles != null) {
+            this.detalles.addAll(detalles);
+        }
+    }
+
+    public void addDetalle(GastoAdicionalDetalle detalle) {
+        this.detalles.add(detalle);
     }
 
     public void setMonto(Money monto) {

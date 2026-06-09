@@ -9,7 +9,7 @@ import backend.com.comercial.infrastructure.persistence.entity.NotaVentaItemTall
 import backend.com.comercial.infrastructure.persistence.entity.NotaVentaJpaEntity;
 import backend.com.gestionUsuarios.cliente.infrastructure.persistence.entity.ClienteJpaEntity;
 import backend.com.gestionUsuarios.vendedor.infrastructure.persistence.entity.VendedorJpaEntity;
-import backend.com.shared.infrastructure.persistence.entity.ProductoJpaEntity;
+import backend.com.shared.infrastructure.persistence.entity.ArticuloJpaEntity;
 import backend.com.gestionUsuarios.proveedor.infrastructure.persistence.entity.ProveedorJpaEntity;
 import backend.com.shared.valueobjects.DocumentNumber;
 import backend.com.shared.valueobjects.Money;
@@ -46,7 +46,7 @@ public class NotaVentaMapper {
             return null;
         return new ItemNV(
                 entity.getNroItem(),
-                entity.getProducto() != null ? entity.getProducto().getProductoId() : null,
+                entity.getArticulo() != null ? entity.getArticulo().getIdArticulo() : null,
                 entity.getModelo(),
                 entity.getTela(),
                 entity.getComposicion(),
@@ -116,10 +116,10 @@ public class NotaVentaMapper {
         domain.getItems().forEach(itemDomain -> {
             NotaVentaItemJpaEntity itemEntity = new NotaVentaItemJpaEntity();
             itemEntity.setNroItem(itemDomain.getNroItem());
-            if (itemDomain.getProductoId() != null) {
-                ProductoJpaEntity p = new ProductoJpaEntity();
-                p.setProductoId(itemDomain.getProductoId());
-                itemEntity.setProducto(p);
+            if (itemDomain.getArticuloId() != null) {
+                ArticuloJpaEntity a = new ArticuloJpaEntity();
+                a.setIdArticulo(itemDomain.getArticuloId());
+                itemEntity.setArticulo(a);
             }
             itemEntity.setModelo(itemDomain.getModelo());
             itemEntity.setTela(itemDomain.getTela());

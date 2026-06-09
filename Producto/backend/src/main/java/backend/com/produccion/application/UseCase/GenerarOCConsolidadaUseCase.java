@@ -70,10 +70,10 @@ public class GenerarOCConsolidadaUseCase {
             }
         }
 
-        // Agrupar por (tipoInsumo, insumoId)
+        // Agrupar por (tipoInsumo, articuloId)
         Map<String, List<HojaCompraItem>> agrupados = new LinkedHashMap<>();
         for (HojaCompraItem item : itemsSeleccionados) {
-            String key = item.getTipoInsumo() + "|" + item.getInsumoId();
+            String key = item.getTipoInsumo() + "|" + item.getArticuloId();
             agrupados.computeIfAbsent(key, k -> new ArrayList<>()).add(item);
         }
 
@@ -111,7 +111,7 @@ public class GenerarOCConsolidadaUseCase {
             OrdenCompraItem ocItem = new OrdenCompraItem(
                     null, null,
                     ref.getTipoInsumo(),
-                    ref.getInsumoId(),
+                    ref.getArticuloId(),
                     ref.getNombreInsumo(),
                     cantidadRequerida,
                     cantidadStock,

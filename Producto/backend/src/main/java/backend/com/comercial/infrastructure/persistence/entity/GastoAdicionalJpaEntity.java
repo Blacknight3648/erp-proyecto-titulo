@@ -29,6 +29,11 @@ public class GastoAdicionalJpaEntity {
     @Column(length = 3)
     private String moneda;
 
-    @Column(name = "metadata_json", columnDefinition = "TEXT")
-    private String metadataJson;
+    @OneToMany(mappedBy = "gastoAdicional", cascade = CascadeType.ALL, orphanRemoval = true)
+    private java.util.List<GastoAdicionalDetalleJpaEntity> detalles = new java.util.ArrayList<>();
+
+    public void addDetalle(GastoAdicionalDetalleJpaEntity detalle) {
+        detalles.add(detalle);
+        detalle.setGastoAdicional(this);
+    }
 }

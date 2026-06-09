@@ -11,8 +11,7 @@ import backend.com.comercial.infrastructure.persistence.entity.SolicitudCostosJp
 import backend.com.gestionUsuarios.cliente.infrastructure.persistence.entity.ClienteJpaEntity;
 import backend.com.gestionUsuarios.proveedor.infrastructure.persistence.entity.ProveedorJpaEntity;
 import backend.com.gestionUsuarios.vendedor.infrastructure.persistence.entity.VendedorJpaEntity;
-import backend.com.shared.infrastructure.persistence.entity.EspecificacionTecnica;
-import backend.com.shared.infrastructure.persistence.entity.Tela;
+import backend.com.shared.infrastructure.persistence.entity.ArticuloJpaEntity;
 import backend.com.shared.valueobjects.DocumentNumber;
 import backend.com.shared.valueobjects.Money;
 import org.springframework.stereotype.Component;
@@ -49,9 +48,6 @@ public class SolicitudCostosMapper {
                 clienteNombre,
                 entity.getVendedor() != null ? entity.getVendedor().getIdVendedor() : null,
                 vendedorNombre,
-                entity.getEspecificacionTecnica() != null
-                        ? entity.getEspecificacionTecnica().getEspecificacionTecnicaId()
-                        : null,
                 entity.getArticuloDescripcion(),
                 entity.getNombrePrenda(),
                 entity.getEsMuestra(),
@@ -76,7 +72,7 @@ public class SolicitudCostosMapper {
     private SCOSTela mapTelaToDomain(SCOSTelaJpaEntity entity) {
         if (entity == null) return null;
         return new SCOSTela(
-                entity.getTela() != null ? entity.getTela().getIdTela() : null,
+                entity.getArticulo() != null ? entity.getArticulo().getIdArticulo() : null,
                 entity.getAplicacion(),
                 entity.getDescripcion(),
                 entity.getProveedor() != null ? entity.getProveedor().getProveedorId() : null,
@@ -94,7 +90,7 @@ public class SolicitudCostosMapper {
     private SCOSAccesorio mapAccesorioToDomain(SCOSAccesorioJpaEntity entity) {
         if (entity == null) return null;
         return new SCOSAccesorio(
-                entity.getAccesorio() != null ? entity.getAccesorio().getAccesorioId() : null,
+                entity.getArticulo() != null ? entity.getArticulo().getIdArticulo() : null,
                 entity.getTipo(),
                 entity.getDescripcion(),
                 entity.getCantidad(),
@@ -155,18 +151,12 @@ public class SolicitudCostosMapper {
             v.setIdVendedor(domain.getVendedorId());
             entity.setVendedor(v);
         }
-        if (domain.getEspecificacionTecnicaId() != null) {
-            EspecificacionTecnica et = new EspecificacionTecnica();
-            et.setEspecificacionTecnicaId(domain.getEspecificacionTecnicaId());
-            entity.setEspecificacionTecnica(et);
-        }
-
         domain.getTelas().forEach(t -> {
             SCOSTelaJpaEntity te = new SCOSTelaJpaEntity();
-            if (t.getIdTela() != null) {
-                Tela telaResource = new Tela();
-                telaResource.setIdTela(t.getIdTela());
-                te.setTela(telaResource);
+            if (t.getIdArticulo() != null) {
+                ArticuloJpaEntity artRef = new ArticuloJpaEntity();
+                artRef.setIdArticulo(t.getIdArticulo());
+                te.setArticulo(artRef);
             }
             te.setAplicacion(t.getAplicacion());
             te.setDescripcion(t.getDescripcion());
@@ -196,6 +186,11 @@ public class SolicitudCostosMapper {
 
         domain.getAccesorios().forEach(a -> {
             SCOSAccesorioJpaEntity ae = new SCOSAccesorioJpaEntity();
+            if (a.getIdArticulo() != null) {
+                ArticuloJpaEntity artRef = new ArticuloJpaEntity();
+                artRef.setIdArticulo(a.getIdArticulo());
+                ae.setArticulo(artRef);
+            }
             ae.setTipo(a.getTipo());
             ae.setDescripcion(a.getDescripcion());
             ae.setCantidad(a.getCantidad());

@@ -16,6 +16,6 @@ public class SCOSPlantillaMaterialVinculo {
 
     private Long id;
     private String materialType;   // "TELA" | "ACCESORIO"
-    private Long materialId;       // FK lógica a SCOSTela.idTela o SCOSAccesorio.idAccesorio
+    private Long materialId;       // FK lógica a SCOSTela.idArticulo o SCOSAccesorio.idArticulo
     private Integer cantidad;
 }

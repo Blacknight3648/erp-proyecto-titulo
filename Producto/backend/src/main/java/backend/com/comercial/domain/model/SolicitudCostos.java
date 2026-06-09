@@ -20,7 +20,6 @@ public class SolicitudCostos {
     private String clienteNombre;
     private Long vendedorId;
     private String vendedorNombre;
-    private Long especificacionTecnicaId;
     private String articuloDescripcion;
     private String nombrePrenda;
     private Boolean esMuestra;
@@ -39,13 +38,12 @@ public class SolicitudCostos {
 
     // Constructor for creating new records
     private SolicitudCostos(DocumentNumber numeroSCOS, String tipo, Long clienteId, Long vendedorId,
-            Long especificacionTecnicaId, String articuloDescripcion, String nombrePrenda,
+            String articuloDescripcion, String nombrePrenda,
             Boolean esMuestra, Boolean hasLogo, Integer cantidad, String genero, String tallaje) {
         this.numeroSCOS = numeroSCOS;
         this.tipo = tipo;
         this.clienteId = clienteId;
         this.vendedorId = vendedorId;
-        this.especificacionTecnicaId = especificacionTecnicaId;
         this.articuloDescripcion = articuloDescripcion;
         this.nombrePrenda = nombrePrenda;
         this.esMuestra = esMuestra != null ? esMuestra : false;
@@ -59,7 +57,7 @@ public class SolicitudCostos {
     }
 
     public SolicitudCostos(Long idSCOS, DocumentNumber numeroSCOS, EstadoSCOS estado, String tipo, Long clienteId,
-            String clienteNombre, Long vendedorId, String vendedorNombre, Long especificacionTecnicaId,
+            String clienteNombre, Long vendedorId, String vendedorNombre,
             String articuloDescripcion, String nombrePrenda,
             Boolean esMuestra, Boolean hasLogo, Integer cantidad, String genero, String tallaje, LocalDate fecha,
             List<SCOSTela> telas, List<SCOSAccesorio> accesorios, List<SCOSLogotipo> logotipos,
@@ -73,7 +71,6 @@ public class SolicitudCostos {
         this.clienteNombre = clienteNombre;
         this.vendedorId = vendedorId;
         this.vendedorNombre = vendedorNombre;
-        this.especificacionTecnicaId = especificacionTecnicaId;
         this.articuloDescripcion = articuloDescripcion;
         this.nombrePrenda = nombrePrenda;
         this.esMuestra = esMuestra;
@@ -90,9 +87,9 @@ public class SolicitudCostos {
     }
 
     public static SolicitudCostos crear(DocumentNumber numero, String tipo, Long clienteId, Long vendedorId,
-            Long especificacionTecnicaId, String articuloDescripcion, String nombrePrenda,
+            String articuloDescripcion, String nombrePrenda,
             Boolean esMuestra, Boolean hasLogo, Integer cantidad, String genero, String tallaje) {
-        return new SolicitudCostos(numero, tipo, clienteId, vendedorId, especificacionTecnicaId,
+        return new SolicitudCostos(numero, tipo, clienteId, vendedorId,
                 articuloDescripcion, nombrePrenda, esMuestra, hasLogo, cantidad, genero, tallaje);
     }
 

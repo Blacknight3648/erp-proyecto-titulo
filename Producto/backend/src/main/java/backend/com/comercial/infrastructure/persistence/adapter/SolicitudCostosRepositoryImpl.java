@@ -14,7 +14,7 @@ import backend.com.comercial.infrastructure.persistence.repository.SolicitudCost
 import backend.com.gestionUsuarios.cliente.infrastructure.persistence.entity.ClienteJpaEntity;
 import backend.com.gestionUsuarios.proveedor.infrastructure.persistence.entity.ProveedorJpaEntity;
 import backend.com.gestionUsuarios.vendedor.infrastructure.persistence.entity.VendedorJpaEntity;
-import backend.com.shared.infrastructure.persistence.entity.EspecificacionTecnica;
+import backend.com.shared.infrastructure.persistence.entity.ArticuloJpaEntity;
 import backend.com.shared.valueobjects.DocumentNumber;
 import org.springframework.stereotype.Component;
 
@@ -84,17 +84,16 @@ public class SolicitudCostosRepositoryImpl implements SolicitudCostosRepository 
             v.setIdVendedor(domain.getVendedorId());
             entity.setVendedor(v);
         }
-        if (domain.getEspecificacionTecnicaId() != null) {
-            EspecificacionTecnica et = new EspecificacionTecnica();
-            et.setEspecificacionTecnicaId(domain.getEspecificacionTecnicaId());
-            entity.setEspecificacionTecnica(et);
-        }
-
         entity.clearCollections();
 
         if (domain.getTelas() != null) {
             for (SCOSTela t : domain.getTelas()) {
                 SCOSTelaJpaEntity te = new SCOSTelaJpaEntity();
+                if (t.getIdArticulo() != null) {
+                    ArticuloJpaEntity artRef = new ArticuloJpaEntity();
+                    artRef.setIdArticulo(t.getIdArticulo());
+                    te.setArticulo(artRef);
+                }
                 te.setDescripcion(t.getDescripcion());
                 te.setProveedorReferencia(t.getProveedorReferencia());
                 if (t.getProveedorId() != null) {
@@ -123,6 +122,11 @@ public class SolicitudCostosRepositoryImpl implements SolicitudCostosRepository 
         if (domain.getAccesorios() != null) {
             for (SCOSAccesorio a : domain.getAccesorios()) {
                 SCOSAccesorioJpaEntity ae = new SCOSAccesorioJpaEntity();
+                if (a.getIdArticulo() != null) {
+                    ArticuloJpaEntity artRef = new ArticuloJpaEntity();
+                    artRef.setIdArticulo(a.getIdArticulo());
+                    ae.setArticulo(artRef);
+                }
                 ae.setDescripcion(a.getDescripcion());
                 ae.setProveedorReferencia(a.getProveedorReferencia());
                 ae.setConsumo(a.getConsumo());

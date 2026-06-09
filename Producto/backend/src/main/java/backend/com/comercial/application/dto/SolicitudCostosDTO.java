@@ -36,5 +36,4 @@ public class SolicitudCostosDTO {
     private List<SCOSAccesorioDTO> accesorios;
     private List<SCOSLogotipoDTO> logotipos;
     private List<DescripcionPlantillaDTO> descripciones;
-    private SCOSCostoFijoDTO costoFijo;
 }

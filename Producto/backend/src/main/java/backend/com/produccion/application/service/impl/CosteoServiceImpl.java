@@ -34,16 +34,19 @@ public class CosteoServiceImpl implements CosteoService {
     }
 
     /**
-     * Carga el Articulo asociado a cada item a partir de su insumoId.
-     * Solo lectura: si el insumo no corresponde a un artículo existente, se omite.
+     * Carga el Articulo asociado a cada item a partir de su articuloId.
+     * Solo aplica a TELAS y ACCESORIOS (los únicos tipos con artículo maestro en BD).
+     * LOGOTIPO e INSUMOS no tienen artículo aún: se omiten.
      */
     private void enrichItemsWithArticulo(Costeo domain) {
         if (domain == null || domain.getItems() == null) {
             return;
         }
         domain.getItems().forEach(item -> {
-            if (item.getInsumoId() != null) {
-                articuloRepository.findById(item.getInsumoId().intValue())
+            String tipo = item.getTipoInsumo();
+            boolean aplicaArticulo = "TELAS".equalsIgnoreCase(tipo) || "ACCESORIOS".equalsIgnoreCase(tipo);
+            if (aplicaArticulo && item.getArticuloId() != null) {
+                articuloRepository.findById(item.getArticuloId())
                         .ifPresent(item::setArticulo);
             }
         });

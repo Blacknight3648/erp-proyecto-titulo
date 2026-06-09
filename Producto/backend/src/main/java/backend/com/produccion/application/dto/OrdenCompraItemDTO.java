@@ -17,7 +17,7 @@ public class OrdenCompraItemDTO {
     private Long idOCItem;
     private Long ocId;
     private String tipoInsumo;
-    private Long insumoId;
+    private Integer articuloId;
     private String nombreInsumo;
     private BigDecimal cantidadRequerida;
     private BigDecimal cantidadStock;

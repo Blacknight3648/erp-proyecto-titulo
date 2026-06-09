@@ -14,7 +14,7 @@ public class CosteoItemVersion {
     private Long costeoVersionId;
     private Long costeoItemId;
     private String tipoInsumo;
-    private Long insumoId;
+    private Integer articuloId; // referencia blanda al Articulo; el snapshot conserva nombreInsumo congelado
     private String nombreInsumo;
     private BigDecimal consumo;
     private BigDecimal precioUnitario;
@@ -22,12 +22,12 @@ public class CosteoItemVersion {
     private Articulo articulo;
 
     public CosteoItemVersion(Long idCosteoItemVersion, Long costeoVersionId, Long costeoItemId, String tipoInsumo,
-            Long insumoId, String nombreInsumo, BigDecimal consumo, BigDecimal precioUnitario, BigDecimal costoTotal) {
+            Integer articuloId, String nombreInsumo, BigDecimal consumo, BigDecimal precioUnitario, BigDecimal costoTotal) {
         this.idCosteoItemVersion = idCosteoItemVersion;
         this.costeoVersionId = costeoVersionId;
         this.costeoItemId = costeoItemId;
         this.tipoInsumo = tipoInsumo;
-        this.insumoId = insumoId;
+        this.articuloId = articuloId;
         this.nombreInsumo = nombreInsumo;
         this.consumo = consumo;
         this.precioUnitario = precioUnitario;

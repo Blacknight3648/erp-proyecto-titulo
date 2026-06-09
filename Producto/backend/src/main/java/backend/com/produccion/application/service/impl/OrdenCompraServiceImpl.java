@@ -79,7 +79,7 @@ public class OrdenCompraServiceImpl implements OrdenCompraService {
                 itemOriginal.getIdOCItem(),
                 itemOriginal.getOcId(),
                 itemOriginal.getTipoInsumo(),
-                itemOriginal.getInsumoId(),
+                itemOriginal.getArticuloId(),
                 itemOriginal.getNombreInsumo(),
                 itemOriginal.getCantidadRequerida(),
                 itemOriginal.getCantidadStock(),
@@ -162,7 +162,7 @@ public class OrdenCompraServiceImpl implements OrdenCompraService {
                 .idOCItem(item.getIdOCItem())
                 .ocId(item.getOcId())
                 .tipoInsumo(item.getTipoInsumo())
-                .insumoId(item.getInsumoId())
+                .articuloId(item.getArticuloId())
                 .nombreInsumo(item.getNombreInsumo())
                 .cantidadRequerida(item.getCantidadRequerida())
                 .cantidadStock(item.getCantidadStock())

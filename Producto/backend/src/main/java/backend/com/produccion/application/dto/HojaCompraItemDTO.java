@@ -16,7 +16,7 @@ public class HojaCompraItemDTO {
     private Long idHCItem;
     private Long hcId;
     private String tipoInsumo;
-    private Long insumoId;
+    private Integer articuloId;
     private String nombreInsumo;
     private BigDecimal consumoUnitario;
     private Integer cantidadOP;

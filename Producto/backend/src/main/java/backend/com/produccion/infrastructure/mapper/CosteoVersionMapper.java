@@ -98,14 +98,15 @@ public class CosteoVersionMapper {
                 entity.getCosteoVersion() != null ? entity.getCosteoVersion().getIdCosteoVersion() : null,
                 entity.getCosteoItemId() != null ? entity.getCosteoItemId() : null,
                 entity.getTipoInsumo(),
-                entity.getInsumoId(),
+                entity.getArticuloId(),
                 entity.getNombreInsumo(),
                 entity.getConsumo(),
                 entity.getPrecioUnitario(),
                 entity.getCostoTotal());
-        // Lectura del artículo asociado al insumo (si existe)
-        if (entity.getInsumoId() != null) {
-            articuloRepository.findById(entity.getInsumoId().intValue())
+        // Lectura del artículo asociado (si existe). El snapshot mantiene su propio
+        // nombreInsumo congelado; el artículo es solo informativo en lectura.
+        if (entity.getArticuloId() != null) {
+            articuloRepository.findById(entity.getArticuloId())
                     .ifPresent(domain::setArticulo);
         }
         return domain;
@@ -116,7 +117,7 @@ public class CosteoVersionMapper {
         entity.setIdCosteoItemVersion(domain.getIdCosteoItemVersion());
         entity.setCosteoItemId(domain.getCosteoItemId());
         entity.setTipoInsumo(domain.getTipoInsumo());
-        entity.setInsumoId(domain.getInsumoId());
+        entity.setArticuloId(domain.getArticuloId());
         entity.setNombreInsumo(domain.getNombreInsumo());
         entity.setConsumo(domain.getConsumo());
         entity.setPrecioUnitario(domain.getPrecioUnitario());

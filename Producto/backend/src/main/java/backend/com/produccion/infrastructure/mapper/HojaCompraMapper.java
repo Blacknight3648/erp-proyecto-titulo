@@ -76,7 +76,7 @@ public class HojaCompraMapper {
                 entity.getIdHCItem(),
                 entity.getHojaCompra() != null ? entity.getHojaCompra().getIdHC() : null,
                 entity.getTipoInsumo(),
-                entity.getInsumoId(),
+                entity.getArticuloId(),
                 entity.getNombreInsumo(),
                 entity.getConsumoUnitario(),
                 entity.getCantidadOP(),
@@ -88,7 +88,7 @@ public class HojaCompraMapper {
         HojaCompraItemJpaEntity entity = new HojaCompraItemJpaEntity();
         entity.setIdHCItem(domain.getIdHCItem());
         entity.setTipoInsumo(domain.getTipoInsumo());
-        entity.setInsumoId(domain.getInsumoId());
+        entity.setArticuloId(domain.getArticuloId());
         entity.setNombreInsumo(domain.getNombreInsumo());
         entity.setConsumoUnitario(domain.getConsumoUnitario());
         entity.setCantidadOP(domain.getCantidadOP());

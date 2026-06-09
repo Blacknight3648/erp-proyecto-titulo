@@ -25,8 +25,8 @@ public class HojaCompraItemJpaEntity {
     @Column(name = "tipo_insumo", length = 50, nullable = false)
     private String tipoInsumo;
 
-    @Column(name = "insumo_id", nullable = false)
-    private Long insumoId;
+    @Column(name = "articulo_id")
+    private Integer articuloId; // referencia blanda a articulo(id_articulo); registro conserva nombreInsumo
 
     @Column(name = "nombre_insumo", length = 200)
     private String nombreInsumo;

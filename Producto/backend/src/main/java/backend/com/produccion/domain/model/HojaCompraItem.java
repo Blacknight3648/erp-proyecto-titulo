@@ -10,20 +10,20 @@ public class HojaCompraItem {
     private Long idHCItem;
     private Long hcId;
     private String tipoInsumo;
-    private Long insumoId;
+    private Integer articuloId; // referencia blanda al Articulo; el registro conserva nombreInsumo congelado
     private String nombreInsumo;
     private BigDecimal consumoUnitario;
     private Integer cantidadOP;
     private BigDecimal cantidadRequerida;
     private BigDecimal precioUnitarioRef;
 
-    public HojaCompraItem(Long idHCItem, Long hcId, String tipoInsumo, Long insumoId, String nombreInsumo,
+    public HojaCompraItem(Long idHCItem, Long hcId, String tipoInsumo, Integer articuloId, String nombreInsumo,
             BigDecimal consumoUnitario, Integer cantidadOP, BigDecimal cantidadRequerida,
             BigDecimal precioUnitarioRef) {
         this.idHCItem = idHCItem;
         this.hcId = hcId;
         this.tipoInsumo = tipoInsumo;
-        this.insumoId = insumoId;
+        this.articuloId = articuloId;
         this.nombreInsumo = nombreInsumo;
         this.consumoUnitario = consumoUnitario;
         this.cantidadOP = cantidadOP;
@@ -44,7 +44,7 @@ public class HojaCompraItem {
                 null,
                 null,
                 origen.getTipoInsumo(),
-                origen.getInsumoId(),
+                origen.getArticuloId(),
                 origen.getNombreInsumo(),
                 origen.getConsumo(),
                 cantidadOP,

@@ -1,6 +1,6 @@
 package backend.com.comercial.infrastructure.persistence.entity;
 
-import backend.com.shared.infrastructure.persistence.entity.ProductoJpaEntity;
+import backend.com.shared.infrastructure.persistence.entity.ArticuloJpaEntity;
 import backend.com.gestionUsuarios.proveedor.infrastructure.persistence.entity.ProveedorJpaEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -28,8 +28,8 @@ public class NotaVentaItemJpaEntity {
     private NotaVentaJpaEntity notaVenta;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "producto_id", nullable = true)
-    private ProductoJpaEntity producto;
+    @JoinColumn(name = "articulo_id", nullable = true)
+    private ArticuloJpaEntity articulo;
 
     @Column(length = 100)
     private String modelo;

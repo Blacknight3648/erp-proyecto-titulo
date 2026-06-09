@@ -29,7 +29,7 @@ public class NVResponse {
     @Data
     public static class ItemNVResponse {
         private Integer nroItem;
-        private Long productoId;
+        private Integer articuloId;
         private String modelo;
         private String color;
         private String talla;
@@ -58,7 +58,7 @@ public class NVResponse {
         response.setItems(domain.getItems().stream().map(item -> {
             ItemNVResponse itemResponse = new ItemNVResponse();
             itemResponse.setNroItem(item.getNroItem());
-            itemResponse.setProductoId(item.getProductoId());
+            itemResponse.setArticuloId(item.getArticuloId());
             itemResponse.setModelo(item.getModelo());
             itemResponse.setColor(item.getColor());
             itemResponse.setTalla(item.getTalla());

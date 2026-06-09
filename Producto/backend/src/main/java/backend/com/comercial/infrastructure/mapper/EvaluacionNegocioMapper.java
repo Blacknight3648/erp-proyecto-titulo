@@ -11,7 +11,7 @@ import backend.com.comercial.infrastructure.persistence.entity.GastoAdicionalJpa
 import backend.com.comercial.infrastructure.persistence.entity.TomaTallajeJpaEntity;
 import backend.com.gestionUsuarios.cliente.infrastructure.persistence.entity.ClienteJpaEntity;
 import backend.com.gestionUsuarios.vendedor.infrastructure.persistence.entity.VendedorJpaEntity;
-import backend.com.shared.infrastructure.persistence.entity.ProductoJpaEntity;
+import backend.com.shared.infrastructure.persistence.entity.ArticuloJpaEntity;
 import backend.com.gestionUsuarios.proveedor.infrastructure.persistence.entity.ProveedorJpaEntity;
 import backend.com.shared.valueobjects.DocumentNumber;
 import backend.com.shared.valueobjects.Money;
@@ -61,8 +61,6 @@ public class EvaluacionNegocioMapper {
                 tomaTallaje,
                 gastosAdicionales,
                 entity.getItems().stream().map(this::toItemDomain).collect(Collectors.toList()),
-                entity.getCosteoId(),
-                entity.getSolicitudCotizacionId(),
                 entity.getPorcentajeComision(),
                 entity.getClienteNombre(),
                 entity.getReferencia(),
@@ -107,7 +105,7 @@ public class EvaluacionNegocioMapper {
         }
 
         return new ItemEVN(
-                entity.getProducto() != null ? entity.getProducto().getProductoId() : null,
+                entity.getArticulo() != null ? entity.getArticulo().getIdArticulo() : null,
                 entity.getProveedor() != null ? entity.getProveedor().getProveedorId() : null,
                 entity.getCantidad(),
                 new Money(entity.getPrecioUnitario(), entity.getMonedaPrecioUnitario()),
@@ -116,7 +114,9 @@ public class EvaluacionNegocioMapper {
                 entity.getCostoLogo(),
                 entity.getCostoOrdenTrabajo(),
                 entity.getTipoItem(),
-                specs);
+                specs,
+                entity.getCosteoId(),
+                entity.getSolicitudCostosId());
     }
 
     public EvaluacionNegocioJpaEntity toEntity(EvaluacionNegocio domain) {
@@ -163,16 +163,14 @@ public class EvaluacionNegocioMapper {
             entity.addGastoAdicional(g);
         });
 
-        entity.setCosteoId(domain.getCosteoId());
-        entity.setSolicitudCotizacionId(domain.getSolicitudCotizacionId());
         entity.setPorcentajeComision(domain.getPorcentajeComision());
 
         domain.getItems().forEach(itemDomain -> {
             EvaluacionNegocioItemJpaEntity itemEntity = new EvaluacionNegocioItemJpaEntity();
-            if (itemDomain.getProductoId() != null) {
-                ProductoJpaEntity p = new ProductoJpaEntity();
-                p.setProductoId(itemDomain.getProductoId());
-                itemEntity.setProducto(p);
+            if (itemDomain.getArticuloId() != null) {
+                ArticuloJpaEntity a = new ArticuloJpaEntity();
+                a.setIdArticulo(itemDomain.getArticuloId());
+                itemEntity.setArticulo(a);
             }
             if (itemDomain.getProveedorId() != null) {
                 ProveedorJpaEntity prov = new ProveedorJpaEntity();
@@ -192,6 +190,8 @@ public class EvaluacionNegocioMapper {
             itemEntity.setCostoLogo(itemDomain.getCostoLogo());
             itemEntity.setCostoOrdenTrabajo(itemDomain.getCostoOrdenTrabajo());
             itemEntity.setTipoItem(itemDomain.getTipoItem());
+            itemEntity.setCosteoId(itemDomain.getCosteoId());
+            itemEntity.setSolicitudCostosId(itemDomain.getSolicitudCostosId());
 
             // Poblar columnas individuales desde el mapa de especificaciones
             if (itemDomain.getTechnicalSpecs() != null) {
@@ -218,6 +218,8 @@ public class EvaluacionNegocioMapper {
         return entity;
     }
 
+    
+
     public void updateEntityFromDomain(EvaluacionNegocio domain, EvaluacionNegocioJpaEntity entity) {
         if (domain == null || entity == null)
             return;
@@ -227,8 +229,6 @@ public class EvaluacionNegocioMapper {
         entity.setClienteNombre(domain.getClienteNombre());
         entity.setReferencia(domain.getReferencia());
         entity.setPorcentajeComision(domain.getPorcentajeComision());
-        entity.setCosteoId(domain.getCosteoId());
-        entity.setSolicitudCotizacionId(domain.getSolicitudCotizacionId());
 
         // El resto de colecciones (items, gastos) no se tocan para evitar recreación
         // si el dominio no indica cambios en ellas (como es el caso de adjudicar).

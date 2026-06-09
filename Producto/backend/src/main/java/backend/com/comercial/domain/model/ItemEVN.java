@@ -6,7 +6,7 @@ import lombok.Value;
 
 @Value
 public class ItemEVN {
-    Long productoId;
+    Integer articuloId;
     Long proveedorId;
     Integer cantidad;
     Money precioUnitario;
@@ -16,18 +16,22 @@ public class ItemEVN {
     java.math.BigDecimal costoOrdenTrabajo;
     String tipoItem;
     java.util.Map<String, String> technicalSpecs;
+    // Vínculo con el costeo/SCOS — solo aplica cuando tipoItem = "OP" (opcional)
+    Long costeoId;
+    Long solicitudCostosId;
 
-    public ItemEVN(Long productoId, Long proveedorId, Integer cantidad, Money precioUnitario, Money costoUnitario,
+    public ItemEVN(Integer articuloId, Long proveedorId, Integer cantidad, Money precioUnitario, Money costoUnitario,
             java.math.BigDecimal costoProducto,
             java.math.BigDecimal costoLogo, java.math.BigDecimal costoOrdenTrabajo,
-            String tipoItem, java.util.Map<String, String> technicalSpecs) {
+            String tipoItem, java.util.Map<String, String> technicalSpecs,
+            Long costeoId, Long solicitudCostosId) {
         if (cantidad == null || cantidad <= 0) {
             throw new EVNBusinessException("La cantidad debe ser mayor a cero");
         }
         if (precioUnitario == null || precioUnitario.getAmount().compareTo(java.math.BigDecimal.ZERO) < 0) {
             throw new EVNBusinessException("El precio unitario no puede ser negativo");
         }
-        this.productoId = productoId;
+        this.articuloId = articuloId;
         this.proveedorId = proveedorId;
         this.cantidad = cantidad;
         this.precioUnitario = precioUnitario;
@@ -37,6 +41,8 @@ public class ItemEVN {
         this.costoOrdenTrabajo = costoOrdenTrabajo != null ? costoOrdenTrabajo : java.math.BigDecimal.ZERO;
         this.tipoItem = tipoItem;
         this.technicalSpecs = technicalSpecs != null ? technicalSpecs : java.util.Collections.emptyMap();
+        this.costeoId = costeoId;
+        this.solicitudCostosId = solicitudCostosId;
     }
 
     public Money getTotal() {

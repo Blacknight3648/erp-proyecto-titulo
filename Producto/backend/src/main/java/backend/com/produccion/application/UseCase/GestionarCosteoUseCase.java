@@ -1,6 +1,7 @@
 package backend.com.produccion.application.UseCase;
 
 import backend.com.produccion.application.dto.CosteoDTO;
+import backend.com.produccion.application.dto.CosteoResumenEVNDTO;
 import backend.com.produccion.application.service.CosteoService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -44,5 +45,15 @@ public class GestionarCosteoUseCase {
 
     public java.util.List<CosteoDTO> obtenerTodosPorSCOS(Long scosId) {
         return costeoService.findAllBySolicitudCostosId(scosId);
+    }
+
+    public java.util.List<CosteoDTO> obtenerCosteosDisponiblesParaEVN() {
+        return costeoService.obtenerDisponiblesParaEVN();
+    }
+
+    public Optional<CosteoResumenEVNDTO> obtenerResumenEVN(Long idCosteo) {
+        if (idCosteo == null)
+            throw new IllegalArgumentException("El id del costeo es obligatorio");
+        return costeoService.obtenerResumenEVN(idCosteo);
     }
 }

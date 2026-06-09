@@ -2,6 +2,7 @@ package backend.com.produccion.infrastructure.api;
 
 import backend.com.produccion.application.UseCase.GestionarCosteoUseCase;
 import backend.com.produccion.application.dto.CosteoDTO;
+import backend.com.produccion.application.dto.CosteoResumenEVNDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -30,6 +31,12 @@ public class CosteoController {
         return ResponseEntity.ok(gestionarCosteoUseCase.obtenerTodosPorSCOS(scosId));
     }
 
+    /** Costeos disponibles (no vinculados a ninguna EVN) para vincular a un ítem OP. */
+    @GetMapping("/disponibles-evn")
+    public ResponseEntity<java.util.List<CosteoDTO>> getDisponiblesParaEVN() {
+        return ResponseEntity.ok(gestionarCosteoUseCase.obtenerCosteosDisponiblesParaEVN());
+    }
+
     @PostMapping
     public CosteoDTO crear(@RequestBody CosteoDTO costeo) {
         return gestionarCosteoUseCase.registrarCosteo(costeo);
@@ -38,5 +45,13 @@ public class CosteoController {
     @PutMapping("/{idCosteo}")
     public ResponseEntity<CosteoDTO> actualizar(@PathVariable Long idCosteo, @RequestBody CosteoDTO costeo) {
         return ResponseEntity.ok(gestionarCosteoUseCase.actualizarCosteo(idCosteo, costeo));
+    }
+
+    /** Resumen para auto-rellenar un ítem tipo OP de una EVN al vincular un costeo. */
+    @GetMapping("/{idCosteo}/resumen-evn")
+    public ResponseEntity<CosteoResumenEVNDTO> getResumenParaEVN(@PathVariable Long idCosteo) {
+        return gestionarCosteoUseCase.obtenerResumenEVN(idCosteo)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 }

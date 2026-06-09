@@ -11,7 +11,7 @@ import java.util.List;
 @Getter
 public class ItemNV {
     private Integer nroItem;
-    private Long productoId;
+    private Integer articuloId;
     private String modelo;
     private String tela;
     private String composicion;
@@ -31,12 +31,12 @@ public class ItemNV {
 
     private List<ItemNVTalla> tallas = new ArrayList<>();
 
-    public ItemNV(Integer nroItem, Long productoId, String modelo, String tela, String composicion,
+    public ItemNV(Integer nroItem, Integer articuloId, String modelo, String tela, String composicion,
             String color, String talla, String genero, String codigo, Long proveedorId,
             String llevaLogo, String tipoItem, Boolean generaOt, String detalleOt,
             String logoDetalle, Integer cantidad, Money precioUnitario, List<ItemNVTalla> tallas) {
         this.nroItem = nroItem;
-        this.productoId = productoId;
+        this.articuloId = articuloId;
         this.modelo = modelo;
         this.tela = tela;
         this.composicion = composicion;

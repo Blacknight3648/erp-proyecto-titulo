@@ -64,4 +64,9 @@ public class EvaluacionNegocioRepositoryImpl implements EvaluacionNegocioReposit
                 .map(mapper::toDomain)
                 .collect(java.util.stream.Collectors.toList());
     }
+
+    @Override
+    public java.util.List<Long> findLinkedCosteoIds() {
+        return jpaRepository.findLinkedCosteoIds();
+    }
 }

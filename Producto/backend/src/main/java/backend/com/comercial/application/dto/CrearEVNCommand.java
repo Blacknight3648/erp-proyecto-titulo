@@ -12,8 +12,6 @@ public class CrearEVNCommand {
     // IDs de relaciones
     private Long clienteId;
     private Long vendedorId;
-    private Long costeoId;
-    private Long solicitudCotizacionId;
 
     // Datos del encabezado enviados desde el frontend
     private String clienteNombre;

@@ -6,7 +6,7 @@ import java.math.BigDecimal;
 @Data
 public class ItemEVNDTO {
     // IDs de relaciones (opcionales)
-    private Long productoId;
+    private Integer articuloId;
     private Long proveedorId;
 
     // Datos descriptivos del ítem (enviados desde el frontend)
@@ -33,4 +33,8 @@ public class ItemEVNDTO {
     // Clasificación
     private String tipoItem;
     private java.util.Map<String, String> technicalSpecs;
+
+    // Vínculo con costeo/SCOS — solo si tipoItem = "OP"
+    private Long costeoId;
+    private Long solicitudCostosId;
 }

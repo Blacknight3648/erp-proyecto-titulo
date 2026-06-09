@@ -31,7 +31,7 @@ public class EVNResponse {
 
     @Data
     public static class ItemEVNResponse {
-        private Long productoId;
+        private Integer articuloId;
         private Long proveedorId;
         private Integer nroItem;
         private String descripcion;
@@ -51,6 +51,9 @@ public class EVNResponse {
         private BigDecimal costoOrdenTrabajo;
         private BigDecimal margenItem;
         private java.util.Map<String, String> technicalSpecs;
+        // Vínculo con costeo/SCOS (solo ítems tipo OP)
+        private Long costeoId;
+        private Long solicitudCostosId;
     }
 
     @Data
@@ -96,7 +99,7 @@ public class EVNResponse {
 
         response.setItems(domain.getItems().stream().map(item -> {
             ItemEVNResponse itemResponse = new ItemEVNResponse();
-            itemResponse.setProductoId(item.getProductoId());
+            itemResponse.setArticuloId(item.getArticuloId());
             itemResponse.setProveedorId(item.getProveedorId());
             itemResponse.setCantidad(item.getCantidad());
             itemResponse.setPrecioUnitario(item.getPrecioUnitario().getAmount());
@@ -107,6 +110,8 @@ public class EVNResponse {
             itemResponse.setTotalItem(item.getTotal().getAmount());
             itemResponse.setMargenItem(item.getMargenItem());
             itemResponse.setTechnicalSpecs(item.getTechnicalSpecs());
+            itemResponse.setCosteoId(item.getCosteoId());
+            itemResponse.setSolicitudCostosId(item.getSolicitudCostosId());
 
             // Mapear campos descriptivos desde el mapa si están presentes
             if (item.getTechnicalSpecs() != null) {

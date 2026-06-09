@@ -39,25 +39,32 @@ public class ConsultarTrazabilidadUseCase {
         if (nv.getEvaluacionNegocioId() != null) {
             evnRepository.findById(nv.getEvaluacionNegocioId()).ifPresent(evn -> {
 
-                // Buscar Costeo si existe
-                if (evn.getCosteoId() != null) {
-                    costeoRepository.findById(evn.getCosteoId()).ifPresent(costeo -> {
+                // Buscar Costeos vinculados a los ítems tipo OP de la EVN
+                evn.getItems().stream()
+                        .filter(i -> "OP".equalsIgnoreCase(i.getTipoItem()) && i.getCosteoId() != null)
+                        .map(backend.com.comercial.domain.model.ItemEVN::getCosteoId)
+                        .distinct()
+                        .forEach(costeoId -> {
 
-                        // Buscar SCOS si existe
-                        if (costeo.getSolicitudCostosId() != null) {
-                            scosRepository.findById(costeo.getSolicitudCostosId()).ifPresent(scos -> {
-                                trazabilidad.add(mapToDto("Solicitud Costos", scos.getIdSCOS(),
-                                        scos.getNumeroSCOS().getValue().toString(),
-                                        scos.getEstado() != null ? scos.getEstado().name() : null,
-                                        scos.getFecha()));
+                            costeoRepository.findById(costeoId).ifPresent(costeo -> {
+
+                                // Buscar SCOS si existe
+                                if (costeo.getSolicitudCostosId() != null) {
+                                    scosRepository.findById(costeo.getSolicitudCostosId()).ifPresent(scos -> {
+                                        trazabilidad.add(mapToDto("Solicitud Costos", scos.getIdSCOS(),
+                                                scos.getNumeroSCOS().getValue().toString(),
+                                                scos.getEstado() != null ? scos.getEstado().name() : null,
+                                                scos.getFecha()));
+                                    });
+                                }
+
+                                trazabilidad.add(
+                                        mapToDto("Costeo", costeo.getIdCosteo(),
+                                                costeo.getNumeroCosteo().getValue().toString(),
+                                                "COMPLETO", null));
                             });
-                        }
 
-                        trazabilidad.add(
-                                mapToDto("Costeo", costeo.getIdCosteo(), costeo.getNumeroCosteo().getValue().toString(),
-                                        "COMPLETO", null));
-                    });
-                }
+                        });
 
                 trazabilidad.add(mapToDto("Evaluación Negocio", evn.getEvaluacionNegocioId(),
                         evn.getNumeroEvn().getValue().toString(),

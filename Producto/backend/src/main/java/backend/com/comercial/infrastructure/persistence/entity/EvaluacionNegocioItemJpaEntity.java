@@ -1,5 +1,6 @@
 package backend.com.comercial.infrastructure.persistence.entity;
 
+import backend.com.shared.infrastructure.persistence.entity.ArticuloJpaEntity;
 import backend.com.shared.infrastructure.persistence.entity.ProductoJpaEntity;
 import backend.com.gestionUsuarios.proveedor.infrastructure.persistence.entity.ProveedorJpaEntity;
 import jakarta.persistence.*;
@@ -27,8 +28,8 @@ public class EvaluacionNegocioItemJpaEntity {
     private ProveedorJpaEntity proveedor;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "producto_id")
-    private ProductoJpaEntity producto;
+    @JoinColumn(name = "articulo_id")
+    private ArticuloJpaEntity articulo;
 
     // === Campos descriptivos del ítem ===
     @Column(name = "nro_item")
@@ -90,4 +91,11 @@ public class EvaluacionNegocioItemJpaEntity {
 
     @Column(name = "technical_specs_json", length = 2000)
     private String technicalSpecsJson;
+
+    // === Vínculo con costeo/SCOS (solo ítems tipo OP; sin FK cross-módulo) ===
+    @Column(name = "costeo_id")
+    private Long costeoId;
+
+    @Column(name = "solicitud_costos_id")
+    private Long solicitudCostosId;
 }

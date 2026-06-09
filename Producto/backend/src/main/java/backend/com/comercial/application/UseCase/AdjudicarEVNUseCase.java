@@ -57,7 +57,7 @@ public class AdjudicarEVNUseCase {
 
             List<ItemNVDTO> nvItems = evn.getItems().stream().map(itemEvn -> {
                 ItemNVDTO itemNv = new ItemNVDTO();
-                itemNv.setProductoId(itemEvn.getProductoId());
+                itemNv.setArticuloId(itemEvn.getArticuloId());
                 itemNv.setProveedorId(itemEvn.getProveedorId());
                 itemNv.setCantidad(itemEvn.getCantidad());
                 itemNv.setPrecioUnitario(itemEvn.getPrecioUnitario().getAmount());

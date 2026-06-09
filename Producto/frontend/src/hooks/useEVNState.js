@@ -23,6 +23,8 @@ export const DEFAULT_ITEM = {
     genero: "",
     tela: "",
     composicion: "",
+    costeoId: null,
+    solicitudCostosId: null,
     costoProducto: 0,
     costoLogo: 0,
     costoOrdenTrabajo: 0,
@@ -47,12 +49,12 @@ export const DEFAULT_OTROS_COSTOS = {
     tomaTallaje: {
         diasRecinto: 1,
         persRecinto: 2,
-        colacionPers: 20000,
-        asignacionPers: 10000,
+        colacionPorPersona: 20000,
+        asignacionPorPersona: 10000,
         peajes: 0,
         bencinaPorLitro: 900,
         kmTotal: 0,
-        rendKmLt: 10,
+        rendimiento: 10,
         costoPersonal: 0,
         costoMovilizacion: 0,
         total: 0
@@ -80,7 +82,7 @@ export const useEVNState = (initialEval = null) => {
     const { clientes } = useClientes();
     const { vendedores } = useVendedores();
     const { solicitudesCostos, loadSolicitudesCostos } = useComercial();
-    const { getAllCosteosBySCOS } = useProduccion();
+    const { getAllCosteosBySCOS, getCosteosDisponiblesEVN, getCosteoResumenEVN } = useProduccion();
 
     // States
     const [items, setItems] = useState([{ ...DEFAULT_ITEM }]);
@@ -107,6 +109,12 @@ export const useEVNState = (initialEval = null) => {
     const [showQuotationModal, setShowQuotationModal] = useState(false);
     const [availableQuotations, setAvailableQuotations] = useState([]);
     const [pendingSCOS, setPendingSCOS] = useState(null);
+
+    // Modal de selección de costeo para ítems OP
+    const [costeosDisponibles, setCosteosDisponibles] = useState([]);
+    const [showCosteoModal, setShowCosteoModal] = useState(false);
+    const [costeoModalItemId, setCosteoModalItemId] = useState(null);
+    const [loadingCosteos, setLoadingCosteos] = useState(false);
 
     useEffect(() => {
         loadSolicitudesCostos();
@@ -231,9 +239,10 @@ export const useEVNState = (initialEval = null) => {
         const currentOtros = otrosCostos || DEFAULT_OTROS_COSTOS;
         const tt = currentOtros.tomaTallaje || DEFAULT_OTROS_COSTOS.tomaTallaje;
 
-        const costoPersonalTT = (Number(tt.diasRecinto || 0) * Number(tt.persRecinto || 0)) * (Number(tt.colacionPers || 0) + Number(tt.asignacionPers || 0));
-        const divisorKmLt = Math.max(Number(tt.rendKmLt || 1), 1);
+        const costoPersonalTT = (Number(tt.diasRecinto || 0) * Number(tt.persRecinto || 0)) * (Number(tt.colacionPorPersona || 0) + Number(tt.asignacionPorPersona || 0));
+        const divisorKmLt = Math.max(Number(tt.rendimiento || 1), 1);
         const costoMovilizacionTT = Number(tt.peajes || 0) + (Number(tt.bencinaPorLitro || 0) * (Number(tt.kmTotal || 0) / divisorKmLt));
+        const costoRecintosTT = (Number(tt.diasRecinto || 0) * Number(tt.persRecinto || 0)) * Number(tt.peajes || 0);
         const totalTT = (isNaN(costoPersonalTT) ? 0 : costoPersonalTT) + (isNaN(costoMovilizacionTT) ? 0 : costoMovilizacionTT);
 
         const listaCinta = currentOtros.pegadoCinta || [];
@@ -303,6 +312,7 @@ export const useEVNState = (initialEval = null) => {
             prorrateoLineal,
             costoPersonalTT,
             costoMovilizacionTT,
+            costoRecintosTT: isNaN(costoRecintosTT) ? 0 : costoRecintosTT,
             totalOtrosCostos,
             itemsCintaCalculados
         };
@@ -352,6 +362,40 @@ export const useEVNState = (initialEval = null) => {
         setItems(prev => prev.map(item => item.id === id ? { ...item, [field]: (typeof value === 'string' && field !== 'tipo' && field !== 'producto' && field !== 'modelo' && field !== 'tela' && field !== 'composicion' && field !== 'genero' && field !== 'codigoInterno' && field !== 'codigoProveedor' && field !== 'proveedor') ? (parseFloat(value) || 0) : value } : item));
     }, []);
 
+    /**
+     * Vincula un costeo a un ítem (tipo OP) y auto-rellena modelo/tela/composición/género
+     * desde el resumen del costeo. Si idCosteo es null, desvincula.
+     */
+    const applyCosteoToItem = useCallback(async (itemId, idCosteo) => {
+        if (!idCosteo) {
+            setItems(prev => prev.map(it => it.id === itemId
+                ? { ...it, costeoId: null, solicitudCostosId: null }
+                : it));
+            return;
+        }
+        try {
+            const resumen = await getCosteoResumenEVN(idCosteo);
+            setItems(prev => prev.map(it => {
+                if (it.id !== itemId) return it;
+                return {
+                    ...it,
+                    costeoId: idCosteo,
+                    solicitudCostosId: resumen?.solicitudCostosId ?? null,
+                    modelo: resumen?.modelo || it.modelo,
+                    tela: resumen?.tela || it.tela,
+                    composicion: resumen?.composicion || it.composicion,
+                    genero: resumen?.genero || it.genero,
+                    producto: it.producto || resumen?.modelo || '',
+                    codigoInterno: resumen?.numeroCosteo || it.codigoInterno,
+                };
+            }));
+            toast.success(`Costeo ${resumen?.numeroCosteo || idCosteo} vinculado al ítem`);
+        } catch (e) {
+            console.error("Error vinculando costeo al ítem:", e);
+            toast.error("No se pudo vincular el costeo");
+        }
+    }, [getCosteoResumenEVN]);
+
     const applySCOSQuotation = useCallback((doc, quote) => {
         setSolicitud(prev => ({
             ...prev,
@@ -377,7 +421,6 @@ export const useEVNState = (initialEval = null) => {
             cant: doc.cantidad || 0,
             tipo: 'SC',
             codigoInterno: doc.numero || "",
-            costeoId: quote?.idCosteo || null,
             costoProducto: totalCosto,
             costoTotalUnitario: totalCosto,
             costoTotal: totalCosto * (doc.cantidad || 0)
@@ -500,8 +543,6 @@ export const useEVNState = (initialEval = null) => {
                 clienteId: parseId(solicitud.clienteId || initialEval?.clienteId),
                 vendedorId: parseId(solicitud.vendedorId || initialEval?.vendedorId) || user?.id || 1,
                 clienteNombre: solicitud.clienteNombre || initialEval?.clienteNombre || '',
-                costeoId: parseId(vinculados.scos[0]?.id || initialEval?.costeoId),
-                solicitudCotizacionId: parseId(vinculados.scot[0]?.id || initialEval?.solicitudCotizacionId),
                 referencia: evalData.referencia || '',
                 estado: 'BORRADOR',
                 porcentajeComision: otrosCostos.porcentajeComision || 0,
@@ -520,12 +561,12 @@ export const useEVNState = (initialEval = null) => {
                 pegadoCinta: (otrosCostos.pegadoCinta || []).reduce((acc, c) => acc + (c.total || 0), 0),
                 pegadoCintaMetadata: JSON.stringify(otrosCostos.pegadoCinta),
 
-                costeoIds: vinculados.scos.map(s => parseId(s.id)).filter(Boolean),
-                solicitudCotizacionIds: vinculados.scot.map(s => parseId(s.id)).filter(Boolean),
                 items: (items || []).map((item, idx) => ({
                     nroItem: idx + 1,
                     productoId: parseId(item.productoId),
                     proveedorId: parseId(item.proveedorId),
+                    costeoId: parseId(item.costeoId),
+                    solicitudCostosId: parseId(item.solicitudCostosId),
                     descripcion: item.producto || item.descripcion || '',
                     modelo: item.modelo || '',
                     tela: item.tela || '',
@@ -593,9 +634,11 @@ export const useEVNState = (initialEval = null) => {
         availableQuotations,
         pendingSCOS,
         totals,
+        costeos,
 
         // Handlers
         handleUpdateItem,
+        applyCosteoToItem,
         handleBulkLink,
         handleSingleSCOSLink,
         applySCOSQuotation,

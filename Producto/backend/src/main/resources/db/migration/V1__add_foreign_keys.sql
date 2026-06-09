@@ -33,9 +33,9 @@ ALTER TABLE produccion_costeos
     ADD CONSTRAINT fk_costeo_solicitud_costos
     FOREIGN KEY (solicitud_costos_id) REFERENCES solicitudes_costos (idscos);
 
-ALTER TABLE evaluaciones_negocio
-    ADD CONSTRAINT fk_evn_costeo
-    FOREIGN KEY (costeo_id) REFERENCES produccion_costeos (id_costeo);
+-- fk_evn_costeo eliminada: costeo_id es ahora BIGINT ARRAY (List<Long>)
+-- Un ARRAY no puede referenciar una columna escalar con FOREIGN KEY.
+-- La integridad EVN ↔ Costeo se gestiona a nivel de aplicación.
 
 ALTER TABLE notas_venta
     ADD CONSTRAINT fk_nv_evaluacion_negocio

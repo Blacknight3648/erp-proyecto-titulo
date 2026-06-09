@@ -28,8 +28,10 @@ export default function DetalleEVN({ initialEval, onBack, isReadOnly }) {
         availableQuotations,
         pendingSCOS,
         totals,
+        costeos,
 
         handleUpdateItem,
+        applyCosteoToItem,
         handleBulkLink,
         applySCOSQuotation,
         toggleDocSelection,
@@ -226,6 +228,20 @@ export default function DetalleEVN({ initialEval, onBack, isReadOnly }) {
                                                 onChange={(e) => handleUpdateItem(item.id, 'codigoInterno', e.target.value)}
                                                 placeholder="Código"
                                             />
+                                            {item.tipo === 'OP' && (
+                                                <div className="mt-1.5">
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => openCosteoSelector(item.id)}
+                                                        className={`w-full px-2 py-1 rounded-lg text-[9px] font-black uppercase tracking-wide transition-all flex items-center justify-center gap-1 ${item.costeoId
+                                                            ? 'bg-amber-100 text-amber-700 border border-amber-300 hover:bg-amber-200'
+                                                            : 'bg-indigo-600 text-white hover:bg-indigo-700'}`}
+                                                    >
+                                                        <Calculator className="w-3 h-3" />
+                                                        {item.costeoId ? `Costeo #${item.costeoId} ✓` : 'Vincular costeo'}
+                                                    </button>
+                                                </div>
+                                            )}
                                         </td>
                                         <td className="px-3 py-3">
                                             <select
@@ -461,131 +477,177 @@ export default function DetalleEVN({ initialEval, onBack, isReadOnly }) {
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                                 {/* Toma de Tallaje */}
                                 <div className="p-6 bg-indigo-50/50 rounded-[2rem] border border-indigo-100 relative group overflow-hidden">
-                                     <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-100/50 rounded-full -mr-16 -mt-16 group-hover:scale-110 transition-transform duration-700" />
-                                     <div className="relative">
-                                         <p className="text-[10px] font-black text-indigo-600 uppercase tracking-widest mb-6 flex items-center">
-                                             <Users className="w-4 h-4 mr-2" />
-                                             Desglose Toma de Tallaje
-                                         </p>
-                                         <div className="grid grid-cols-2 gap-4">
-                                             <div>
-                                                 <p className="text-[8px] font-black text-indigo-400 uppercase mb-1">Días Recinto</p>
-                                                 <input
-                                                     type="number"
-                                                     className="w-full px-3 py-2 bg-white border border-indigo-100 rounded-xl text-[11px] font-black"
-                                                     value={otrosCostos.tomaTallaje.diasRecinto}
-                                                     onChange={(e) => setOtrosCostos({ ...otrosCostos, tomaTallaje: { ...otrosCostos.tomaTallaje, diasRecinto: parseFloat(e.target.value) || 0 } })}
-                                                 />
-                                             </div>
-                                             <div>
-                                                 <p className="text-[8px] font-black text-indigo-400 uppercase mb-1">Personal</p>
-                                                 <input
-                                                     type="number"
-                                                     className="w-full px-3 py-2 bg-white border border-indigo-100 rounded-xl text-[11px] font-black"
-                                                     value={otrosCostos.tomaTallaje.persRecinto}
-                                                     onChange={(e) => setOtrosCostos({ ...otrosCostos, tomaTallaje: { ...otrosCostos.tomaTallaje, persRecinto: parseFloat(e.target.value) || 0 } })}
-                                                 />
-                                             </div>
-                                             <div>
-                                                 <p className="text-[8px] font-black text-indigo-400 uppercase mb-1">Bencina $/Lt</p>
-                                                 <input
-                                                     type="number"
-                                                     className="w-full px-3 py-2 bg-white border border-indigo-100 rounded-xl text-[11px] font-black"
-                                                     value={otrosCostos.tomaTallaje.bencinaPorLitro}
-                                                     onChange={(e) => setOtrosCostos({ ...otrosCostos, tomaTallaje: { ...otrosCostos.tomaTallaje, bencinaPorLitro: parseFloat(e.target.value) || 0 } })}
-                                                 />
-                                             </div>
-                                             <div>
-                                                 <p className="text-[8px] font-black text-indigo-400 uppercase mb-1">Km Totales</p>
-                                                 <input
-                                                     type="number"
-                                                     className="w-full px-3 py-2 bg-white border border-indigo-100 rounded-xl text-[11px] font-black"
-                                                     value={otrosCostos.tomaTallaje.kmTotal}
-                                                     onChange={(e) => setOtrosCostos({ ...otrosCostos, tomaTallaje: { ...otrosCostos.tomaTallaje, kmTotal: parseFloat(e.target.value) || 0 } })}
-                                                 />
-                                             </div>
-                                         </div>
-                                         <div className="mt-6 pt-4 border-t border-indigo-100 flex justify-between items-center">
-                                             <div className="text-[7px] space-y-0.5">
-                                                 <p className="font-black text-indigo-300 uppercase">Personal: ${totals.costoPersonalTT.toLocaleString('es-CL')}</p>
-                                                 <p className="font-black text-indigo-300 uppercase">Movilidad: ${totals.costoMovilizacionTT.toLocaleString('es-CL')}</p>
-                                             </div>
-                                             <div className="bg-indigo-600 text-white px-4 py-2 rounded-xl text-center shadow-lg shadow-indigo-100">
-                                                 <p className="text-[7px] font-black uppercase opacity-80">Total TT</p>
-                                                 <p className="text-sm font-black">${totals.totalTT.toLocaleString('es-CL')}</p>
-                                             </div>
-                                         </div>
-                                     </div>
+                                    <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-100/50 rounded-full -mr-16 -mt-16 group-hover:scale-110 transition-transform duration-700" />
+                                    <div className="relative">
+                                        <p className="text-[10px] font-black text-indigo-600 uppercase tracking-widest mb-6 flex items-center">
+                                            <Users className="w-4 h-4 mr-2" />
+                                            Toma de Tallaje
+                                        </p>
+                                        <div className="grid grid-cols-2 gap-4">
+                                            <div>
+                                                <p className="text-[8px] font-black text-indigo-400 uppercase mb-1">Días x Recinto</p>
+                                                <input
+                                                    type="number"
+                                                    className="w-full px-3 py-2 bg-white border border-indigo-100 rounded-xl text-[11px] font-black"
+                                                    value={otrosCostos.tomaTallaje.diasRecinto}
+                                                    onChange={(e) => setOtrosCostos({ ...otrosCostos, tomaTallaje: { ...otrosCostos.tomaTallaje, diasRecinto: parseFloat(e.target.value) || 0 } })}
+                                                />
+                                            </div>
+                                            <div>
+                                                <p className="text-[8px] font-black text-indigo-400 uppercase mb-1">Personal x recinto</p>
+                                                <input
+                                                    type="number"
+                                                    className="w-full px-3 py-2 bg-white border border-indigo-100 rounded-xl text-[11px] font-black"
+                                                    value={otrosCostos.tomaTallaje.persRecinto}
+                                                    onChange={(e) => setOtrosCostos({ ...otrosCostos, tomaTallaje: { ...otrosCostos.tomaTallaje, persRecinto: parseFloat(e.target.value) || 0 } })}
+                                                />
+                                            </div>
+                                            <div>
+                                                <p className="text-[8px] font-black text-indigo-400 uppercase mb-1">Colaccion x persona</p>
+                                                <input
+                                                    type="number"
+                                                    className="w-full px-3 py-2 bg-white border border-indigo-100 rounded-xl text-[11px] font-black"
+                                                    value={otrosCostos.tomaTallaje.colacionPorPersona}
+                                                    onChange={(e) => setOtrosCostos({ ...otrosCostos, tomaTallaje: { ...otrosCostos.tomaTallaje, colacionPorPersona: parseFloat(e.target.value) || 0 } })}
+                                                />
+                                            </div>
+                                            <div>
+                                                <p className="text-[8px] font-black text-indigo-400 uppercase mb-1">Asignacion x persona</p>
+                                                <input
+                                                    type="number"
+                                                    className="w-full px-3 py-2 bg-white border border-indigo-100 rounded-xl text-[11px] font-black"
+                                                    value={otrosCostos.tomaTallaje.asignacionPorPersona}
+                                                    onChange={(e) => setOtrosCostos({ ...otrosCostos, tomaTallaje: { ...otrosCostos.tomaTallaje, asignacionPorPersona: parseFloat(e.target.value) || 0 } })}
+                                                />
+                                            </div>
+                                            <div>
+                                                <p className="text-[8px] font-black text-indigo-400 uppercase mb-1">Peajes</p>
+                                                <input
+                                                    type="number"
+                                                    className="w-full px-3 py-2 bg-white border border-indigo-100 rounded-xl text-[11px] font-black"
+                                                    value={otrosCostos.tomaTallaje.peajes}
+                                                    onChange={(e) => setOtrosCostos({ ...otrosCostos, tomaTallaje: { ...otrosCostos.tomaTallaje, peajes: parseFloat(e.target.value) || 0 } })}
+                                                />
+                                            </div>
+                                            <div>
+                                                <p className="text-[8px] font-black text-indigo-400 uppercase mb-1">Bencina $/Lt</p>
+                                                <input
+                                                    type="number"
+                                                    className="w-full px-3 py-2 bg-white border border-indigo-100 rounded-xl text-[11px] font-black"
+                                                    value={otrosCostos.tomaTallaje.bencinaPorLitro}
+                                                    onChange={(e) => setOtrosCostos({ ...otrosCostos, tomaTallaje: { ...otrosCostos.tomaTallaje, bencinaPorLitro: parseFloat(e.target.value) || 0 } })}
+                                                />
+                                            </div>
+                                            <div>
+                                                <p className="text-[8px] font-black text-indigo-400 uppercase mb-1">Km Totales(+10%)</p>
+                                                <input
+                                                    type="number"
+                                                    className="w-full px-3 py-2 bg-white border border-indigo-100 rounded-xl text-[11px] font-black"
+                                                    value={otrosCostos.tomaTallaje.kmTotal}
+                                                    onChange={(e) => setOtrosCostos({ ...otrosCostos, tomaTallaje: { ...otrosCostos.tomaTallaje, kmTotal: parseFloat(e.target.value) || 0 } })}
+                                                />
+                                            </div>
+                                            <div>
+                                                <p className="text-[8px] font-black text-indigo-400 uppercase mb-1">Rendimiento KM/LT</p>
+                                                <input
+                                                    type="number"
+                                                    className="w-full px-3 py-2 bg-white border border-indigo-100 rounded-xl text-[11px] font-black"
+                                                    value={otrosCostos.tomaTallaje.rendimiento}
+                                                    onChange={(e) => setOtrosCostos({ ...otrosCostos, tomaTallaje: { ...otrosCostos.tomaTallaje, rendimiento: parseFloat(e.target.value) || 0 } })}
+                                                />
+                                            </div>
+                                            <div>
+                                                <p className="text-[8px] font-black text-indigo-400 uppercase mb-1">Recintos</p>
+                                                <input
+                                                    type="number"
+                                                    className="w-full px-3 py-2 bg-white border border-indigo-100 rounded-xl text-[11px] font-black"
+                                                    value={otrosCostos.tomaTallaje.cantRecintos}
+                                                    onChange={(e) => setOtrosCostos({ ...otrosCostos, tomaTallaje: { ...otrosCostos.tomaTallaje, cantRecintos: parseFloat(e.target.value) || 0 } })}
+                                                />
+                                            </div>
+                                        </div>
+                                        <div className="mt-6 pt-4 border-t border-indigo-100 flex justify-between items-center">
+                                            <div className="text-[7px] space-y-0.5">
+                                                <p className="font-black text-indigo-300 uppercase">Personal: ${totals.costoPersonalTT.toLocaleString('es-CL')}</p>
+                                                <p className="font-black text-indigo-300 uppercase">Movilidad: ${totals.costoMovilizacionTT.toLocaleString('es-CL')}</p>
+                                                <p className="font-black text-indigo-300 uppercase">Recintos x viaje: ${totals.costoRecintosTT.toLocaleString('es-CL')}</p>
+                                            </div>
+                                            <div className="bg-indigo-600 text-white px-4 py-2 rounded-xl text-center shadow-lg shadow-indigo-100">
+                                                <p className="text-[7px] font-black uppercase opacity-80">Total TT</p>
+                                                <p className="text-sm font-black">${totals.totalTT.toLocaleString('es-CL')}</p>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
 
                                 {/* Pegado de Cinta */}
                                 <div className="p-6 bg-purple-50/50 rounded-[2rem] border border-purple-100 relative group overflow-hidden">
-                                     <div className="absolute top-0 right-0 w-32 h-32 bg-purple-100/50 rounded-full -mr-16 -mt-16 group-hover:scale-110 transition-transform duration-700" />
-                                     <div className="relative">
-                                         <p className="text-[10px] font-black text-purple-600 uppercase tracking-widest mb-4 flex items-center">
-                                             <Calculator className="w-4 h-4 mr-2" />
-                                             Costos Pegado de Cinta
-                                         </p>
-                                         <div className="space-y-4">
-                                             {(otrosCostos.pegadoCinta || []).map((itemCinta, idx) => (
-                                                 <div key={itemCinta.id} className="bg-white p-3 rounded-2xl border border-purple-100 shadow-sm flex flex-col gap-2">
-                                                     <p className="text-[9px] font-black text-purple-700 uppercase italic">{itemCinta.etiqueta}</p>
-                                                     <div className="grid grid-cols-3 gap-2">
-                                                         <div>
-                                                             <p className="text-[7px] font-black text-gray-400 uppercase mb-0.5">Cinta $</p>
-                                                             <input
-                                                                 type="number"
-                                                                 className="w-full px-1.5 py-1 bg-white border border-purple-100 rounded text-[9px] font-bold"
-                                                                 value={itemCinta.costoCinta}
-                                                                 onChange={(e) => {
-                                                                     const newLista = [...otrosCostos.pegadoCinta];
-                                                                     newLista[idx].costoCinta = parseFloat(e.target.value) || 0;
-                                                                     setOtrosCostos({ ...otrosCostos, pegadoCinta: newLista });
-                                                                 }}
-                                                             />
-                                                         </div>
-                                                         <div>
-                                                             <p className="text-[7px] font-black text-gray-400 uppercase mb-0.5">MO $</p>
-                                                             <input
-                                                                 type="number"
-                                                                 className="w-full px-1.5 py-1 bg-white border border-purple-100 rounded text-[9px] font-bold"
-                                                                 value={itemCinta.costoMO}
-                                                                 onChange={(e) => {
-                                                                     const newLista = [...otrosCostos.pegadoCinta];
-                                                                     newLista[idx].costoMO = parseFloat(e.target.value) || 0;
-                                                                     setOtrosCostos({ ...otrosCostos, pegadoCinta: newLista });
-                                                                 }}
-                                                             />
-                                                         </div>
-                                                         <div>
-                                                             <p className="text-[7px] font-black text-gray-400 uppercase mb-0.5">MTS</p>
-                                                             <input
-                                                                 type="number"
-                                                                 step="0.1"
-                                                                 className="w-full px-1.5 py-1 bg-white border border-purple-100 rounded text-[9px] font-bold"
-                                                                 value={itemCinta.mtsCinta}
-                                                                 onChange={(e) => {
-                                                                     const newLista = [...otrosCostos.pegadoCinta];
-                                                                     newLista[idx].mtsCinta = parseFloat(e.target.value) || 0;
-                                                                     setOtrosCostos({ ...otrosCostos, pegadoCinta: newLista });
-                                                                 }}
-                                                             />
-                                                         </div>
-                                                     </div>
-                                                 </div>
-                                             ))}
-                                         </div>
-                                         <div className="mt-4 pt-4 border-t border-purple-100 flex justify-between items-center">
-                                             <div className="text-left">
-                                                 <p className="text-[8px] font-black text-purple-400 uppercase leading-none">Total Cinta</p>
-                                                 <p className="text-[8px] text-purple-300 italic font-bold">Sumado a costos OT</p>
-                                             </div>
-                                             <div className="bg-purple-600 text-white px-4 py-2 rounded-xl text-center shadow-lg shadow-purple-100">
-                                                 <p className="text-[7px] font-black uppercase opacity-80 leading-none mb-1">Subtotal</p>
-                                                 <p className="text-sm font-black">${totals.totalPC.toLocaleString('es-CL')}</p>
-                                             </div>
-                                         </div>
-                                     </div>
+                                    <div className="absolute top-0 right-0 w-32 h-32 bg-purple-100/50 rounded-full -mr-16 -mt-16 group-hover:scale-110 transition-transform duration-700" />
+                                    <div className="relative">
+                                        <p className="text-[10px] font-black text-purple-600 uppercase tracking-widest mb-4 flex items-center">
+                                            <Calculator className="w-4 h-4 mr-2" />
+                                            Costos Pegado de Cinta
+                                        </p>
+                                        <div className="space-y-4">
+                                            {(otrosCostos.pegadoCinta || []).map((itemCinta, idx) => (
+                                                <div key={itemCinta.id} className="bg-white p-3 rounded-2xl border border-purple-100 shadow-sm flex flex-col gap-2">
+                                                    <p className="text-[9px] font-black text-purple-700 uppercase italic">{itemCinta.etiqueta}</p>
+                                                    <div className="grid grid-cols-3 gap-2">
+                                                        <div>
+                                                            <p className="text-[7px] font-black text-gray-400 uppercase mb-0.5">Cinta $</p>
+                                                            <input
+                                                                type="number"
+                                                                className="w-full px-1.5 py-1 bg-white border border-purple-100 rounded text-[9px] font-bold"
+                                                                value={itemCinta.costoCinta}
+                                                                onChange={(e) => {
+                                                                    const newLista = [...otrosCostos.pegadoCinta];
+                                                                    newLista[idx].costoCinta = parseFloat(e.target.value) || 0;
+                                                                    setOtrosCostos({ ...otrosCostos, pegadoCinta: newLista });
+                                                                }}
+                                                            />
+                                                        </div>
+                                                        <div>
+                                                            <p className="text-[7px] font-black text-gray-400 uppercase mb-0.5">MO $</p>
+                                                            <input
+                                                                type="number"
+                                                                className="w-full px-1.5 py-1 bg-white border border-purple-100 rounded text-[9px] font-bold"
+                                                                value={itemCinta.costoMO}
+                                                                onChange={(e) => {
+                                                                    const newLista = [...otrosCostos.pegadoCinta];
+                                                                    newLista[idx].costoMO = parseFloat(e.target.value) || 0;
+                                                                    setOtrosCostos({ ...otrosCostos, pegadoCinta: newLista });
+                                                                }}
+                                                            />
+                                                        </div>
+                                                        <div>
+                                                            <p className="text-[7px] font-black text-gray-400 uppercase mb-0.5">MTS</p>
+                                                            <input
+                                                                type="number"
+                                                                step="0.1"
+                                                                className="w-full px-1.5 py-1 bg-white border border-purple-100 rounded text-[9px] font-bold"
+                                                                value={itemCinta.mtsCinta}
+                                                                onChange={(e) => {
+                                                                    const newLista = [...otrosCostos.pegadoCinta];
+                                                                    newLista[idx].mtsCinta = parseFloat(e.target.value) || 0;
+                                                                    setOtrosCostos({ ...otrosCostos, pegadoCinta: newLista });
+                                                                }}
+                                                            />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                        <div className="mt-4 pt-4 border-t border-purple-100 flex justify-between items-center">
+                                            <div className="text-left">
+                                                <p className="text-[8px] font-black text-purple-400 uppercase leading-none">Total Cinta</p>
+                                                <p className="text-[8px] text-purple-300 italic font-bold">Sumado a costos OT</p>
+                                            </div>
+                                            <div className="bg-purple-600 text-white px-4 py-2 rounded-xl text-center shadow-lg shadow-purple-100">
+                                                <p className="text-[7px] font-black uppercase opacity-80 leading-none mb-1">Subtotal</p>
+                                                <p className="text-sm font-black">${totals.totalPC.toLocaleString('es-CL')}</p>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
 

@@ -37,8 +37,6 @@ public class CrearEVNUseCase {
                 new DocumentNumber(numeroFormateado),
                 command.getClienteId(),
                 command.getVendedorId(),
-                command.getCosteoId(),
-                command.getSolicitudCotizacionId(),
                 command.getPorcentajeComision(),
                 command.getClienteNombre(),
                 command.getReferencia(),
@@ -66,7 +64,7 @@ public class CrearEVNUseCase {
                 }
 
                 ItemEVN item = new ItemEVN(
-                        dto.getProductoId(),
+                        dto.getArticuloId(),
                         dto.getProveedorId(),
                         cantidad,
                         precio,
@@ -75,7 +73,9 @@ public class CrearEVNUseCase {
                         dto.getCostoLogo() != null ? dto.getCostoLogo() : java.math.BigDecimal.ZERO,
                         dto.getCostoOrdenTrabajo() != null ? dto.getCostoOrdenTrabajo() : java.math.BigDecimal.ZERO,
                         dto.getTipoItem() != null ? dto.getTipoItem() : "SC",
-                        specs);
+                        specs,
+                        dto.getCosteoId(),
+                        dto.getSolicitudCostosId());
 
                 evn.addItem(item);
             });

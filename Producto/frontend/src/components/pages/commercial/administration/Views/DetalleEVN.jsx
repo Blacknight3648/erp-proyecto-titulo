@@ -12,6 +12,7 @@ import EVNActionBar from "./components/EVNActionBar";
 import EVNVinculacionesPanel from "./components/EVNVinculacionesPanel";
 import EVNResumenSidebar from "./components/EVNResumenSidebar";
 import QuotationSelectionModal from "./components/QuotationSelectionModal";
+import CosteoSelectionModal from "./components/CosteoSelectionModal";
 import { useEVNState, parseId, DEFAULT_ITEM } from '../../../../../hooks/useEVNState';
 
 export default function DetalleEVN({ initialEval, onBack, isReadOnly }) {
@@ -28,10 +29,16 @@ export default function DetalleEVN({ initialEval, onBack, isReadOnly }) {
         availableQuotations,
         pendingSCOS,
         totals,
-        costeos,
+
+        costeosDisponibles,
+        showCosteoModal,
+        costeoModalItemId,
+        loadingCosteos,
+        openCosteoSelector,
+        closeCosteoSelector,
+        handleSelectCosteo,
 
         handleUpdateItem,
-        applyCosteoToItem,
         handleBulkLink,
         applySCOSQuotation,
         toggleDocSelection,
@@ -698,6 +705,15 @@ export default function DetalleEVN({ initialEval, onBack, isReadOnly }) {
                     availableQuotations={availableQuotations}
                     onApply={applySCOSQuotation}
                     onClose={() => setShowQuotationModal(false)}
+                />
+
+                <CosteoSelectionModal
+                    open={showCosteoModal}
+                    costeos={costeosDisponibles}
+                    loading={loadingCosteos}
+                    currentCosteoId={items.find(i => i.id === costeoModalItemId)?.costeoId || null}
+                    onSelect={handleSelectCosteo}
+                    onClose={closeCosteoSelector}
                 />
             </div>
         </div>

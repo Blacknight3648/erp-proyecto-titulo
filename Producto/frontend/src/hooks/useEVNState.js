@@ -396,6 +396,33 @@ export const useEVNState = (initialEval = null) => {
         }
     }, [getCosteoResumenEVN]);
 
+    // Abre el modal de selección de costeo para un ítem OP y carga los disponibles
+    const openCosteoSelector = useCallback(async (itemId) => {
+        setCosteoModalItemId(itemId);
+        setShowCosteoModal(true);
+        setLoadingCosteos(true);
+        try {
+            const data = await getCosteosDisponiblesEVN();
+            setCosteosDisponibles(data || []);
+        } finally {
+            setLoadingCosteos(false);
+        }
+    }, [getCosteosDisponiblesEVN]);
+
+    const closeCosteoSelector = useCallback(() => {
+        setShowCosteoModal(false);
+        setCosteoModalItemId(null);
+    }, []);
+
+    // Selección desde el modal: vincula (o desvincula si idCosteo es null) y cierra
+    const handleSelectCosteo = useCallback(async (idCosteo) => {
+        if (costeoModalItemId != null) {
+            await applyCosteoToItem(costeoModalItemId, idCosteo);
+        }
+        setShowCosteoModal(false);
+        setCosteoModalItemId(null);
+    }, [costeoModalItemId, applyCosteoToItem]);
+
     const applySCOSQuotation = useCallback((doc, quote) => {
         setSolicitud(prev => ({
             ...prev,
@@ -634,11 +661,18 @@ export const useEVNState = (initialEval = null) => {
         availableQuotations,
         pendingSCOS,
         totals,
-        costeos,
+
+        // Selección de costeo (ítems OP)
+        costeosDisponibles,
+        showCosteoModal,
+        costeoModalItemId,
+        loadingCosteos,
+        openCosteoSelector,
+        closeCosteoSelector,
+        handleSelectCosteo,
 
         // Handlers
         handleUpdateItem,
-        applyCosteoToItem,
         handleBulkLink,
         handleSingleSCOSLink,
         applySCOSQuotation,

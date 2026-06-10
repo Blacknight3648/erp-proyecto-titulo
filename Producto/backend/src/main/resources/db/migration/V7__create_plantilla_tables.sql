@@ -40,7 +40,7 @@ CREATE TABLE IF NOT EXISTS descripcion_plantilla (
         REFERENCES plantilla(id_plantilla)
 );
 
-CREATE INDEX IF NOT EXISTS idx_descripcion_scos ON descripcion_plantilla(id_scos);
+CREATE INDEX idx_descripcion_scos ON descripcion_plantilla(id_scos);
 
 -- Vínculos 1:N con DescripcionPlantilla
 -- Permite asociar varios materiales (telas o accesorios) a un campo
@@ -54,4 +54,4 @@ CREATE TABLE IF NOT EXISTS scos_plantilla_material_vinculo (
         REFERENCES descripcion_plantilla(id_descripcion_plantilla) ON DELETE CASCADE
 );
 
-CREATE INDEX IF NOT EXISTS idx_vinculo_descripcion ON scos_plantilla_material_vinculo(id_descripcion_plantilla);
+CREATE INDEX idx_vinculo_descripcion ON scos_plantilla_material_vinculo(id_descripcion_plantilla);

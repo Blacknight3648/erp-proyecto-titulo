@@ -1,16 +1,15 @@
--- Mueve el vínculo Costeo/SCOS desde la EVN (columnas ARRAY que rompían Flyway)
--- hacia el ítem de la EVN, donde realmente pertenece (1 costeo por ítem tipo OP).
-
--- Nuevas columnas en el ítem de la EVN (sin FK: desacople cross-módulo con producción)
-ALTER TABLE evaluacion_negocio_items
-    ADD COLUMN IF NOT EXISTS costeo_id BIGINT;
-
-ALTER TABLE evaluacion_negocio_items
-    ADD COLUMN IF NOT EXISTS solicitud_costos_id BIGINT;
-
--- Eliminar las columnas ARRAY obsoletas de la cabecera de la EVN
-ALTER TABLE evaluaciones_negocio
-    DROP COLUMN IF EXISTS costeo_id;
-
-ALTER TABLE evaluaciones_negocio
-    DROP COLUMN IF EXISTS solicitud_cotizacion_id;
+-- V10: Vínculo Costeo/SCOS en el ítem de la EVN.
+--
+-- Esta migración quedó como no-op tras la normalización a MySQL:
+--
+--   * `evaluacion_negocio_items.costeo_id` y `.solicitud_costos_id` ahora están
+--     mapeadas en EvaluacionNegocioItemJpaEntity (@Column), por lo que Hibernate
+--     (ddl-auto=update) las crea. El `ADD COLUMN IF NOT EXISTS` era redundante y
+--     MySQL no lo soporta → se retiró.
+--
+--   * Los `DROP COLUMN IF EXISTS` sobre `evaluaciones_negocio` (columnas ARRAY
+--     legacy) eran limpieza in-place; en un despliegue fresco esas columnas no
+--     existen y MySQL no soporta DROP COLUMN IF EXISTS → se retiró. Si se migra
+--     una instancia antigua con esas columnas, ejecutar el DROP manualmente.
+--
+-- Se conserva el archivo (sin sentencias) para no alterar el versionado Flyway.

@@ -18,6 +18,7 @@ public class NotaVentaItemJpaEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id_item_nv")
     private Long idItemNV;
 
     @Column(name = "nro_item")

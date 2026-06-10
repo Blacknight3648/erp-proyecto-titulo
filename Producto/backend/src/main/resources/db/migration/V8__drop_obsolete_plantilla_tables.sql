@@ -22,9 +22,9 @@ DROP TABLE IF EXISTS scos_plantilla_accesorios;
 DROP TABLE IF EXISTS scos_plantilla_logotipos;
 DROP TABLE IF EXISTS scos_plantilla;
 
--- ── SCOT Prendas: quitar FK obsoleta solicitud_costos_id ────────────────
--- La relación SCOTPrendaLista→SolicitudCostos se eliminó al separar contextos.
--- Si las columnas existían y H2/MySQL las creó, las eliminamos. SCOT prendas
--- conservan solo la FK a solicitudes_cotizacion (su único owner legítimo).
-ALTER TABLE scot_prendas DROP COLUMN IF EXISTS solicitud_costos_id;
-ALTER TABLE scot_prendas DROP COLUMN IF EXISTS solicitud_cotizacion_id;
+-- ── SCOT Prendas: limpieza de columnas legacy ───────────────────────────
+-- Antes se hacía aquí `ALTER TABLE scot_prendas DROP COLUMN IF EXISTS ...`.
+-- Se retiró: MySQL no soporta DROP COLUMN IF EXISTS, y en un despliegue fresco
+-- (greenfield MySQL / H2 en memoria) esas columnas legacy nunca son creadas por
+-- las entidades actuales, por lo que el DROP era un no-op. Si en el futuro se
+-- migra una instancia con esas columnas, ejecutar el DROP manualmente.

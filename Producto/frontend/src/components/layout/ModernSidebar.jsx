@@ -157,20 +157,28 @@ export default function ModernSidebar({ isOpen, setIsOpen }) {
                   className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all ${
                     item.disabled
                       ? 'opacity-40 cursor-not-allowed text-sidebar-foreground/40'
-                      : isSubmenuOpen || isActive
-                        ? 'bg-sidebar-active-bg text-sidebar-primary'
-                        : 'text-sidebar-foreground hover:bg-sidebar-hover-bg'
+                      : isActive
+                        ? 'active bg-sidebar-active-bg text-white font-bold shadow-sm' 
+                        : isSubmenuOpen
+                          ? 'bg-sidebar-active-bg/60 text-sidebar-primary'
+                          : 'text-sidebar-foreground hover:bg-sidebar-hover-bg'
                   }`}
                 >
                   <Icon className={`w-5 h-5 flex-shrink-0 ${
-                    item.disabled ? 'text-sidebar-foreground/30' : isActive || isSubmenuOpen ? 'text-sidebar-primary' : 'text-sidebar-foreground/50'
+                    item.disabled 
+                      ? 'text-sidebar-foreground/30' 
+                      : isActive 
+                        ? 'text-white' 
+                        : isSubmenuOpen 
+                          ? 'text-sidebar-primary' 
+                          : 'text-sidebar-foreground/50'
                   }`} />
                   {isOpen && (
                     <>
                       <span className="text-sm font-semibold flex-1 text-left">{item.label}</span>
                       {item.disabled
                         ? <span className="text-[9px] font-bold uppercase tracking-wider text-sidebar-foreground/40 bg-sidebar-hover-bg px-1.5 py-0.5 rounded">Pronto</span>
-                        : <ChevronRight className={`w-4 h-4 transition-transform ${isSubmenuOpen ? 'rotate-90' : ''}`} />
+                        : <ChevronRight className={`w-4 h-4 transition-transform ${isSubmenuOpen ? 'rotate-90' : ''} ${isActive ? 'text-white' : ''}`} />
                       }
                     </>
                   )}
@@ -191,12 +199,16 @@ export default function ModernSidebar({ isOpen, setIsOpen }) {
                   className={({ isActive }) => `
                     flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all
                     ${isActive
-                      ? 'bg-sidebar-active-bg text-sidebar-primary'
+                      ? 'active bg-sidebar-active-bg text-white font-bold shadow-sm'
                       : 'text-sidebar-foreground hover:bg-sidebar-hover-bg'}
                   `}
                 >
-                  <Icon className={`w-5 h-5 flex-shrink-0 ${isActive ? 'text-sidebar-primary' : 'text-sidebar-foreground/50'}`} />
-                  {isOpen && <span className="text-sm font-semibold">{item.label}</span>}
+                  {({ isActive }) => (
+                    <>
+                      <Icon className={`w-5 h-5 flex-shrink-0 ${isActive ? 'text-white' : 'text-sidebar-foreground/50'}`} />
+                      {isOpen && <span className="text-sm">{item.label}</span>}
+                    </>
+                  )}
                 </NavLink>
               )}
 
@@ -208,9 +220,9 @@ export default function ModernSidebar({ isOpen, setIsOpen }) {
                       key={subitem.path}
                       to={subitem.path}
                       className={({ isActive }) => `
-                        block px-3 py-2 rounded-lg text-xs font-medium transition-colors
+                        block px-3 py-2 rounded-lg text-xs transition-colors
                         ${isActive
-                          ? 'bg-sidebar-active-bg text-sidebar-primary'
+                          ? 'active bg-sidebar-active-bg text-white font-bold shadow-sm'
                           : 'text-sidebar-foreground/80 hover:bg-sidebar-hover-bg'}
                       `}
                     >
@@ -224,7 +236,7 @@ export default function ModernSidebar({ isOpen, setIsOpen }) {
         })}
       </nav>
 
-      {/* User Info (Minimalistized version for sidebar) */}
+      {/* User Info */}
       {isOpen && (
         <div className="p-3 border-t border-sidebar-border">
           <div className="flex items-center gap-3 p-3 bg-sidebar-hover-bg/40 rounded-xl">

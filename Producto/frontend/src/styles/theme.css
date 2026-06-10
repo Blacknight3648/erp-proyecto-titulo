@@ -86,7 +86,7 @@
   ========================================= */
 
   --card:               rgba(255, 255, 255, 0.85);
-  --card-foreground:    #1d1d1f;
+  --card-foreground:    #cccccc;
 
   --popover:            #ffffff;
   --popover-foreground: #1d1d1f;
@@ -587,8 +587,8 @@
 
   .card-enterprise {
     background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 14px; /* El radio de curvatura clásico de iOS (squircle-like) */
+    border: 0.1px solid var(--border);
+    border-radius: 20px; /* El radio de curvatura clásico de iOS (squircle-like) */
     box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.05);
     transition:
       box-shadow var(--transition-normal),
@@ -622,4 +622,46 @@
   .text-sidebar-foreground\/30 {
     color: color-mix(in srgb, var(--sidebar-foreground) 30%, transparent) !important;
   }
+
+  /* =========================================================
+     SIDEBAR ACTIVE ITEMS (Pearl White with Glow & Premium Highlight)
+     Asegura que el elemento activo se ilumine de forma tridimensional
+  ========================================================= */
+  aside .active,
+  aside a.active {
+    color: #ffffff !important;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.12) 0%, rgba(59, 130, 246, 0.25) 100%) !important;
+    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+    box-shadow: 
+      0 4px 15px -1px rgba(59, 130, 246, 0.3),
+      0 0 12px 1px rgba(255, 255, 255, 0.08),
+      inset 0 1px 0 rgba(255, 255, 255, 0.2) !important;
+    backdrop-filter: blur(10px);
+    border-radius: 12px !important;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  }
+
+  .dark aside .active,
+  .dark aside a.active {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(10, 132, 255, 0.22) 100%) !important;
+    border: 1px solid rgba(255, 255, 255, 0.12) !important;
+    box-shadow: 
+      0 4px 15px -1px rgba(10, 132, 255, 0.4),
+      0 0 12px 1px rgba(255, 255, 255, 0.05),
+      inset 0 1px 0 rgba(255, 255, 255, 0.15) !important;
+  }
+
+  aside .active span,
+  aside a.active span {
+    color: #ffffff !important;
+    font-weight: 700 !important;
+    text-shadow: 0 0 8px rgba(255, 255, 255, 0.4) !important;
+  }
+
+  aside .active svg,
+  aside a.active svg {
+    color: #ffffff !important;
+    filter: drop-shadow(0 0 6px rgba(255, 255, 255, 0.6)) !important;
+  }
 }
+

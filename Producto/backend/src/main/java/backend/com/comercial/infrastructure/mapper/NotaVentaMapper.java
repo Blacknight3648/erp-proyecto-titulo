@@ -45,6 +45,7 @@ public class NotaVentaMapper {
         if (entity == null)
             return null;
         return new ItemNV(
+                entity.getIdItemNV(),
                 entity.getNroItem(),
                 entity.getArticulo() != null ? entity.getArticulo().getIdArticulo() : null,
                 entity.getModelo(),
@@ -57,7 +58,7 @@ public class NotaVentaMapper {
                 entity.getProveedor() != null ? entity.getProveedor().getProveedorId() : null,
                 entity.getLlevaLogo(),
                 entity.getTipoItem(),
-                entity.getIsPersonalized(), // JpaEntity mantiene isPersonalized por ahora
+                entity.getRequiereOt(),
                 entity.getDetalleOt(),
                 entity.getLogoDetalle(),
                 entity.getCantidad(),
@@ -115,6 +116,9 @@ public class NotaVentaMapper {
 
         domain.getItems().forEach(itemDomain -> {
             NotaVentaItemJpaEntity itemEntity = new NotaVentaItemJpaEntity();
+            if (itemDomain.getIdItemNV() != null) {
+                itemEntity.setIdItemNV(itemDomain.getIdItemNV());
+            }
             itemEntity.setNroItem(itemDomain.getNroItem());
             if (itemDomain.getArticuloId() != null) {
                 ArticuloJpaEntity a = new ArticuloJpaEntity();
@@ -135,7 +139,7 @@ public class NotaVentaMapper {
             }
             itemEntity.setLlevaLogo(itemDomain.getLlevaLogo());
             itemEntity.setTipoItem(itemDomain.getTipoItem());
-            itemEntity.setIsPersonalized(itemDomain.getGeneraOt());
+            itemEntity.setRequiereOt(itemDomain.getRequiereOt());
             itemEntity.setDetalleOt(itemDomain.getDetalleOt());
             itemEntity.setLogoDetalle(itemDomain.getLogoDetalle());
             itemEntity.setCantidad(itemDomain.getCantidad());

@@ -78,7 +78,7 @@ public class AdjudicarEVNUseCase {
                             .findFirst().ifPresent(s -> itemNv.setTalla(s.getValor()));
                 }
 
-                itemNv.setGeneraOt(true); // Por defecto para Pre-NV
+                itemNv.setRequiereOt(true); // Por defecto para Pre-NV
                 return itemNv;
             }).collect(Collectors.toList());
 

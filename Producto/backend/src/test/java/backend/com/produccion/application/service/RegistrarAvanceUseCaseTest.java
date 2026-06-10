@@ -53,7 +53,7 @@ class RegistrarAvanceUseCaseTest {
     @BeforeEach
     void setUp() {
         otBase = OrdenTrabajo.crearParaFase(
-                new DocumentNumber(1L), 1L, 1L, 1, FaseProduccion.CORTE, 100, null);
+                new DocumentNumber(1L), 1L, 1L, 1L, 1, FaseProduccion.CORTE, 100, null);
     }
 
     private RegistrarAvanceCommand cmd(Integer prod, Integer merma, String motivo, String usuario) {

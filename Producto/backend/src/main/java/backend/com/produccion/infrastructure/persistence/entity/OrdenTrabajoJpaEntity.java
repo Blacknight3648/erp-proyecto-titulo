@@ -24,6 +24,13 @@ public class OrdenTrabajoJpaEntity extends AuditableJpaEntity {
     @Column(name = "nota_venta_id", nullable = false)
     private Long notaVentaId;
 
+    // FK directa al ítem de la NV (notas_venta_items.id_item_nv).
+    // Columna simple para no acoplar entidades entre bounded contexts;
+    // la constraint FK se declara a nivel de BD (ver V12__ot_item_nv_fk.sql).
+    // Nullable: las OT históricas se rellenan por backfill en la migración.
+    @Column(name = "item_nv_id")
+    private Long itemNVId;
+
     @Column(name = "orden_produccion_id")
     private Long ordenProduccionId;
 

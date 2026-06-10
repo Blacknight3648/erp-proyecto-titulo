@@ -770,7 +770,7 @@
 | proveedor_id           | BIGINT        | FK → proveedores(proveedor_id)    |
 | lleva_logo             | VARCHAR(50)   |                                    |
 | tipo_item              | VARCHAR(30)   |                                    |
-| is_personalized        | BOOLEAN       |                                    |
+| requiere_ot            | BOOLEAN       |                                    |
 | detalle_ot             | TEXT          |                                    |
 | logo_detalle           | TEXT          |                                    |
 | cantidad               | INTEGER       | NOT NULL                           |
@@ -840,6 +840,7 @@
 | id_ot               | BIGINT      | PK, AUTO                           |
 | numero_ot           | VARCHAR(30) | NOT NULL                           |
 | nota_venta_id       | BIGINT      | NOT NULL, FK → notas_venta(id_nv) |
+| item_nv_id          | BIGINT      | FK → notas_venta_items(id_item_nv) ON DELETE SET NULL |
 | orden_produccion_id | BIGINT      | FK → orden_produccion(id_op)      |
 | nro_item            | INTEGER     |                                    |
 | tipo_ot             | VARCHAR(20) | NOT NULL, ENUM(TipoOT)             |
@@ -1173,6 +1174,7 @@
 | orden_produccion              | 1 : N        | produccion_orden_items           | items.orden_produccion_id                        |
 | articulo                      | 1 : N        | produccion_orden_items           | items.articulo_id                                |
 | notas_venta                   | 1 : N        | produccion_orden_trabajo         | ot.nota_venta_id                                 |
+| notas_venta_items             | 1 : N        | produccion_orden_trabajo         | ot.item_nv_id                                    |
 | orden_produccion              | 1 : N        | produccion_orden_trabajo         | ot.orden_produccion_id                           |
 | produccion_orden_trabajo      | 1 : N        | produccion_registro_avance       | avance.orden_trabajo_id                          |
 | solicitudes_costos            | 1 : N        | produccion_costeos               | costeos.solicitud_costos_id                      |

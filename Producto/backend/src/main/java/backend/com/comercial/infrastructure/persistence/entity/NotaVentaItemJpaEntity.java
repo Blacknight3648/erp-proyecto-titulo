@@ -62,8 +62,8 @@ public class NotaVentaItemJpaEntity {
     @Column(name = "tipo_item", length = 30)
     private String tipoItem;
 
-    @Column(name = "is_personalized")
-    private Boolean isPersonalized;
+    @Column(name = "requiere_ot")
+    private Boolean requiereOt;
 
     @Column(name = "detalle_ot", columnDefinition = "TEXT")
     private String detalleOt;

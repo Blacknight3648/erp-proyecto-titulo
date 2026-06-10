@@ -20,7 +20,7 @@ public class ItemNVDTO {
     private String llevaLogo;
     private String logoDetalle;
     private String itemType; // OP, SC, o SCI
-    private Boolean generaOt;
+    private Boolean requiereOt;
     private String detalleOt;
     private List<TallaDTO> tallas;
     private BigDecimal precioUnitario;

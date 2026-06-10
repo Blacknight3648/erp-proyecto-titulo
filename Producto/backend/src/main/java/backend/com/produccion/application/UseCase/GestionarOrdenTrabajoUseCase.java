@@ -23,8 +23,9 @@ public class GestionarOrdenTrabajoUseCase {
             return;
 
         for (ItemNV item : nv.getItems()) {
-            // Si el ítem es personalizado o se indica explícitamente detalle OT
-            if (Boolean.TRUE.equals(item.getGeneraOt()) || item.getDetalleOt() != null) {
+            // La OT de modificación se genera cuando el ítem la requiere explícitamente,
+            // sin importar si es prenda lista o por confeccionar.
+            if (Boolean.TRUE.equals(item.getRequiereOt())) {
 
                 // Evitar duplicados (simplificado: chequear si ya existe OT para esta NV e
                 // ítem)
@@ -33,8 +34,9 @@ public class GestionarOrdenTrabajoUseCase {
                 OrdenTrabajo ot = OrdenTrabajo.crearParaItem(
                         nv.getNumeroNV(),
                         nv.getIdNV(),
+                        item.getIdItemNV(),
                         item.getNroItem(),
-                        item.getDetalleOt() != null ? item.getDetalleOt() : "Personalización requerida");
+                        item.getDetalleOt() != null ? item.getDetalleOt() : "Modificación requerida");
                 repository.save(ot);
             }
         }

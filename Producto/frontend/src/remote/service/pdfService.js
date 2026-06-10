@@ -166,7 +166,7 @@ export const pdfService = {
             item.supplier || 'SIN ASIGNAR',
             `${item.sizes?.XS || 0}/${item.sizes?.S || 0}/${item.sizes?.M || 0}/${item.sizes?.L || 0}/${item.sizes?.XL || 0}`,
             item.quantity,
-            item.generaOt ? `[OT] ${item.detalleOt || 'Requerida'}` : 'N/A'
+            item.requiereOt ? `[OT] ${item.detalleOt || 'Requerida'}` : 'N/A'
         ]);
 
         doc.autoTable({

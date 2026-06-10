@@ -13,26 +13,26 @@
 --   * FK recepcion.os_id   ON DELETE CASCADE
 -- =============================================================================
 
-CREATE INDEX IF NOT EXISTS idx_os_estado
+CREATE INDEX idx_os_estado
     ON produccion_ordenes_servicio (estado);
 
-CREATE INDEX IF NOT EXISTS idx_os_op
+CREATE INDEX idx_os_op
     ON produccion_ordenes_servicio (op_id);
 
-CREATE INDEX IF NOT EXISTS idx_os_proveedor
+CREATE INDEX idx_os_proveedor
     ON produccion_ordenes_servicio (proveedor_id);
 
-CREATE INDEX IF NOT EXISTS idx_os_tipo
+CREATE INDEX idx_os_tipo
     ON produccion_ordenes_servicio (tipo_servicio);
 
-CREATE INDEX IF NOT EXISTS idx_desp_os
+CREATE INDEX idx_desp_os
     ON produccion_despachos_os (os_id);
 
-CREATE INDEX IF NOT EXISTS idx_desp_fecha
+CREATE INDEX idx_desp_fecha
     ON produccion_despachos_os (fecha_despacho);
 
-CREATE INDEX IF NOT EXISTS idx_rec_os
+CREATE INDEX idx_rec_os
     ON produccion_recepciones_os (os_id);
 
-CREATE INDEX IF NOT EXISTS idx_rec_fecha
+CREATE INDEX idx_rec_fecha
     ON produccion_recepciones_os (fecha_recepcion);

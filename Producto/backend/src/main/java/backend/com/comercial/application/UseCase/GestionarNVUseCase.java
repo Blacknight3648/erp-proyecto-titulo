@@ -4,6 +4,7 @@ import backend.com.comercial.application.dto.NVResponse;
 import backend.com.comercial.domain.enums.EstadoNV;
 import backend.com.comercial.domain.model.NotaVenta;
 import backend.com.comercial.domain.repository.NotaVentaRepository;
+import backend.com.produccion.application.UseCase.GestionarOrdenTrabajoUseCase;
 import backend.com.shared.application.service.HistorialEstadoService;
 import backend.com.shared.exception.EntityNotFoundException;
 import backend.com.shared.exception.ValidationException;
@@ -19,6 +20,7 @@ public class GestionarNVUseCase {
 
     private final NotaVentaRepository repository;
     private final HistorialEstadoService historialService;
+    private final GestionarOrdenTrabajoUseCase gestionarOTUseCase;
 
     @Transactional
     public NVResponse aprobar(Long id, String aprobador, String observacion) {
@@ -31,6 +33,11 @@ public class GestionarNVUseCase {
         EstadoNV anterior = nv.getEstado();
         nv.aprobar();
         repository.save(nv);
+
+        // Al aprobar la NV se generan las OT de modificación de los ítems que las
+        // requieren (requiereOt). aprobar() solo transiciona desde BORRADOR (one-shot),
+        // por lo que esto no duplica OT en reaprobaciones.
+        gestionarOTUseCase.generarDesdeNotaVenta(nv);
 
         historialService.registrar(TIPO_ENTIDAD, nv.getIdNV(),
                 anterior != null ? anterior.name() : null,

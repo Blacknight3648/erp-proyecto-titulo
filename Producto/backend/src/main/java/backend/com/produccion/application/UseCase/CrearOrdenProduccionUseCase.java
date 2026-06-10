@@ -127,10 +127,12 @@ public class CrearOrdenProduccionUseCase {
         fases.add(FaseProduccion.CORTE);
         fases.add(FaseProduccion.CONFECCION);
         if (llevaLogo) {
-            // Si la marca explícita lo indica, asignamos bordado por defecto;
-            // si el detalle menciona "estampado" se agrega estampado en su lugar.
-            String detalle = (itemNV.getDetalleOt() != null ? itemNV.getDetalleOt() : "").toLowerCase();
-            if (detalle.contains("estampado")) {
+            // La técnica de aplicación del logo (bordado/estampado) se decide a partir de
+            // la info de logo del ítem (llevaLogo/logoDetalle), NO del detalle de OT
+            // (que describe modificaciones de la prenda, un concepto distinto).
+            String infoLogo = ((itemNV.getLlevaLogo() != null ? itemNV.getLlevaLogo() : "") + " "
+                    + (itemNV.getLogoDetalle() != null ? itemNV.getLogoDetalle() : "")).toLowerCase();
+            if (infoLogo.contains("estampado")) {
                 fases.add(FaseProduccion.ESTAMPADO);
             } else {
                 fases.add(FaseProduccion.BORDADO);
@@ -145,6 +147,7 @@ public class CrearOrdenProduccionUseCase {
             OrdenTrabajo ot = OrdenTrabajo.crearParaFase(
                     new backend.com.shared.valueobjects.DocumentNumber(numeroOT),
                     notaVentaId,
+                    itemNV.getIdItemNV(),
                     op.getIdOP(),
                     itemNV.getNroItem(),
                     fase,

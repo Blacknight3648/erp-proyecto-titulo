@@ -57,6 +57,7 @@ public class CrearNVUseCase {
                                 .collect(Collectors.toList());
 
                 ItemNV item = new ItemNV(
+                        null, // idItemNV: lo asigna la BD al persistir
                         i + 1,
                         dto.getArticuloId(),
                         dto.getModelo(),
@@ -69,7 +70,7 @@ public class CrearNVUseCase {
                         dto.getProveedorId(),
                         dto.getLlevaLogo(),
                         dto.getItemType() != null ? dto.getItemType() : "OP",
-                        dto.getGeneraOt(),
+                        dto.getRequiereOt(),
                         dto.getDetalleOt(),
                         dto.getLogoDetalle(),
                         dto.getCantidad(),

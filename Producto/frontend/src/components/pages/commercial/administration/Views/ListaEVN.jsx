@@ -14,6 +14,14 @@ import { EvaluacionNegocioService } from '../../../../../remote/service/Evaluaci
 import { useAuth } from '../../../../../contexts/AuthContext';
 import { toast } from 'sonner';
 import FirmaAprobacionModal from './Modals/FirmaAprobacionModal';
+import {
+    Card,
+    CardHeader,
+    CardTitle,
+    CardDescription,
+    CardContent,
+    CardFooter
+} from '../../../../ui/card';
 
 // El backend emite estos estados (EstadoEVN.java):
 // BORRADOR | EVALUACION | APROBADA | ADJUDICADA | RECHAZADA | CANCELADA
@@ -180,74 +188,77 @@ export default function ListaEVN({ onNueva, onEditar, onVer }) {
                             : 'bg-red-50';
 
                         return (
-                            <div
+                            <Card
                                 key={ev.evaluacionNegocioId}
-                                className="bg-white p-7 rounded-[2.5rem] border border-gray-100 hover:shadow-xl hover:shadow-gray-100 transition-all flex flex-col"
+                                className="bg-white p-7 rounded-[2.5rem] border border-gray-100 hover:shadow-xl hover:shadow-gray-100 transition-all flex flex-col gap-6"
                             >
-                                <div className="flex justify-between items-start mb-5">
-                                    <span className="text-[11px] font-black text-indigo-600 bg-indigo-50 px-2.5 py-1 rounded-xl shadow-sm border border-indigo-100 uppercase tracking-widest">
-                                        EVN-{formatNumeroEVN(ev.numeroEvn ?? ev.numero)}
-                                    </span>
-                                    <span className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest ${estadoStyle.badge}`}>
-                                        <span className={`w-1.5 h-1.5 rounded-full ${estadoStyle.dot}`} />
-                                        {estado}
-                                    </span>
-                                </div>
-
-                                <div className="mb-6 flex-1">
-                                    <h4 className="text-xl font-black text-gray-800 leading-tight uppercase mb-1">
-                                        {ev.clienteNombre || 'Sin cliente'}
-                                    </h4>
-                                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest flex items-center gap-1 italic">
-                                        GESTIONADO POR: <span className="text-indigo-500 not-italic">{ev.vendedorNombre || 'SISTEMA'}</span>
-                                    </p>
-                                </div>
-
-                                <div className="grid grid-cols-2 gap-3 mb-5">
-                                    <div className="bg-slate-800 px-3 py-3 rounded-2xl">
-                                        <p className="text-[9px] font-black text-slate-400 uppercase mb-1">Monto Total Venta</p>
-                                        <p className="text-base font-black text-white tabular-nums">
-                                            {montoTotal > 0 ? `$${montoTotal.toLocaleString('es-CL')}` : <span className="text-slate-500 text-xs">Sin cálculo</span>}
-                                        </p>
+                                <CardHeader className="p-0 flex flex-col gap-4">
+                                    <div className="flex justify-between items-center w-full">
+                                        <span className="text-[11px] font-black text-indigo-600 bg-indigo-50 px-2.5 py-1 rounded-xl shadow-sm border border-indigo-100 uppercase tracking-widest">
+                                            EVN-{formatNumeroEVN(ev.numeroEvn ?? ev.numero)}
+                                        </span>
+                                        <span className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest ${estadoStyle.badge}`}>
+                                            <span className={`w-1.5 h-1.5 rounded-full ${estadoStyle.dot}`} />
+                                            {estado}
+                                        </span>
                                     </div>
-                                    <div className={`${margenBg} px-3 py-3 rounded-2xl`}>
-                                        <p className={`text-[9px] font-black uppercase mb-1 ${margenColor}`}>Margen s/Venta</p>
-                                        <p className={`text-base font-black tabular-nums ${margenColor}`}>
-                                            {margenNum !== null ? `${margenNum.toFixed(1)}%` : <span className="text-gray-400 text-xs">—</span>}
-                                        </p>
+                                    <div>
+                                        <CardTitle className="text-xl font-black text-gray-800 leading-tight uppercase mb-1">
+                                            {ev.clienteNombre || 'Sin cliente'}
+                                        </CardTitle>
+                                        <CardDescription className="text-[10px] font-bold text-gray-400 uppercase tracking-widest flex items-center gap-1 italic">
+                                            GESTIONADO POR: <span className="text-indigo-500 not-italic">{ev.vendedorNombre || 'SISTEMA'}</span>
+                                        </CardDescription>
                                     </div>
-                                </div>
+                                </CardHeader>
 
-                                {(ev.costeoId || ev.solicitudCotizacionId) && (
-                                    <div className="flex flex-wrap gap-1.5 mb-4">
-                                        {ev.costeoId && (
-                                            <span className="flex items-center gap-1 px-2.5 py-1 bg-amber-50 border border-amber-200 text-amber-700 rounded-full text-[9px] font-black uppercase tracking-widest">
-                                                <Calculator className="w-2.5 h-2.5" />
-                                                SCOS #{ev.costeoId}
-                                            </span>
-                                        )}
-                                        {ev.solicitudCotizacionId && (
-                                            <span className="flex items-center gap-1 px-2.5 py-1 bg-blue-50 border border-blue-200 text-blue-700 rounded-full text-[9px] font-black uppercase tracking-widest">
-                                                <FileText className="w-2.5 h-2.5" />
-                                                SCOT #{ev.solicitudCotizacionId}
-                                            </span>
-                                        )}
+                                <CardContent className="p-0 flex-1 flex flex-col justify-between gap-5">
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div className="bg-slate-800 px-4 py-3.5 rounded-2xl shadow-inner flex flex-col justify-between">
+                                            <p className="text-[9px] font-black text-slate-400 uppercase mb-1">Monto Total Venta</p>
+                                            <p className="text-lg font-black text-white tabular-nums">
+                                                {montoTotal > 0 ? `$${montoTotal.toLocaleString('es-CL')}` : <span className="text-slate-500 text-xs">Sin cálculo</span>}
+                                            </p>
+                                        </div>
+                                        <div className={`${margenBg} px-4 py-3.5 rounded-2xl flex flex-col justify-between transition-colors`}>
+                                            <p className={`text-[9px] font-black uppercase mb-1 ${margenColor}`}>Margen s/Venta</p>
+                                            <p className={`text-lg font-black tabular-nums ${margenColor}`}>
+                                                {margenNum !== null ? `${margenNum.toFixed(1)}%` : <span className="text-gray-400 text-xs">—</span>}
+                                            </p>
+                                        </div>
                                     </div>
-                                )}
 
-                                <div className="flex flex-col gap-2 pt-4 border-t border-gray-50">
-                                    <div className="flex gap-2">
+                                    {(ev.costeoId || ev.solicitudCotizacionId) && (
+                                        <div className="flex flex-wrap gap-1.5">
+                                            {ev.costeoId && (
+                                                <span className="flex items-center gap-1.5 px-3 py-1 bg-amber-50 border border-amber-200 text-amber-700 rounded-full text-[9px] font-black uppercase tracking-widest">
+                                                    <Calculator className="w-2.5 h-2.5" />
+                                                    SCOS #{ev.costeoId}
+                                                </span>
+                                            )}
+                                            {ev.solicitudCotizacionId && (
+                                                <span className="flex items-center gap-1.5 px-3 py-1 bg-blue-50 border border-blue-200 text-blue-700 rounded-full text-[9px] font-black uppercase tracking-widest">
+                                                    <FileText className="w-2.5 h-2.5" />
+                                                    SCOT #{ev.solicitudCotizacionId}
+                                                </span>
+                                            )}
+                                        </div>
+                                    )}
+                                </CardContent>
+
+                                <CardFooter className="p-0 flex flex-col gap-2 pt-4 border-t border-gray-50 w-full">
+                                    <div className="flex gap-2 w-full">
                                         <button
                                             onClick={() => onVer(ev)}
-                                            className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all"
+                                            className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all"
                                         >
-                                            <ExternalLink className="w-3 h-3" />
+                                            <ExternalLink className="w-3.5 h-3.5" />
                                             Ver Detalle
                                         </button>
                                         {puedeAdjudicar && (
                                             <button
                                                 onClick={() => onEditar(ev)}
-                                                className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 bg-indigo-50 hover:bg-indigo-100 text-indigo-600 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all"
+                                                className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-600 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all"
                                             >
                                                 Ajustar
                                             </button>
@@ -256,14 +267,14 @@ export default function ListaEVN({ onNueva, onEditar, onVer }) {
                                     {puedeAdjudicar && (
                                         <button
                                             onClick={(e) => openFirma(ev, e)}
-                                            className="w-full flex items-center justify-center gap-2 px-3 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-[10px] font-black uppercase tracking-widest transition-all"
+                                            className="w-full flex items-center justify-center gap-2 px-3 py-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-[10px] font-black uppercase tracking-widest transition-all"
                                         >
                                             <CheckCircle2 className="w-3.5 h-3.5" />
                                             Adjudicar (requiere firma)
                                         </button>
                                     )}
-                                </div>
-                            </div>
+                                </CardFooter>
+                            </Card>
                         );
                     })}
 

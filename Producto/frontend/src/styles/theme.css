@@ -599,4 +599,27 @@
     box-shadow: 0 10px 30px -4px rgba(0, 0, 0, 0.08);
     transform: translateY(-1px); /* Movimiento casi imperceptible, muy elegante */
   }
+
+  /* =========================================================
+     SIDEBAR TEXT READABILITY FIXES
+     Fuerza a que las letras se lean correctamente con contraste
+  ========================================================= */
+  .text-sidebar-foreground {
+    color: var(--sidebar-foreground) !important;
+  }
+  .text-sidebar-foreground\/80 {
+    color: color-mix(in srgb, var(--sidebar-foreground) 80%, transparent) !important;
+  }
+  .text-sidebar-foreground\/60 {
+    color: color-mix(in srgb, var(--sidebar-foreground) 60%, transparent) !important;
+  }
+  .text-sidebar-foreground\/50 {
+    color: color-mix(in srgb, var(--sidebar-foreground) 50%, transparent) !important;
+  }
+  .text-sidebar-foreground\/40 {
+    color: color-mix(in srgb, var(--sidebar-foreground) 40%, transparent) !important;
+  }
+  .text-sidebar-foreground\/30 {
+    color: color-mix(in srgb, var(--sidebar-foreground) 30%, transparent) !important;
+  }
 }

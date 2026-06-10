@@ -26,33 +26,33 @@ export default function ModernNavbar({ isSidebarOpen = true }) {
     }, []);
 
     return (
-        <header className={`bg-white/90 backdrop-blur-md border-b border-slate-200 h-20 px-8 flex items-center justify-between fixed top-0 right-0 z-40 transition-all duration-300 left-0 ${isSidebarOpen ? 'md:left-64' : 'md:left-20'}`}>
+        <header className={`bg-surface-1/90 backdrop-blur-md border-b border-border h-20 px-8 flex items-center justify-between fixed top-0 right-0 z-40 transition-all duration-300 left-0 ${isSidebarOpen ? 'md:left-64' : 'md:left-20'}`}>
             
             {/* Left Side - Quick Actions & Status */}
             <div className="flex items-center gap-6">
                 {/* Search Bar */}
                 <div className="hidden lg:flex items-center relative group">
-                    <Search className="w-5 h-5 text-slate-400 absolute left-4 group-focus-within:text-blue-500 transition-colors" />
+                    <Search className="w-5 h-5 text-muted-foreground absolute left-4 group-focus-within:text-primary transition-colors" />
                     <input 
                         type="text" 
                         placeholder="Buscar en el sistema..." 
-                        className="bg-slate-50 border border-slate-200 text-sm rounded-xl pl-12 pr-4 py-2.5 w-72 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all placeholder:text-slate-400"
+                        className="bg-surface-2 border border-border text-foreground text-sm rounded-xl pl-12 pr-4 py-2.5 w-72 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all placeholder:text-muted-foreground"
                     />
                 </div>
 
-                <div className="hidden md:block h-6 w-px bg-slate-200"></div>
+                <div className="hidden md:block h-6 w-px bg-border"></div>
 
                 {/* Quick Links */}
                 <nav className="hidden md:flex items-center gap-3">
                     <button 
                         onClick={() => navigate('/admin/datos-maestros')}
-                        className="flex items-center gap-2 text-sm font-semibold text-slate-600 hover:text-blue-700 bg-slate-50 hover:bg-blue-50 border border-slate-100 hover:border-blue-200 px-4 py-2 rounded-xl transition-all shadow-sm hover:shadow"
+                        className="flex items-center gap-2 text-sm font-semibold text-foreground/80 hover:text-primary bg-surface-2 hover:bg-primary/10 border border-border hover:border-primary/20 px-4 py-2 rounded-xl transition-all shadow-sm hover:shadow"
                     >
-                        <Box className="w-4 h-4 text-slate-400" />
+                        <Box className="w-4 h-4 text-muted-foreground" />
                         <span>Gestión de Datos Maestros</span>
                     </button>
-                    <button className="flex items-center gap-2 text-sm font-semibold text-slate-600 hover:text-blue-700 bg-slate-50 hover:bg-blue-50 border border-slate-100 hover:border-blue-200 px-4 py-2 rounded-xl transition-all shadow-sm hover:shadow">
-                        <History className="w-4 h-4 text-slate-400" />
+                    <button className="flex items-center gap-2 text-sm font-semibold text-foreground/80 hover:text-primary bg-surface-2 hover:bg-primary/10 border border-border hover:border-primary/20 px-4 py-2 rounded-xl transition-all shadow-sm hover:shadow">
+                        <History className="w-4 h-4 text-muted-foreground" />
                         <span>Versiones del Sistema</span>
                     </button>
                 </nav>
@@ -62,34 +62,34 @@ export default function ModernNavbar({ isSidebarOpen = true }) {
             <div className="flex items-center gap-5">
                 
                 {/* System Status Indicator */}
-                <div className="hidden xl:flex items-center gap-2 bg-emerald-50 border border-emerald-100 px-3 py-1.5 rounded-lg mr-2">
+                <div className="hidden xl:flex items-center gap-2 bg-success-bg border border-success/20 px-3 py-1.5 rounded-lg mr-2">
                     <span className="relative flex h-2.5 w-2.5">
-                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                      <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-success opacity-75"></span>
+                      <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-success"></span>
                     </span>
-                    <span className="text-[11px] font-bold text-emerald-700 uppercase tracking-wider">ERP Operativo</span>
+                    <span className="text-[11px] font-bold text-success uppercase tracking-wider">ERP Operativo</span>
                 </div>
 
                 {/* Settings Button */}
-                <button className="hidden sm:flex items-center gap-2 px-3 py-2 text-slate-600 hover:text-blue-700 hover:bg-blue-50 rounded-xl transition-all border border-transparent hover:border-blue-100 group">
-                    <Settings className="w-5 h-5 text-slate-400 group-hover:text-blue-600 group-hover:rotate-90 transition-all duration-300" />
+                <button className="hidden sm:flex items-center gap-2 px-3 py-2 text-foreground/80 hover:text-primary hover:bg-primary/10 rounded-xl transition-all border border-transparent hover:border-primary/10 group">
+                    <Settings className="w-5 h-5 text-muted-foreground group-hover:text-primary group-hover:rotate-90 transition-all duration-300" />
                     <span className="text-sm font-semibold">Configuración</span>
                 </button>
 
-                <div className="h-6 w-px bg-slate-200 hidden sm:block"></div>
+                <div className="h-6 w-px bg-border hidden sm:block"></div>
 
                 {/* Notification Bell */}
                 <div className="relative" ref={notifRef}>
                     <button
-                        className="relative p-2.5 text-slate-500 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-all"
+                        className="relative p-2.5 text-foreground/80 hover:text-primary hover:bg-primary/10 rounded-xl transition-all"
                         onClick={() => setIsNotifOpen(!isNotifOpen)}
                     >
                         <Bell className="w-5 h-5" />
                         {unreadCount > 0 && (
-                            <span className="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full ring-2 ring-white animate-pulse"></span>
+                            <span className="absolute top-2 right-2 w-2 h-2 bg-destructive rounded-full ring-2 ring-white animate-pulse"></span>
                         )}
                         {unreadCount > 0 && (
-                            <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold w-4.5 h-4.5 flex items-center justify-center rounded-full shadow-sm">
+                            <span className="absolute -top-1 -right-1 bg-destructive text-white text-[10px] font-bold w-4.5 h-4.5 flex items-center justify-center rounded-full shadow-sm">
                                 {unreadCount}
                             </span>
                         )}
@@ -101,25 +101,25 @@ export default function ModernNavbar({ isSidebarOpen = true }) {
                     />
                 </div>
 
-                <div className="h-6 w-px bg-slate-200"></div>
+                <div className="h-6 w-px bg-border"></div>
 
                 {/* User Profile */}
                 <div className="flex items-center gap-3">
-                    <div className="flex items-center gap-3 p-1.5 pr-2.5 hover:bg-slate-50 rounded-2xl transition-all cursor-pointer border border-transparent hover:border-slate-200 group">
-                        <div className="w-9 h-9 bg-blue-100 border border-blue-200 text-blue-700 rounded-xl flex items-center justify-center group-hover:bg-blue-600 group-hover:text-white transition-colors">
+                    <div className="flex items-center gap-3 p-1.5 pr-2.5 hover:bg-surface-2 rounded-2xl transition-all cursor-pointer border border-transparent hover:border-border group">
+                        <div className="w-9 h-9 bg-primary/10 border border-primary/20 text-primary rounded-xl flex items-center justify-center group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
                             <User className="w-5 h-5" strokeWidth={2} />
                         </div>
                         <div className="hidden sm:block text-left">
-                            <p className="text-sm font-bold text-slate-800 leading-tight">{user?.name || 'Administrador'}</p>
-                            <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mt-0.5">{user?.role || 'Admin'}</p>
+                            <p className="text-sm font-bold text-foreground leading-tight">{user?.name || 'Administrador'}</p>
+                            <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mt-0.5">{user?.role || 'Admin'}</p>
                         </div>
-                        <ChevronDown className="w-4 h-4 text-slate-400 ml-1 group-hover:text-slate-600 transition-colors" />
+                        <ChevronDown className="w-4 h-4 text-muted-foreground ml-1 group-hover:text-foreground transition-colors" />
                     </div>
 
                     <button
                         onClick={logout}
                         title="Cerrar Sesión"
-                        className="p-2.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all"
+                        className="p-2.5 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-xl transition-all"
                     >
                         <LogOut className="w-5 h-5" />
                     </button>

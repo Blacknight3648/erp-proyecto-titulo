@@ -10,6 +10,7 @@ import backend.com.produccion.domain.model.EstadoOC;
 import backend.com.produccion.domain.model.HCItemOCItemLink;
 import backend.com.produccion.domain.model.OrdenCompra;
 import backend.com.produccion.domain.model.OrdenCompraItem;
+import backend.com.produccion.domain.repository.HojaCompraRepository;
 import backend.com.produccion.domain.repository.OrdenCompraRepository;
 import backend.com.shared.exception.BusinessRuleException;
 import backend.com.shared.exception.EntityNotFoundException;
@@ -18,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -29,6 +31,7 @@ public class OrdenCompraServiceImpl implements OrdenCompraService {
 
     private final OrdenCompraRepository ordenCompraRepository;
     private final GenerarOCConsolidadaUseCase generarOCConsolidadaUseCase;
+    private final HojaCompraRepository hojaCompraRepository;
 
     @Override
     public OrdenCompraDTO generarConsolidada(GenerarOCConsolidadaRequest request) {
@@ -181,5 +184,216 @@ public class OrdenCompraServiceImpl implements OrdenCompraService {
                 .ocItemId(link.getOcItemId())
                 .cantidadAsignada(link.getCantidadAsignada())
                 .build();
+    }
+
+    @Override
+    public void eliminar(Long idOC) {
+        OrdenCompra oc = cargar(idOC);
+        if (oc.getEstado() != EstadoOC.EMITIDA) {
+            throw new BusinessRuleException(
+                    "Solo se puede eliminar una OC en estado EMITIDA (estado actual: " + oc.getEstado() + ")");
+        }
+        ordenCompraRepository.deleteById(idOC);
+    }
+
+    @Override
+    public OrdenCompraDTO agregarItem(Long idOC, OrdenCompraItemDTO itemDTO) {
+        OrdenCompra oc = cargar(idOC);
+        if (oc.getEstado() != EstadoOC.EMITIDA) {
+            throw new BusinessRuleException(
+                    "Solo se pueden agregar ítems a OCs EMITIDAS (estado actual: " + oc.getEstado() + ")");
+        }
+
+        BigDecimal precioUnitario = itemDTO.getPrecioUnitario() != null ? itemDTO.getPrecioUnitario() : BigDecimal.ZERO;
+        if (precioUnitario.signum() < 0) {
+            throw new BusinessRuleException("El precio unitario debe ser no negativo");
+        }
+
+        BigDecimal cantidadStock = itemDTO.getCantidadStock() != null ? itemDTO.getCantidadStock() : BigDecimal.ZERO;
+        BigDecimal cantidadComprada = itemDTO.getCantidadComprada();
+        if (cantidadComprada == null) {
+            BigDecimal req = itemDTO.getCantidadRequerida() != null ? itemDTO.getCantidadRequerida() : BigDecimal.ZERO;
+            cantidadComprada = req.subtract(cantidadStock);
+        }
+        if (cantidadComprada.compareTo(BigDecimal.ZERO) <= 0) {
+            throw new BusinessRuleException("La cantidad comprada debe ser mayor que cero");
+        }
+
+        BigDecimal subtotal = cantidadComprada.multiply(precioUnitario);
+
+        List<HCItemOCItemLink> links = new ArrayList<>();
+        if (itemDTO.getHcLinks() != null && !itemDTO.getHcLinks().isEmpty()) {
+            List<Long> hcItemIds = itemDTO.getHcLinks().stream()
+                    .map(HCItemOCItemLinkDTO::getHcItemId)
+                    .collect(Collectors.toList());
+
+            // Validar límites de precio costeado (referencia)
+            validarLimitesPrecio(precioUnitario, hcItemIds);
+
+            for (HCItemOCItemLinkDTO linkDto : itemDTO.getHcLinks()) {
+                links.add(new HCItemOCItemLink(
+                        linkDto.getHcItemId(),
+                        null,
+                        linkDto.getCantidadAsignada() != null ? linkDto.getCantidadAsignada() : cantidadComprada
+                ));
+            }
+        }
+
+        OrdenCompraItem nuevoItem = new OrdenCompraItem(
+                null,
+                idOC,
+                itemDTO.getTipoInsumo(),
+                itemDTO.getArticuloId(),
+                itemDTO.getNombreInsumo(),
+                itemDTO.getCantidadRequerida() != null ? itemDTO.getCantidadRequerida() : cantidadComprada,
+                cantidadStock,
+                cantidadComprada,
+                precioUnitario,
+                subtotal,
+                links
+        );
+
+        List<OrdenCompraItem> nuevos = new ArrayList<>(oc.getItems());
+        nuevos.add(nuevoItem);
+
+        OrdenCompra ocActualizada = new OrdenCompra(
+                oc.getIdOC(), oc.getNumeroOC(), oc.getProveedorId(), oc.getEstado(),
+                oc.getFechaEmision(), oc.getFechaEntregaEstimada(), oc.getObservaciones(),
+                BigDecimal.ZERO, nuevos);
+        ocActualizada.recalcularTotal();
+
+        return toDTO(ordenCompraRepository.save(ocActualizada));
+    }
+
+    @Override
+    public OrdenCompraDTO actualizarItem(Long idOC, Long idOCItem, OrdenCompraItemDTO itemDTO) {
+        OrdenCompra oc = cargar(idOC);
+        if (oc.getEstado() != EstadoOC.EMITIDA) {
+            throw new BusinessRuleException(
+                    "Solo se pueden modificar ítems en OCs EMITIDAS (estado actual: " + oc.getEstado() + ")");
+        }
+
+        OrdenCompraItem itemOriginal = oc.getItems().stream()
+                .filter(i -> idOCItem.equals(i.getIdOCItem()))
+                .findFirst()
+                .orElseThrow(() -> new EntityNotFoundException(
+                        "OCItem " + idOCItem + " no encontrado en la OC " + idOC));
+
+        BigDecimal precioUnitario = itemDTO.getPrecioUnitario() != null ? itemDTO.getPrecioUnitario() : itemOriginal.getPrecioUnitario();
+        if (precioUnitario.signum() < 0) {
+            throw new BusinessRuleException("El precio unitario debe ser no negativo");
+        }
+
+        BigDecimal cantidadStock = itemDTO.getCantidadStock() != null ? itemDTO.getCantidadStock() : itemOriginal.getCantidadStock();
+        BigDecimal cantidadComprada = itemDTO.getCantidadComprada();
+        if (cantidadComprada == null) {
+            BigDecimal req = itemDTO.getCantidadRequerida() != null ? itemDTO.getCantidadRequerida() : itemOriginal.getCantidadRequerida();
+            cantidadComprada = req.subtract(cantidadStock);
+        }
+        if (cantidadComprada.compareTo(BigDecimal.ZERO) <= 0) {
+            throw new BusinessRuleException("La cantidad comprada debe ser mayor que cero");
+        }
+
+        BigDecimal subtotal = cantidadComprada.multiply(precioUnitario);
+
+        List<HCItemOCItemLink> links = new ArrayList<>();
+        if (itemDTO.getHcLinks() != null) {
+            if (!itemDTO.getHcLinks().isEmpty()) {
+                List<Long> hcItemIds = itemDTO.getHcLinks().stream()
+                        .map(HCItemOCItemLinkDTO::getHcItemId)
+                        .collect(Collectors.toList());
+
+                validarLimitesPrecio(precioUnitario, hcItemIds);
+
+                for (HCItemOCItemLinkDTO linkDto : itemDTO.getHcLinks()) {
+                    links.add(new HCItemOCItemLink(
+                            linkDto.getHcItemId(),
+                            idOCItem,
+                            linkDto.getCantidadAsignada() != null ? linkDto.getCantidadAsignada() : cantidadComprada
+                    ));
+                }
+            }
+        } else {
+            if (itemOriginal.getHcLinks() != null && !itemOriginal.getHcLinks().isEmpty()) {
+                List<Long> hcItemIds = itemOriginal.getHcLinks().stream()
+                        .map(HCItemOCItemLink::getHcItemId)
+                        .collect(Collectors.toList());
+
+                validarLimitesPrecio(precioUnitario, hcItemIds);
+                links.addAll(itemOriginal.getHcLinks());
+            }
+        }
+
+        OrdenCompraItem itemActualizado = new OrdenCompraItem(
+                itemOriginal.getIdOCItem(),
+                itemOriginal.getOcId(),
+                itemDTO.getTipoInsumo() != null ? itemDTO.getTipoInsumo() : itemOriginal.getTipoInsumo(),
+                itemDTO.getArticuloId() != null ? itemDTO.getArticuloId() : itemOriginal.getArticuloId(),
+                itemDTO.getNombreInsumo() != null ? itemDTO.getNombreInsumo() : itemOriginal.getNombreInsumo(),
+                itemDTO.getCantidadRequerida() != null ? itemDTO.getCantidadRequerida() : itemOriginal.getCantidadRequerida(),
+                cantidadStock,
+                cantidadComprada,
+                precioUnitario,
+                subtotal,
+                links
+        );
+
+        List<OrdenCompraItem> nuevos = oc.getItems().stream()
+                .map(i -> i.getIdOCItem().equals(idOCItem) ? itemActualizado : i)
+                .collect(Collectors.toList());
+
+        OrdenCompra ocActualizada = new OrdenCompra(
+                oc.getIdOC(), oc.getNumeroOC(), oc.getProveedorId(), oc.getEstado(),
+                oc.getFechaEmision(), oc.getFechaEntregaEstimada(), oc.getObservaciones(),
+                BigDecimal.ZERO, nuevos);
+        ocActualizada.recalcularTotal();
+
+        return toDTO(ordenCompraRepository.save(ocActualizada));
+    }
+
+    @Override
+    public OrdenCompraDTO eliminarItem(Long idOC, Long idOCItem) {
+        OrdenCompra oc = cargar(idOC);
+        if (oc.getEstado() != EstadoOC.EMITIDA) {
+            throw new BusinessRuleException(
+                    "Solo se pueden eliminar ítems en OCs EMITIDAS (estado actual: " + oc.getEstado() + ")");
+        }
+
+        boolean existe = oc.getItems().stream().anyMatch(i -> idOCItem.equals(i.getIdOCItem()));
+        if (!existe) {
+            throw new EntityNotFoundException(
+                    "OCItem " + idOCItem + " no encontrado en la OC " + idOC);
+        }
+
+        List<OrdenCompraItem> nuevos = oc.getItems().stream()
+                .filter(i -> !idOCItem.equals(i.getIdOCItem()))
+                .collect(Collectors.toList());
+
+        OrdenCompra ocActualizada = new OrdenCompra(
+                oc.getIdOC(), oc.getNumeroOC(), oc.getProveedorId(), oc.getEstado(),
+                oc.getFechaEmision(), oc.getFechaEntregaEstimada(), oc.getObservaciones(),
+                BigDecimal.ZERO, nuevos);
+        ocActualizada.recalcularTotal();
+
+        return toDTO(ordenCompraRepository.save(ocActualizada));
+    }
+
+    private void validarLimitesPrecio(BigDecimal precioUnitario, List<Long> hcItemIds) {
+        if (hcItemIds == null || hcItemIds.isEmpty()) return;
+        List<backend.com.produccion.domain.model.HojaCompra> hcs = hojaCompraRepository.findAllByItemIds(hcItemIds);
+        for (Long hcItemId : hcItemIds) {
+            backend.com.produccion.domain.model.HojaCompraItem hcItem = hcs.stream()
+                    .flatMap(hc -> hc.getItems().stream())
+                    .filter(item -> hcItemId.equals(item.getIdHCItem()))
+                    .findFirst()
+                    .orElseThrow(() -> new EntityNotFoundException("No se encontró el item de Hoja de Compra con id " + hcItemId));
+
+            if (hcItem.getPrecioUnitarioRef() != null && precioUnitario.compareTo(hcItem.getPrecioUnitarioRef()) > 0) {
+                throw new BusinessRuleException(String.format(
+                        "El precio de compra unitario (%s) excede el precio de referencia costeado (%s) para el insumo '%s'",
+                        precioUnitario, hcItem.getPrecioUnitarioRef(), hcItem.getNombreInsumo()
+                ));
+            }
+        }
     }
 }

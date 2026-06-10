@@ -14,11 +14,13 @@
   --font-size: 16px;
 
   --font-family:
+    -apple-system,
+    BlinkMacSystemFont,
+    "SF Pro Text",
+    "SF Pro Display",
+    "SF Pro",
     "Outfit",
     "Inter",
-    "SF Pro Display",
-    "General Sans",
-    ui-sans-serif,
     system-ui,
     sans-serif;
 
@@ -36,108 +38,108 @@
   --radius: 0.875rem;
 
   /* =========================================
-     PALETA DE MARCA — LIGHT MODE
+     PALETA DE MARCA — LIGHT MODE (iOS System Colors)
   ========================================= */
 
-  --brand-royal:        #1243a8;
-  --brand-royal-hover:  #0f3789;
-  --brand-royal-light:  #dce8ff;
+  --brand-royal:        #007aff; /* iOS System Blue */
+  --brand-royal-hover:  #0062cc;
+  --brand-royal-light:  #e5f1ff;
 
-  --brand-steel:        #2e5fa3;
-  --brand-steel-light:  #e8effa;
+  --brand-steel:        #5856d6; /* iOS System Indigo */
+  --brand-steel-light:  #f0efff;
 
-  --brand-indigo:       #4338ca;
-  --brand-indigo-hover: #3730a3;
-  --brand-indigo-light: #eef2ff;
+  --brand-indigo:       #5856d6; /* iOS System Indigo */
+  --brand-indigo-hover: #4846c4;
+  --brand-indigo-light: #f0efff;
 
-  --brand-emerald:       #059669;
-  --brand-emerald-hover: #047857;
-  --brand-emerald-light: #d1fae5;
+  --brand-emerald:       #34c759; /* iOS System Green */
+  --brand-emerald-hover: #2da84b;
+  --brand-emerald-light: #eafaf1;
 
-  --brand-teal:        #0891b2;
-  --brand-teal-light:  #cffafe;
+  --brand-teal:        #30b0c7; /* iOS System Teal */
+  --brand-teal-light:  #ecfcfd;
 
-  --brand-amber:       #d97706;
-  --brand-amber-light: #fef3c7;
+  --brand-amber:       #ff9500; /* iOS System Orange */
+  --brand-amber-light: #fff8eb;
 
-  --brand-red:         #c0192b;
-  --brand-red-light:   #ffe4e6;
+  --brand-red:         #ff3b30; /* iOS System Red */
+  --brand-red-light:   #ffefee;
 
-  --brand-violet:       #6d28d9;
-  --brand-violet-light: #ede9fe;
+  --brand-violet:       #af52de; /* iOS System Purple */
+  --brand-violet-light: #fcf5ff;
 
   /* =========================================
-     FONDO Y SUPERFICIE — LIGHT
+     FONDO Y SUPERFICIE — LIGHT (iOS Glassmorphism)
   ========================================= */
 
-  --background:         #f3f6fb;
+  --background:         #f5f5f7; /* Apple Web Premium Light Gray */
   --surface-1:          #ffffff;
-  --surface-2:          #f8fafd;
-  --surface-3:          #eef2f8;
-  --surface-glass:      rgba(255, 255, 255, 0.72);
-  --surface-glass-md:   rgba(255, 255, 255, 0.88);
+  --surface-2:          #f5f5f7;
+  --surface-3:          #e8e8ed;
+  --surface-glass:      rgba(255, 255, 255, 0.70);
+  --surface-glass-md:   rgba(255, 255, 255, 0.85);
 
-  --foreground:         #0a1628;
+  --foreground:         #1d1d1f; /* Apple Charcoal */
 
   /* =========================================
      TOKENS DE COMPONENTES — LIGHT
   ========================================= */
 
-  --card:               rgba(255, 255, 255, 0.92);
-  --card-foreground:    #0a1628;
+  --card:               rgba(255, 255, 255, 0.85);
+  --card-foreground:    #1d1d1f;
 
   --popover:            #ffffff;
-  --popover-foreground: #0a1628;
+  --popover-foreground: #1d1d1f;
 
-  --primary:            #1243a8;
-  --primary-hover:      #0f3789;
+  --primary:            #007aff;
+  --primary-hover:      #0062cc;
   --primary-foreground: #ffffff;
 
-  --secondary:          #eef2ff;
-  --secondary-foreground: #3730a3;
+  --secondary:          #e5f1ff;
+  --secondary-foreground: #007aff;
 
-  --muted:              #eef2f8;
-  --muted-foreground:   #5a6a85;
+  --muted:              #f5f5f7;
+  --muted-foreground:   #86868b; /* Apple Muted Gray */
 
-  --accent:             #e8effa;
-  --accent-foreground:  #1243a8;
+  --accent:             #e5f1ff;
+  --accent-foreground:  #007aff;
 
-  --destructive:        #c0192b;
+  --destructive:        #ff3b30;
   --destructive-foreground: #ffffff;
 
-  --success:            #059669;
+  --success:            #34c759;
   --success-foreground: #ffffff;
-  --success-bg:         #d1fae5;
+  --success-bg:         #eafaf1;
 
-  --warning:            #d97706;
+  --warning:            #ff9500;
   --warning-foreground: #ffffff;
-  --warning-bg:         #fef3c7;
+  --warning-bg:         #fff8eb;
 
-  --info:               #0891b2;
+  --info:               #30b0c7;
   --info-foreground:    #ffffff;
-  --info-bg:            #cffafe;
+  --info-bg:            #ecfcfd;
 
-  --border:             rgba(10, 22, 40, 0.07);
-  --border-strong:      rgba(10, 22, 40, 0.14);
+  --border:             rgba(0, 0, 0, 0.08);
+  --border-strong:      rgba(0, 0, 0, 0.16);
 
   --input:              #ffffff;
   --input-background:   rgba(255, 255, 255, 0.95);
-  --input-border:       rgba(10, 22, 40, 0.12);
-  --input-border-focus: #1243a8;
+  --input-border:       rgba(0, 0, 0, 0.12);
+  --input-border-focus: #007aff;
 
-  --switch-background:  #b8c8e0;
+  --switch-background:  #e3e3e8;
 
-  --ring:               rgba(18, 67, 168, 0.22);
+  --ring:               rgba(0, 122, 255, 0.25);
 
   /* =========================================
      CHART COLORS
   ========================================= */
 
-  --chart-1: #1243a8;
-  --chart-2: #059669;
-  --chart-3: #6d28d9;
-  --chart-4: #d97706;
-  --chart-5: #0891b2;
+  --chart-1: #007aff;
+  --chart-2: #34c759;
+  --chart-3: #af52de;
+  --chart-4: #ff9500;
+  --chart-5: #30b0c7;
 
   /* =========================================
      SIDEBAR — Enterprise SaaS Style
@@ -208,78 +210,78 @@
 
 .dark {
 
-  --background:         #080f1e;
-  --surface-1:          #0e1929;
-  --surface-2:          #0a1220;
-  --surface-3:          #152237;
-  --surface-glass:      rgba(14, 25, 41, 0.72);
-  --surface-glass-md:   rgba(14, 25, 41, 0.90);
+  --background:         #000000; /* Apple Premium True Black */
+  --surface-1:          #1c1c1e; /* iOS Dark Secondary */
+  --surface-2:          #09090b;
+  --surface-3:          #2c2c2e; /* iOS Dark Tertiary */
+  --surface-glass:      rgba(28, 28, 30, 0.70);
+  --surface-glass-md:   rgba(28, 28, 30, 0.85);
 
-  --foreground:         #e8f0fe;
+  --foreground:         #f5f5f7; /* Apple Off-White */
 
-  --card:               rgba(14, 25, 41, 0.82);
-  --card-foreground:    #e8f0fe;
+  --card:               rgba(28, 28, 30, 0.85);
+  --card-foreground:    #f5f5f7;
 
-  --popover:            #0e1929;
-  --popover-foreground: #e8f0fe;
+  --popover:            #1c1c1e;
+  --popover-foreground: #f5f5f7;
 
-  --primary:            #4a7de8;
-  --primary-hover:      #5d8ff2;
+  --primary:            #0a84ff; /* iOS Dark System Blue */
+  --primary-hover:      #3399ff;
   --primary-foreground: #ffffff;
 
-  --secondary:          #162040;
-  --secondary-foreground: #93b4f0;
+  --secondary:          #152e4d;
+  --secondary-foreground: #0a84ff;
 
-  --muted:              #111e35;
-  --muted-foreground:   #6b8ab8;
+  --muted:              #1c1c1e;
+  --muted-foreground:   #86868b;
 
-  --accent:             #162040;
-  --accent-foreground:  #93b4f0;
+  --accent:             #152e4d;
+  --accent-foreground:  #0a84ff;
 
-  --destructive:        #e53e4d;
+  --destructive:        #ff453a; /* iOS Dark System Red */
   --destructive-foreground: #ffffff;
 
-  --success:            #34d399;
-  --success-foreground: #022c22;
-  --success-bg:         rgba(5, 150, 105, 0.15);
+  --success:            #30d158; /* iOS Dark System Green */
+  --success-foreground: #ffffff;
+  --success-bg:         rgba(48, 209, 88, 0.15);
 
-  --warning:            #fbbf24;
-  --warning-foreground: #1c1200;
-  --warning-bg:         rgba(217, 119, 6, 0.15);
+  --warning:            #ff9f0a; /* iOS Dark System Orange */
+  --warning-foreground: #ffffff;
+  --warning-bg:         rgba(255, 159, 10, 0.15);
 
-  --info:               #22d3ee;
-  --info-foreground:    #001f24;
-  --info-bg:            rgba(8, 145, 178, 0.15);
+  --info:               #64d2ff; /* iOS Dark System Teal */
+  --info-foreground:    #000000;
+  --info-bg:            rgba(100, 210, 255, 0.15);
 
-  --border:             rgba(255, 255, 255, 0.07);
-  --border-strong:      rgba(255, 255, 255, 0.13);
+  --border:             rgba(255, 255, 255, 0.08);
+  --border-strong:      rgba(255, 255, 255, 0.16);
 
-  --input:              #0e1929;
-  --input-background:   rgba(14, 25, 41, 0.90);
-  --input-border:       rgba(255, 255, 255, 0.10);
-  --input-border-focus: #4a7de8;
+  --input:              #1c1c1e;
+  --input-background:   rgba(28, 28, 30, 0.90);
+  --input-border:       rgba(255, 255, 255, 0.12);
+  --input-border-focus: #0a84ff;
 
-  --switch-background:  #1e3458;
+  --switch-background:  #3a3a3c;
 
-  --ring:               rgba(74, 125, 232, 0.30);
+  --ring:               rgba(10, 132, 255, 0.30);
 
-  --chart-1: #4a7de8;
-  --chart-2: #34d399;
-  --chart-3: #a78bfa;
-  --chart-4: #fbbf24;
-  --chart-5: #22d3ee;
+  --chart-1: #0a84ff;
+  --chart-2: #30d158;
+  --chart-3: #bf5af2;
+  --chart-4: #ff9f0a;
+  --chart-5: #64d2ff;
 
-  --sidebar:                    #060d1a;
-  --sidebar-foreground:         #9ab2d4;
-  --sidebar-primary:            #4a7de8;
+  --sidebar:                    #09090b;
+  --sidebar-foreground:         #98989d;
+  --sidebar-primary:            #0a84ff;
   --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent:             rgba(74, 125, 232, 0.14);
-  --sidebar-accent-foreground:  #c0d5f8;
-  --sidebar-border:             rgba(255, 255, 255, 0.05);
-  --sidebar-ring:               rgba(74, 125, 232, 0.25);
-  --sidebar-muted:              #4a6585;
-  --sidebar-active-bg:          rgba(74, 125, 232, 0.20);
-  --sidebar-active-border:      #4a7de8;
+  --sidebar-accent:             rgba(10, 132, 255, 0.12);
+  --sidebar-accent-foreground:  #ffffff;
+  --sidebar-border:             rgba(255, 255, 255, 0.06);
+  --sidebar-ring:               rgba(10, 132, 255, 0.25);
+  --sidebar-muted:              #636366;
+  --sidebar-active-bg:          rgba(10, 132, 255, 0.18);
+  --sidebar-active-border:      #0a84ff;
   --sidebar-hover-bg:           rgba(255, 255, 255, 0.05);
 
   --shadow-xs:
@@ -298,12 +300,12 @@
     0 28px 64px rgba(0, 0, 0, 0.52);
 
   --shadow-primary:
-    0 4px 24px rgba(74, 125, 232, 0.36),
-    0 2px 8px rgba(74, 125, 232, 0.20);
+    0 4px 24px rgba(10, 132, 255, 0.36),
+    0 2px 8px rgba(10, 132, 255, 0.20);
 
   --shadow-emerald:
-    0 4px 24px rgba(52, 211, 153, 0.28),
-    0 2px 8px rgba(52, 211, 153, 0.14);
+    0 4px 24px rgba(48, 209, 88, 0.28),
+    0 2px 8px rgba(48, 209, 88, 0.14);
 
   --shadow-glass:
     0 8px 32px rgba(0, 0, 0, 0.40),
@@ -398,7 +400,7 @@
 }
 
 /* =========================================================
-   BASE LAYER
+   BASE LAYER (iOS Minimalist Style)
 ========================================================= */
 
 @layer base {
@@ -410,7 +412,8 @@
 
   html {
     font-size: var(--font-size);
-    font-family: var(--font-family);
+    /* Pila de fuentes nativa de Apple antes de las variables por si acaso */
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     scroll-behavior: smooth;
     -webkit-text-size-adjust: 100%;
   }
@@ -418,9 +421,11 @@
   body {
     @apply bg-background text-foreground;
     min-height: 100vh;
-    line-height: 1.6;
-    font-weight: var(--font-weight-normal);
-    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+    line-height: 1.5; /* Estilo iOS para cuerpo de texto */
+    font-weight: 400; /* Normal */
+    
+    /* Configuración de renderizado premium */
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11", "ss01";
     font-variation-settings: normal;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -428,10 +433,10 @@
 
     background:
       radial-gradient(ellipse 80% 50% at 0% -10%,
-        rgba(18, 67, 168, 0.05) 0%,
+        rgba(18, 67, 168, 0.04) 0%,
         transparent 60%),
       radial-gradient(ellipse 60% 40% at 100% 110%,
-        rgba(8, 145, 178, 0.04) 0%,
+        rgba(8, 145, 178, 0.03) 0%,
         transparent 60%),
       var(--background);
 
@@ -443,10 +448,10 @@
   .dark body {
     background:
       radial-gradient(ellipse 80% 50% at 0% -10%,
-        rgba(74, 125, 232, 0.06) 0%,
+        rgba(74, 125, 232, 0.05) 0%,
         transparent 60%),
       radial-gradient(ellipse 60% 40% at 100% 110%,
-        rgba(34, 211, 238, 0.04) 0%,
+        rgba(34, 211, 238, 0.03) 0%,
         transparent 60%),
       var(--background);
   }
@@ -458,126 +463,140 @@
     font-feature-settings: "cv02", "cv03", "cv04";
   }
 
+  /* h1 en iOS es Bold, no Black, y con tracking muy ajustado */
   h1 {
-    font-size: clamp(2rem, 4.5vw, 3.5rem);
-    font-weight: var(--font-weight-black);
-    line-height: 1.06;
-    letter-spacing: -0.045em;
+    font-size: clamp(2.25rem, 5vw, 3.25rem);
+    font-weight: 700; 
+    line-height: 1.1;
+    letter-spacing: -0.035em; 
   }
 
   h2 {
-    font-size: clamp(1.6rem, 3.5vw, 2.6rem);
-    font-weight: var(--font-weight-bold);
-    line-height: 1.12;
-    letter-spacing: -0.035em;
-  }
-
-  h3 {
-    font-size: clamp(1.25rem, 2.5vw, 1.85rem);
-    font-weight: var(--font-weight-semibold);
-    line-height: 1.22;
+    font-size: clamp(1.75rem, 3.8vw, 2.25rem);
+    font-weight: 700;
+    line-height: 1.15;
     letter-spacing: -0.025em;
   }
 
+  h3 {
+    font-size: clamp(1.35rem, 2.8vw, 1.75rem);
+    font-weight: 600; /* Semibold */
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+  }
+
   h4 {
-    font-size: 1.1rem;
-    font-weight: var(--font-weight-semibold);
-    line-height: 1.35;
+    font-size: 1.25rem;
+    font-weight: 600;
+    line-height: 1.25;
     letter-spacing: -0.015em;
   }
 
   h5 {
-    font-size: 0.95rem;
-    font-weight: var(--font-weight-semibold);
-    line-height: 1.4;
+    font-size: 1.05rem;
+    font-weight: 600;
+    line-height: 1.3;
     letter-spacing: -0.01em;
   }
 
+  /* h6 se usa mucho en iOS para "Subsecciones" o sobre-títulos pequeños */
   h6 {
-    font-size: 0.875rem;
-    font-weight: var(--font-weight-medium);
+    font-size: 0.75rem; /* Más pequeño para contrastar */
+    font-weight: 500;
     line-height: 1.4;
-    letter-spacing: 0.01em;
+    letter-spacing: 0.06em; /* Mayor espaciado por ser mayúsculas pequeñas */
     text-transform: uppercase;
     color: var(--muted-foreground);
+    opacity: 0.8;
   }
 
   p {
     color: var(--muted-foreground);
-    line-height: 1.75;
+    font-size: 1rem;
+    line-height: 1.55; /* Estilo San Francisco Text */
+    letter-spacing: -0.005em;
     text-wrap: pretty;
   }
 
   label {
     font-size: 0.875rem;
-    font-weight: var(--font-weight-medium);
+    font-weight: 500;
     color: var(--foreground);
-    letter-spacing: 0.01em;
+    letter-spacing: -0.005em;
   }
 
+  /* Botones estilo iOS: Texto limpio, interacción sutil sin saltos bruscos */
   button {
-    font-family: var(--font-family);
-    font-size: 0.875rem;
-    font-weight: var(--font-weight-semibold);
+    font-family: inherit;
+    font-size: 0.925rem; /* Un pelín más grande para simular las tappable areas de iOS */
+    font-weight: 600;
     cursor: pointer;
-    letter-spacing: 0.01em;
+    letter-spacing: -0.01em;
     transition:
-      transform var(--transition-fast),
-      box-shadow var(--transition-fast),
       opacity var(--transition-fast),
-      background-color var(--transition-fast);
+      background-color var(--transition-fast),
+      transform 0.15s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
-  button:hover   { transform: translateY(-1px); }
-  button:active  { transform: scale(0.975); }
+  button:hover { 
+    opacity: 0.9; /* iOS prefiere cambios de opacidad en hover */
+  }
+  
+  button:active { 
+    transform: scale(0.96); /* Efecto de presión nativo de Apple */
+  }
 
+  /* Inputs limpios con tipografía San Francisco nativa */
   input, textarea, select {
-    font-family: var(--font-family);
-    font-size: 0.875rem;
-    font-weight: var(--font-weight-normal);
-    line-height: 1.5;
+    font-family: inherit;
+    font-size: 1rem; /* Importante: 16px (1rem) evita el zoom automático molesto en iOS Safari */
+    font-weight: 400;
+    line-height: 1.4;
+    letter-spacing: -0.01em;
     background: var(--input-background);
     transition:
       border-color var(--transition-fast),
-      box-shadow var(--transition-fast),
-      background-color var(--transition-fast);
+      box-shadow var(--transition-fast);
   }
 
   input:focus, textarea:focus, select:focus {
     outline: none;
-    box-shadow: 0 0 0 3px var(--ring);
+    /* Enfoque sutil y limpio sin bordes toscos */
+    box-shadow: 0 0 0 2px var(--ring);
     border-color: var(--input-border-focus) !important;
   }
 
+  /* =========================================================
+     COMPONENTES BLUR (Estilo Cristal de Apple)
+  ========================================================= */
+
   .glass {
     background: var(--surface-glass-md);
-    backdrop-filter: blur(16px) saturate(180%);
-    -webkit-backdrop-filter: blur(16px) saturate(180%);
-    border: 1px solid var(--border);
+    backdrop-filter: blur(20px) saturate(190%); /* Un toque más de desenfoque nativo */
+    -webkit-backdrop-filter: blur(20px) saturate(190%);
+    border: 1px solid rgba(255, 255, 255, 0.08); /* Bordes ultra finos */
     box-shadow: var(--shadow-glass);
   }
 
   .glass-subtle {
     background: var(--surface-glass);
-    backdrop-filter: blur(10px) saturate(150%);
-    -webkit-backdrop-filter: blur(10px) saturate(150%);
-    border: 1px solid var(--border);
+    backdrop-filter: blur(12px) saturate(160%);
+    -webkit-backdrop-filter: blur(12px) saturate(160%);
+    border: 1px solid rgba(255, 255, 255, 0.05);
   }
 
   .card-enterprise {
     background: var(--card);
     border: 1px solid var(--border);
-    border-radius: var(--radius-lg);
-    box-shadow: var(--shadow-md);
+    border-radius: 14px; /* El radio de curvatura clásico de iOS (squircle-like) */
+    box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.05);
     transition:
       box-shadow var(--transition-normal),
-      transform var(--transition-normal),
-      border-color var(--transition-fast);
+      transform var(--transition-normal);
   }
 
   .card-enterprise:hover {
-    box-shadow: var(--shadow-lg);
-    transform: translateY(-2px);
-    border-color: var(--border-strong);
+    box-shadow: 0 10px 30px -4px rgba(0, 0, 0, 0.08);
+    transform: translateY(-1px); /* Movimiento casi imperceptible, muy elegante */
   }
 }

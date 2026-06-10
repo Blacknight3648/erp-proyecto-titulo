@@ -1,7 +1,7 @@
 package backend.com.comercial.application.UseCase;
 
 import backend.com.comercial.application.dto.EVNResponse;
-import backend.com.comercial.domain.model.EstadoEVN;
+import backend.com.comercial.domain.enums.EstadoEVN;
 import backend.com.comercial.domain.model.EvaluacionNegocio;
 import backend.com.comercial.domain.model.ItemEVN;
 import backend.com.comercial.domain.repository.EvaluacionNegocioRepository;

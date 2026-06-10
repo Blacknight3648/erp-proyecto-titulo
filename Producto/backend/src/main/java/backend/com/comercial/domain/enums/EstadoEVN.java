@@ -1,4 +1,4 @@
-package backend.com.comercial.domain.model;
+package backend.com.comercial.domain.enums;
 
 public enum EstadoEVN {
     BORRADOR,

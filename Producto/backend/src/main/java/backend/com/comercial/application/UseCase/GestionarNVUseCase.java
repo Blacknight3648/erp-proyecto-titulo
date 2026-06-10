@@ -1,7 +1,7 @@
 package backend.com.comercial.application.UseCase;
 
 import backend.com.comercial.application.dto.NVResponse;
-import backend.com.comercial.domain.model.EstadoNV;
+import backend.com.comercial.domain.enums.EstadoNV;
 import backend.com.comercial.domain.model.NotaVenta;
 import backend.com.comercial.domain.repository.NotaVentaRepository;
 import backend.com.shared.application.service.HistorialEstadoService;

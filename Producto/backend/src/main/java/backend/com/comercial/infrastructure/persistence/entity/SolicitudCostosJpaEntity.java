@@ -1,6 +1,6 @@
 package backend.com.comercial.infrastructure.persistence.entity;
 
-import backend.com.comercial.domain.model.EstadoSCOS;
+import backend.com.comercial.domain.enums.EstadoSCOS;
 import backend.com.gestionUsuarios.cliente.infrastructure.persistence.entity.ClienteJpaEntity;
 import backend.com.gestionUsuarios.vendedor.infrastructure.persistence.entity.VendedorJpaEntity;
 import backend.com.shared.infrastructure.persistence.entity.EspecificacionTecnica;

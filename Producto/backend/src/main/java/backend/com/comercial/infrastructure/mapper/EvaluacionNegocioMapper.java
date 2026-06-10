@@ -1,6 +1,6 @@
 package backend.com.comercial.infrastructure.mapper;
 
-import backend.com.comercial.domain.model.EstadoEVN;
+import backend.com.comercial.domain.enums.EstadoEVN;
 import backend.com.comercial.domain.model.EvaluacionNegocio;
 import backend.com.comercial.domain.model.GastoAdicional;
 import backend.com.comercial.domain.model.ItemEVN;

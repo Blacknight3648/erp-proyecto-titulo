@@ -1,5 +1,4 @@
 import {
-    ArrowRight,
     Building2,
     Trash2,
     Plus,
@@ -7,7 +6,9 @@ import {
     Edit3,
     Users
 } from 'lucide-react';
-import EvaluacionForm from "./EvaluacionForm";
+
+
+
 import EVNActionBar from "./components/EVNActionBar";
 import EVNVinculacionesPanel from "./components/EVNVinculacionesPanel";
 import EVNResumenSidebar from "./components/EVNResumenSidebar";
@@ -666,38 +667,13 @@ export default function DetalleEVN({ initialEval, onBack, isReadOnly }) {
                                 <p className="text-3xl font-black text-indigo-700 tracking-tighter">${totals.totalOtrosCostos.toLocaleString('es-CL')}</p>
                             </div>
                         </div>
-
-                        {/* Commercial Conditions */}
-                        <div className="bg-white rounded-[2rem] shadow-sm border border-gray-100 p-8">
-                            <div className="flex items-center space-x-3 mb-8">
-                                <div className="w-2 h-6 bg-indigo-600 rounded-full" />
-                                <h3 className="text-sm font-black text-gray-800 uppercase tracking-widest italic">Condiciones Comerciales y Formales</h3>
-                            </div>
-
-                            <EvaluacionForm
-                                data={{ ...evalData, margenFinal: totals.margenPorc }}
-                                onChange={setEvalData}
-                            />
-
-                            {!isReadOnly && (
-                                <div className="mt-8 flex justify-end items-center pt-8 border-t border-gray-50">
-                                    <button
-                                        onClick={onGenerarPropuestaInterno}
-                                        disabled={isSaving}
-                                        className="flex items-center gap-3 px-6 py-3 bg-gray-900 hover:bg-indigo-600 text-white rounded-2xl text-[11px] font-black uppercase tracking-widest shadow-xl shadow-gray-200 transition-colors disabled:opacity-60"
-                                    >
-                                        {isSaving ? 'Guardando...' : 'Guardar Condiciones'}
-                                        <ArrowRight className="w-4 h-4" />
-                                    </button>
-                                </div>
-                            )}
-                        </div>
                     </div>
 
                     <div className="space-y-6">
                         <EVNResumenSidebar totals={totals} otrosCostos={otrosCostos} />
                     </div>
                 </div>
+
 
                 <QuotationSelectionModal
                     open={showQuotationModal}

@@ -671,8 +671,8 @@ export const useEVNState = (initialEval = null) => {
         closeCosteoSelector,
         handleSelectCosteo,
 
-        // Handlers
         handleUpdateItem,
+        applyCosteoToItem,
         handleBulkLink,
         handleSingleSCOSLink,
         applySCOSQuotation,

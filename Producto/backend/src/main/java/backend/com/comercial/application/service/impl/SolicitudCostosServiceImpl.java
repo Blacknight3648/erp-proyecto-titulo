@@ -7,7 +7,7 @@ import backend.com.comercial.application.dto.SolicitudCostosCreateDTO;
 import backend.com.comercial.application.dto.SolicitudCostosDTO;
 import backend.com.comercial.application.service.DescripcionPlantillaService;
 import backend.com.comercial.application.service.SolicitudCostosService;
-import backend.com.comercial.domain.model.EstadoSCOS;
+import backend.com.comercial.domain.enums.EstadoSCOS;
 import backend.com.comercial.domain.model.SCOSAccesorio;
 import backend.com.comercial.domain.model.SCOSLogotipo;
 import backend.com.comercial.domain.model.SCOSTela;

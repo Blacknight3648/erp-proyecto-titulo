@@ -111,23 +111,23 @@ export default function ModernSidebar({ isOpen, setIsOpen }) {
   };
 
   return (
-    <aside className={`fixed top-0 left-0 z-50 h-screen transition-all duration-300 bg-white border-r border-gray-200 flex flex-col ${isOpen ? 'w-64' : 'w-20'}`}>
+    <aside className={`fixed top-0 left-0 z-50 h-screen transition-all duration-300 bg-sidebar/95 backdrop-blur-md border-r border-sidebar-border flex flex-col ${isOpen ? 'w-64' : 'w-20'}`}>
       {/* Logo */}
-      <div className="p-4 border-b border-gray-200 flex items-center justify-between h-20">
+      <div className="p-4 border-b border-sidebar-border flex items-center justify-between h-20">
         {isOpen && (
           <div className="flex items-center gap-2 animate-in fade-in duration-300">
             <div className="w-8 h-8 bg-gradient-to-br from-indigo-600 to-blue-500 rounded-lg flex items-center justify-center shadow-lg">
               <span className="font-black text-white text-sm">A</span>
             </div>
             <div>
-              <h1 className="font-black text-gray-900 text-sm leading-tight">ANTUAN ERP</h1>
-              <p className="text-[9px] text-gray-500 tracking-widest font-bold uppercase">V1.0.2 MODULAR</p>
+              <h1 className="font-black text-white text-sm leading-tight">ANTUAN ERP</h1>
+              <p className="text-[9px] text-sidebar-foreground/60 tracking-widest font-bold uppercase">V1.0.2 MODULAR</p>
             </div>
           </div>
         )}
         <button 
           onClick={() => setIsOpen(!isOpen)}
-          className={`p-1 hover:bg-gray-100 rounded-lg transition-colors ${!isOpen ? 'mx-auto' : ''}`}
+          className={`p-1 text-sidebar-foreground hover:bg-sidebar-hover-bg rounded-lg transition-colors ${!isOpen ? 'mx-auto' : ''}`}
         >
           {isOpen ? <ChevronLeft className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
         </button>
@@ -156,32 +156,40 @@ export default function ModernSidebar({ isOpen, setIsOpen }) {
                   }}
                   className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all ${
                     item.disabled
-                      ? 'opacity-40 cursor-not-allowed text-gray-400'
-                      : isSubmenuOpen || isActive
-                        ? 'bg-indigo-50 text-indigo-600'
-                        : 'text-gray-700 hover:bg-gray-50'
+                      ? 'opacity-40 cursor-not-allowed text-sidebar-foreground/40'
+                      : isActive
+                        ? 'active bg-sidebar-active-bg text-white font-bold shadow-sm' 
+                        : isSubmenuOpen
+                          ? 'bg-sidebar-active-bg/60 text-sidebar-primary'
+                          : 'text-sidebar-foreground hover:bg-sidebar-hover-bg'
                   }`}
                 >
                   <Icon className={`w-5 h-5 flex-shrink-0 ${
-                    item.disabled ? 'text-gray-300' : isActive || isSubmenuOpen ? item.color : 'text-gray-400'
+                    item.disabled 
+                      ? 'text-sidebar-foreground/30' 
+                      : isActive 
+                        ? 'text-white' 
+                        : isSubmenuOpen 
+                          ? 'text-sidebar-primary' 
+                          : 'text-sidebar-foreground/50'
                   }`} />
                   {isOpen && (
                     <>
                       <span className="text-sm font-semibold flex-1 text-left">{item.label}</span>
                       {item.disabled
-                        ? <span className="text-[9px] font-bold uppercase tracking-wider text-gray-300 bg-gray-100 px-1.5 py-0.5 rounded">Pronto</span>
-                        : <ChevronRight className={`w-4 h-4 transition-transform ${isSubmenuOpen ? 'rotate-90' : ''}`} />
+                        ? <span className="text-[9px] font-bold uppercase tracking-wider text-sidebar-foreground/40 bg-sidebar-hover-bg px-1.5 py-0.5 rounded">Pronto</span>
+                        : <ChevronRight className={`w-4 h-4 transition-transform ${isSubmenuOpen ? 'rotate-90' : ''} ${isActive ? 'text-white' : ''}`} />
                       }
                     </>
                   )}
                 </button>
               ) : item.disabled ? (
-                <div className="flex items-center gap-3 px-3 py-2.5 rounded-xl opacity-40 cursor-not-allowed text-gray-400">
-                  <Icon className="w-5 h-5 flex-shrink-0 text-gray-300" />
+                <div className="flex items-center gap-3 px-3 py-2.5 rounded-xl opacity-40 cursor-not-allowed text-sidebar-foreground/40">
+                  <Icon className="w-5 h-5 flex-shrink-0 text-sidebar-foreground/30" />
                   {isOpen && (
                     <>
                       <span className="text-sm font-semibold flex-1">{item.label}</span>
-                      <span className="text-[9px] font-bold uppercase tracking-wider text-gray-300 bg-gray-100 px-1.5 py-0.5 rounded">Pronto</span>
+                      <span className="text-[9px] font-bold uppercase tracking-wider text-sidebar-foreground/40 bg-sidebar-hover-bg px-1.5 py-0.5 rounded">Pronto</span>
                     </>
                   )}
                 </div>
@@ -191,27 +199,31 @@ export default function ModernSidebar({ isOpen, setIsOpen }) {
                   className={({ isActive }) => `
                     flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all
                     ${isActive
-                      ? 'bg-indigo-50 text-indigo-600'
-                      : 'text-gray-700 hover:bg-gray-50'}
+                      ? 'active bg-sidebar-active-bg text-white font-bold shadow-sm'
+                      : 'text-sidebar-foreground hover:bg-sidebar-hover-bg'}
                   `}
                 >
-                  <Icon className={`w-5 h-5 flex-shrink-0 ${isActive ? item.color : 'text-gray-400'}`} />
-                  {isOpen && <span className="text-sm font-semibold">{item.label}</span>}
+                  {({ isActive }) => (
+                    <>
+                      <Icon className={`w-5 h-5 flex-shrink-0 ${isActive ? 'text-white' : 'text-sidebar-foreground/50'}`} />
+                      {isOpen && <span className="text-sm">{item.label}</span>}
+                    </>
+                  )}
                 </NavLink>
               )}
 
               {/* Submenu */}
               {isOpen && hasSubmenu && isSubmenuOpen && (
-                <div className="ml-8 mt-1 space-y-1 border-l-2 border-indigo-100 pl-2 animate-in slide-in-from-top-2 duration-200">
+                <div className="ml-8 mt-1 space-y-1 border-l-2 border-sidebar-border pl-2 animate-in slide-in-from-top-2 duration-200">
                   {item.submenu.map((subitem) => (
                     <NavLink
                       key={subitem.path}
                       to={subitem.path}
                       className={({ isActive }) => `
-                        block px-3 py-2 rounded-lg text-xs font-medium transition-colors
+                        block px-3 py-2 rounded-lg text-xs transition-colors
                         ${isActive
-                          ? 'bg-indigo-50 text-indigo-600'
-                          : 'text-gray-600 hover:bg-gray-50'}
+                          ? 'active bg-sidebar-active-bg text-white font-bold shadow-sm'
+                          : 'text-sidebar-foreground/80 hover:bg-sidebar-hover-bg'}
                       `}
                     >
                       {subitem.label}
@@ -224,16 +236,16 @@ export default function ModernSidebar({ isOpen, setIsOpen }) {
         })}
       </nav>
 
-      {/* User Info (Minimalistized version for sidebar) */}
+      {/* User Info */}
       {isOpen && (
-        <div className="p-3 border-t border-gray-100">
-          <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl">
+        <div className="p-3 border-t border-sidebar-border">
+          <div className="flex items-center gap-3 p-3 bg-sidebar-hover-bg/40 rounded-xl">
             <div className="w-9 h-9 bg-gradient-to-br from-indigo-600 to-blue-500 rounded-full flex items-center justify-center shadow-md">
               <span className="font-bold text-white text-xs">AJ</span>
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-xs font-bold text-gray-900 truncate">Antuan Andrés Jury</p>
-              <p className="text-[10px] text-gray-400 font-bold uppercase tracking-tight">Jefe de Planta</p>
+              <p className="text-xs font-bold text-white truncate">Antuan Andrés Jury</p>
+              <p className="text-[10px] text-sidebar-foreground/50 font-bold uppercase tracking-tight">Jefe de Planta</p>
             </div>
           </div>
         </div>

@@ -22,4 +22,10 @@ public class HojaCompraItemDTO {
     private Integer cantidadOP;
     private BigDecimal cantidadRequerida;
     private BigDecimal precioUnitarioRef;
+    
+    // Nuevos campos para proveedor y OC vinculada
+    private Long proveedorId;
+    private String proveedorNombre;
+    private Long ocId;
+    private String numeroOC;
 }

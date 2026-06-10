@@ -1,5 +1,6 @@
 package backend.com.comercial.infrastructure.api;
 
+import backend.com.comercial.application.UseCase.ActualizarEVNUseCase;
 import backend.com.comercial.application.UseCase.AdjudicarEVNUseCase;
 import backend.com.comercial.application.UseCase.AprobarEVNUseCase;
 import backend.com.comercial.application.UseCase.CrearEVNUseCase;
@@ -27,6 +28,7 @@ import java.util.stream.Collectors;
 public class EvaluacionNegocioController {
 
     private final CrearEVNUseCase crearEVNUseCase;
+    private final ActualizarEVNUseCase actualizarEVNUseCase;
     private final AdjudicarEVNUseCase adjudicarEVNUseCase;
     private final AprobarEVNUseCase aprobarEVNUseCase;
     private final EvaluacionNegocioRepository repository;
@@ -50,6 +52,12 @@ public class EvaluacionNegocioController {
     @Operation(summary = "Crear EVN", description = "Crea una EVN nueva. El número se asigna atómicamente.")
     public EVNResponse crear(@Valid @RequestBody CrearEVNCommand command) {
         return crearEVNUseCase.ejecutar(command);
+    }
+
+    @PutMapping("/{id}")
+    @Operation(summary = "Actualizar EVN", description = "Actualiza los datos de una EVN existente (ítems, costos, gastos). No modifica el número ni el estado.")
+    public EVNResponse actualizar(@PathVariable Long id, @Valid @RequestBody CrearEVNCommand command) {
+        return actualizarEVNUseCase.ejecutar(id, command);
     }
 
     @GetMapping("/{id}")

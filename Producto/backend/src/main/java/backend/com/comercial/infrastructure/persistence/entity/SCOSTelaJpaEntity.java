@@ -1,7 +1,7 @@
 package backend.com.comercial.infrastructure.persistence.entity;
 
 import backend.com.gestionUsuarios.proveedor.infrastructure.persistence.entity.ProveedorJpaEntity;
-import backend.com.shared.infrastructure.persistence.entity.Tela;
+import backend.com.shared.infrastructure.persistence.entity.ArticuloJpaEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -25,9 +25,8 @@ public class SCOSTelaJpaEntity {
     private SolicitudCostosJpaEntity solicitudCostos;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "tela_id")
-    private Tela tela;
-
+    @JoinColumn(name = "articulo_id")
+    private ArticuloJpaEntity articulo;
 
     private String aplicacion;
     private String descripcion;
@@ -41,7 +40,7 @@ public class SCOSTelaJpaEntity {
 
     private String composicion;
     private String color;
-    
+
     @Column(precision = 10, scale = 4)
     private BigDecimal peso;
 

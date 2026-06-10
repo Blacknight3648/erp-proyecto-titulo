@@ -3,7 +3,6 @@ package backend.com.comercial.infrastructure.persistence.entity;
 import backend.com.comercial.domain.enums.EstadoSCOS;
 import backend.com.gestionUsuarios.cliente.infrastructure.persistence.entity.ClienteJpaEntity;
 import backend.com.gestionUsuarios.vendedor.infrastructure.persistence.entity.VendedorJpaEntity;
-import backend.com.shared.infrastructure.persistence.entity.EspecificacionTecnica;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -39,10 +38,6 @@ public class SolicitudCostosJpaEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "vendedor_id")
     private VendedorJpaEntity vendedor;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "especificacion_tecnica_id")
-    private EspecificacionTecnica especificacionTecnica;
 
     @Column(name = "articulo_descripcion", nullable = false)
     private String articuloDescripcion;

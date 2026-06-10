@@ -48,7 +48,6 @@ public class SolicitudCostosServiceImpl implements SolicitudCostosService {
                 dto.getTipo(),
                 dto.getClienteId(),
                 dto.getVendedorId(),
-                null,
                 dto.getArticuloDescripcion(),
                 dto.getNombrePrenda(),
                 dto.getEsMuestra() != null ? dto.getEsMuestra() : false,
@@ -82,7 +81,6 @@ public class SolicitudCostosServiceImpl implements SolicitudCostosService {
                 null,
                 dto.getVendedorId() != null ? dto.getVendedorId() : existing.getVendedorId(),
                 null,
-                existing.getEspecificacionTecnicaId(),
                 dto.getArticuloDescripcion() != null ? dto.getArticuloDescripcion() : existing.getArticuloDescripcion(),
                 dto.getNombrePrenda() != null ? dto.getNombrePrenda() : existing.getNombrePrenda(),
                 dto.getEsMuestra() != null ? dto.getEsMuestra() : existing.getEsMuestra(),
@@ -212,7 +210,6 @@ public class SolicitudCostosServiceImpl implements SolicitudCostosService {
                 .descripciones(domain.getIdSCOS() != null
                         ? descripcionPlantillaService.listarPorSCOS(domain.getIdSCOS())
                         : new ArrayList<>())
-                .costoFijo(null)
                 .build();
     }
 

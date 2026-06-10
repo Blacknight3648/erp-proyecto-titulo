@@ -2,7 +2,7 @@ import { ItemEVNDTO } from "./ItemEVNDTO";
 
 /**
  * DTO para representar una Evaluación de Negocio.
- * Basado en EvaluacionNegocio.java
+ * Basado en EVNResponse.java
  */
 export class EvaluacionNegocioDTO {
   constructor(data = {}) {
@@ -16,8 +16,6 @@ export class EvaluacionNegocioDTO {
     this.currency = "CLP";
     this.margenGanancia = data.margenGanancia || 0;
     this.rentabilidadEsperada = data.rentabilidadEsperada || 0;
-    this.costeoId = data.costeoId || null;
-    this.solicitudCotizacionId = data.solicitudCotizacionId || null;
     this.porcentajeComision = data.porcentajeComision || 0;
 
     this.clienteNombre = data.clienteNombre
@@ -33,20 +31,34 @@ export class EvaluacionNegocioDTO {
 
     this.numeroCosteo    = data.numeroCosteo || null;
     this.numeroSolicitud = data.numeroSolicitud || null;
-    this.tomaTallajeMetadata = data.tomaTallajeMetadata || null;
-    this.pegadoCintaMetadata = data.pegadoCintaMetadata || null;
 
-    // Costos adicionales (mapeo plano)
-    this.garantiaSeriedad = data.garantiaSeriedad || 0;
-    this.garantiaFielCumplimiento = data.garantiaFielCumplimiento || data.garantiaFiel || 0;
-    this.flete = data.flete || data.fleteEspecial || 0;
-    this.modificacionPrenda = data.modificacionPrenda || 0;
-    this.tomaTallajeArr = data.tomaTallaje || 0; 
-    this.certificacion = data.certificacion || 0;
-    this.muestras = data.muestras || data.muestrasFisicas || 0;
+    // Costos adicionales (mapeo plano desde gastosAdicionales)
+    this.garantiaSeriedad = 0;
+    this.garantiaFielCumplimiento = 0;
+    this.flete = 0;
+    this.modificacionPrenda = 0;
+    this.certificacion = 0;
+    this.muestras = 0;
+    this.entregaPersonalizada = 0;
+
+    this.gastosAdicionales = data.gastosAdicionales || [];
+    this.gastosAdicionales.forEach(g => {
+      const monto = g.monto || 0;
+      if (g.tipoGasto === 'FLETE') this.flete = monto;
+      if (g.tipoGasto === 'GARANTIA_SERIEDAD') this.garantiaSeriedad = monto;
+      if (g.tipoGasto === 'GARANTIA_CUMPLIMIENTO') this.garantiaFielCumplimiento = monto;
+      if (g.tipoGasto === 'CERTIFICACION') this.certificacion = monto;
+      if (g.tipoGasto === 'MUESTRAS_FISICAS') this.muestras = monto;
+      if (g.tipoGasto === 'ENTREGA_PERSONALIZADA') this.entregaPersonalizada = monto;
+    });
+
+    // Toma de tallaje — objeto estructurado desde el backend (3FN)
+    this.tomaTallaje = data.tomaTallaje || null;
+
+    // Pegado de cinta — detalles como [{clave, valor}]
+    this.pegadoCintaDetalles = data.pegadoCintaDetalles || [];
 
     this.items = (data.items || []).map(item => new ItemEVNDTO(item));
-    this.gastosAdicionales = data.gastosAdicionales || [];
   }
 
   static fromResponse(response) {

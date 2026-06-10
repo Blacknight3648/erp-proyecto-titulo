@@ -136,6 +136,7 @@ export const useEVNState = (initialEval = null) => {
                 cant: it.cantidad || 0,
                 tipo: it.tipoItem || it.tipo || "SC",
                 producto: it.descripcion || it.producto || "",
+                descripcion: it.descripcion || "",
                 modelo: it.modelo || "",
                 tela: it.tela || "",
                 composicion: it.composicion || "",
@@ -144,10 +145,14 @@ export const useEVNState = (initialEval = null) => {
                 codigoProveedor: it.codigoProveedor || "",
                 proveedorId: it.proveedorId || null,
                 proveedor: it.proveedorNombre || "",
+                articuloId: it.articuloId || null,
                 costoProducto: it.costoProducto || it.costoUnitario || 0,
                 costoLogo: it.costoLogo || 0,
                 costoOrdenTrabajo: it.costoOrdenTrabajo || 0,
                 precioVentaNeto: it.precioUnitario || 0,
+                costeoId: it.costeoId || null,
+                solicitudCostosId: it.solicitudCostosId || null,
+                technicalSpecs: it.technicalSpecs || [],
             })));
 
             const hydratedOtrosCostos = { ...DEFAULT_OTROS_COSTOS };
@@ -167,24 +172,43 @@ export const useEVNState = (initialEval = null) => {
                 });
             }
 
-            // Hidratar metadatos JSON para desgloses operativos
-            if (initialEval.tomaTallajeMetadata) {
-                try {
-                    const ttData = JSON.parse(initialEval.tomaTallajeMetadata);
-                    hydratedOtrosCostos.tomaTallaje = { ...DEFAULT_OTROS_COSTOS.tomaTallaje, ...ttData };
-                } catch (e) { console.error("Error parsing TT metadata:", e); }
-            } else if (initialEval.tomaTallaje) {
+            // Hidratar Toma de Tallaje desde campos estructurados (3FN)
+            if (initialEval.tomaTallaje) {
+                const tt = initialEval.tomaTallaje;
                 hydratedOtrosCostos.tomaTallaje = {
                     ...DEFAULT_OTROS_COSTOS.tomaTallaje,
-                    ...(initialEval.tomaTallaje || {})
+                    diasRecinto:        tt.diasXRecinto        ?? DEFAULT_OTROS_COSTOS.tomaTallaje.diasRecinto,
+                    persRecinto:        tt.persXRecinto        ?? DEFAULT_OTROS_COSTOS.tomaTallaje.persRecinto,
+                    colacionPorPersona: tt.colaccionXPers      ?? DEFAULT_OTROS_COSTOS.tomaTallaje.colacionPorPersona,
+                    asignacionPorPersona: tt.asignacionXPers   ?? DEFAULT_OTROS_COSTOS.tomaTallaje.asignacionPorPersona,
+                    peajes:             tt.peajes              ?? DEFAULT_OTROS_COSTOS.tomaTallaje.peajes,
+                    bencinaPorLitro:    tt.bencinaXLt          ?? DEFAULT_OTROS_COSTOS.tomaTallaje.bencinaPorLitro,
+                    kmTotal:            tt.kmTotal             ?? DEFAULT_OTROS_COSTOS.tomaTallaje.kmTotal,
+                    rendimiento:        tt.rendKmLt            ?? DEFAULT_OTROS_COSTOS.tomaTallaje.rendimiento,
+                    cantRecintos:       tt.recintos            ?? 1,
+                    observaciones:      tt.observaciones       ?? '',
+                    detalles:           tt.detalles            || []
                 };
             }
 
-            if (initialEval.pegadoCintaMetadata) {
-                try {
-                    const pcData = JSON.parse(initialEval.pegadoCintaMetadata);
-                    hydratedOtrosCostos.pegadoCinta = pcData;
-                } catch (e) { console.error("Error parsing PC metadata:", e); }
+            // Hidratar Pegado de Cinta desde [{clave, valor}] (3FN)
+            const pcDetalles = initialEval.pegadoCintaDetalles || [];
+            if (pcDetalles.length > 0) {
+                hydratedOtrosCostos.pegadoCinta = pcDetalles.map((d, idx) => {
+                    try {
+                        const parsed = JSON.parse(d.valor);
+                        return {
+                            id: idx + 1,
+                            etiqueta: d.clave,
+                            costoCinta: parsed.costoCinta || 0,
+                            costoMO:    parsed.costoMO    || 0,
+                            mtsCinta:   parsed.mtsCinta   || 0,
+                            total: 0
+                        };
+                    } catch {
+                        return { id: idx + 1, etiqueta: d.clave, costoCinta: 0, costoMO: 0, mtsCinta: 0, total: 0 };
+                    }
+                });
             }
 
             const rebuiltVinculados = { scos: [], scot: [] };
@@ -559,19 +583,21 @@ export const useEVNState = (initialEval = null) => {
         const hasCliente = solicitud.clienteId || initialEval?.clienteId || solicitud.clienteNombre || initialEval?.clienteNombre;
 
         if (!hasCliente) {
-            toast.error("Debe seleccionar un cliente para generar la propuesta.");
+            toast.error("Debe seleccionar un cliente para guardar la propuesta.");
             return;
         }
 
         setIsSaving(true);
+        const evnId = initialEval?.evaluacionNegocioId || initialEval?.id || null;
+        const isUpdate = !!evnId;
+
         try {
             const payload = {
-                // numero: Math.floor(10000 + Math.random() * 90000), // Eliminado: El backend genera el correlativo real
                 clienteId: parseId(solicitud.clienteId || initialEval?.clienteId),
                 vendedorId: parseId(solicitud.vendedorId || initialEval?.vendedorId) || user?.id || 1,
                 clienteNombre: solicitud.clienteNombre || initialEval?.clienteNombre || '',
                 referencia: evalData.referencia || '',
-                estado: 'BORRADOR',
+                estado: initialEval?.estado || 'BORRADOR',
                 porcentajeComision: otrosCostos.porcentajeComision || 0,
                 garantiaSeriedad: otrosCostos.garantiaSeriedad || 0,
                 garantiaFielCumplimiento: otrosCostos.garantiaFielCumplimiento || 0,
@@ -580,17 +606,29 @@ export const useEVNState = (initialEval = null) => {
                 muestras: otrosCostos.muestras || 0,
                 entregaPersonalizada: otrosCostos.entregaPersonalizada || 0,
 
-                // Campos aplanados según CrearEVNCommand.java
-                tomaTallajeMonto: totals.totalTT || 0,
-                tomaTallajeObservaciones: otrosCostos.tomaTallaje.observaciones || '',
-                tomaTallajeMetadata: JSON.stringify(otrosCostos.tomaTallaje),
+                // Toma de Tallaje — campos individuales tipados (3FN)
+                tomaTallajeObservaciones:    otrosCostos.tomaTallaje.observaciones      || '',
+                tomaTallajeDiasXRecinto:     otrosCostos.tomaTallaje.diasRecinto        || null,
+                tomaTallajePersonasXRecinto: otrosCostos.tomaTallaje.persRecinto        || null,
+                tomaTallajeColaccionXPers:   otrosCostos.tomaTallaje.colacionPorPersona || null,
+                tomaTallajeAsignacionXPers:  otrosCostos.tomaTallaje.asignacionPorPersona || null,
+                tomaTallajePeajes:           otrosCostos.tomaTallaje.peajes             || null,
+                tomaTallajeBencinaXLt:       otrosCostos.tomaTallaje.bencinaPorLitro    || null,
+                tomaTallajeKmTotal:          otrosCostos.tomaTallaje.kmTotal            || null,
+                tomaTallajeRendKmLt:         otrosCostos.tomaTallaje.rendimiento        || null,
+                tomaTallajeRecintos:         otrosCostos.tomaTallaje.cantRecintos       || 1,
+                tomaTallajeDetalles:         otrosCostos.tomaTallaje.detalles           || [],
 
-                pegadoCinta: (otrosCostos.pegadoCinta || []).reduce((acc, c) => acc + (c.total || 0), 0),
-                pegadoCintaMetadata: JSON.stringify(otrosCostos.pegadoCinta),
+                // Pegado de cinta — monto total + detalles [{clave, valor}] (3FN)
+                pegadoCinta: totals.totalPC,
+                pegadoCintaDetalles: (otrosCostos.pegadoCinta || []).map(c => ({
+                    clave: c.etiqueta || 'ITEM',
+                    valor: JSON.stringify({ costoCinta: c.costoCinta, costoMO: c.costoMO, mtsCinta: c.mtsCinta })
+                })),
 
                 items: (items || []).map((item, idx) => ({
                     nroItem: idx + 1,
-                    productoId: parseId(item.productoId),
+                    articuloId: parseId(item.articuloId || item.productoId),
                     proveedorId: parseId(item.proveedorId),
                     costeoId: parseId(item.costeoId),
                     solicitudCostosId: parseId(item.solicitudCostosId),
@@ -602,16 +640,7 @@ export const useEVNState = (initialEval = null) => {
                     codigoInterno: item.codigoInterno || '',
                     codigoProveedor: item.codigoProveedor || '',
                     proveedorNombre: item.proveedor || '',
-                    technicalSpecs: {
-                        descripcion: item.producto || item.descripcion || '',
-                        modelo: item.modelo || '',
-                        tela: item.tela || '',
-                        composicion: item.composicion || '',
-                        genero: item.genero || '',
-                        codigoInterno: item.codigoInterno || '',
-                        codigoProveedor: item.codigoProveedor || '',
-                        proveedor: item.proveedor || ''
-                    },
+                    technicalSpecs: item.technicalSpecs || [],
                     cantidad: item.cant || 1,
                     precioUnitario: item.precioVentaNeto || 0,
                     costoUnitario: item.costoProducto || 0,
@@ -621,9 +650,15 @@ export const useEVNState = (initialEval = null) => {
                     tipoItem: item.tipo || 'SC',
                 })),
             };
-            await EvaluacionNegocioService.save(payload);
-            resetState();
-            toast.success("Propuesta generada correctamente");
+
+            if (isUpdate) {
+                await EvaluacionNegocioService.update(evnId, payload);
+                toast.success("EVN actualizada correctamente");
+            } else {
+                await EvaluacionNegocioService.save(payload);
+                resetState();
+                toast.success("Propuesta creada correctamente");
+            }
             return true;
         } catch (error) {
             console.error("Error al guardar la propuesta:", error);

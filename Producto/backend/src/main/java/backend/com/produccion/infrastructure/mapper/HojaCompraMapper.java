@@ -72,6 +72,21 @@ public class HojaCompraMapper {
     }
 
     private HojaCompraItem itemToDomain(HojaCompraItemJpaEntity entity) {
+        if (entity == null) return null;
+
+        Long proveedorId = entity.getProveedorId();
+        String proveedorNombre = entity.getProveedor() != null ? entity.getProveedor().getRazonSocialProveedor() : null;
+
+        Long ocId = null;
+        String numeroOC = null;
+        if (entity.getOcLinks() != null && !entity.getOcLinks().isEmpty()) {
+            backend.com.produccion.infrastructure.persistence.entity.HCItemOCItemLinkJpaEntity link = entity.getOcLinks().get(0);
+            if (link.getOcItem() != null && link.getOcItem().getOrdenCompra() != null) {
+                ocId = link.getOcItem().getOrdenCompra().getIdOC();
+                numeroOC = link.getOcItem().getOrdenCompra().getNumeroOC();
+            }
+        }
+
         return new HojaCompraItem(
                 entity.getIdHCItem(),
                 entity.getHojaCompra() != null ? entity.getHojaCompra().getIdHC() : null,
@@ -81,10 +96,15 @@ public class HojaCompraMapper {
                 entity.getConsumoUnitario(),
                 entity.getCantidadOP(),
                 entity.getCantidadRequerida(),
-                entity.getPrecioUnitarioRef());
+                entity.getPrecioUnitarioRef(),
+                proveedorId,
+                proveedorNombre,
+                ocId,
+                numeroOC);
     }
 
     private HojaCompraItemJpaEntity itemToJpaEntity(HojaCompraItem domain) {
+        if (domain == null) return null;
         HojaCompraItemJpaEntity entity = new HojaCompraItemJpaEntity();
         entity.setIdHCItem(domain.getIdHCItem());
         entity.setTipoInsumo(domain.getTipoInsumo());
@@ -94,6 +114,7 @@ public class HojaCompraMapper {
         entity.setCantidadOP(domain.getCantidadOP());
         entity.setCantidadRequerida(domain.getCantidadRequerida());
         entity.setPrecioUnitarioRef(domain.getPrecioUnitarioRef());
+        entity.setProveedorId(domain.getProveedorId());
         return entity;
     }
 }

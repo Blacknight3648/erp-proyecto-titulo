@@ -23,4 +23,6 @@ public interface OrdenCompraRepository {
      * Útil para conocer en qué OCs se está comprando un HCItem específico.
      */
     List<OrdenCompra> findAllByHcItemId(Long hcItemId);
+
+    void deleteById(Long idOC);
 }

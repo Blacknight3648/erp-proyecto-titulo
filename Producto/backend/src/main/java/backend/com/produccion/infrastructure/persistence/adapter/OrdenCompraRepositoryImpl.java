@@ -65,4 +65,11 @@ public class OrdenCompraRepositoryImpl implements OrdenCompraRepository {
                 .map(mapper::toDomain)
                 .collect(Collectors.toList());
     }
+
+    @Override
+    public void deleteById(Long idOC) {
+        if (idOC != null) {
+            jpaRepository.deleteById(idOC);
+        }
+    }
 }

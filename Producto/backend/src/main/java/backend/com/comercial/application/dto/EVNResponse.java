@@ -2,7 +2,9 @@ package backend.com.comercial.application.dto;
 
 import backend.com.comercial.domain.model.EvaluacionNegocio;
 import backend.com.comercial.domain.model.GastoAdicional;
+import backend.com.comercial.domain.model.TomaTallajeDetalle;
 import lombok.Data;
+
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
@@ -26,8 +28,7 @@ public class EVNResponse {
     private List<ItemEVNResponse> items;
     private List<GastoAdicionalResponse> gastosAdicionales;
     private TomaTallajeResponse tomaTallaje;
-    private String tomaTallajeMetadata;
-    private String pegadoCintaMetadata;
+    private List<backend.com.comercial.domain.model.GastoAdicionalDetalle> pegadoCintaDetalles;
 
     @Data
     public static class ItemEVNResponse {
@@ -45,13 +46,14 @@ public class EVNResponse {
         private Integer cantidad;
         private BigDecimal precioUnitario;
         private BigDecimal costoUnitario;
-        private String tipoItem;
-        private BigDecimal totalItem;
+        private BigDecimal costoProducto;
         private BigDecimal costoLogo;
         private BigDecimal costoOrdenTrabajo;
+        private BigDecimal costoTotalUnitario;
+        private String tipoItem;
+        private BigDecimal totalItem;
         private BigDecimal margenItem;
-        private java.util.Map<String, String> technicalSpecs;
-        // Vínculo con costeo/SCOS (solo ítems tipo OP)
+        private List<backend.com.comercial.domain.model.ItemEspecificacion> technicalSpecs;
         private Long costeoId;
         private Long solicitudCostosId;
     }
@@ -61,15 +63,27 @@ public class EVNResponse {
         private String tipoGasto;
         private BigDecimal monto;
         private String moneda;
+        private List<backend.com.comercial.domain.model.GastoAdicionalDetalle> detalles;
     }
 
     @Data
     public static class TomaTallajeResponse {
-        private BigDecimal monto;
+        private BigDecimal costoTotal;
         private String moneda;
         private String observaciones;
         private LocalDate fechaProgramada;
-        private String metadata;
+        private Integer diasXRecinto;
+        private Integer persXRecinto;
+        private BigDecimal colaccionXPers;
+        private BigDecimal asignacionXPers;
+        private BigDecimal peajes;
+        private BigDecimal bencinaXLt;
+        private BigDecimal kmTotal;
+        private BigDecimal rendKmLt;
+        private Integer recintos;
+        private BigDecimal personal;
+        private BigDecimal movilizacion;
+        private List<TomaTallajeDetalle> detalles;
     }
 
     public static EVNResponse fromDomain(EvaluacionNegocio domain) {
@@ -87,63 +101,72 @@ public class EVNResponse {
         response.setReferencia(domain.getReferencia());
         response.setClienteNombre(domain.getClienteNombre());
         response.setVendedorNombre(domain.getVendedorNombre());
-        
-        if (domain.getTomaTallaje() != null) {
-            response.setTomaTallajeMetadata(domain.getTomaTallaje().getMetadataJson());
-        }
-        
+
         domain.getGastosAdicionales().stream()
-            .filter(g -> g.getTipoGasto() == GastoAdicional.TipoGastoAdicional.PEGADO_CINTA)
-            .findFirst()
-            .ifPresent(g -> response.setPegadoCintaMetadata(g.getMetadataJson()));
+                .filter(g -> g.getTipoGasto() == GastoAdicional.TipoGastoAdicional.PEGADO_CINTA)
+                .findFirst()
+                .ifPresent(g -> response.setPegadoCintaDetalles(g.getDetalles()));
 
         response.setItems(domain.getItems().stream().map(item -> {
-            ItemEVNResponse itemResponse = new ItemEVNResponse();
-            itemResponse.setArticuloId(item.getArticuloId());
-            itemResponse.setProveedorId(item.getProveedorId());
-            itemResponse.setCantidad(item.getCantidad());
-            itemResponse.setPrecioUnitario(item.getPrecioUnitario().getAmount());
-            itemResponse.setCostoUnitario(item.getCostoUnitario().getAmount());
-            itemResponse.setCostoLogo(item.getCostoLogo());
-            itemResponse.setCostoOrdenTrabajo(item.getCostoOrdenTrabajo());
-            itemResponse.setTipoItem(item.getTipoItem());
-            itemResponse.setTotalItem(item.getTotal().getAmount());
-            itemResponse.setMargenItem(item.getMargenItem());
-            itemResponse.setTechnicalSpecs(item.getTechnicalSpecs());
-            itemResponse.setCosteoId(item.getCosteoId());
-            itemResponse.setSolicitudCostosId(item.getSolicitudCostosId());
-
-            // Mapear campos descriptivos desde el mapa si están presentes
-            if (item.getTechnicalSpecs() != null) {
-                itemResponse.setDescripcion(item.getTechnicalSpecs().get("descripcion"));
-                itemResponse.setModelo(item.getTechnicalSpecs().get("modelo"));
-                itemResponse.setTela(item.getTechnicalSpecs().get("tela"));
-                itemResponse.setComposicion(item.getTechnicalSpecs().get("composicion"));
-                itemResponse.setGenero(item.getTechnicalSpecs().get("genero"));
-                itemResponse.setCodigoInterno(item.getTechnicalSpecs().get("codigoInterno"));
-                itemResponse.setProveedorNombre(item.getTechnicalSpecs().get("proveedor"));
-            }
-            return itemResponse;
+            ItemEVNResponse r = new ItemEVNResponse();
+            r.setArticuloId(item.getArticuloId());
+            r.setProveedorId(item.getProveedorId());
+            r.setNroItem(item.getNroItem());
+            r.setDescripcion(item.getDescripcion());
+            r.setModelo(item.getModelo());
+            r.setTela(item.getTela());
+            r.setComposicion(item.getComposicion());
+            r.setGenero(item.getGenero());
+            r.setCodigoInterno(item.getCodigoInterno());
+            r.setCodigoProveedor(item.getCodigoProveedor());
+            r.setProveedorNombre(item.getProveedorNombre());
+            r.setCantidad(item.getCantidad());
+            r.setPrecioUnitario(item.getPrecioUnitario().getAmount());
+            r.setCostoUnitario(item.getCostoUnitario().getAmount());
+            r.setCostoProducto(item.getCostoProducto());
+            r.setCostoLogo(item.getCostoLogo());
+            r.setCostoOrdenTrabajo(item.getCostoOrdenTrabajo());
+            r.setCostoTotalUnitario(item.getCostoTotalUnitario());
+            r.setTipoItem(item.getTipoItem());
+            r.setTotalItem(item.getTotal().getAmount());
+            r.setMargenItem(item.getMargenItem());
+            r.setTechnicalSpecs(item.getTechnicalSpecs());
+            r.setCosteoId(item.getCosteoId());
+            r.setSolicitudCostosId(item.getSolicitudCostosId());
+            return r;
         }).collect(Collectors.toList()));
 
         if (domain.getGastosAdicionales() != null) {
             response.setGastosAdicionales(domain.getGastosAdicionales().stream().map(gasto -> {
-                GastoAdicionalResponse gastoResponse = new GastoAdicionalResponse();
-                gastoResponse.setTipoGasto(gasto.getTipoGasto().name());
-                gastoResponse.setMonto(gasto.getMonto().getAmount());
-                gastoResponse.setMoneda(gasto.getMonto().getCurrency());
-                return gastoResponse;
+                GastoAdicionalResponse gr = new GastoAdicionalResponse();
+                gr.setTipoGasto(gasto.getTipoGasto().name());
+                gr.setMonto(gasto.getMonto().getAmount());
+                gr.setMoneda(gasto.getMonto().getCurrency());
+                gr.setDetalles(gasto.getDetalles());
+                return gr;
             }).collect(Collectors.toList()));
         }
 
         if (domain.getTomaTallaje() != null) {
-            TomaTallajeResponse ttResponse = new TomaTallajeResponse();
-            ttResponse.setMonto(domain.getTomaTallaje().getCostoTotal().getAmount());
-            ttResponse.setMoneda(domain.getTomaTallaje().getCostoTotal().getCurrency());
-            ttResponse.setObservaciones(domain.getTomaTallaje().getObservaciones());
-            ttResponse.setFechaProgramada(domain.getTomaTallaje().getFechaProgramada());
-            ttResponse.setMetadata(domain.getTomaTallaje().getMetadataJson());
-            response.setTomaTallaje(ttResponse);
+            backend.com.comercial.domain.model.TomaTallaje tt = domain.getTomaTallaje();
+            TomaTallajeResponse ttR = new TomaTallajeResponse();
+            ttR.setCostoTotal(tt.getCostoTotal().getAmount());
+            ttR.setMoneda(tt.getCostoTotal().getCurrency());
+            ttR.setObservaciones(tt.getObservaciones());
+            ttR.setFechaProgramada(tt.getFechaProgramada());
+            ttR.setDiasXRecinto(tt.getDiasXRecinto());
+            ttR.setPersXRecinto(tt.getPersXRecinto());
+            ttR.setColaccionXPers(tt.getColaccionXPers());
+            ttR.setAsignacionXPers(tt.getAsignacionXPers());
+            ttR.setPeajes(tt.getPeajes());
+            ttR.setBencinaXLt(tt.getBencinaXLt());
+            ttR.setKmTotal(tt.getKmTotal());
+            ttR.setRendKmLt(tt.getRendKmLt());
+            ttR.setRecintos(tt.getRecintos());
+            ttR.setPersonal(tt.calcPersonal());
+            ttR.setMovilizacion(tt.calcMovilizacion());
+            ttR.setDetalles(tt.getDetalles());
+            response.setTomaTallaje(ttR);
         }
 
         return response;

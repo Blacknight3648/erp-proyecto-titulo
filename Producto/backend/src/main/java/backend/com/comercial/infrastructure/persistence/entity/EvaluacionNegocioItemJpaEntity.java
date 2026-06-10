@@ -89,8 +89,13 @@ public class EvaluacionNegocioItemJpaEntity {
     @Column(name = "tipo_item", length = 30)
     private String tipoItem;
 
-    @Column(name = "technical_specs_json", length = 2000)
-    private String technicalSpecsJson;
+    @OneToMany(mappedBy = "evaluacionNegocioItem", cascade = CascadeType.ALL, orphanRemoval = true)
+    private java.util.List<EvaluacionNegocioItemSpecJpaEntity> specs = new java.util.ArrayList<>();
+
+    public void addSpec(EvaluacionNegocioItemSpecJpaEntity spec) {
+        specs.add(spec);
+        spec.setEvaluacionNegocioItem(this);
+    }
 
     // === Vínculo con costeo/SCOS (solo ítems tipo OP; sin FK cross-módulo) ===
     @Column(name = "costeo_id")

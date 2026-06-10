@@ -32,6 +32,16 @@ export const EvaluacionNegocioService = {
         }
     },
 
+    update: async (id, evaluacion) => {
+        try {
+            const response = await api.put(`/comercial/evaluaciones-negocio/${id}`, evaluacion);
+            return EvaluacionNegocioDTO.fromResponse(response);
+        } catch (error) {
+            console.error(`Error updating Evaluacion de Negocio ${id}:`, error);
+            throw error;
+        }
+    },
+
     adjudicar: async (id, aprobador, observacion) => {
         const response = await api.patch(
             `/comercial/evaluaciones-negocio/${id}/adjudicar`,

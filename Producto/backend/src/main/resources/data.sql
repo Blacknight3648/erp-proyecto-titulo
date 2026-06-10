@@ -305,6 +305,48 @@ MERGE INTO notas_venta (idnv, numeronv, evaluacion_negocio_id, cliente_id, vende
     (2, 'NV-2024-002', 1, 1, 1, 'EN_PRODUCCION', false, CURRENT_DATE, DATEADD('DAY', 45, CURRENT_DATE), 850000.00, 'CLP', 161500.00, 'CLP', 1011500.00, 'CLP', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
 -- ============================================================
+-- 7.4. PRODUCCIÓN: COSTEO -> OP -> HOJA DE COMPRA (APROBADA)
+-- ============================================================
+-- Costeo (vinculado a SCOS-2024-002, Pantalón Cargo Operario)
+MERGE INTO produccion_costeos (id_costeo, solicitud_costos_id, numero_costeo)
+    KEY (id_costeo)
+    VALUES
+    (1, 2, 'COST-2024-001');
+
+-- Versión de costeo
+MERGE INTO produccion_costeo_versiones (id_costeo_version, costeo_id, numero_version, fecha_creacion, usuario_creador)
+    KEY (id_costeo_version)
+    VALUES
+    (1, 1, 1, CURRENT_TIMESTAMP, 'SISTEMA');
+
+-- Orden de Producción (vinculada a NV-2024-002, EN_PRODUCCION)
+MERGE INTO orden_produccion (idop, costeo_version_id, numeroop, nota_venta_id, estado, fecha_inicio, fecha_entrega_programada, observaciones, created_at, updated_at)
+    KEY (idop)
+    VALUES
+    (1, 1, 'OP-2024-001', 2, 'EN_PROCESO', CURRENT_DATE, DATEADD('DAY', 30, CURRENT_DATE), 'Producción Pantalón Cargo Operario - Laboratorio Medcell', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+
+-- Items de la Orden de Producción
+MERGE INTO produccion_orden_items (idopitem, orden_produccion_id, articulo_id, nro_item, modelo, tela, color, talla, genero, codigo, lleva_logo, cantidad)
+    KEY (idopitem)
+    VALUES
+    (1, 1, 2, 1, 'Pantalón Cargo', 'Ripstop Impermeable', 'Verde', 'M', 'MASCULINO', 'PANT-CARGO-M', 'SI', 25),
+    (2, 1, 2, 2, 'Pantalón Cargo', 'Ripstop Impermeable', 'Verde', 'L', 'MASCULINO', 'PANT-CARGO-L', 'SI', 25);
+
+-- Hoja de Compra APROBADA para la OP-2024-001
+MERGE INTO produccion_hojas_compra (id_hc, numero_hc, op_id, costeo_version_id, estado, fecha_generacion, observaciones)
+    KEY (id_hc)
+    VALUES
+    (1, 'HC-2024-001', 1, 1, 'APROBADA', CURRENT_DATE, 'HC generada para OP-2024-001');
+
+-- Items de la Hoja de Compra
+MERGE INTO produccion_hoja_compra_items (id_hc_item, hc_id, tipo_insumo, articulo_id, proveedor_id, nombre_insumo, consumo_unitario, cantidad_op, cantidad_requerida, precio_unitario_ref)
+    KEY (id_hc_item)
+    VALUES
+    (1, 1, 'TELA',      2, 1, 'Ripstop Impermeable',         1.8000, 50, 90.0000,  4500.00),
+    (2, 1, 'ACCESORIO', 4, 2, 'Cierre YKK 60cm Metálico',    1.0000, 50, 50.0000,  1200.00),
+    (3, 1, 'ACCESORIO', 5, 2, 'Botón Snap 15mm Nácar',       4.0000, 50, 200.0000, 150.00);
+
+-- ============================================================
 -- 8. REINICIO DE SECUENCIAS (Unificado al final)
 -- ============================================================
 ALTER TABLE areas ALTER COLUMN id_area RESTART WITH 50;
@@ -343,3 +385,10 @@ ALTER TABLE rubros ALTER COLUMN rubro_id RESTART WITH 10;
 ALTER TABLE banco ALTER COLUMN banco_id RESTART WITH 20;
 ALTER TABLE tipo_cuenta_bancaria ALTER COLUMN tipo_cuenta_id RESTART WITH 10;
 ALTER TABLE dato_bancario ALTER COLUMN dato_bancario_id RESTART WITH 10;
+
+ALTER TABLE produccion_costeos ALTER COLUMN id_costeo RESTART WITH 100;
+ALTER TABLE produccion_costeo_versiones ALTER COLUMN id_costeo_version RESTART WITH 100;
+ALTER TABLE orden_produccion ALTER COLUMN idop RESTART WITH 100;
+ALTER TABLE produccion_orden_items ALTER COLUMN idopitem RESTART WITH 1000;
+ALTER TABLE produccion_hojas_compra ALTER COLUMN id_hc RESTART WITH 100;
+ALTER TABLE produccion_hoja_compra_items ALTER COLUMN id_hc_item RESTART WITH 1000;

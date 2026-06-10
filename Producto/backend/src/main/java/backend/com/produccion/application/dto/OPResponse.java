@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 @Data
 public class OPResponse {
     private Long idOP;
+    private Long costeoVersionId;
     private String numeroOP;
     private Long notaVentaId;
     private String estado;
@@ -24,6 +25,7 @@ public class OPResponse {
             return null;
         OPResponse r = new OPResponse();
         r.idOP = op.getIdOP();
+        r.costeoVersionId = op.getCosteoVersionId();
         r.numeroOP = op.getNumeroOP() != null ? op.getNumeroOP().getValue() : null;
         r.notaVentaId = op.getNotaVentaId();
         r.estado = op.getEstado() != null ? op.getEstado().name() : null;

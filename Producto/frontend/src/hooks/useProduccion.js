@@ -73,18 +73,27 @@ export const useProduccion = () => {
     const saveCosteo = async (data) => {
         setLoading(true);
         try {
-            // El backend actual solo tiene un POST que parece manejar creación.
-            // Si el ID de costeo existe, podríamos necesitar un PUT o que el POST lo maneje.
-            // Viendo el controlador, solo hay POST /api/v1/produccion/costeos
-            const res = await api.post('/produccion/costeos', data);
+            let res;
+            if (data.idCosteo) {
+                // Actualizar costeo existente
+                res = await api.put(`/produccion/costeos/${data.idCosteo}`, data);
+            } else {
+                // Crear nuevo costeo
+                res = await api.post('/produccion/costeos', data);
+            }
             return res.data;
         } catch (error) {
             console.error("Error saving costeo:", error);
+            if (error.response) {
+                console.error("Costeo error detail:", JSON.stringify(error.response.data, null, 2));
+                console.error("Costeo payload:", JSON.stringify(data, null, 2));
+            }
             throw error;
         } finally {
             setLoading(false);
         }
     };
+
 
     return {
         loading,

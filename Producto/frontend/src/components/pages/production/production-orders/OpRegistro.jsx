@@ -32,16 +32,27 @@ export default function OpRegistro() {
         handleSaveInline,
         finalizeSave,
         calculateTotalQty,
-        mockOperaciones,
+        ordenes,
+        isLoadingOrdenes,
         mockOpDetails
     } = useOpRegistroState();
 
     const getClientName = (op) => {
         if (!op) return '';
-        if (op.id === 'OP-2024-001') return 'PROCESOS SANITARIOS SPA';
-        if (op.id === 'OP-2024-002') return 'I MUNICIPALIDAD LO BARNECHEA';
-        return op.cliente;
+        return op.notaVentaId ? `NV ${op.notaVentaId}` : '-';
     };
+
+    if (view === 'list' && isLoadingOrdenes) {
+        return (
+            <div className="flex flex-col items-center justify-center min-h-[calc(100vh-120px)] p-4">
+                <div className="bg-white p-12 rounded-[3rem] shadow-xl border border-gray-100 flex flex-col items-center animate-in fade-in zoom-in-95 duration-500">
+                    <Loader2 className="w-16 h-16 text-blue-600 animate-spin mb-6" />
+                    <h2 className="text-xl font-black text-gray-800 mb-2">Consultando Servidor</h2>
+                    <p className="text-gray-400 font-medium text-sm animate-pulse tracking-wide italic">Cargando Ordenes de Producción...</p>
+                </div>
+            </div>
+        );
+    }
 
     if (view === 'loading') {
         return (
@@ -58,8 +69,8 @@ export default function OpRegistro() {
     return (
         <div className="min-h-screen bg-gray-50/10">
             {view === 'list' && (
-                <ListaOPs 
-                    mockOperaciones={mockOperaciones}
+                <ListaOPs
+                    ordenes={ordenes}
                     isSelectionMode={isSelectionMode}
                     setIsSelectionMode={setIsSelectionMode}
                     selectedOPIds={selectedOPIds}

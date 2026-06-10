@@ -32,7 +32,15 @@
       "Bash(npm run *)",
       "Bash(jps -l)",
       "PowerShell(Get-Process | Where-Object { $_.ProcessName -match 'java' } | Select-Object Id, ProcessName, StartTime)",
-      "PowerShell(Stop-Process -Id 11920,12360 -Force -Confirm:$false)"
+      "PowerShell(Stop-Process -Id 11920,12360 -Force -Confirm:$false)",
+      "Bash(cd \"/c/Users/Ejecutivo2.ANTUAN/Desktop/ANTUAN SA - TRABAJO TI/erp-proyecto-titulo/Producto/frontend/src/components/pages/production\" && find . -type f -name \"*.jsx\" | head -50)",
+      "Read(//c/c/Users/Ejecutivo2.ANTUAN/Desktop/ANTUAN SA - TRABAJO TI/erp-proyecto-titulo/Producto/frontend/src/components/pages/**)",
+      "Bash(cd \"/c/Users/Ejecutivo2.ANTUAN/Desktop/ANTUAN SA - TRABAJO TI/erp-proyecto-titulo/Producto/backend/src/main/java/backend/com/produccion\" && find . -path \"*application/dto*\" -o -path \"*controller*\" | grep -i -E \"OP|Orden\" )",
+      "Read(//c/c/Users/Ejecutivo2.ANTUAN/Desktop/ANTUAN SA - TRABAJO TI/erp-proyecto-titulo/Producto/backend/src/main/java/backend/com/**)",
+      "Bash(cd \"/c/Users/Ejecutivo2.ANTUAN/Desktop/ANTUAN SA - TRABAJO TI/erp-proyecto-titulo/Producto/frontend/src\" && find . -iname \"mockData*\")",
+      "Read(//c/c/Users/Ejecutivo2.ANTUAN/Desktop/ANTUAN SA - TRABAJO TI/erp-proyecto-titulo/Producto/frontend/**)",
+      "Bash(npx eslint *)",
+      "Bash(xargs -I{} sh -c 'echo === {} ===; cat {}')"
     ],
     "additionalDirectories": [
       "c:\\Users\\Ejecutivo2.ANTUAN\\Desktop\\ANTUAN SA - TRABAJO TI\\erp-proyecto-titulo\\Producto\\backend\\src\\main\\java\\backend\\com\\maestros\\dto"

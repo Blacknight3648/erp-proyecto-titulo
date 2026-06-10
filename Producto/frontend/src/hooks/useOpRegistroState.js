@@ -1,7 +1,8 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { toast } from 'sonner';
-import { mockOperaciones, mockOpDetails, mockNVs } from '../data/mockData';
+import { mockOpDetails, mockNVs } from '../data/mockData';
 import { validateNumericInput } from '../utils/validations';
+import { OrdenProduccionService } from '../remote/service/OrdenProduccionService';
 
 export const useOpRegistroState = () => {
     const [selectedOP, setSelectedOP] = useState(null);
@@ -15,6 +16,34 @@ export const useOpRegistroState = () => {
     const [isReadOnly, setIsReadOnly] = useState(false);
     const [isManualCutting, setIsManualCutting] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [ordenes, setOrdenes] = useState([]);
+    const [isLoadingOrdenes, setIsLoadingOrdenes] = useState(true);
+
+    useEffect(() => {
+        let active = true;
+        setIsLoadingOrdenes(true);
+        OrdenProduccionService.getAll()
+            .then(async (ops) => {
+                const conAvance = await Promise.all(
+                    ops.map(async (op) => {
+                        try {
+                            const avance = await OrdenProduccionService.getAvance(op.idOP);
+                            return { ...op, id: op.idOP, progreso: Number(avance?.porcentajeGlobal) || 0 };
+                        } catch {
+                            return { ...op, id: op.idOP, progreso: 0 };
+                        }
+                    })
+                );
+                if (active) setOrdenes(conAvance);
+            })
+            .catch((err) => {
+                console.error('Error fetching Ordenes de Producción:', err);
+            })
+            .finally(() => {
+                if (active) setIsLoadingOrdenes(false);
+            });
+        return () => { active = false; };
+    }, []);
 
     const opFields = [
         { key: 'recepcionOP', title: 'Recepción OP', type: 'date', hasData: true },
@@ -43,12 +72,15 @@ export const useOpRegistroState = () => {
     };
 
     const calculateTotalQty = useCallback((opId) => {
-        const op = mockOperaciones.find(o => (o.idOP || o.id) === opId);
-        if (!op || !(op.notaVentaId || op.nv_id)) return 0;
-        const nv = mockNVs.find(n => (n.idNV || n.id) === (op.notaVentaId || op.nv_id));
+        const op = ordenes.find(o => o.id === opId);
+        if (op?.items?.length) {
+            return op.items.reduce((acc, item) => acc + (item.cantidad || 0), 0);
+        }
+        if (!op || !op.notaVentaId) return 0;
+        const nv = mockNVs.find(n => (n.idNV || n.id) === op.notaVentaId);
         if (!nv || !nv.items) return 0;
         return nv.items.reduce((acc, item) => acc + (item.qty || item.quantity || item.cantidad || 0), 0);
-    }, []);
+    }, [ordenes]);
 
     const handleModificarRegistro = () => {
         setIsReadOnly(false);
@@ -144,7 +176,8 @@ export const useOpRegistroState = () => {
         handleSaveInline,
         finalizeSave,
         calculateTotalQty,
-        mockOperaciones,
+        ordenes,
+        isLoadingOrdenes,
         mockOpDetails
     };
 };

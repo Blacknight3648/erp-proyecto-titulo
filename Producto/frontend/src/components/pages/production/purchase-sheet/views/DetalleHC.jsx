@@ -9,6 +9,7 @@ export default function DetalleHC({
     formatCLP,
     aprobar,
     cerrar,
+    onModificar,
 }) {
     const hcActual = registros?.find(r => r.id === selectedHC);
 
@@ -33,6 +34,7 @@ export default function DetalleHC({
             onBack={handleBack}
             onAprobar={aprobar ? handleAprobar : undefined}
             onCerrar={cerrar ? handleCerrar : undefined}
+            onModificar={onModificar}
             formatCLP={formatCLP}
         />
     );

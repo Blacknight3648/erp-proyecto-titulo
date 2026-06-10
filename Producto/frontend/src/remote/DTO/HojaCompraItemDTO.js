@@ -13,5 +13,9 @@ export class HojaCompraItemDTO {
         this.cantidadOP = data.cantidadOP ?? 0;
         this.cantidadRequerida = data.cantidadRequerida ?? 0;
         this.precioUnitarioRef = data.precioUnitarioRef ?? 0;
+        this.proveedorId = data.proveedorId ?? null;
+        this.proveedorNombre = data.proveedorNombre ?? '';
+        this.ocId = data.ocId ?? null;
+        this.numeroOC = data.numeroOC ?? '';
     }
 }

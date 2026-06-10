@@ -5,7 +5,8 @@ import {
     Calculator,
     Edit3,
     Users,
-    Eye
+    Eye,
+    ArrowRight
 } from 'lucide-react';
 
 
@@ -640,8 +641,6 @@ export default function DetalleEVN({ initialEval, onBack, mode = 'create' }) {
                                 <p className="text-3xl font-black text-indigo-700 tracking-tighter">${totals.totalOtrosCostos.toLocaleString('es-CL')}</p>
                             </div>
                         </div>
-<<<<<<< HEAD
-=======
 
                         {/* Commercial Conditions */}
                         <div className="bg-white rounded-[2rem] shadow-sm border border-gray-100 p-8">
@@ -671,7 +670,6 @@ export default function DetalleEVN({ initialEval, onBack, mode = 'create' }) {
                                 </div>
                             )}
                         </div>
->>>>>>> a3683dc7efa62356c87817b32d58c31cfb5b39e5
                     </div>
 
                     <div className="space-y-6">

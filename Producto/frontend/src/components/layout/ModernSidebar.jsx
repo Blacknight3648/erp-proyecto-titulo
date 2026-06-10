@@ -73,6 +73,7 @@ export default function ModernSidebar({ isOpen, setIsOpen }) {
         { path: '/produccion/ordenes', label: 'Ficha Técnica OP', icon: FileText },
         { path: '/op-registro', label: 'Registro OPs', icon: ClipboardList },
         { path: '/produccion/costeo-mp', label: 'Costeos OP', icon: DollarSign },
+        { path: '/produccion/hoja-compra', label: 'Hoja de Compra', icon: ClipboardList },
         { path: '/produccion/compras', label: 'Ordenes de Compra', icon: ShoppingCart },
       ]
     },

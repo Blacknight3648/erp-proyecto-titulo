@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { HojaCompraService } from '../remote/service/HojaCompraService';
+import { OrdenCompraService } from '../remote/service/OrdenCompraService';
 
 /**
  * Mapea una HojaCompraDTO (shape del backend) al shape esperado por la lista de la UI.
@@ -22,6 +23,10 @@ function toRegistro(hc) {
             cantidadOP: i.cantidadOP,
             consumoUnitario: i.consumoUnitario,
             precioEstimado: i.precioUnitarioRef,
+            proveedorId: i.proveedorId,
+            proveedorNombre: i.proveedorNombre,
+            ocId: i.ocId,
+            numeroOC: i.numeroOC,
         })),
         // Shape backend completo para acciones que lo necesiten
         raw: hc,
@@ -116,6 +121,19 @@ export function useHCState(initialView = 'list') {
         }
     }, [refresh]);
 
+    /** Abre la vista de gestión de compras (consolidación en OC) para una HC aprobada */
+    const handleOpenModificacion = useCallback((idHC) => {
+        setSelectedHC(idHC);
+        setView('modificacion');
+    }, []);
+
+    /** Consolida items de la HC seleccionada en una nueva Orden de Compra */
+    const consolidarOC = useCallback(async (payload) => {
+        const oc = await OrdenCompraService.generarConsolidada(payload);
+        await refresh();
+        return oc;
+    }, [refresh]);
+
     /** Helpers para items (solo afectan el formData local; las HC no se editan línea por línea por API) */
     const handleAddItem = useCallback(() => {
         const newItem = { id: Date.now(), insumo: '', cantidadRequerida: 0, precioEstimado: 0 };
@@ -172,6 +190,8 @@ export function useHCState(initialView = 'list') {
         handleSave,
         aprobar,
         cerrar,
+        handleOpenModificacion,
+        consolidarOC,
         formatCLP,
         ...calculations,
     };

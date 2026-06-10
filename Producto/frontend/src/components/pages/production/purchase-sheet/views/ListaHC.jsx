@@ -12,7 +12,7 @@ import { Button } from "../../../../ui/button";
 import { Input } from "../../../../ui/input";
 import { Tabs, TabsList, TabsTrigger } from "../../../../ui/tabs";
 import { motion, AnimatePresence } from "framer-motion";
-import { Plus, Search, Eye, ShoppingBag, CheckCircle2, Lock } from "lucide-react";
+import { Plus, Search, Eye, ShoppingBag, ShoppingCart, CheckCircle2, Lock } from "lucide-react";
 
 const STATUS_BADGE = {
     BORRADOR: 'bg-amber-50 text-amber-600 border-amber-100',
@@ -29,6 +29,7 @@ export default function ListaHC({
     handleOpenForm,
     aprobar,
     cerrar,
+    onModificar,
     loading,
     error,
 }) {
@@ -166,6 +167,17 @@ export default function ListaHC({
                                                     className="rounded-xl hover:bg-emerald-600 hover:text-white transition-all"
                                                 >
                                                     <CheckCircle2 className="w-4 h-4" />
+                                                </Button>
+                                            )}
+                                            {hc.status === 'APROBADA' && onModificar && (
+                                                <Button
+                                                    variant="ghost"
+                                                    size="icon"
+                                                    title="Gestionar Compra (OC)"
+                                                    onClick={() => onModificar(hc.id)}
+                                                    className="rounded-xl hover:bg-indigo-600 hover:text-white transition-all"
+                                                >
+                                                    <ShoppingCart className="w-4 h-4" />
                                                 </Button>
                                             )}
                                             {hc.status === 'APROBADA' && cerrar && (

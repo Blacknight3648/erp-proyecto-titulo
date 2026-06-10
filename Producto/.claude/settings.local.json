@@ -71,7 +71,8 @@
       "Bash(curl -s \"http://127.0.0.1:8050/api/v1/produccion/ordenes-produccion\")",
       "Bash(curl -s \"http://127.0.0.1:8050/api/v1/produccion/ordenes-produccion/1/avance\")",
       "Bash(grep -B2 -A30 \"hojas-compra\\\\|HojaCompra\" /tmp/backend.log | tail -60)",
-      "Bash(curl -s \"http://127.0.0.1:8050/api/v1/hojas-compra?estado=APROBADA\")"
+      "Bash(curl -s \"http://127.0.0.1:8050/api/v1/hojas-compra?estado=APROBADA\")",
+      "Bash(powershell -Command 'Stop-Process -Id 17452 -Force -Confirm:$false')"
     ],
     "additionalDirectories": [
       "c:\\Users\\Ejecutivo2.ANTUAN\\Desktop\\ANTUAN SA - TRABAJO TI\\erp-proyecto-titulo\\Producto\\backend\\src\\main\\java\\backend\\com\\maestros\\dto"

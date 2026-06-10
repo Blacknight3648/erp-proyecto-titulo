@@ -1,9 +1,9 @@
 import React from 'react';
 import { Factory, ClipboardList, CheckCircle2 } from 'lucide-react';
 
-export default function ListaOPs({ 
-    mockOperaciones, 
-    isSelectionMode, 
+export default function ListaOPs({
+    ordenes,
+    isSelectionMode,
     setIsSelectionMode, 
     selectedOPIds, 
     toggleSelection, 
@@ -58,10 +58,10 @@ export default function ListaOPs({
             </div>
 
             <div className="space-y-2 max-h-[500px] overflow-y-auto pr-2 custom-scrollbar">
-                {mockOperaciones.map((op) => {
+                {ordenes.map((op) => {
                     const isSelected = selectedOP?.id === op.id;
                     const isMultiSelected = selectedOPIds.includes(op.id);
-                    
+
                     return (
                         <div
                             key={op.id}
@@ -76,7 +76,7 @@ export default function ListaOPs({
                                         </div>
                                     )}
                                     <div>
-                                        <h4 className="font-black text-blue-600 text-lg uppercase tracking-tight">{op.id === 'OP-2024-001' ? 'OP 20549' : op.id === 'OP-2024-002' ? 'OP 20573' : op.id}</h4>
+                                        <h4 className="font-black text-blue-600 text-lg uppercase tracking-tight">{op.numeroOP || `OP-${op.id}`}</h4>
                                         <p className="text-[11px] font-bold text-gray-500 uppercase tracking-tight">{getClientName(op)}</p>
                                     </div>
                                 </div>
@@ -95,7 +95,8 @@ export default function ListaOPs({
                             </div>
 
                             <div className="mt-4 flex justify-between items-center text-[10px] font-bold text-gray-300">
-                                <span>09/02/2026</span>
+                                <span>{op.fechaInicio || '-'}</span>
+                                <span className="uppercase">{op.estado || '-'}</span>
                             </div>
 
                             {!isSelectionMode && isSelected && (
@@ -117,6 +118,11 @@ export default function ListaOPs({
                         </div>
                     );
                 })}
+                {ordenes.length === 0 && (
+                    <p className="text-center py-10 text-gray-300 font-bold italic uppercase tracking-widest text-xs">
+                        No hay Ordenes de Producción registradas
+                    </p>
+                )}
             </div>
 
             <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 p-4 flex justify-around items-center lg:hidden z-10 shadow-[0_-4px_20px_rgba(0,0,0,0.05)]">

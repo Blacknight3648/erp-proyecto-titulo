@@ -100,9 +100,9 @@ const TableroOP = () => {
 
             {/* Progress List View */}
             <div className="space-y-4 max-w-6xl">
-                {filteredData.map(op => (
+                {filteredData.map((op, idx) => (
                     <ProgressCard
-                        key={op.id}
+                        key={op.idOP ?? op.id ?? op.numeroOP ?? `op-idx-${idx}`}
                         item={op}
                         details={mockOpDetails}
                         stages={stages}

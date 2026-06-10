@@ -9,7 +9,8 @@ export class OrdenCompraItemDTO {
         this.idOCItem = data.idOCItem ?? null;
         this.ocId = data.ocId ?? null;
         this.tipoInsumo = data.tipoInsumo ?? '';
-        this.insumoId = data.insumoId ?? null;
+        this.insumoId = data.insumoId ?? data.articuloId ?? null;
+        this.articuloId = data.articuloId ?? data.insumoId ?? null;
         this.nombreInsumo = data.nombreInsumo ?? '';
         this.cantidadRequerida = data.cantidadRequerida ?? 0;
         this.cantidadStock = data.cantidadStock ?? 0;

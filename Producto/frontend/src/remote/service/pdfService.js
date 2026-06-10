@@ -1,5 +1,5 @@
 import jsPDF from 'jspdf';
-import 'jspdf-autotable';
+import autoTable from 'jspdf-autotable';
 
 const COMPANY_INFO = {
     name: "ANTUAN S.A.",
@@ -108,7 +108,7 @@ export const pdfService = {
             formatCurrency((item.unitPrice || 0) * item.quantity)
         ]);
 
-        doc.autoTable({
+        autoTable(doc, {
             head: [tableColumn],
             body: tableRows,
             startY: data.esKit ? 95 : 85,
@@ -169,7 +169,7 @@ export const pdfService = {
             item.requiereOt ? `[OT] ${item.detalleOt || 'Requerida'}` : 'N/A'
         ]);
 
-        doc.autoTable({
+        autoTable(doc, {
             head: [tableColumn],
             body: tableRows,
             startY: 85,
@@ -210,7 +210,7 @@ export const pdfService = {
             item.llevaLogo || 'N/A'
         ]);
 
-        doc.autoTable({
+        autoTable(doc, {
             head: [tableColumn],
             body: tableRows,
             startY: 85,
@@ -247,7 +247,7 @@ export const pdfService = {
             formatCurrency((item.precioUnitario || item.unitPrice || item.price || 0) * (item.cantidad || item.qty))
         ]);
 
-        doc.autoTable({
+        autoTable(doc, {
             head: [tableColumn],
             body: tableRows,
             startY: 80,

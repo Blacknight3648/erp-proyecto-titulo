@@ -98,6 +98,10 @@ public class HojaCompraServiceImpl implements HojaCompraService {
                 .cantidadOP(item.getCantidadOP())
                 .cantidadRequerida(item.getCantidadRequerida())
                 .precioUnitarioRef(item.getPrecioUnitarioRef())
+                .proveedorId(item.getProveedorId())
+                .proveedorNombre(item.getProveedorNombre())
+                .ocId(item.getOcId())
+                .numeroOC(item.getNumeroOC())
                 .build();
     }
 }

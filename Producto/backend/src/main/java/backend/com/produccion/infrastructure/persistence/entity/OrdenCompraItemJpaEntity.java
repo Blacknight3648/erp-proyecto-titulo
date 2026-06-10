@@ -1,5 +1,6 @@
 package backend.com.produccion.infrastructure.persistence.entity;
 
+import backend.com.shared.infrastructure.persistence.entity.ArticuloJpaEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -29,6 +30,11 @@ public class OrdenCompraItemJpaEntity {
 
     @Column(name = "articulo_id")
     private Integer articuloId; // referencia blanda a articulo(id_articulo); registro conserva nombreInsumo
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "articulo_id", insertable = false, updatable = false,
+            foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+    private ArticuloJpaEntity articulo;
 
     @Column(name = "nombre_insumo", length = 200)
     private String nombreInsumo;

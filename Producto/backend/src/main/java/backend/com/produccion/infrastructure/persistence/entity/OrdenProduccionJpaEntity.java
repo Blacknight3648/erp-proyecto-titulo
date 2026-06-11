@@ -1,6 +1,6 @@
 package backend.com.produccion.infrastructure.persistence.entity;
 
-import backend.com.produccion.domain.model.EstadoOP;
+import backend.com.produccion.domain.enums.EstadoOP;
 import backend.com.shared.infrastructure.persistence.entity.AuditableJpaEntity;
 import jakarta.persistence.*;
 import lombok.Getter;

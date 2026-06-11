@@ -4,7 +4,7 @@ import backend.com.produccion.application.UseCase.GenerarHCDesdeOPUseCase;
 import backend.com.produccion.application.dto.HojaCompraDTO;
 import backend.com.produccion.application.dto.HojaCompraItemDTO;
 import backend.com.produccion.application.service.HojaCompraService;
-import backend.com.produccion.domain.model.EstadoHC;
+import backend.com.produccion.domain.enums.EstadoHC;
 import backend.com.produccion.domain.model.HojaCompra;
 import backend.com.produccion.domain.model.HojaCompraItem;
 import backend.com.produccion.domain.repository.HojaCompraRepository;

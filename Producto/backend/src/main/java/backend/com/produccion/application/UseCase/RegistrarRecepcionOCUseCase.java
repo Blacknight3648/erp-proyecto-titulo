@@ -2,7 +2,7 @@ package backend.com.produccion.application.UseCase;
 
 import backend.com.produccion.application.dto.RecepcionOCDTO;
 import backend.com.produccion.application.dto.RecepcionOCItemDTO;
-import backend.com.produccion.domain.model.EstadoOC;
+import backend.com.produccion.domain.enums.EstadoOC;
 import backend.com.produccion.domain.model.OrdenCompra;
 import backend.com.produccion.domain.model.OrdenCompraItem;
 import backend.com.produccion.domain.model.RecepcionOC;

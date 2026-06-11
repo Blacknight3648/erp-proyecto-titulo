@@ -1,7 +1,7 @@
 package backend.com.produccion.application.UseCase;
 
 import backend.com.produccion.application.dto.GenerarOCConsolidadaRequest;
-import backend.com.produccion.domain.model.EstadoHC;
+import backend.com.produccion.domain.enums.EstadoHC;
 import backend.com.produccion.domain.model.HCItemOCItemLink;
 import backend.com.produccion.domain.model.HojaCompra;
 import backend.com.produccion.domain.model.HojaCompraItem;

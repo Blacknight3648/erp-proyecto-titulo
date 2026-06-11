@@ -1,5 +1,7 @@
 package backend.com.produccion.domain.model;
 
+import backend.com.produccion.domain.enums.EstadoOS;
+import backend.com.produccion.domain.enums.TipoServicioOS;
 import backend.com.shared.valueobjects.DocumentNumber;
 import lombok.Getter;
 

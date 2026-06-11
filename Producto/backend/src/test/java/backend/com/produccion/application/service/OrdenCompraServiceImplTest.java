@@ -5,6 +5,8 @@ import backend.com.produccion.application.dto.HCItemOCItemLinkDTO;
 import backend.com.produccion.application.dto.OrdenCompraDTO;
 import backend.com.produccion.application.dto.OrdenCompraItemDTO;
 import backend.com.produccion.application.service.impl.OrdenCompraServiceImpl;
+import backend.com.produccion.domain.enums.EstadoHC;
+import backend.com.produccion.domain.enums.EstadoOC;
 import backend.com.produccion.domain.model.*;
 import backend.com.produccion.domain.repository.HojaCompraRepository;
 import backend.com.produccion.domain.repository.OrdenCompraRepository;

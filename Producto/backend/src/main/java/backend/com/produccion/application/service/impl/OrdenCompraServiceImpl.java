@@ -6,7 +6,7 @@ import backend.com.produccion.application.dto.HCItemOCItemLinkDTO;
 import backend.com.produccion.application.dto.OrdenCompraDTO;
 import backend.com.produccion.application.dto.OrdenCompraItemDTO;
 import backend.com.produccion.application.service.OrdenCompraService;
-import backend.com.produccion.domain.model.EstadoOC;
+import backend.com.produccion.domain.enums.EstadoOC;
 import backend.com.produccion.domain.model.HCItemOCItemLink;
 import backend.com.produccion.domain.model.OrdenCompra;
 import backend.com.produccion.domain.model.OrdenCompraItem;

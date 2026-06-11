@@ -2,10 +2,10 @@ package backend.com.produccion.application.service;
 
 import backend.com.produccion.application.UseCase.CalcularAvanceUseCase;
 import backend.com.produccion.application.dto.AvanceOPResponse;
-import backend.com.produccion.domain.model.EstadoOT;
+import backend.com.produccion.domain.enums.EstadoOT;
 import backend.com.produccion.domain.model.FaseProduccion;
 import backend.com.produccion.domain.model.OrdenTrabajo;
-import backend.com.produccion.domain.model.TipoOT;
+import backend.com.produccion.domain.enums.TipoOT;
 import backend.com.produccion.domain.repository.OrdenTrabajoRepository;
 import backend.com.shared.valueobjects.DocumentNumber;
 import org.junit.jupiter.api.DisplayName;

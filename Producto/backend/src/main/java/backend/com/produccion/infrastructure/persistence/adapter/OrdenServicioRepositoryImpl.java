@@ -1,6 +1,6 @@
 package backend.com.produccion.infrastructure.persistence.adapter;
 
-import backend.com.produccion.domain.model.EstadoOS;
+import backend.com.produccion.domain.enums.EstadoOS;
 import backend.com.produccion.domain.model.OrdenServicio;
 import backend.com.produccion.domain.repository.OrdenServicioRepository;
 import backend.com.produccion.infrastructure.mapper.OrdenServicioMapper;

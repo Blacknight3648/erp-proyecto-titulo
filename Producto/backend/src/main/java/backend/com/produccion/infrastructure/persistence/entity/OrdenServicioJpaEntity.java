@@ -1,8 +1,8 @@
 package backend.com.produccion.infrastructure.persistence.entity;
 
 import backend.com.gestionUsuarios.proveedor.infrastructure.persistence.entity.ProveedorJpaEntity;
-import backend.com.produccion.domain.model.EstadoOS;
-import backend.com.produccion.domain.model.TipoServicioOS;
+import backend.com.produccion.domain.enums.EstadoOS;
+import backend.com.produccion.domain.enums.TipoServicioOS;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;

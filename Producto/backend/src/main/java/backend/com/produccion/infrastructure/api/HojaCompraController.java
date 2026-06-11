@@ -2,7 +2,7 @@ package backend.com.produccion.infrastructure.api;
 
 import backend.com.produccion.application.dto.HojaCompraDTO;
 import backend.com.produccion.application.service.HojaCompraService;
-import backend.com.produccion.domain.model.EstadoHC;
+import backend.com.produccion.domain.enums.EstadoHC;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

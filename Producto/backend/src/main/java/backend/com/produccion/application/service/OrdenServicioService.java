@@ -4,7 +4,7 @@ import backend.com.produccion.application.dto.CrearOSRequest;
 import backend.com.produccion.application.dto.DespachoOSDTO;
 import backend.com.produccion.application.dto.OrdenServicioDTO;
 import backend.com.produccion.application.dto.RecepcionOSDTO;
-import backend.com.produccion.domain.model.EstadoOS;
+import backend.com.produccion.domain.enums.EstadoOS;
 
 import java.util.List;
 import java.util.Optional;

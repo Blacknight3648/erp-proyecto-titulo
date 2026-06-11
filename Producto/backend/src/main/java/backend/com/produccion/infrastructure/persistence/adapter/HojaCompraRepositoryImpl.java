@@ -1,6 +1,6 @@
 package backend.com.produccion.infrastructure.persistence.adapter;
 
-import backend.com.produccion.domain.model.EstadoHC;
+import backend.com.produccion.domain.enums.EstadoHC;
 import backend.com.produccion.domain.model.HojaCompra;
 import backend.com.produccion.domain.repository.HojaCompraRepository;
 import backend.com.produccion.infrastructure.mapper.HojaCompraMapper;

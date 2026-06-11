@@ -1,6 +1,5 @@
 package backend.com.produccion.infrastructure.persistence.entity;
 
-import backend.com.produccion.domain.model.EstadoHC;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -8,6 +7,8 @@ import lombok.Setter;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+
+import backend.com.produccion.domain.enums.EstadoHC;
 
 @Entity
 @Table(name = "produccion_hojas_compra", uniqueConstraints = {

@@ -1,4 +1,4 @@
-package backend.com.produccion.domain.model;
+package backend.com.produccion.domain.enums;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

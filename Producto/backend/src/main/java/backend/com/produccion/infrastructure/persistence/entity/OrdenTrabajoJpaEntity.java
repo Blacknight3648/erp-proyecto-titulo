@@ -2,7 +2,7 @@ package backend.com.produccion.infrastructure.persistence.entity;
 
 import backend.com.produccion.domain.enums.EstadoOT;
 import backend.com.produccion.domain.enums.TipoOT;
-import backend.com.produccion.domain.model.FaseProduccion;
+import backend.com.produccion.domain.enums.FaseProduccion;
 import backend.com.shared.infrastructure.persistence.entity.AuditableJpaEntity;
 import jakarta.persistence.*;
 import lombok.Getter;

@@ -3,7 +3,7 @@ package backend.com.produccion.application.service;
 import backend.com.produccion.application.UseCase.RegistrarAvanceUseCase;
 import backend.com.produccion.application.dto.RegistrarAvanceCommand;
 import backend.com.produccion.application.dto.RegistroAvanceDTO;
-import backend.com.produccion.domain.model.FaseProduccion;
+import backend.com.produccion.domain.enums.FaseProduccion;
 import backend.com.produccion.domain.model.OrdenTrabajo;
 import backend.com.produccion.domain.model.RegistroAvance;
 import backend.com.produccion.domain.repository.OrdenTrabajoRepository;

@@ -6,7 +6,7 @@ import backend.com.comercial.domain.model.NotaVenta;
 import backend.com.comercial.domain.repository.EvaluacionNegocioRepository;
 import backend.com.produccion.domain.model.Costeo;
 import backend.com.produccion.domain.model.CosteoVersion;
-import backend.com.produccion.domain.model.FaseProduccion;
+import backend.com.produccion.domain.enums.FaseProduccion;
 import backend.com.produccion.domain.model.OrdenProduccion;
 import backend.com.produccion.domain.model.OrdenProduccionItem;
 import backend.com.produccion.domain.model.OrdenTrabajo;

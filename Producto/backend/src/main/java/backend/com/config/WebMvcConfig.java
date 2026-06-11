@@ -16,10 +16,15 @@ public class WebMvcConfig implements WebMvcConfigurer {
 
     @Override
     public void addInterceptors(@NonNull InterceptorRegistry registry) {
-        registry.addInterceptor(historialAccessInterceptor)
-                .addPathPatterns("/api/v1/historial-estado/**")
-                .addPathPatterns("/api/v1/comercial/evaluaciones-negocio/*/historial")
-                .addPathPatterns("/api/v1/comercial/notas-venta/*/historial");
+        final HistorialAccessInterceptor historialAccessInterceptor2 = historialAccessInterceptor;
+        if (historialAccessInterceptor2 != null) {
+            registry.addInterceptor(historialAccessInterceptor2)
+                    .addPathPatterns("/api/v1/historial-estado/**")
+                    .addPathPatterns("/api/v1/comercial/evaluaciones-negocio/*/historial")
+                    .addPathPatterns("/api/v1/comercial/notas-venta/*/historial");
+        } else {
+            // TODO handle null value
+        }
     }
 
     @Override

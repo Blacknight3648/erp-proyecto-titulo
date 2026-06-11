@@ -1,4 +1,4 @@
-package backend.com.produccion.application.entity;
+package backend.com.produccion.entity;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;

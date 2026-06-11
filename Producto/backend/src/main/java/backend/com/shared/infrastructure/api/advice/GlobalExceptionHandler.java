@@ -136,6 +136,18 @@ public class GlobalExceptionHandler {
                 .body(buildError(HttpStatus.BAD_REQUEST, ex.getMessage(), request));
     }
 
+    @ExceptionHandler(IllegalStateException.class)
+    public ResponseEntity<StandardErrorResponse> handleIllegalState(
+            IllegalStateException ex, HttpServletRequest request) {
+
+        log.warn("[409] Estado inválido | ruta={} | mensaje={}",
+                request.getRequestURI(), ex.getMessage());
+
+        return ResponseEntity
+                .status(HttpStatus.CONFLICT)
+                .body(buildError(HttpStatus.CONFLICT, ex.getMessage(), request));
+    }
+
     // ─────────────────────────────────────────────────────────────────────────
     // 500 – Fallback para cualquier excepción no controlada
     // ─────────────────────────────────────────────────────────────────────────

@@ -1,4 +1,4 @@
-package backend.com.produccion.application.service;
+package backend.com.produccion.service;
 
 import backend.com.produccion.application.UseCase.GenerarOCConsolidadaUseCase;
 import backend.com.produccion.application.dto.HCItemOCItemLinkDTO;

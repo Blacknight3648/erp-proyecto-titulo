@@ -1,6 +1,7 @@
 package backend.com.produccion.domain.model;
 
 import backend.com.produccion.domain.enums.EstadoOT;
+import backend.com.produccion.domain.enums.FaseProduccion;
 import backend.com.produccion.domain.enums.TipoOT;
 import backend.com.shared.valueobjects.DocumentNumber;
 import lombok.Getter;

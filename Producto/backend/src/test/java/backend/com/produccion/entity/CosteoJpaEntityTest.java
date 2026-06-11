@@ -25,8 +25,10 @@ class CosteoJpaEntityTest {
         void listaItemsInicializada() {
             CosteoJpaEntity costeo = new CosteoJpaEntity();
 
+            // Corrección aquí: comprobamos que NO es nula y que está vacía ([])
             assertThat(costeo.getItems())
-                    .isNull();
+                    .isNotNull()
+                    .isEmpty();
         }
     }
 

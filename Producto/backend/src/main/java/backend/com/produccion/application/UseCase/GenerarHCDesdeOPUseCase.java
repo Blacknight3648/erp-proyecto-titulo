@@ -1,5 +1,6 @@
 package backend.com.produccion.application.UseCase;
 
+import backend.com.gestionUsuarios.domain.model.Proveedor;
 import backend.com.produccion.domain.model.CosteoVersion;
 import backend.com.produccion.domain.model.HojaCompra;
 import backend.com.produccion.domain.model.HojaCompraItem;
@@ -11,7 +12,7 @@ import backend.com.produccion.domain.repository.OrdenProduccionRepository;
 import backend.com.produccion.domain.repository.CosteoRepository;
 import backend.com.comercial.domain.repository.SolicitudCostosRepository;
 import backend.com.shared.infrastructure.persistence.repository.ArticuloRepository;
-import backend.com.gestionUsuarios.proveedor.infrastructure.persistence.repository.ProveedorRepository;
+import backend.com.gestionUsuarios.infrastructure.persistence.repository.ProveedorRepository;
 import backend.com.shared.exception.BusinessRuleException;
 import backend.com.shared.exception.EntityNotFoundException;
 import backend.com.shared.exception.ValidationException;
@@ -112,7 +113,7 @@ public class GenerarHCDesdeOPUseCase {
                         }
                         
                         if (providerTextName != null && !providerTextName.trim().isEmpty()) {
-                            List<backend.com.gestionUsuarios.proveedor.domain.model.Proveedor> matchedProvs = proveedorRepository.buscarPorRazonSocial(providerTextName);
+                            List<Proveedor> matchedProvs = proveedorRepository.buscarPorRazonSocial(providerTextName);
                             if (matchedProvs != null && !matchedProvs.isEmpty()) {
                                 proveedorId = matchedProvs.get(0).getProveedorId();
                             }
@@ -122,7 +123,7 @@ public class GenerarHCDesdeOPUseCase {
 
                 // 3. Obtener el nombre de la razón social del proveedor encontrado
                 if (proveedorId != null) {
-                    java.util.Optional<backend.com.gestionUsuarios.proveedor.domain.model.Proveedor> provOpt = proveedorRepository.findById(proveedorId);
+                    java.util.Optional<Proveedor> provOpt = proveedorRepository.findById(proveedorId);
                     if (provOpt.isPresent()) {
                         proveedorNombre = provOpt.get().getRazonSocialProveedor();
                     }

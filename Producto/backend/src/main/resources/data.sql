@@ -86,8 +86,6 @@ MERGE INTO giros (giro_id, codigo_sii, nombre_giro, descripcion_giro, rubro_id)
     (3, '492200', 'LOGÍSTICA',       'LOGÍSTICA Y TRANSPORTE',            3),
     (4, '410000', 'CONSTRUCCIÓN',    'CONSTRUCCIÓN Y FERRETERÍA',         4);
 
-
-
 -- ============================================================
 -- 4.3. PRODUCTOS
 -- ============================================================
@@ -97,10 +95,8 @@ MERGE INTO producto (producto_id, codigo_producto, nombre, descripcion, genero, 
     (1, 'PROD-POL-001', 'Polerón Corporativo Premium', 'Polerón corporativo con gorro y bolsillos canguro', 'UNISEX', 'Azul Marino', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
     (2, 'PROD-CHA-002', 'Chaqueta Impermeable Térmica', 'Chaqueta impermeable con forro micropolar interior', 'UNISEX', 'Gris Plata', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true);
 
-
-
 -- ============================================================
--- 5. CLIENTES (Nuevo modelo sin campos de correo/teléfono y con mappers asociados)
+-- 5. CLIENTES (Modelo normalizado sin campos planos de contacto)
 -- ============================================================
 MERGE INTO clientes (cliente_id, activo, razon_social, run_cliente, sigla, fk_giro)
     KEY (cliente_id)
@@ -110,7 +106,7 @@ MERGE INTO clientes (cliente_id, activo, razon_social, run_cliente, sigla, fk_gi
     (3, true, 'GEODIS WILSON', '79699520-3', 'S.A.', 3);
 
 -- ============================================================
--- 5.1. TIPOS DE CONTACTO Y CONTACTOS (Establece Fk_ de cliente)
+-- 5.1. TIPOS DE CONTACTO Y CONTACTOS
 -- ============================================================
 MERGE INTO tipos_contacto (tipo_contacto_id, descripcion_tipo_contacto)
     KEY (tipo_contacto_id)
@@ -127,7 +123,7 @@ MERGE INTO contactos (contacto_id, nombre_contacto, telefono_contacto, email_con
     (3, 'CONTACTO GEODIS WILSON', '+56223816500', 'info.chile@geodis.com', 1, 3);
 
 -- ============================================================
--- 5.2. PAÍS, REGION, COMUNA, TIPO DIRECCIÓN Y DIRECCIONES (Establece Fk_ de cliente)
+-- 5.2. GEOGRAFÍA Y DIRECCIONES
 -- ============================================================
 MERGE INTO pais (pais_id, nombre_pais)
     KEY (pais_id)
@@ -158,7 +154,7 @@ MERGE INTO direccion (direccion_id, calle, numero, depto, tipo_direccion_id, com
     (3, 'LO BOZA', '110', NULL, 1, 1, 3);
 
 -- ============================================================
--- 6. PROVEEDORES (RUTs de empresas reales)
+-- 6. PROVEEDORES (Modelo normalizado con giros asociados)
 -- ============================================================
 MERGE INTO proveedores (proveedor_id, activo, creado_en, actualizado_en, horario_atencion, razon_social_proveedor, run_proveedor, sigla, tipo_proveedor, fk_provee_giro)
     KEY (proveedor_id)
@@ -169,7 +165,7 @@ MERGE INTO proveedores (proveedor_id, activo, creado_en, actualizado_en, horario
     (4, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'SODIMAC S.A.', '96792430-K', 'S.A.', 'NACIONAL', 4);
 
 -- ============================================================
--- 6.1. BANCOS
+-- 6.1. BANCOS Y ENTIDADES FINANCIERAS
 -- ============================================================
 MERGE INTO banco (banco_id, nombre_banco, codigo_banco)
     KEY (banco_id)
@@ -182,9 +178,6 @@ MERGE INTO banco (banco_id, nombre_banco, codigo_banco)
     (6, 'BANCO SECURITY',         'SEC'),
     (7, 'ITAÚ CORPBANCA',         'ITA');
 
--- ============================================================
--- 6.2. TIPOS DE CUENTA BANCARIA
--- ============================================================
 MERGE INTO tipo_cuenta_bancaria (tipo_cuenta_id, denominacion_cuenta)
     KEY (tipo_cuenta_id)
     VALUES
@@ -194,7 +187,7 @@ MERGE INTO tipo_cuenta_bancaria (tipo_cuenta_id, denominacion_cuenta)
     (4, 'CUENTA RUT');
 
 -- ============================================================
--- 6.3. DATOS BANCARIOS (Asociados a proveedores vía fk_provee_dato_bancario)
+-- 6.2. DATOS BANCARIOS PROVEEDORES
 -- ============================================================
 MERGE INTO dato_bancario (dato_bancario_id, numero_cuenta, banco_id, tipo_cuenta_id, fk_provee_dato_bancario)
     KEY (dato_bancario_id)
@@ -205,8 +198,9 @@ MERGE INTO dato_bancario (dato_bancario_id, numero_cuenta, banco_id, tipo_cuenta
     (4, '00-456-78901-23', 4, 1, 4);
 
 -- ============================================================
--- 7. CATEGORÍAS Y SUBCATEGORÍAS DE TELA
+-- 7. CATEGORÍAS Y SUBCATEGORÍAS DE TEXTIL
 -- ============================================================
+
 MERGE INTO categoria_tela (id_categoria_tela, codigo_categoria_tela, nombre_categoria_tela)
     KEY (id_categoria_tela)
     VALUES
@@ -224,7 +218,7 @@ MERGE INTO subcategoria_tela (id_subcategoria_tela, codigo_subcategoria_tela, no
     (5, 'TEC-IMPR', 'Impermeable Tech',  3);
 
 -- ============================================================
--- 7.1. ARTÍCULOS (Telas base de catálogo)
+-- 7.1. ARTÍCULOS (Catálogo Base)
 -- ============================================================
 MERGE INTO articulo (id_articulo, codigo_articulo, nombre_articulo, descripcion_articulo, codigo_barra, id_tipo_articulo, activo, id_categoria_tela, id_subcategoria_tela)
     KEY (id_articulo)
@@ -258,9 +252,8 @@ MERGE INTO plantilla (id_plantilla, nombre_campo)
     (15, 'obsModelo');
 
 -- ============================================================
--- 7.3. MODELO PLANTILLA (Campos sugeridos por artículo)
+-- 7.3. MODELO PLANTILLA (Mapeo Artículo e Id Plantilla)
 -- ============================================================
--- Polerón Fleece (ART-FLEE-001): gorro, bolsillos, mangas, forro
 MERGE INTO modelo_plantilla (id_modelo_plantilla, id_articulo, id_plantilla)
     KEY (id_modelo_plantilla)
     VALUES
@@ -268,12 +261,10 @@ MERGE INTO modelo_plantilla (id_modelo_plantilla, id_articulo, id_plantilla)
     (2,  1, 11),  -- Polar Fleece -> bolsillos
     (3,  1, 9),   -- Polar Fleece -> mangas
     (4,  1, 1),   -- Polar Fleece -> forro
-    -- Ripstop Impermeable (ART-IMPR-001): cuello, relleno, bolsillos, abotonaduraCierre
     (5,  2, 5),   -- Ripstop -> cuello
     (6,  2, 2),   -- Ripstop -> relleno
     (7,  2, 11),  -- Ripstop -> bolsillos
     (8,  2, 6),   -- Ripstop -> abotonaduraCierre
-    -- Jersey Piqué (ART-JRSY-001): mangas, pretinasRuedo
     (9,  3, 9),   -- Jersey  -> mangas
     (10, 3, 10);  -- Jersey  -> pretinasRuedo
 
@@ -287,7 +278,7 @@ MERGE INTO solicitudes_costos (idscos, numero, estado, tipo, cliente_id, vendedo
     (2, 'SCOS-2024-002', 'APROBADA',  'SCOS', 2, 2, 'PANTALON', 'Pantalón Cargo Operario', 'MASCULINO', 'Cliente', false, false, 50, CURRENT_DATE, 250000.00);
 
 -- ============================================================
--- 7.2. EVALUACIONES DE NEGOCIO (EVN)
+-- 7.5. EVALUACIONES DE NEGOCIO (EVN)
 -- ============================================================
 MERGE INTO evaluaciones_negocio (idevn, numero, referencia, cliente_nombre, cliente_id, vendedor_id, estado, fecha_evaluacion, porcentaje_comision, created_at, updated_at)
     KEY (idevn)
@@ -296,7 +287,7 @@ MERGE INTO evaluaciones_negocio (idevn, numero, referencia, cliente_nombre, clie
     (2, 'EVN-2024-002', 'Licitación Pantalones', 'LABORATORIO MEDCELL', 2, 2, 'APROBADA', CURRENT_DATE, 3.50, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
 -- ============================================================
--- 7.3. NOTAS DE VENTA (NV)
+-- 7.6. NOTAS DE VENTA (NV)
 -- ============================================================
 MERGE INTO notas_venta (idnv, numeronv, evaluacion_negocio_id, cliente_id, vendedor_id, estado, es_kit, fecha_emision, fecha_entrega_estimada, monto_subtotal, moneda_subtotal, monto_iva, moneda_iva, monto_total, moneda_total, created_at, updated_at)
     KEY (idnv)
@@ -305,40 +296,34 @@ MERGE INTO notas_venta (idnv, numeronv, evaluacion_negocio_id, cliente_id, vende
     (2, 'NV-2024-002', 1, 1, 1, 'EN_PRODUCCION', false, CURRENT_DATE, DATEADD('DAY', 45, CURRENT_DATE), 850000.00, 'CLP', 161500.00, 'CLP', 1011500.00, 'CLP', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
 -- ============================================================
--- 7.4. PRODUCCIÓN: COSTEO -> OP -> HOJA DE COMPRA (APROBADA)
+-- 7.7. PLANIFICACIÓN DE PRODUCCIÓN Y HOJAS DE COMPRA
 -- ============================================================
--- Costeo (vinculado a SCOS-2024-002, Pantalón Cargo Operario)
 MERGE INTO produccion_costeos (id_costeo, solicitud_costos_id, numero_costeo)
     KEY (id_costeo)
     VALUES
     (1, 2, 'COST-2024-001');
 
--- Versión de costeo
 MERGE INTO produccion_costeo_versiones (id_costeo_version, costeo_id, numero_version, fecha_creacion, usuario_creador)
     KEY (id_costeo_version)
     VALUES
     (1, 1, 1, CURRENT_TIMESTAMP, 'SISTEMA');
 
--- Orden de Producción (vinculada a NV-2024-002, EN_PRODUCCION)
 MERGE INTO orden_produccion (idop, costeo_version_id, numeroop, nota_venta_id, estado, fecha_inicio, fecha_entrega_programada, observaciones, created_at, updated_at)
     KEY (idop)
     VALUES
     (1, 1, 'OP-2024-001', 2, 'EN_PROCESO', CURRENT_DATE, DATEADD('DAY', 30, CURRENT_DATE), 'Producción Pantalón Cargo Operario - Laboratorio Medcell', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
--- Items de la Orden de Producción
 MERGE INTO produccion_orden_items (idopitem, orden_produccion_id, articulo_id, nro_item, modelo, tela, color, talla, genero, codigo, lleva_logo, cantidad)
     KEY (idopitem)
     VALUES
     (1, 1, 2, 1, 'Pantalón Cargo', 'Ripstop Impermeable', 'Verde', 'M', 'MASCULINO', 'PANT-CARGO-M', 'SI', 25),
     (2, 1, 2, 2, 'Pantalón Cargo', 'Ripstop Impermeable', 'Verde', 'L', 'MASCULINO', 'PANT-CARGO-L', 'SI', 25);
 
--- Hoja de Compra APROBADA para la OP-2024-001
 MERGE INTO produccion_hojas_compra (id_hc, numero_hc, op_id, costeo_version_id, estado, fecha_generacion, observaciones)
     KEY (id_hc)
     VALUES
     (1, 'HC-2024-001', 1, 1, 'APROBADA', CURRENT_DATE, 'HC generada para OP-2024-001');
 
--- Items de la Hoja de Compra
 MERGE INTO produccion_hoja_compra_items (id_hc_item, hc_id, tipo_insumo, articulo_id, proveedor_id, nombre_insumo, consumo_unitario, cantidad_op, cantidad_requerida, precio_unitario_ref)
     KEY (id_hc_item)
     VALUES
@@ -347,7 +332,7 @@ MERGE INTO produccion_hoja_compra_items (id_hc_item, hc_id, tipo_insumo, articul
     (3, 1, 'ACCESORIO', 5, 2, 'Botón Snap 15mm Nácar',       4.0000, 50, 200.0000, 150.00);
 
 -- ============================================================
--- 8. REINICIO DE SECUENCIAS (Unificado al final)
+-- 8. REINICIO DE SECUENCIAS (Consolidado)
 -- ============================================================
 ALTER TABLE areas ALTER COLUMN id_area RESTART WITH 50;
 ALTER TABLE roles ALTER COLUMN id_role RESTART WITH 100;
@@ -357,23 +342,35 @@ ALTER TABLE vendedores ALTER COLUMN id_vendedor RESTART WITH 200;
 ALTER TABLE proveedores ALTER COLUMN proveedor_id RESTART WITH 100;
 ALTER TABLE giros ALTER COLUMN giro_id RESTART WITH 100;
 ALTER TABLE producto ALTER COLUMN producto_id RESTART WITH 100;
--- Artículos / catálogo
+
+-- Artículos y catálogo
 ALTER TABLE articulo ALTER COLUMN id_articulo RESTART WITH 1000;
 ALTER TABLE categoria_tela ALTER COLUMN id_categoria_tela RESTART WITH 100;
 ALTER TABLE subcategoria_tela ALTER COLUMN id_subcategoria_tela RESTART WITH 100;
+
 -- Plantillas
 ALTER TABLE plantilla ALTER COLUMN id_plantilla RESTART WITH 100;
 ALTER TABLE modelo_plantilla ALTER COLUMN id_modelo_plantilla RESTART WITH 1000;
 ALTER TABLE descripcion_plantilla ALTER COLUMN id_descripcion_plantilla RESTART WITH 5000;
--- SCOS
+
+-- SCOS / Costeos
 ALTER TABLE solicitudes_costos ALTER COLUMN idscos RESTART WITH 2000;
 ALTER TABLE scos_telas ALTER COLUMN idscostela RESTART WITH 2000;
 ALTER TABLE scos_logotipos ALTER COLUMN id RESTART WITH 2000;
 ALTER TABLE scos_plantilla_material_vinculo ALTER COLUMN id RESTART WITH 5000;
--- EVN / NV
+ALTER TABLE produccion_costeos ALTER COLUMN id_costeo RESTART WITH 100;
+ALTER TABLE produccion_costeo_versiones ALTER COLUMN id_costeo_version RESTART WITH 100;
+ALTER TABLE produccion_costeo_items ALTER COLUMN id_costeo_item RESTART WITH 5000;
+
+-- EVN / NV / OP
 ALTER TABLE evaluaciones_negocio ALTER COLUMN idevn RESTART WITH 1000;
 ALTER TABLE notas_venta ALTER COLUMN idnv RESTART WITH 1000;
--- Contactos / Direcciones
+ALTER TABLE orden_produccion ALTER COLUMN idop RESTART WITH 100;
+ALTER TABLE produccion_orden_items ALTER COLUMN idopitem RESTART WITH 1000;
+ALTER TABLE produccion_hojas_compra ALTER COLUMN id_hc RESTART WITH 100;
+ALTER TABLE produccion_hoja_compra_items ALTER COLUMN id_hc_item RESTART WITH 1000;
+
+-- Contactos, Direcciones y Financieros
 ALTER TABLE tipos_contacto ALTER COLUMN tipo_contacto_id RESTART WITH 10;
 ALTER TABLE contactos ALTER COLUMN contacto_id RESTART WITH 10;
 ALTER TABLE pais ALTER COLUMN pais_id RESTART WITH 10;
@@ -385,10 +382,3 @@ ALTER TABLE rubros ALTER COLUMN rubro_id RESTART WITH 10;
 ALTER TABLE banco ALTER COLUMN banco_id RESTART WITH 20;
 ALTER TABLE tipo_cuenta_bancaria ALTER COLUMN tipo_cuenta_id RESTART WITH 10;
 ALTER TABLE dato_bancario ALTER COLUMN dato_bancario_id RESTART WITH 10;
-
-ALTER TABLE produccion_costeos ALTER COLUMN id_costeo RESTART WITH 100;
-ALTER TABLE produccion_costeo_versiones ALTER COLUMN id_costeo_version RESTART WITH 100;
-ALTER TABLE orden_produccion ALTER COLUMN idop RESTART WITH 100;
-ALTER TABLE produccion_orden_items ALTER COLUMN idopitem RESTART WITH 1000;
-ALTER TABLE produccion_hojas_compra ALTER COLUMN id_hc RESTART WITH 100;
-ALTER TABLE produccion_hoja_compra_items ALTER COLUMN id_hc_item RESTART WITH 1000;

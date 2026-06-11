@@ -1,8 +1,8 @@
 package backend.com.comercial.infrastructure.persistence.entity;
 
 import backend.com.comercial.domain.enums.EstadoSCOS;
-import backend.com.gestionUsuarios.cliente.infrastructure.persistence.entity.ClienteJpaEntity;
-import backend.com.gestionUsuarios.vendedor.infrastructure.persistence.entity.VendedorJpaEntity;
+import backend.com.gestionUsuarios.infrastructure.persistence.entity.ClienteJpaEntity;
+import backend.com.gestionUsuarios.infrastructure.persistence.entity.VendedorJpaEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;

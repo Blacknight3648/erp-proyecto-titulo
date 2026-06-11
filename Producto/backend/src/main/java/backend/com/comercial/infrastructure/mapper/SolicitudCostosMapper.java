@@ -8,9 +8,9 @@ import backend.com.comercial.infrastructure.persistence.entity.SCOSAccesorioJpaE
 import backend.com.comercial.infrastructure.persistence.entity.SCOSLogotipoJpaEntity;
 import backend.com.comercial.infrastructure.persistence.entity.SCOSTelaJpaEntity;
 import backend.com.comercial.infrastructure.persistence.entity.SolicitudCostosJpaEntity;
-import backend.com.gestionUsuarios.cliente.infrastructure.persistence.entity.ClienteJpaEntity;
-import backend.com.gestionUsuarios.proveedor.infrastructure.persistence.entity.ProveedorJpaEntity;
-import backend.com.gestionUsuarios.vendedor.infrastructure.persistence.entity.VendedorJpaEntity;
+import backend.com.gestionUsuarios.infrastructure.persistence.entity.ClienteJpaEntity;
+import backend.com.gestionUsuarios.infrastructure.persistence.entity.ProveedorJpaEntity;
+import backend.com.gestionUsuarios.infrastructure.persistence.entity.VendedorJpaEntity;
 import backend.com.shared.infrastructure.persistence.entity.ArticuloJpaEntity;
 import backend.com.shared.valueobjects.DocumentNumber;
 import backend.com.shared.valueobjects.Money;

@@ -10,6 +10,7 @@ public class OTResponse {
     private Long idOT;
     private String numeroOT;
     private Long notaVentaId;
+    private Long itemNVId;
     private Long ordenProduccionId;
     private Integer nroItem;
     private String tipoOT;
@@ -27,6 +28,7 @@ public class OTResponse {
         r.idOT = ot.getIdOT();
         r.numeroOT = ot.getNumeroOT() != null ? ot.getNumeroOT().getValue() : null;
         r.notaVentaId = ot.getNotaVentaId();
+        r.itemNVId = ot.getItemNVId();
         r.ordenProduccionId = ot.getOrdenProduccionId();
         r.nroItem = ot.getNroItem();
         r.tipoOT = ot.getTipoOT() != null ? ot.getTipoOT().name() : null;

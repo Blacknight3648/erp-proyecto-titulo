@@ -16,6 +16,7 @@ import backend.com.comercial.domain.repository.DescripcionPlantillaRepository;
 import backend.com.comercial.domain.repository.SolicitudCostosRepository;
 import backend.com.produccion.application.dto.CosteoDTO;
 import backend.com.produccion.application.service.CosteoService;
+import backend.com.shared.exception.EntityNotFoundException;
 import backend.com.shared.valueobjects.DocumentNumber;
 import backend.com.shared.valueobjects.Money;
 import lombok.RequiredArgsConstructor;
@@ -69,7 +70,7 @@ public class SolicitudCostosServiceImpl implements SolicitudCostosService {
     @Transactional
     public SolicitudCostosDTO update(Long id, SolicitudCostosCreateDTO dto) {
         SolicitudCostos existing = repository.findById(id)
-                .orElseThrow(() -> new RuntimeException(
+                .orElseThrow(() -> new EntityNotFoundException(
                         "Solicitud de costos no encontrada con ID: " + id));
 
         SolicitudCostos updated = new SolicitudCostos(

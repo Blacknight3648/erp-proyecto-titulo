@@ -1,0 +1,101 @@
+package backend.com.gestionUsuarios.infrastructure.api;
+
+import backend.com.gestionUsuarios.application.dto.ClienteDTO;
+import backend.com.gestionUsuarios.application.service.ClienteService;
+import backend.com.gestionUsuarios.domain.model.Cliente;
+import backend.com.gestionUsuarios.infrastructure.mapper.ClienteMapper;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("/api/v1/clientes")
+@RequiredArgsConstructor
+public class ClienteController {
+
+    private final ClienteService clienteService;
+    private final ClienteMapper clienteMapper;
+
+    @GetMapping
+    public ResponseEntity<List<ClienteDTO>> listarTodos() {
+        return ResponseEntity.ok(clienteMapper.toDTOList(clienteService.listarTodos()));
+    }
+
+    @GetMapping("/{clienteId}")
+    public ResponseEntity<ClienteDTO> obtenerPorId(@PathVariable Long clienteId) {
+        return clienteService.obtenerPorId(clienteId)
+                .map(clienteMapper::toDTO)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    @GetMapping("/run/{runCliente}")
+    public ResponseEntity<ClienteDTO> obtenerPorRun(@PathVariable String runCliente) {
+        return clienteService.obtenerPorRun(runCliente)
+                .map(clienteMapper::toDTO)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    @GetMapping("/razon-social/{razonSocial}")
+    public ResponseEntity<List<ClienteDTO>> buscarPorRazonSocial(@PathVariable String razonSocial) {
+        return ResponseEntity.ok(clienteMapper.toDTOList(clienteService.buscarPorRazonSocial(razonSocial)));
+    }
+
+    @GetMapping("/activos")
+    public ResponseEntity<List<ClienteDTO>> obtenerActivos() {
+        return ResponseEntity.ok(clienteMapper.toDTOList(clienteService.obtenerActivos()));
+    }
+
+    @GetMapping("/inactivos")
+    public ResponseEntity<List<ClienteDTO>> obtenerInactivos() {
+        return ResponseEntity.ok(clienteMapper.toDTOList(clienteService.obtenerInactivos()));
+    }
+
+    @GetMapping("/giro/{giroId}")
+    public ResponseEntity<List<ClienteDTO>> obtenerPorGiroId(@PathVariable Long giroId) {
+        return ResponseEntity.ok(clienteMapper.toDTOList(clienteService.obtenerPorGiroId(giroId)));
+    }
+
+    @GetMapping("/sigla/{sigla}")
+    public ResponseEntity<List<ClienteDTO>> obtenerPorSigla(@PathVariable String sigla) {
+        return ResponseEntity.ok(clienteMapper.toDTOList(clienteService.obtenerPorSigla(sigla)));
+    }
+
+    @GetMapping("/giro/descripcion/{descripcionGiro}")
+    public ResponseEntity<List<ClienteDTO>> obtenerPorDescripcionGiro(@PathVariable String descripcionGiro) {
+        return ResponseEntity.ok(clienteMapper.toDTOList(clienteService.obtenerPorDescripcionGiro(descripcionGiro)));
+    }
+
+    @GetMapping("/activos/sigla/{sigla}")
+    public ResponseEntity<List<ClienteDTO>> obtenerActivosPorSigla(@PathVariable String sigla) {
+        return ResponseEntity.ok(clienteMapper.toDTOList(clienteService.obtenerActivosPorSigla(sigla)));
+    }
+
+    @GetMapping("/activos/giro/{giroId}")
+    public ResponseEntity<List<ClienteDTO>> obtenerActivosPorGiro(@PathVariable Long giroId) {
+        return ResponseEntity.ok(clienteMapper.toDTOList(clienteService.obtenerActivosPorGiro(giroId)));
+    }
+
+    @PostMapping
+    public ResponseEntity<ClienteDTO> crear(@Valid @RequestBody ClienteDTO dto) {
+        Cliente creado = clienteService.crear(clienteMapper.toDomain(dto));
+        return ResponseEntity.status(HttpStatus.CREATED).body(clienteMapper.toDTO(creado));
+    }
+
+    @PutMapping("/{clienteId}")
+    public ResponseEntity<ClienteDTO> actualizar(@PathVariable Long clienteId, @Valid @RequestBody ClienteDTO dto) {
+        Cliente actualizado = clienteService.actualizar(clienteId, clienteMapper.toDomain(dto));
+        return ResponseEntity.ok(clienteMapper.toDTO(actualizado));
+    }
+
+    @DeleteMapping("/{clienteId}")
+    public ResponseEntity<Void> eliminar(@PathVariable Long clienteId) {
+        clienteService.eliminar(clienteId);
+        return ResponseEntity.noContent().build();
+    }
+}

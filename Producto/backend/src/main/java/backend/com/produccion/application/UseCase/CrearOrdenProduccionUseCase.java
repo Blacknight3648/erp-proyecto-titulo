@@ -30,7 +30,7 @@ public class CrearOrdenProduccionUseCase {
     private final OrdenTrabajoRepository otRepository;
     private final CrearVersionCosteoUseCase crearVersionCosteoUseCase;
 
-  @Transactional
+    @Transactional
     public OrdenProduccion execute(NotaVenta notaVenta) {
         if (notaVenta == null)
             throw new ValidationException("La Nota de Venta no puede ser nula");

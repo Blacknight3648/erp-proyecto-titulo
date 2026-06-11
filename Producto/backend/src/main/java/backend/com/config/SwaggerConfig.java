@@ -13,10 +13,8 @@ public class SwaggerConfig {
     public OpenAPI antuanSAOpenAPI() {
         return new OpenAPI()
                 .info(new Info().title("Antuan SA Gestion API")
-                        .description("API del Backend de GestiÃ³n desarrollado con Spring Boot para Antuan SA.")
+                        .description("API del Backend de Gestión desarrollado con Spring Boot para Antuan SA.")
                         .version("v1.0.0")
                         .license(new License().name("Propiedad de Antuan SA").url("https://antuan.cl")));
     }
 }
-
-

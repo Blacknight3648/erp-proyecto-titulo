@@ -72,7 +72,10 @@
       "Bash(curl -s \"http://127.0.0.1:8050/api/v1/produccion/ordenes-produccion/1/avance\")",
       "Bash(grep -B2 -A30 \"hojas-compra\\\\|HojaCompra\" /tmp/backend.log | tail -60)",
       "Bash(curl -s \"http://127.0.0.1:8050/api/v1/hojas-compra?estado=APROBADA\")",
-      "Bash(powershell -Command 'Stop-Process -Id 17452 -Force -Confirm:$false')"
+      "Bash(powershell -Command 'Stop-Process -Id 17452 -Force -Confirm:$false')",
+      "Bash(./mvnw.cmd -q -Dtest=\"DespachoOSTest,RegistroAvanceTest,RecepcionOCTest,OrdenCompraTest,OrdenServicioTest\" test)",
+      "Bash(cd \"c:\\\\Users\\\\GAMER\\\\Desktop\\\\ANTUAN SA\\\\erp-proyecto-titulo\\\\Producto\\\\backend\" && grep -h \"Tests run\" target/surefire-reports/backend.com.produccion.domain.model.*'$'*.txt)",
+      "Read(//c/Users/GAMER/Desktop/ANTUAN SA/erp-proyecto-titulo/Producto/backend/target/surefire-reports/**)"
     ],
     "additionalDirectories": [
       "c:\\Users\\Ejecutivo2.ANTUAN\\Desktop\\ANTUAN SA - TRABAJO TI\\erp-proyecto-titulo\\Producto\\backend\\src\\main\\java\\backend\\com\\maestros\\dto"

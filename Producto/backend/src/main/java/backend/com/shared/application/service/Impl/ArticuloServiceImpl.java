@@ -66,7 +66,8 @@ public class ArticuloServiceImpl implements ArticuloService {
         articulo.setDescripcionArticulo(dto.getDescripcionArticulo());
         articulo.setCodigoBarra(dto.getCodigoBarra());
         articulo.setTipoArticulo(dto.getTipoArticulo());
-        if (dto.getActivo() != null) articulo.setActivo(dto.getActivo());
+        if (dto.getActivo() != null)
+            articulo.setActivo(dto.getActivo());
         articulo.setCategoriaTela(resolverCategoriaTela(dto.getIdCategoriaTela()));
         articulo.setSubCategoriaTela(resolverSubCategoriaTela(dto.getIdSubCategoriaTela()));
 
@@ -130,13 +131,15 @@ public class ArticuloServiceImpl implements ArticuloService {
     }
 
     private CategoriaTela resolverCategoriaTela(Integer id) {
-        if (id == null) return null;
+        if (id == null)
+            return null;
         return categoriaTelaRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("CategoriaTela con id " + id + " no encontrada"));
     }
 
     private SubCategoriaTela resolverSubCategoriaTela(Integer id) {
-        if (id == null) return null;
+        if (id == null)
+            return null;
         return subCategoriaTelaRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("SubCategoriaTela con id " + id + " no encontrada"));
     }
@@ -157,9 +160,11 @@ public class ArticuloServiceImpl implements ArticuloService {
     }
 
     private void limpiarDetallesAnteriores(Articulo articulo, TipoArticulo nuevoTipo) {
-        if (nuevoTipo != TipoArticulo.TELA) articulo.setDetalleTela(null);
+        if (nuevoTipo != TipoArticulo.TELA)
+            articulo.setDetalleTela(null);
         if (nuevoTipo != TipoArticulo.PRENDA_LISTA && nuevoTipo != TipoArticulo.PRENDA_CONFECCIONAR)
             articulo.setDetallePrenda(null);
-        if (nuevoTipo != TipoArticulo.ACCESORIO) articulo.setDetalleAccesorio(null);
+        if (nuevoTipo != TipoArticulo.ACCESORIO)
+            articulo.setDetalleAccesorio(null);
     }
 }

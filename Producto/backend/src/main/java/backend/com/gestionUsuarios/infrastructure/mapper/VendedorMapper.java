@@ -1,8 +1,8 @@
-package backend.com.gestionUsuarios.vendedor.infrastructure.mapper;
+package backend.com.gestionUsuarios.infrastructure.mapper;
 
-import backend.com.gestionUsuarios.vendedor.domain.model.Vendedor;
-import backend.com.gestionUsuarios.vendedor.application.dto.VendedorDTO;
-import backend.com.gestionUsuarios.vendedor.infrastructure.persistence.entity.VendedorJpaEntity;
+import backend.com.gestionUsuarios.domain.model.Vendedor;
+import backend.com.gestionUsuarios.application.dto.VendedorDTO;
+import backend.com.gestionUsuarios.infrastructure.persistence.entity.VendedorJpaEntity;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -28,6 +28,32 @@ public class VendedorMapper {
                 .build();
     }
 
+    public VendedorJpaEntity toJpaEntity(Vendedor domain) {
+        if (domain == null)
+            return null;
+
+        VendedorJpaEntity entity = new VendedorJpaEntity();
+        entity.setIdVendedor(domain.getVendedorId());
+        entity.setCodigoVendedor(domain.getCodigoVendedor());
+        entity.setActivo(domain.getActivo());
+        return entity;
+    }
+
+    public VendedorDTO toDTO(Vendedor domain) {
+        if (domain == null)
+            return null;
+
+        return VendedorDTO.builder()
+                .vendedorId(domain.getVendedorId())
+                .usuarioId(domain.getUsuarioId())
+                .codigoVendedor(domain.getCodigoVendedor())
+                .activo(domain.getActivo())
+                .creadoEn(domain.getCreadoEn())
+                .actualizadoEn(domain.getActualizadoEn())
+                .nombreUsuario(domain.getNombreCompleto())
+                .build();
+    }
+
     public VendedorDTO toDTO(VendedorJpaEntity entity) {
         if (entity == null)
             return null;
@@ -44,7 +70,7 @@ public class VendedorMapper {
                 .build();
     }
 
-    public List<VendedorDTO> toDTOList(List<VendedorJpaEntity> entities) {
-        return entities.stream().map(this::toDTO).collect(Collectors.toList());
+    public List<VendedorDTO> toDTOList(List<Vendedor> domains) {
+        return domains.stream().map(this::toDTO).collect(Collectors.toList());
     }
 }

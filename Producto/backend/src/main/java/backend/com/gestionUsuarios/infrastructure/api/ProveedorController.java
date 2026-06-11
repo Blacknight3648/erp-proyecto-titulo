@@ -1,9 +1,9 @@
-package backend.com.gestionUsuarios.proveedor.infrastructure.api;
+package backend.com.gestionUsuarios.infrastructure.api;
 
-import backend.com.gestionUsuarios.proveedor.application.dto.ProveedorDTO;
-import backend.com.gestionUsuarios.proveedor.application.service.ProveedorService;
-import backend.com.gestionUsuarios.proveedor.domain.model.Proveedor;
-import backend.com.gestionUsuarios.proveedor.infrastructure.mapper.ProveedorMapper;
+import backend.com.gestionUsuarios.application.dto.ProveedorDTO;
+import backend.com.gestionUsuarios.application.service.ProveedorService;
+import backend.com.gestionUsuarios.domain.model.Proveedor;
+import backend.com.gestionUsuarios.infrastructure.mapper.ProveedorMapper;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

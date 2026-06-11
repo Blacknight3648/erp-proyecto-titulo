@@ -1,6 +1,6 @@
-package backend.com.gestionUsuarios.proveedor.application.service;
+package backend.com.gestionUsuarios.application.service;
 
-import backend.com.gestionUsuarios.proveedor.domain.model.Proveedor;
+import backend.com.gestionUsuarios.domain.model.Proveedor;
 
 import java.util.List;
 import java.util.Optional;

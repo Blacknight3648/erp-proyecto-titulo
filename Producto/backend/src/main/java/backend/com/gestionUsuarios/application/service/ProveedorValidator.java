@@ -1,7 +1,7 @@
-package backend.com.gestionUsuarios.proveedor.application.service;
+package backend.com.gestionUsuarios.application.service;
 
-import backend.com.gestionUsuarios.proveedor.infrastructure.exception.ProveedorDuplicadoException;
-import backend.com.gestionUsuarios.proveedor.infrastructure.persistence.repository.ProveedorRepository;
+import backend.com.gestionUsuarios.infrastructure.exception.ProveedorDuplicadoException;
+import backend.com.gestionUsuarios.infrastructure.persistence.repository.ProveedorRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 

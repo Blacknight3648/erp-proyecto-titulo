@@ -1,4 +1,4 @@
-package backend.com.gestionUsuarios.proveedor.application.dto;
+package backend.com.gestionUsuarios.application.dto;
 
 import backend.com.shared.application.dto.ContactoDTO;
 import backend.com.shared.application.dto.DatoBancarioDTO;

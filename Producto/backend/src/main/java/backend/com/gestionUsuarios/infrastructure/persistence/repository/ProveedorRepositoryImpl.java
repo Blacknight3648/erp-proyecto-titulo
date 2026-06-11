@@ -1,8 +1,8 @@
-package backend.com.gestionUsuarios.proveedor.infrastructure.persistence.repository;
+package backend.com.gestionUsuarios.infrastructure.persistence.repository;
 
-import backend.com.gestionUsuarios.proveedor.domain.model.Proveedor;
-import backend.com.gestionUsuarios.proveedor.infrastructure.mapper.ProveedorMapper;
-import backend.com.gestionUsuarios.proveedor.infrastructure.persistence.entity.ProveedorJpaEntity;
+import backend.com.gestionUsuarios.domain.model.Proveedor;
+import backend.com.gestionUsuarios.infrastructure.mapper.ProveedorMapper;
+import backend.com.gestionUsuarios.infrastructure.persistence.entity.ProveedorJpaEntity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 

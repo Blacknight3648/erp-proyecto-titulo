@@ -1,4 +1,4 @@
-package backend.com.gestionUsuarios.vendedor.domain.model;
+package backend.com.gestionUsuarios.domain.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -19,6 +19,5 @@ public class Vendedor {
     private LocalDateTime creadoEn;
     private LocalDateTime actualizadoEn;
     
-    // Derived or common fields for easier access in domain (optional)
     private String nombreCompleto;
 }

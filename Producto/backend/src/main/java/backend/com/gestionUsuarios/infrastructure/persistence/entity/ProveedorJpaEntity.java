@@ -1,4 +1,4 @@
-package backend.com.gestionUsuarios.proveedor.infrastructure.persistence.entity;
+package backend.com.gestionUsuarios.infrastructure.persistence.entity;
 
 import backend.com.shared.infrastructure.persistence.entity.BaseEntity;
 import backend.com.shared.infrastructure.persistence.entity.GiroJpaEntity;

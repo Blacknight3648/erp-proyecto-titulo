@@ -1,4 +1,4 @@
-package backend.com.gestionUsuarios.vendedor.application.dto;
+package backend.com.gestionUsuarios.application.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

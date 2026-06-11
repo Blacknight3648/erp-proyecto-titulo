@@ -1,4 +1,4 @@
-package backend.com.gestionUsuarios.vendedor.infrastructure.exception;
+package backend.com.gestionUsuarios.infrastructure.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;

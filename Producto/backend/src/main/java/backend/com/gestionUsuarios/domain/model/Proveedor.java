@@ -1,4 +1,4 @@
-package backend.com.gestionUsuarios.proveedor.domain.model;
+package backend.com.gestionUsuarios.domain.model;
 
 import backend.com.shared.domain.model.Giro;
 import backend.com.shared.domain.model.Contacto;

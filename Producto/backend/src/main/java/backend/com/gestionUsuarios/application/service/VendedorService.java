@@ -1,7 +1,7 @@
-package backend.com.gestionUsuarios.vendedor.application.service;
+package backend.com.gestionUsuarios.application.service;
 
-import backend.com.gestionUsuarios.vendedor.application.dto.VendedorCreateDTO;
-import backend.com.gestionUsuarios.vendedor.application.dto.VendedorDTO;
+import backend.com.gestionUsuarios.application.dto.VendedorCreateDTO;
+import backend.com.gestionUsuarios.application.dto.VendedorDTO;
 
 import java.util.List;
 

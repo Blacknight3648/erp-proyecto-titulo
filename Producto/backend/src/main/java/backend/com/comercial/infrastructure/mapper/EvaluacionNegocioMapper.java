@@ -15,10 +15,10 @@ import backend.com.comercial.infrastructure.persistence.entity.GastoAdicionalJpa
 import backend.com.comercial.infrastructure.persistence.entity.GastoAdicionalDetalleJpaEntity;
 import backend.com.comercial.infrastructure.persistence.entity.TomaTallajeJpaEntity;
 import backend.com.comercial.infrastructure.persistence.entity.TomaTallajeDetalleJpaEntity;
-import backend.com.gestionUsuarios.cliente.infrastructure.persistence.entity.ClienteJpaEntity;
-import backend.com.gestionUsuarios.vendedor.infrastructure.persistence.entity.VendedorJpaEntity;
+import backend.com.gestionUsuarios.infrastructure.persistence.entity.ClienteJpaEntity;
+import backend.com.gestionUsuarios.infrastructure.persistence.entity.VendedorJpaEntity;
 import backend.com.shared.infrastructure.persistence.entity.ArticuloJpaEntity;
-import backend.com.gestionUsuarios.proveedor.infrastructure.persistence.entity.ProveedorJpaEntity;
+import backend.com.gestionUsuarios.infrastructure.persistence.entity.ProveedorJpaEntity;
 import backend.com.shared.valueobjects.DocumentNumber;
 import backend.com.shared.valueobjects.Money;
 import org.springframework.stereotype.Component;

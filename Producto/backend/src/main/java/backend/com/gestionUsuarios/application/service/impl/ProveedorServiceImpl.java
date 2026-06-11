@@ -1,10 +1,10 @@
-package backend.com.gestionUsuarios.proveedor.application.service.impl;
+package backend.com.gestionUsuarios.application.service.impl;
 
-import backend.com.gestionUsuarios.proveedor.application.service.ProveedorService;
-import backend.com.gestionUsuarios.proveedor.application.service.ProveedorValidator;
-import backend.com.gestionUsuarios.proveedor.domain.model.Proveedor;
-import backend.com.gestionUsuarios.proveedor.infrastructure.exception.ProveedorNotFoundException;
-import backend.com.gestionUsuarios.proveedor.infrastructure.persistence.repository.ProveedorRepository;
+import backend.com.gestionUsuarios.application.service.ProveedorService;
+import backend.com.gestionUsuarios.application.service.ProveedorValidator;
+import backend.com.gestionUsuarios.domain.model.Proveedor;
+import backend.com.gestionUsuarios.infrastructure.exception.ProveedorNotFoundException;
+import backend.com.gestionUsuarios.infrastructure.persistence.repository.ProveedorRepository;
 import backend.com.shared.domain.model.Giro;
 import backend.com.shared.exception.EntityNotFoundException;
 import backend.com.shared.infrastructure.mapper.GiroMapper;

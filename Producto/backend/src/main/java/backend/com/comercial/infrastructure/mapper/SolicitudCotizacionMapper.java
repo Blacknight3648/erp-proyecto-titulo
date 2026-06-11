@@ -2,8 +2,8 @@ package backend.com.comercial.infrastructure.mapper;
 
 import backend.com.comercial.domain.model.*;
 import backend.com.comercial.infrastructure.persistence.entity.*;
-import backend.com.gestionUsuarios.cliente.infrastructure.persistence.entity.ClienteJpaEntity;
-import backend.com.gestionUsuarios.vendedor.infrastructure.persistence.entity.VendedorJpaEntity;
+import backend.com.gestionUsuarios.infrastructure.persistence.entity.ClienteJpaEntity;
+import backend.com.gestionUsuarios.infrastructure.persistence.entity.VendedorJpaEntity;
 import backend.com.shared.infrastructure.persistence.entity.EspecificacionTecnica;
 import backend.com.shared.valueobjects.DocumentNumber;
 import backend.com.shared.valueobjects.Money;

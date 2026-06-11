@@ -1,8 +1,8 @@
-package backend.com.gestionUsuarios.proveedor.infrastructure.mapper;
+package backend.com.gestionUsuarios.infrastructure.mapper;
 
-import backend.com.gestionUsuarios.proveedor.application.dto.ProveedorDTO;
-import backend.com.gestionUsuarios.proveedor.domain.model.Proveedor;
-import backend.com.gestionUsuarios.proveedor.infrastructure.persistence.entity.ProveedorJpaEntity;
+import backend.com.gestionUsuarios.application.dto.ProveedorDTO;
+import backend.com.gestionUsuarios.domain.model.Proveedor;
+import backend.com.gestionUsuarios.infrastructure.persistence.entity.ProveedorJpaEntity;
 import backend.com.shared.infrastructure.mapper.GiroMapper;
 import backend.com.shared.infrastructure.mapper.ContactoMapper;
 import backend.com.shared.infrastructure.mapper.DireccionMapper;

@@ -1,4 +1,4 @@
-package backend.com.gestionUsuarios.vendedor.application.dto;
+package backend.com.gestionUsuarios.application.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

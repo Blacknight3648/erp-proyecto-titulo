@@ -1,4 +1,4 @@
-package backend.com.gestionUsuarios.proveedor.infrastructure.exception;
+package backend.com.gestionUsuarios.infrastructure.exception;
 
 import backend.com.gestionUsuarios.exception.BusinessException;
 import org.springframework.http.HttpStatus;

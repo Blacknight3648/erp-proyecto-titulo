@@ -1,8 +1,8 @@
-package backend.com.gestionUsuarios.vendedor.infrastructure.api;
+package backend.com.gestionUsuarios.infrastructure.api;
 
-import backend.com.gestionUsuarios.vendedor.application.dto.VendedorCreateDTO;
-import backend.com.gestionUsuarios.vendedor.application.dto.VendedorDTO;
-import backend.com.gestionUsuarios.vendedor.application.service.VendedorService;
+import backend.com.gestionUsuarios.application.dto.VendedorCreateDTO;
+import backend.com.gestionUsuarios.application.dto.VendedorDTO;
+import backend.com.gestionUsuarios.application.service.VendedorService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

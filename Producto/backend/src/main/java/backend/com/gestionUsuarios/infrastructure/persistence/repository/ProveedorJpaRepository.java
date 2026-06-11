@@ -1,6 +1,6 @@
-package backend.com.gestionUsuarios.proveedor.infrastructure.persistence.repository;
+package backend.com.gestionUsuarios.infrastructure.persistence.repository;
 
-import backend.com.gestionUsuarios.proveedor.infrastructure.persistence.entity.ProveedorJpaEntity;
+import backend.com.gestionUsuarios.infrastructure.persistence.entity.ProveedorJpaEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

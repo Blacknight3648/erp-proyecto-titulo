@@ -1,6 +1,6 @@
-package backend.com.gestionUsuarios.vendedor.infrastructure.persistence.repository;
+package backend.com.gestionUsuarios.infrastructure.persistence.repository;
 
-import backend.com.gestionUsuarios.vendedor.infrastructure.persistence.entity.VendedorJpaEntity;
+import backend.com.gestionUsuarios.infrastructure.persistence.entity.VendedorJpaEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

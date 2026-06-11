@@ -1,6 +1,6 @@
-package backend.com.gestionUsuarios.proveedor.infrastructure.persistence.repository;
+package backend.com.gestionUsuarios.infrastructure.persistence.repository;
 
-import backend.com.gestionUsuarios.proveedor.domain.model.Proveedor;
+import backend.com.gestionUsuarios.domain.model.Proveedor;
 
 import java.util.List;
 import java.util.Optional;

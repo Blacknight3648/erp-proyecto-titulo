@@ -40,7 +40,8 @@ public class CosteoServiceImpl implements CosteoService {
 
     /**
      * Carga el Articulo asociado a cada item a partir de su articuloId.
-     * Solo aplica a TELAS y ACCESORIOS (los únicos tipos con artículo maestro en BD).
+     * Solo aplica a TELAS y ACCESORIOS (los únicos tipos con artículo maestro en
+     * BD).
      * LOGOTIPO e INSUMOS no tienen artículo aún: se omiten.
      */
     private void enrichItemsWithArticulo(Costeo domain) {
@@ -107,7 +108,8 @@ public class CosteoServiceImpl implements CosteoService {
         return repository.findById(idCosteo).map(costeo -> {
             enrichItemsWithArticulo(costeo);
 
-            // Tela: primer ítem tipo TELAS; nombre y composición desde su Articulo si existe
+            // Tela: primer ítem tipo TELAS; nombre y composición desde su Articulo si
+            // existe
             CosteoItem itemTela = costeo.getItems() == null ? null
                     : costeo.getItems().stream()
                             .filter(i -> "TELAS".equalsIgnoreCase(i.getTipoInsumo()))

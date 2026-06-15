@@ -19,12 +19,12 @@ public class SolicitudCotizacionesController {
     private final SolicitudCotizacionesService service;
 
     @PostMapping
-    public ResponseEntity<SolicitudCotizacionesDTO> create(@RequestBody SolicitudCotizacionesCreateDTO dto) {
+    public ResponseEntity<SolicitudCotizacionesDTO> create(@jakarta.validation.Valid @RequestBody SolicitudCotizacionesCreateDTO dto) {
         return ResponseEntity.status(HttpStatus.CREATED).body(service.create(dto));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<SolicitudCotizacionesDTO> update(@PathVariable Long id, @RequestBody SolicitudCotizacionesCreateDTO dto) {
+    public ResponseEntity<SolicitudCotizacionesDTO> update(@PathVariable Long id, @jakarta.validation.Valid @RequestBody SolicitudCotizacionesCreateDTO dto) {
         return ResponseEntity.ok(service.update(id, dto));
     }
 
@@ -32,7 +32,7 @@ public class SolicitudCotizacionesController {
     public ResponseEntity<SolicitudCotizacionesDTO> findById(@PathVariable Long id) {
         return service.findById(id)
                 .map(ResponseEntity::ok)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Cotización no encontrada con ID: " + id));
+                .orElseThrow(() -> new jakarta.persistence.EntityNotFoundException("Cotización no encontrada con ID: " + id));
     }
 
     @GetMapping

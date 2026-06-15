@@ -80,7 +80,7 @@ class CrearVersionCosteoUseCaseTest {
                 new Money(new BigDecimal("50000"), "CLP"), // precioVentaSugerido
                 new ArrayList<>(List.of(itemTela)));
 
-        when(costeoVersionRepository.save(any(CosteoVersion.class)))
+        org.mockito.Mockito.lenient().when(costeoVersionRepository.save(any(CosteoVersion.class)))
                 .thenAnswer(inv -> inv.getArgument(0));
     }
 

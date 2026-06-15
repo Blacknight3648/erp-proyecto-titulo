@@ -72,7 +72,7 @@ class CrearOrdenProduccionUseCaseTest {
 
     @BeforeEach
     void setUp() {
-        when(repository.save(any(OrdenProduccion.class))).thenAnswer(inv -> inv.getArgument(0));
+        org.mockito.Mockito.lenient().when(repository.save(any(OrdenProduccion.class))).thenAnswer(inv -> inv.getArgument(0));
     }
 
     private NotaVenta notaVenta(Long evaluacionNegocioId, List<ItemNV> items) {

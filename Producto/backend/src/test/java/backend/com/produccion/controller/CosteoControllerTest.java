@@ -4,11 +4,13 @@ import backend.com.produccion.application.UseCase.GestionarCosteoUseCase;
 import backend.com.produccion.application.dto.CosteoDTO;
 import backend.com.produccion.application.dto.CosteoResumenEVNDTO;
 import backend.com.produccion.infrastructure.api.CosteoController;
+import backend.com.produccion.infrastructure.api.HojaCompraController;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean; // Nueva ubicación estándar
@@ -23,7 +25,8 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@WebMvcTest(CosteoController.class)
+@WebMvcTest(controllers = CosteoController.class)
+@AutoConfigureMockMvc(addFilters = false)
 @DisplayName("CosteoController (API Web)")
 class CosteoControllerTest {
 

@@ -33,21 +33,21 @@ public class CosteoMapper {
                 null, // clienteNombre (populated in service)
                 null, // vendedorId (populated in service)
                 null, // vendedorNombre (populated in service)
-                new Money(entity.getCostoHilos(), "CLP"),
-                new Money(entity.getCostoManoObra(), "CLP"),
-                new Money(entity.getCostoEtiquetas(), "CLP"),
-                new Money(entity.getCostoEmbalaje(), "CLP"),
-                new Money(entity.getCostoFlete(), "CLP"),
-                entity.getPorcentajeCostoFijo(),
-                new Money(entity.getPrecioCinta1(), "CLP"),
-                entity.getCantidadCinta1(),
-                new Money(entity.getPrecioCinta2(), "CLP"),
-                entity.getCantidadCinta2(),
-                new Money(entity.getVivoReflectivo(), "CLP"),
-                entity.getCantidadVivo(),
-                new Money(entity.getCostoTotalMateriaPrima(), "CLP"),
-                entity.getMargenBrutoSugerido(),
-                new Money(entity.getPrecioVentaSugerido(), "CLP"),
+                new Money(entity.getCostoHilos() != null ? entity.getCostoHilos() : BigDecimal.ZERO, "CLP"),
+                new Money(entity.getCostoManoObra() != null ? entity.getCostoManoObra() : BigDecimal.ZERO, "CLP"),
+                new Money(entity.getCostoEtiquetas() != null ? entity.getCostoEtiquetas() : BigDecimal.ZERO, "CLP"),
+                new Money(entity.getCostoEmbalaje() != null ? entity.getCostoEmbalaje() : BigDecimal.ZERO, "CLP"),
+                new Money(entity.getCostoFlete() != null ? entity.getCostoFlete() : BigDecimal.ZERO, "CLP"),
+                entity.getPorcentajeCostoFijo() != null ? entity.getPorcentajeCostoFijo() : BigDecimal.ZERO,
+                new Money(entity.getPrecioCinta1() != null ? entity.getPrecioCinta1() : BigDecimal.ZERO, "CLP"),
+                entity.getCantidadCinta1() != null ? entity.getCantidadCinta1() : BigDecimal.ZERO,
+                new Money(entity.getPrecioCinta2() != null ? entity.getPrecioCinta2() : BigDecimal.ZERO, "CLP"),
+                entity.getCantidadCinta2() != null ? entity.getCantidadCinta2() : BigDecimal.ZERO,
+                new Money(entity.getVivoReflectivo() != null ? entity.getVivoReflectivo() : BigDecimal.ZERO, "CLP"),
+                entity.getCantidadVivo() != null ? entity.getCantidadVivo() : BigDecimal.ZERO,
+                new Money(entity.getCostoTotalMateriaPrima() != null ? entity.getCostoTotalMateriaPrima() : BigDecimal.ZERO, "CLP"),
+                entity.getMargenBrutoSugerido() != null ? entity.getMargenBrutoSugerido() : BigDecimal.ZERO,
+                new Money(entity.getPrecioVentaSugerido() != null ? entity.getPrecioVentaSugerido() : BigDecimal.ZERO, "CLP"),
                 entity.getItems() != null ? entity.getItems().stream().map(this::mapItemToDomain).collect(Collectors.toList()) : new ArrayList<>());
     }
 

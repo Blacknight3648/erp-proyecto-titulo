@@ -332,6 +332,149 @@ MERGE INTO produccion_hoja_compra_items (id_hc_item, hc_id, tipo_insumo, articul
     (3, 1, 'ACCESORIO', 5, 2, 'Botón Snap 15mm Nácar',       4.0000, 50, 200.0000, 150.00);
 
 -- ============================================================
+-- 7.8. MAESTROS GLOBALES (Moneda, Unidad de Medida)
+-- ============================================================
+MERGE INTO moneda (id_moneda, codigo_moneda, nombre_moneda, simbolo)
+    KEY (id_moneda)
+    VALUES
+    (1, 'CLP', 'Peso Chileno', '$'),
+    (2, 'USD', 'Dólar Estadounidense', 'US$'),
+    (3, 'EUR', 'Euro', '€');
+
+MERGE INTO unidad_medida (id_unidad_medida, nombre_unidad, abreviatura)
+    KEY (id_unidad_medida)
+    VALUES
+    (1, 'Metro',          'M'),
+    (2, 'Metro Cuadrado', 'M2'),
+    (3, 'Kilogramo',      'KG'),
+    (4, 'Unidad',         'UN'),
+    (5, 'Par',            'PAR'),
+    (6, 'Caja',           'CJA'),
+    (7, 'Rollo',          'ROL');
+
+-- ============================================================
+-- 7.9. MAESTROS DE TELA (Familia, Clasificación, etc)
+-- ============================================================
+MERGE INTO familia_tela (id_familia_tela, codigo_familia, nombre_familia)
+    KEY (id_familia_tela)
+    VALUES
+    (1, 'FT-01', 'Jersey'),
+    (2, 'FT-02', 'Rib'),
+    (3, 'FT-03', 'Interlock'),
+    (4, 'FT-04', 'Fleece / French Terry'),
+    (5, 'FT-05', 'Polar / Sherpa'),
+    (6, 'FT-06', 'Scuba / Neoprene'),
+    (7, 'FT-07', 'Piqué / Lacoste'),
+    (8, 'FT-08', 'Tafetán / Popelín'),
+    (9, 'FT-09', 'Sarga / Drill'),
+    (10, 'FT-10', 'Denim'),
+    (11, 'FT-11', 'Gabardina'),
+    (12, 'FT-12', 'Terciopelo / Velvet'),
+    (13, 'FT-13', 'Punto Roma / Bengalina'),
+    (14, 'FT-14', 'Licra / Spandex plano'),
+    (15, 'FT-15', 'Malla deportiva / Mesh'),
+    (16, 'FT-16', 'Oxford / Ripstop'),
+    (17, 'FT-17', 'Lana / Paño'),
+    (18, 'FT-18', 'Lino / Ramio'),
+    (19, 'FT-19', 'Seda / Satén'),
+    (20, 'FT-20', 'Microfibra / Softshell');
+
+MERGE INTO clasificacion_tecnica (id_clasificacion_tecnica, nombre_clasificacion)
+    KEY (id_clasificacion_tecnica)
+    VALUES
+    (1, 'Tejido de Punto'),
+    (2, 'Tejido Plano'),
+    (3, 'No Tejido / TNT'),
+    (4, 'Técnico / Funcional'),
+    (5, 'Alta Prestación');
+
+MERGE INTO composicion (id_composicion, codigo_composicion, descripcion_composicion, clasificacion, uso_tipico)
+    KEY (id_composicion)
+    VALUES
+    (1, 'CO-01',  '100% Algodón',                      'Natural',       'Poleras, básicos, ropa interior'),
+    (2, 'CO-02',  '100% Poliéster',                    'Sintético',     'Deportivo, sublimación, forro'),
+    (3, 'CO-03',  '50% Algodón / 50% Poliéster',       'Mixto',         'Poleras mix, uso general'),
+    (4, 'CO-04',  '65% Poliéster / 35% Algodón',       'Mixto',         'Uniformes corporativos'),
+    (5, 'CO-05',  '95% Algodón / 5% Elastano',         'Natural-Elást', 'Poleras ajustadas, casualwear'),
+    (6, 'CO-06',  '95% Poliéster / 5% Elastano',       'Sint-Elást',    'Deportivo técnico, leggings'),
+    (7, 'CO-07',  '60% Algodón / 40% Poliéster',       'Mixto',         'Prendas escolares, uniformes'),
+    (8, 'CO-08',  '80% Algodón / 20% Poliéster',       'Mixto',         'Camisas, poleras premium mix'),
+    (9, 'CO-09',  '100% Viscosa / Rayón',              'Celulósico',    'Blusas, vestidos, forro liviano'),
+    (10, 'CO-10',  '100% Nylon / Poliamida',            'Sintético',     'Chaquetas, cortavientos'),
+    (11, 'CO-11',  '88% Poliéster / 12% Elastano',      'Sint-Elást',    'Ropa deportiva compresión'),
+    (12, 'CO-12',  '70% Algodón / 30% Poliéster',       'Mixto',         'Poleras escolares'),
+    (13, 'CO-13',  '100% Lana Merino',                  'Natural',       'Paños, abrigos premium'),
+    (14, 'CO-14',  '100% Lino',                         'Natural',       'Verano, guayaberas'),
+    (15, 'CO-15',  '55% Lino / 45% Algodón',            'Natural',       'Ropa verano premium'),
+    (16, 'CO-16',  '50% Viscosa / 50% Poliéster',       'Mixto',         'Vestidos, blusas'),
+    (17, 'CO-17',  '90% Poliéster / 10% Elastano',      'Sint-Elást',    'Mallas, cycling'),
+    (18, 'CO-18',  '100% Algodón Orgánico',             'Natural',       'Línea eco, bebé');
+
+MERGE INTO gramaje_tela (id_gramaje, codigo_gramaje, valor_gramos_m2, categoria_vestuario)
+    KEY (id_gramaje)
+    VALUES
+    (1, 'GR-01',  120.00, 'Verano / Ropa interior liviana'),
+    (2, 'GR-02',  140.00, 'Camisetas básicas verano'),
+    (3, 'GR-03',  160.00, 'Poleras estándar'),
+    (4, 'GR-04',  180.00, 'Poleras premium / escolares'),
+    (5, 'GR-05',  200.00, 'Poleras gruesas / licra deportiva'),
+    (6, 'GR-06',  220.00, 'Rib / uniformes corporativos'),
+    (7, 'GR-07',  240.00, 'Interlock / prendas doble cara'),
+    (8, 'GR-08',  260.00, 'Fleece liviano / jogger'),
+    (9, 'GR-09',  280.00, 'Buzo / French Terry'),
+    (10, 'GR-10',  300.00, 'Fleece grueso / parka interior'),
+    (11, 'GR-11',  320.00, 'Polar ligero'),
+    (12, 'GR-12',  350.00, 'Polar medio / Sherpa'),
+    (13, 'GR-13',  380.00, 'Polar grueso / abrigo'),
+    (14, 'GR-14',  400.00, 'Paño / gabardina gruesa'),
+    (15, 'GR-15',  450.00, 'Lana / abrigo invernal'),
+    (16, 'GR-16',  500.00, 'Tapicería / lona técnica');
+
+MERGE INTO color_tela (id_color, codigo_color, descripcion_color, es_pantone)
+    KEY (id_color)
+    VALUES
+    (1, 'COL-01',  'Blanco',           FALSE),
+    (2, 'COL-02',  'Negro',            FALSE),
+    (3, 'COL-03',  'Gris Claro',       FALSE),
+    (4, 'COL-04',  'Gris Oscuro',      FALSE),
+    (5, 'COL-05',  'Azul Navy',        FALSE),
+    (6, 'COL-06',  'Azul Royal',       FALSE),
+    (7, 'COL-07',  'Azul Petróleo',    FALSE),
+    (8, 'COL-08',  'Rojo',             FALSE),
+    (9, 'COL-09',  'Burdeo',           FALSE),
+    (10, 'COL-10',  'Verde Botella',    FALSE),
+    (11, 'COL-11',  'Verde Menta',      FALSE),
+    (12, 'COL-12',  'Amarillo',         FALSE),
+    (13, 'COL-13',  'Naranjo',          FALSE),
+    (14, 'COL-14',  'Café',             FALSE),
+    (15, 'COL-15',  'Beige / Arena',    FALSE),
+    (16, 'COL-16',  'Celeste',          FALSE),
+    (17, 'COL-17',  'Lila / Malva',     FALSE),
+    (18, 'COL-18',  'Rosado',           FALSE),
+    (19, 'COL-19',  'Fucsia',           FALSE),
+    (20, 'COL-20',  'Caqui / Olive',    FALSE),
+    (21, 'COL-21',  'Melange Gris',     FALSE),
+    (22, 'COL-22',  'Melange Azul',     FALSE),
+    (23, 'COL-23',  'Marino Melange',   FALSE);
+
+MERGE INTO atributo_tecnico (id_atributo, codigo_atributo, clasificacion, descripcion_tecnica, impacto_erp)
+    KEY (id_atributo)
+    VALUES
+    (1, 'AT-01', 'Funcional',    'Antimicrobiano',                    'Certificado requerido para exportación'),
+    (2, 'AT-02', 'Funcional',    'Transpirable / Moisture Wicking',   'Indicar en ficha técnica deportiva'),
+    (3, 'AT-03', 'Funcional',    'UPF 50+ Protección Solar',          'Aplica a prendas outdoor/verano'),
+    (4, 'AT-04', 'Funcional',    'Ignifugo / Retardante de Llama',    'Homologación obligatoria para EPP'),
+    (5, 'AT-05', 'Funcional',    'Antiestático',                      'Requerido en ambientes industriales'),
+    (6, 'AT-06', 'Funcional',    'Impermeable / DWR',                 'Aplica a softshell y cortavientos'),
+    (7, 'AT-07', 'Funcional',    'Termorregulador / PCM',             'Indicar rango temperatura en ficha'),
+    (8, 'AT-08', 'Acabado',      'Suavizado Enzimático',              'Proceso post-confección, afecta gramaje final'),
+    (9, 'AT-09', 'Acabado',      'Sanforizado / Pre-Lavado',          'Control de encogimiento en orden de compra'),
+    (10, 'AT-10', 'Acabado',      'Pilling Reducido',                  'Norma Martindale mínima 5000 ciclos'),
+    (11, 'AT-11', 'Acabado',      'Easy Care / Anti-Arrugas',          'Indicar instrucción lavado en etiqueta'),
+    (12, 'AT-12', 'Sustentable',  'GOTS Certified (Orgánico)',         'Código certificación en PO de compra'),
+    (13, 'AT-13', 'Sustentable',  'Reciclado (GRS Certified)',         'Trazabilidad requerida desde proveedor');
+
+-- ============================================================
 -- 8. REINICIO DE SECUENCIAS (Consolidado)
 -- ============================================================
 ALTER TABLE areas ALTER COLUMN id_area RESTART WITH 50;
@@ -382,3 +525,13 @@ ALTER TABLE rubros ALTER COLUMN rubro_id RESTART WITH 10;
 ALTER TABLE banco ALTER COLUMN banco_id RESTART WITH 20;
 ALTER TABLE tipo_cuenta_bancaria ALTER COLUMN tipo_cuenta_id RESTART WITH 10;
 ALTER TABLE dato_bancario ALTER COLUMN dato_bancario_id RESTART WITH 10;
+
+-- Maestros adicionales
+ALTER TABLE moneda ALTER COLUMN id_moneda RESTART WITH 10;
+ALTER TABLE unidad_medida ALTER COLUMN id_unidad_medida RESTART WITH 10;
+ALTER TABLE familia_tela ALTER COLUMN id_familia_tela RESTART WITH 50;
+ALTER TABLE clasificacion_tecnica ALTER COLUMN id_clasificacion_tecnica RESTART WITH 20;
+ALTER TABLE composicion ALTER COLUMN id_composicion RESTART WITH 50;
+ALTER TABLE gramaje_tela ALTER COLUMN id_gramaje RESTART WITH 50;
+ALTER TABLE color_tela ALTER COLUMN id_color RESTART WITH 50;
+ALTER TABLE atributo_tecnico ALTER COLUMN id_atributo RESTART WITH 50;

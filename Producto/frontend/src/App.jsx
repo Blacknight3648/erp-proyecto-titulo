@@ -4,8 +4,8 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-d
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
 import { NotificationProvider } from "./contexts/NotificationContext";
 
-import ModernSidebar from "./components/layout/ModernSidebar";
-import ModernNavbar from "./components/layout/ModernNavbar";
+import Sidebar from "./components/layout/Sidebar";
+import Navbar from "./components/layout/Navbar";
 
 /* AUTH */
 import Login from "./components/pages/auth/Login";
@@ -77,7 +77,7 @@ function MainLayout({ children }) {
   return (
     <div className="flex min-h-screen">
 
-      <ModernSidebar
+      <Sidebar
         isOpen={isSidebarOpen}
         setIsOpen={setIsSidebarOpen}
       />
@@ -87,7 +87,7 @@ function MainLayout({ children }) {
           } ml-0 flex flex-col min-h-screen overflow-hidden`}
       >
 
-        <ModernNavbar isSidebarOpen={isSidebarOpen} setIsSidebarOpen={setIsSidebarOpen} />
+        <Navbar isSidebarOpen={isSidebarOpen} setIsSidebarOpen={setIsSidebarOpen} />
 
         <main className="mt-20 p-4 sm:p-6 lg:p-8 flex-1 animate-in fade-in duration-500 overflow-auto">
           {children}

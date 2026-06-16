@@ -210,6 +210,24 @@
 }
 
 /* =========================================================
+   SIDEBAR ACTIVE ITEM — Gradiente azul-lila corporativo
+   Referencia visual: Linear / Vercel nav activo
+   Psicología: contraste claro = sensación de control y foco
+========================================================= */
+.sidebar-active-item {
+  background: linear-gradient(
+    135deg,
+    rgba(74, 158, 255, 0.22) 0%,
+    rgba(99, 102, 241, 0.16) 100%
+  ) !important;
+  border: 1px solid rgba(74, 158, 255, 0.28) !important;
+  box-shadow:
+    0 2px 12px rgba(74, 158, 255, 0.14),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08) !important;
+  color: #ffffff !important;
+}
+
+/* =========================================================
    TOPBAR / HEADER
 ========================================================= */
 

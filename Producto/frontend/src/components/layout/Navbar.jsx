@@ -5,54 +5,49 @@ import { useAuth } from '../../contexts/AuthContext';
 import { useNotifications } from '../../contexts/NotificationContext';
 import NotificationDropdown from './NotificationDropdown';
 
-export default function ModernNavbar({ isSidebarOpen = true, setIsSidebarOpen }) {
+export default function Navbar({ isSidebarOpen = true, setIsSidebarOpen }) {
     const { user, logout } = useAuth();
     const { unreadCount } = useNotifications();
     const [isNotifOpen, setIsNotifOpen] = useState(false);
     const notifRef = useRef(null);
     const navigate = useNavigate();
 
-    // Close dropdown when clicking outside
     useEffect(() => {
         function handleClickOutside(event) {
             if (notifRef.current && !notifRef.current.contains(event.target)) {
                 setIsNotifOpen(false);
             }
         }
-        document.addEventListener("mousedown", handleClickOutside);
-        return () => {
-            document.removeEventListener("mousedown", handleClickOutside);
-        };
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
     }, []);
 
     return (
         <header className={`bg-surface-1/90 backdrop-blur-md border-b border-border h-20 px-4 sm:px-8 flex items-center justify-between fixed top-0 right-0 z-40 transition-all duration-300 left-0 ${isSidebarOpen ? 'md:left-64' : 'md:left-20'}`}>
-            
-            {/* Left Side - Quick Actions & Status */}
+
+            {/* Izquierda — Acciones rápidas */}
             <div className="flex items-center gap-3 sm:gap-6">
-                {/* Mobile Hamburger Toggle Button */}
                 <button
                     onClick={() => setIsSidebarOpen(!isSidebarOpen)}
                     className="p-2 text-foreground hover:bg-surface-2 rounded-xl transition-all md:hidden"
-                    title="Menú"
+                    aria-label="Menú"
                 >
                     <Menu className="w-6 h-6" />
                 </button>
-                {/* Search Bar */}
+
                 <div className="hidden lg:flex items-center relative group">
                     <Search className="w-5 h-5 text-muted-foreground absolute left-4 group-focus-within:text-primary transition-colors" />
-                    <input 
-                        type="text" 
-                        placeholder="Buscar en el sistema..." 
+                    <input
+                        type="text"
+                        placeholder="Buscar en el sistema..."
                         className="bg-surface-2 border border-border text-foreground text-sm rounded-xl pl-12 pr-4 py-2.5 w-72 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all placeholder:text-muted-foreground"
                     />
                 </div>
 
-                <div className="hidden md:block h-6 w-px bg-border"></div>
+                <div className="hidden md:block h-6 w-px bg-border" />
 
-                {/* Quick Links */}
                 <nav className="hidden md:flex items-center gap-3">
-                    <button 
+                    <button
                         onClick={() => navigate('/admin/datos-maestros')}
                         className="flex items-center gap-2 text-sm font-semibold text-foreground/80 hover:text-primary bg-surface-2 hover:bg-primary/10 border border-border hover:border-primary/20 px-3 py-2 xl:px-4 xl:py-2 rounded-xl transition-all shadow-sm hover:shadow"
                         title="Gestión de Datos Maestros"
@@ -60,7 +55,7 @@ export default function ModernNavbar({ isSidebarOpen = true, setIsSidebarOpen })
                         <Box className="w-4 h-4 text-muted-foreground" />
                         <span className="hidden xl:inline">Gestión de Datos Maestros</span>
                     </button>
-                    <button 
+                    <button
                         className="flex items-center gap-2 text-sm font-semibold text-foreground/80 hover:text-primary bg-surface-2 hover:bg-primary/10 border border-border hover:border-primary/20 px-3 py-2 xl:px-4 xl:py-2 rounded-xl transition-all shadow-sm hover:shadow"
                         title="Versiones del Sistema"
                     >
@@ -70,20 +65,18 @@ export default function ModernNavbar({ isSidebarOpen = true, setIsSidebarOpen })
                 </nav>
             </div>
 
-            {/* Right Side - User & Notifications */}
+            {/* Derecha — Usuario y notificaciones */}
             <div className="flex items-center gap-5">
-                
-                {/* System Status Indicator */}
+
                 <div className="hidden xl:flex items-center gap-2 bg-success-bg border border-success/20 px-3 py-1.5 rounded-lg mr-2">
                     <span className="relative flex h-2.5 w-2.5">
-                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-success opacity-75"></span>
-                      <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-success"></span>
+                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-success opacity-75" />
+                        <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-success" />
                     </span>
                     <span className="text-[11px] font-bold text-success uppercase tracking-wider">ERP Operativo</span>
                 </div>
 
-                {/* Settings Button */}
-                <button 
+                <button
                     className="hidden sm:flex items-center gap-2 px-3 py-2 text-foreground/80 hover:text-primary hover:bg-primary/10 rounded-xl transition-all border border-transparent hover:border-primary/10 group"
                     title="Configuración"
                 >
@@ -91,34 +84,29 @@ export default function ModernNavbar({ isSidebarOpen = true, setIsSidebarOpen })
                     <span className="text-sm font-semibold hidden lg:inline">Configuración</span>
                 </button>
 
-                <div className="h-6 w-px bg-border hidden sm:block"></div>
+                <div className="h-6 w-px bg-border hidden sm:block" />
 
-                {/* Notification Bell */}
                 <div className="relative" ref={notifRef}>
                     <button
                         className="relative p-2.5 text-foreground/80 hover:text-primary hover:bg-primary/10 rounded-xl transition-all"
                         onClick={() => setIsNotifOpen(!isNotifOpen)}
+                        aria-label="Notificaciones"
                     >
                         <Bell className="w-5 h-5" />
                         {unreadCount > 0 && (
-                            <span className="absolute top-2 right-2 w-2 h-2 bg-destructive rounded-full ring-2 ring-white animate-pulse"></span>
-                        )}
-                        {unreadCount > 0 && (
-                            <span className="absolute -top-1 -right-1 bg-destructive text-white text-[10px] font-bold w-4.5 h-4.5 flex items-center justify-center rounded-full shadow-sm">
-                                {unreadCount}
-                            </span>
+                            <>
+                                <span className="absolute top-2 right-2 w-2 h-2 bg-destructive rounded-full ring-2 ring-white animate-pulse" />
+                                <span className="absolute -top-1 -right-1 bg-destructive text-white text-[10px] font-bold w-4.5 h-4.5 flex items-center justify-center rounded-full shadow-sm">
+                                    {unreadCount}
+                                </span>
+                            </>
                         )}
                     </button>
-
-                    <NotificationDropdown
-                        isOpen={isNotifOpen}
-                        onClose={() => setIsNotifOpen(false)}
-                    />
+                    <NotificationDropdown isOpen={isNotifOpen} onClose={() => setIsNotifOpen(false)} />
                 </div>
 
-                <div className="h-6 w-px bg-border"></div>
+                <div className="h-6 w-px bg-border" />
 
-                {/* User Profile */}
                 <div className="flex items-center gap-3">
                     <div className="flex items-center gap-2.5 p-1.5 pr-2.5 hover:bg-surface-2 rounded-2xl transition-all cursor-pointer border border-transparent hover:border-border group">
                         <div className="w-9 h-9 bg-primary/10 border border-primary/20 text-primary rounded-xl flex items-center justify-center group-hover:bg-primary group-hover:text-primary-foreground transition-colors">

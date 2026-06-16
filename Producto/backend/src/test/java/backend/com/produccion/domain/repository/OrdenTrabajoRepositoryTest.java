@@ -7,7 +7,6 @@ import backend.com.produccion.domain.model.OrdenTrabajo;
 import backend.com.produccion.infrastructure.mapper.OrdenTrabajoMapper;
 import backend.com.produccion.infrastructure.persistence.adapter.OrdenTrabajoRepositoryImpl;
 import backend.com.produccion.infrastructure.persistence.entity.OrdenTrabajoJpaEntity;
-import backend.com.shared.valueobjects.DocumentNumber;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -39,7 +38,6 @@ class OrdenTrabajoRepositoryTest {
     private OrdenTrabajo crearOrdenTrabajoValida(Long notaVentaId, Long ordenProduccionId) {
         return new OrdenTrabajo(
                 null,
-                new DocumentNumber("OT-12345"),
                 notaVentaId,
                 1L,
                 ordenProduccionId,

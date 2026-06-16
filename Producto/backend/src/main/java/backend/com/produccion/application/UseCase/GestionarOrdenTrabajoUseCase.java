@@ -32,7 +32,6 @@ public class GestionarOrdenTrabajoUseCase {
                 // En una implementación real usaríamos una búsqueda más específica
 
                 OrdenTrabajo ot = OrdenTrabajo.crearParaItem(
-                        nv.getNumeroNV(),
                         nv.getIdNV(),
                         item.getIdItemNV(),
                         item.getNroItem(),

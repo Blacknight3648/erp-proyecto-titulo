@@ -13,6 +13,7 @@ import backend.com.produccion.domain.model.OrdenTrabajo;
 import backend.com.produccion.domain.repository.CosteoRepository;
 import backend.com.produccion.domain.repository.OrdenProduccionRepository;
 import backend.com.produccion.domain.repository.OrdenTrabajoRepository;
+import backend.com.shared.application.service.NumeroDocumentoService;
 import backend.com.shared.valueobjects.DocumentNumber;
 import backend.com.shared.exception.EntityNotFoundException;
 import backend.com.shared.exception.ValidationException;
@@ -29,14 +30,16 @@ public class CrearOrdenProduccionUseCase {
     private final CosteoRepository costeoRepository;
     private final OrdenTrabajoRepository otRepository;
     private final CrearVersionCosteoUseCase crearVersionCosteoUseCase;
+    private final NumeroDocumentoService numeroDocumentoService;
 
     @Transactional
     public OrdenProduccion execute(NotaVenta notaVenta) {
         if (notaVenta == null)
             throw new ValidationException("La Nota de Venta no puede ser nula");
 
-        // Regla: El Nro de la OP se hereda del Nro de Costeo
-        DocumentNumber numeroOP = notaVenta.getNumeroNV(); // Fallback por defecto
+        // Política de numeración: la OP genera su PROPIO correlativo independiente,
+        // sin heredar el número del Costeo ni de la NV.
+        DocumentNumber numeroOP = numeroDocumentoService.siguienteFormateado("OP");
         Long costeoVersionId = null;
 
         if (notaVenta.getEvaluacionNegocioId() != null) {
@@ -56,10 +59,6 @@ public class CrearOrdenProduccionUseCase {
             if (costeoIdVinculado != null) {
                 Costeo costeo = costeoRepository.findById(costeoIdVinculado)
                         .orElseThrow(() -> new EntityNotFoundException("Costeo no encontrado: " + costeoIdVinculado));
-
-                if (costeo.getNumeroCosteo() != null) {
-                    numeroOP = costeo.getNumeroCosteo();
-                }
 
                 // Snapshot inicial del Costeo: la OP queda anclada a esta versión
                 CosteoVersion versionInicial = crearVersionCosteoUseCase.ejecutar(
@@ -140,12 +139,8 @@ public class CrearOrdenProduccionUseCase {
         }
         fases.add(FaseProduccion.TERMINACION);
 
-        int seq = 1;
         for (FaseProduccion fase : fases) {
-            String numeroOT = (op.getNumeroOP() != null ? op.getNumeroOP().getValue() : "OT")
-                    + "-I" + itemNV.getNroItem() + "-F" + (seq++);
             OrdenTrabajo ot = OrdenTrabajo.crearParaFase(
-                    new backend.com.shared.valueobjects.DocumentNumber(numeroOT),
                     notaVentaId,
                     itemNV.getIdItemNV(),
                     op.getIdOP(),

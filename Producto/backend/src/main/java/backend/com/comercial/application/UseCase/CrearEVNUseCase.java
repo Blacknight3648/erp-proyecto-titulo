@@ -28,11 +28,10 @@ public class CrearEVNUseCase {
 
     @Transactional
     public EVNResponse ejecutar(CrearEVNCommand command) {
-        Long numeroLong = numeroDocumentoService.siguiente("EVN");
-        String numeroFormateado = String.format("EVN-%d-%07d", LocalDate.now().getYear(), numeroLong);
+        DocumentNumber numero = numeroDocumentoService.siguienteFormateado("EVN");
 
         EvaluacionNegocio evn = EvaluacionNegocio.crear(
-                new DocumentNumber(numeroFormateado),
+                numero,
                 command.getClienteId(),
                 command.getVendedorId(),
                 command.getPorcentajeComision(),

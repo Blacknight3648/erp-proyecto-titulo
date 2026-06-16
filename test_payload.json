@@ -1,0 +1,65 @@
+﻿{
+  "clienteId": 1,
+  "fechaEntregaEstimada": "2024-12-31",
+  "vendedorId": 1,
+  "numero": 2300,
+  "evaluacionNegocioId": 1000,
+  "esKit": false,
+  "detalleKit": "",
+  "items": [
+    {
+      "nroItem": 1,
+      "articuloId": 1,
+      "cantidad": 100,
+      "modelo": "Poleron Corporativo",
+      "tela": "Polar Fleece 280 GSM",
+      "composicion": "100% Poliester",
+      "color": "Azul Marino",
+      "talla": "M",
+      "genero": "UNISEX",
+      "proveedorId": 1,
+      "llevaLogo": "SI",
+      "logoDetalle": "Logo empresa bordado",
+      "itemType": "OP",
+      "requiereOt": false,
+      "detalleOt": "",
+      "tallas": [
+        {
+          "talla": "M",
+          "cantidad": 50
+        },
+        {
+          "talla": "L",
+          "cantidad": 50
+        }
+      ],
+      "precioUnitario": 15000.00,
+      "total": 1500000.00
+    },
+    {
+      "nroItem": 2,
+      "articuloId": 2,
+      "cantidad": 50,
+      "modelo": "Chaqueta Termica",
+      "tela": "Ripstop Impermeable",
+      "composicion": "Poliamida",
+      "color": "Gris Plata",
+      "talla": "L",
+      "genero": "UNISEX",
+      "proveedorId": 2,
+      "llevaLogo": "NO",
+      "logoDetalle": "",
+      "itemType": "OP",
+      "requiereOt": true,
+      "detalleOt": "Ajuste especial en punos",
+      "tallas": [
+        {
+          "talla": "L",
+          "cantidad": 50
+        }
+      ],
+      "precioUnitario": 25000.00,
+      "total": 1250000.00
+    }
+  ]
+}

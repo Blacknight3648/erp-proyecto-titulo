@@ -53,7 +53,6 @@ public class CalcularAvanceUseCase {
     private AvanceOPResponse.AvanceOT toAvanceOT(OrdenTrabajo ot) {
         AvanceOPResponse.AvanceOT a = new AvanceOPResponse.AvanceOT();
         a.setIdOT(ot.getIdOT());
-        a.setNumeroOT(ot.getNumeroOT() != null ? ot.getNumeroOT().getValue() : null);
         a.setFase(ot.getFase() != null ? ot.getFase().name() : null);
         a.setEstado(ot.getEstadoOT() != null ? ot.getEstadoOT().name() : null);
         a.setCantidadTotal(ot.getCantidadTotal());

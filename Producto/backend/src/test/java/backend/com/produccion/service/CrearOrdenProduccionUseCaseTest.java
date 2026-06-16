@@ -78,10 +78,13 @@ class CrearOrdenProduccionUseCaseTest {
         // La OP genera su propio correlativo independiente vía NumeroDocumentoService.
         org.mockito.Mockito.lenient().when(numeroDocumentoService.siguienteFormateado("OP"))
                 .thenReturn(new DocumentNumber("OP-0000001"));
+        org.mockito.Mockito.lenient().when(evnRepository.findById(any()))
+                .thenReturn(Optional.of(evn(7L, List.of())));
     }
 
     private NotaVenta notaVenta(Long evaluacionNegocioId, List<ItemNV> items) {
-        return new NotaVenta(1L, new DocumentNumber("NV-001"), evaluacionNegocioId, 10L, 20L,
+        Long evnId = evaluacionNegocioId != null ? evaluacionNegocioId : 7L;
+        return new NotaVenta(1L, new DocumentNumber("NV-001"), evnId, 10L, 20L,
                 EstadoNV.APROBADA, false, null, LocalDate.now(), LocalDate.now().plusDays(10),
                 Money.zero("CLP"), Money.zero("CLP"), Money.zero("CLP"), items);
     }
@@ -144,10 +147,10 @@ class CrearOrdenProduccionUseCaseTest {
     }
 
     @Test
-    @DisplayName("sin Evaluación de Negocio crea la OP con su propio correlativo y genera las OTs base")
-    void execute_sinEvaluacionNegocio_creaOPConNumeroPropioYGeneraTresFases() {
+    @DisplayName("con Evaluación de Negocio sin costeo crea la OP con su propio correlativo y genera las OTs base")
+    void execute_conEvnSinCosteo_creaOPConNumeroPropioYGeneraTresFases() {
         ItemNV item = itemOP(1, 10, "N/A", null);
-        NotaVenta nv = notaVenta(null, List.of(item));
+        NotaVenta nv = notaVenta(7L, List.of(item));
 
         OrdenProduccion result = useCase.execute(nv);
 
@@ -156,7 +159,7 @@ class CrearOrdenProduccionUseCaseTest {
         assertThat(result.getItems()).hasSize(1);
         assertThat(result.getItems().get(0).getCantidad()).isEqualTo(10);
 
-        verify(evnRepository, never()).findById(any());
+        verify(evnRepository).findById(7L);
         verify(repository).save(any(OrdenProduccion.class));
         verify(otRepository, times(3)).save(any(OrdenTrabajo.class));
     }

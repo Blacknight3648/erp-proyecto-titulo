@@ -45,7 +45,13 @@ export default function LoginForm({ email, setEmail, password, setPassword, onSu
                     </div>
                     <span className="font-medium">Recordarme</span>
                 </label>
-                <a href="#" className="text-blue-400 hover:text-blue-300 font-semibold transition-colors hover:underline decoration-blue-400/50 underline-offset-4">¿Olvidaste tu contraseña?</a>
+                    <button
+                        type="button"
+                        onClick={() => alert('Por favor, contacta al administrador para restablecer tu contraseña.')}
+                        className="text-blue-400 hover:text-blue-300 font-medium transition-colors hover:underline decoration-blue-400/50 underline-offset-4 focus:outline-none"
+                    >
+                        Restablecer contraseña
+                    </button>
             </div>
 
             <button

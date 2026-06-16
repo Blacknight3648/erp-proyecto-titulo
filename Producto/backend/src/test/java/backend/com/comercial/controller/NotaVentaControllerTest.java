@@ -148,6 +148,7 @@ public class NotaVentaControllerTest {
         @DisplayName("POST / crear NV")
         void crear() throws Exception {
             CrearNVCommand cmd = new CrearNVCommand();
+            cmd.setEvaluacionNegocioId(1L);
             cmd.setClienteId(1L);
             cmd.setVendedorId(1L);
             cmd.setFechaEntregaEstimada(LocalDate.now());

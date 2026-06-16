@@ -40,6 +40,7 @@ class NotaVentaFlujoTest extends AbstractIntegrationTest {
     void aprobarNV_generaOrdenTrabajo() throws Exception {
         // 1) Crear NV con un ítem que requiere OT (prenda lista, tipoItem != OP)
         CrearNVCommand cmd = new CrearNVCommand();
+        cmd.setEvaluacionNegocioId(2L);
         cmd.setClienteId(1L);
         cmd.setVendedorId(1L);
         cmd.setFechaEntregaEstimada(LocalDate.now().plusDays(20));

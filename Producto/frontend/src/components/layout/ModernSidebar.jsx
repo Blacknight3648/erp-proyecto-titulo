@@ -27,6 +27,7 @@ import {
 export default function ModernSidebar({ isOpen, setIsOpen }) {
   const location = useLocation();
   const [openSubmenu, setOpenSubmenu] = useState(null);
+  const [hoveredItem, setHoveredItem] = useState(null);
 
   const menuItems = [
     { path: '/', label: 'Dashboard', icon: BarChart3, color: 'text-blue-600', disabled: false },
@@ -112,7 +113,15 @@ export default function ModernSidebar({ isOpen, setIsOpen }) {
   };
 
   return (
-    <aside className={`fixed top-0 left-0 z-50 h-screen transition-all duration-300 bg-sidebar/95 backdrop-blur-md border-r border-sidebar-border flex flex-col ${isOpen ? 'w-64' : 'w-20'}`}>
+    <>
+      {/* Mobile Backdrop Overlay */}
+      {isOpen && (
+        <div 
+          onClick={() => setIsOpen(false)}
+          className="fixed inset-0 bg-black/60 backdrop-blur-xs z-40 md:hidden animate-in fade-in duration-300"
+        />
+      )}
+      <aside className={`fixed top-0 left-0 z-50 h-screen transition-all duration-300 bg-sidebar/95 backdrop-blur-md border-r border-sidebar-border flex flex-col ${isOpen ? 'translate-x-0 w-64' : '-translate-x-full md:translate-x-0 md:w-20 w-0'}`}>
       {/* Logo */}
       <div className="p-4 border-b border-sidebar-border flex items-center justify-between h-20">
         {isOpen && (
@@ -143,7 +152,12 @@ export default function ModernSidebar({ isOpen, setIsOpen }) {
           const isActive = location.pathname === item.path || (hasSubmenu && item.submenu.some(sub => location.pathname === sub.path));
 
           return (
-            <div key={item.id || item.path}>
+            <div 
+              key={item.id || item.path}
+              className="relative"
+              onMouseEnter={() => !isOpen && setHoveredItem(item.id)}
+              onMouseLeave={() => !isOpen && setHoveredItem(null)}
+            >
               {hasSubmenu ? (
                 <button
                   onClick={() => {
@@ -213,7 +227,7 @@ export default function ModernSidebar({ isOpen, setIsOpen }) {
                 </NavLink>
               )}
 
-              {/* Submenu */}
+              {/* Accordion Submenu (Sidebar expanded) */}
               {isOpen && hasSubmenu && isSubmenuOpen && (
                 <div className="ml-8 mt-1 space-y-1 border-l-2 border-sidebar-border pl-2 animate-in slide-in-from-top-2 duration-200">
                   {item.submenu.map((subitem) => (
@@ -230,6 +244,31 @@ export default function ModernSidebar({ isOpen, setIsOpen }) {
                       {subitem.label}
                     </NavLink>
                   ))}
+                </div>
+              )}
+
+              {/* Collapsed Floating Popover Submenu (Sidebar collapsed) */}
+              {!isOpen && hasSubmenu && hoveredItem === item.id && (
+                <div className="absolute left-[calc(100%-8px)] top-0 ml-2 bg-sidebar border border-sidebar-border rounded-2xl p-2 w-56 shadow-2xl z-50 animate-in fade-in slide-in-from-left-2 duration-150 backdrop-blur-md">
+                  <div className="px-3 py-1.5 border-b border-sidebar-border mb-1.5">
+                    <span className="text-[11px] font-black text-white uppercase tracking-wider">{item.label}</span>
+                  </div>
+                  <div className="space-y-1">
+                    {item.submenu.map((subitem) => (
+                      <NavLink
+                        key={subitem.path}
+                        to={subitem.path}
+                        className={({ isActive }) => `
+                          block px-3 py-2 rounded-lg text-xs transition-colors
+                          ${isActive
+                            ? 'active bg-sidebar-active-bg text-white font-bold shadow-sm'
+                            : 'text-sidebar-foreground/80 hover:bg-sidebar-hover-bg'}
+                        `}
+                      >
+                        {subitem.label}
+                      </NavLink>
+                    ))}
+                  </div>
                 </div>
               )}
             </div>
@@ -252,5 +291,6 @@ export default function ModernSidebar({ isOpen, setIsOpen }) {
         </div>
       )}
     </aside>
+    </>
   );
 }

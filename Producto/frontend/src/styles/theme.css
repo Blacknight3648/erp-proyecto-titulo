@@ -41,16 +41,16 @@
      PALETA DE MARCA — LIGHT MODE (iOS System Colors)
   ========================================= */
 
-  --brand-royal:        #007aff; /* iOS System Blue */
-  --brand-royal-hover:  #0062cc;
-  --brand-royal-light:  #e5f1ff;
+  --brand-royal:        #5c8ef2; /* Soft Periwinkle Blue */
+  --brand-royal-hover:  #4b7ddb;
+  --brand-royal-light:  #eef2ff;
 
-  --brand-steel:        #5856d6; /* iOS System Indigo */
-  --brand-steel-light:  #f0efff;
+  --brand-steel:        #a78bfa; /* Soft Lilac/Lavender */
+  --brand-steel-light:  #f5f3ff;
 
-  --brand-indigo:       #5856d6; /* iOS System Indigo */
-  --brand-indigo-hover: #4846c4;
-  --brand-indigo-light: #f0efff;
+  --brand-indigo:       #a78bfa; /* Soft Lilac/Lavender */
+  --brand-indigo-hover: #8b5cf6;
+  --brand-indigo-light: #f5f3ff;
 
   --brand-emerald:       #34c759; /* iOS System Green */
   --brand-emerald-hover: #2da84b;
@@ -91,18 +91,18 @@
   --popover:            #ffffff;
   --popover-foreground: #1d1d1f;
 
-  --primary:            #007aff;
-  --primary-hover:      #0062cc;
+  --primary:            #5c8ef2;
+  --primary-hover:      #4b7ddb;
   --primary-foreground: #ffffff;
 
-  --secondary:          #e5f1ff;
-  --secondary-foreground: #007aff;
+  --secondary:          #f5f3ff;
+  --secondary-foreground: #7c3aed;
 
   --muted:              #f5f5f7;
   --muted-foreground:   #86868b; /* Apple Muted Gray */
 
-  --accent:             #e5f1ff;
-  --accent-foreground:  #007aff;
+  --accent:             #eef2ff;
+  --accent-foreground:  #5c8ef2;
 
   --destructive:        #ff3b30;
   --destructive-foreground: #ffffff;
@@ -125,11 +125,11 @@
   --input:              #ffffff;
   --input-background:   rgba(255, 255, 255, 0.95);
   --input-border:       rgba(0, 0, 0, 0.12);
-  --input-border-focus: #007aff;
+  --input-border-focus: #5c8ef2;
 
   --switch-background:  #e3e3e8;
 
-  --ring:               rgba(0, 122, 255, 0.25);
+  --ring:               rgba(92, 142, 242, 0.25);
 
   /* =========================================
      CHART COLORS
@@ -210,33 +210,33 @@
 
 .dark {
 
-  --background:         #000000; /* Apple Premium True Black */
-  --surface-1:          #1c1c1e; /* iOS Dark Secondary */
-  --surface-2:          #09090b;
-  --surface-3:          #2c2c2e; /* iOS Dark Tertiary */
-  --surface-glass:      rgba(28, 28, 30, 0.70);
-  --surface-glass-md:   rgba(28, 28, 30, 0.85);
+  --background:         #0e131f; /* Deep Charcoal Slate */
+  --surface-1:          #161f30; /* Lighter Deep Slate */
+  --surface-2:          #0b0f17; /* Very Dark Slate */
+  --surface-3:          #1e293b;
+  --surface-glass:      rgba(22, 31, 48, 0.70);
+  --surface-glass-md:   rgba(22, 31, 48, 0.85);
 
   --foreground:         #f5f5f7; /* Apple Off-White */
 
-  --card:               rgba(28, 28, 30, 0.85);
+  --card:               rgba(22, 31, 48, 0.85);
   --card-foreground:    #f5f5f7;
 
-  --popover:            #1c1c1e;
+  --popover:            #161f30;
   --popover-foreground: #f5f5f7;
 
-  --primary:            #0a84ff; /* iOS Dark System Blue */
-  --primary-hover:      #3399ff;
+  --primary:            #5c8ef2; /* Soft Periwinkle Blue */
+  --primary-hover:      #4b7ddb;
   --primary-foreground: #ffffff;
 
-  --secondary:          #152e4d;
-  --secondary-foreground: #0a84ff;
+  --secondary:          #241b3d;
+  --secondary-foreground: #a78bfa;
 
-  --muted:              #1c1c1e;
+  --muted:              #161f30;
   --muted-foreground:   #86868b;
 
-  --accent:             #152e4d;
-  --accent-foreground:  #0a84ff;
+  --accent:             rgba(92, 142, 242, 0.12);
+  --accent-foreground:  #5c8ef2;
 
   --destructive:        #ff453a; /* iOS Dark System Red */
   --destructive-foreground: #ffffff;
@@ -256,14 +256,14 @@
   --border:             rgba(255, 255, 255, 0.08);
   --border-strong:      rgba(255, 255, 255, 0.16);
 
-  --input:              #1c1c1e;
-  --input-background:   rgba(28, 28, 30, 0.90);
+  --input:              #161f30;
+  --input-background:   rgba(22, 31, 48, 0.90);
   --input-border:       rgba(255, 255, 255, 0.12);
-  --input-border-focus: #0a84ff;
+  --input-border-focus: #5c8ef2;
 
   --switch-background:  #3a3a3c;
 
-  --ring:               rgba(10, 132, 255, 0.30);
+  --ring:               rgba(92, 142, 242, 0.35);
 
   --chart-1: #0a84ff;
   --chart-2: #30d158;
@@ -365,8 +365,29 @@
   --color-input-background:   var(--input-background);
 
   --color-switch-background:  var(--switch-background);
-
   --color-ring:               var(--ring);
+
+  --color-blue-50:            #fff3e0;
+  --color-blue-100:           #ffe0b2;
+  --color-blue-200:           #ffcc80;
+  --color-blue-300:           #ffb74d;
+  --color-blue-400:           #ffa726;
+  --color-blue-500:           var(--brand-royal);
+  --color-blue-600:           var(--brand-royal-hover);
+  --color-blue-700:           #e65100;
+  --color-blue-800:           #d84315;
+  --color-blue-900:           #bf360c;
+
+  --color-indigo-50:          #f2f3f3;
+  --color-indigo-100:         #eaeded;
+  --color-indigo-200:         #d5dbdb;
+  --color-indigo-300:         #aab7c4;
+  --color-indigo-400:         #8795a1;
+  --color-indigo-500:         #54657a;
+  --color-indigo-600:         var(--brand-indigo);
+  --color-indigo-700:         var(--brand-indigo-hover);
+  --color-indigo-800:         #16191f;
+  --color-indigo-900:         #0f141d;
 
   --color-chart-1:            var(--chart-1);
   --color-chart-2:            var(--chart-2);
@@ -630,10 +651,10 @@
   aside .active,
   aside a.active {
     color: #ffffff !important;
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.12) 0%, rgba(59, 130, 246, 0.25) 100%) !important;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.12) 0%, rgba(92, 142, 242, 0.25) 100%) !important;
     border: 1px solid rgba(255, 255, 255, 0.15) !important;
     box-shadow: 
-      0 4px 15px -1px rgba(59, 130, 246, 0.3),
+      0 4px 15px -1px rgba(92, 142, 242, 0.3),
       0 0 12px 1px rgba(255, 255, 255, 0.08),
       inset 0 1px 0 rgba(255, 255, 255, 0.2) !important;
     backdrop-filter: blur(10px);
@@ -643,10 +664,10 @@
 
   .dark aside .active,
   .dark aside a.active {
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(10, 132, 255, 0.22) 100%) !important;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(167, 139, 250, 0.22) 100%) !important;
     border: 1px solid rgba(255, 255, 255, 0.12) !important;
     box-shadow: 
-      0 4px 15px -1px rgba(10, 132, 255, 0.4),
+      0 4px 15px -1px rgba(167, 139, 250, 0.4),
       0 0 12px 1px rgba(255, 255, 255, 0.05),
       inset 0 1px 0 rgba(255, 255, 255, 0.15) !important;
   }

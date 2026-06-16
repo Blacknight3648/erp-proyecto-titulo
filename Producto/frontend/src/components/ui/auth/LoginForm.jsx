@@ -119,7 +119,7 @@ export default function LoginForm({ email, setEmail, password, setPassword, onSu
 
             <button
                 type="submit"
-                className="w-full h-14 mt-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold text-lg rounded-2xl shadow-[0_0_40px_-10px_rgba(59,130,246,0.5)] hover:shadow-[0_0_60px_-15px_rgba(59,130,246,0.7)] hover:-translate-y-1 transition-all duration-300 flex items-center justify-center group overflow-hidden relative"
+                className="w-full h-14 mt-4 bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white font-bold text-lg rounded-2xl shadow-[0_0_40px_-10px_rgba(92,142,242,0.4)] hover:shadow-[0_0_60px_-15px_rgba(92,142,242,0.6)] hover:-translate-y-1 transition-all duration-300 flex items-center justify-center group overflow-hidden relative"
             >
                 <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out"></div>
                 <span className="relative z-10 flex items-center">

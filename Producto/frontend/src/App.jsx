@@ -72,7 +72,7 @@ function PrivateRoute({ children }) {
 
 function MainLayout({ children }) {
 
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(() => window.innerWidth >= 768);
 
   return (
     <div className="flex min-h-screen">
@@ -87,9 +87,9 @@ function MainLayout({ children }) {
           } ml-0 flex flex-col min-h-screen overflow-hidden`}
       >
 
-        <ModernNavbar isSidebarOpen={isSidebarOpen} />
+        <ModernNavbar isSidebarOpen={isSidebarOpen} setIsSidebarOpen={setIsSidebarOpen} />
 
-        <main className="mt-20 p-8 flex-1 animate-in fade-in duration-500 overflow-auto">
+        <main className="mt-20 p-4 sm:p-6 lg:p-8 flex-1 animate-in fade-in duration-500 overflow-auto">
           {children}
         </main>
 

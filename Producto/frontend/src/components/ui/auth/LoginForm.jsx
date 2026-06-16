@@ -1,40 +1,103 @@
-import { Mail, Lock, ChevronRight } from 'lucide-react';
+import { useState } from 'react';
+import { Mail, Lock, ChevronRight, AlertCircle } from 'lucide-react';
 
 export default function LoginForm({ email, setEmail, password, setPassword, onSubmit }) {
+    const [errors, setErrors] = useState({ email: '', password: '' });
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        const newErrors = {};
+        if (!email.trim()) {
+            newErrors.email = 'Introduce un usuario o correo electrónico';
+        }
+        if (!password) {
+            newErrors.password = 'Introduce una contraseña';
+        }
+
+        if (Object.keys(newErrors).length > 0) {
+            setErrors(newErrors);
+        } else {
+            setErrors({ email: '', password: '' });
+            onSubmit(e);
+        }
+    };
+
     return (
-        <form onSubmit={onSubmit} className="flex flex-col gap-6">
+        <form onSubmit={handleSubmit} className="flex flex-col gap-6" noValidate>
             <div>
-                <label className="block text-sm font-semibold text-slate-200 mb-2 ml-1 tracking-wide">Usuario o Email</label>
+                <label className={`block text-sm font-semibold mb-2 ml-1 tracking-wide transition-colors ${errors.email ? 'text-rose-400' : 'text-slate-200'}`}>
+                    Usuario o Email
+                </label>
                 <div className="relative group">
-                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400 group-focus-within:text-blue-400 transition-colors">
+                    <div className={`absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none transition-colors ${
+                        errors.email 
+                        ? 'text-rose-400 group-focus-within:text-rose-400' 
+                        : 'text-slate-400 group-focus-within:text-blue-400'
+                    }`}>
                         <Mail className="w-5 h-5" />
                     </div>
                     <input
                         type="text"
                         value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        className="w-full h-14 bg-slate-900/60 border border-slate-700/50 text-white pl-12 pr-4 rounded-2xl focus:ring-4 focus:ring-blue-500/30 focus:border-blue-500 outline-none transition-all placeholder:text-slate-500 shadow-inner backdrop-blur-md"
+                        onChange={(e) => {
+                            setEmail(e.target.value);
+                            if (errors.email) {
+                                setErrors(prev => ({ ...prev, email: '' }));
+                            }
+                        }}
+                        className={`w-full h-14 bg-slate-900/60 border text-white pl-12 pr-4 rounded-2xl focus:ring-4 outline-none transition-all placeholder:text-slate-500 shadow-inner backdrop-blur-md ${
+                            errors.email 
+                            ? 'border-rose-500/80 focus:ring-rose-500/30 focus:border-rose-500' 
+                            : 'border-slate-700/50 focus:ring-blue-500/30 focus:border-blue-500'
+                        }`}
                         placeholder="admin"
                         required
                     />
                 </div>
+                {errors.email && (
+                    <div className="flex items-center gap-2 mt-2 ml-1 text-rose-400 text-sm animate-in fade-in slide-in-from-top-1 duration-200">
+                        <AlertCircle className="w-4 h-4 flex-shrink-0" />
+                        <span>{errors.email}</span>
+                    </div>
+                )}
             </div>
 
             <div>
-                <label className="block text-sm font-semibold text-slate-200 mb-2 ml-1 tracking-wide">Contraseña</label>
+                <label className={`block text-sm font-semibold mb-2 ml-1 tracking-wide transition-colors ${errors.password ? 'text-rose-400' : 'text-slate-200'}`}>
+                    Contraseña
+                </label>
                 <div className="relative group">
-                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400 group-focus-within:text-blue-400 transition-colors">
+                    <div className={`absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none transition-colors ${
+                        errors.password 
+                        ? 'text-rose-400 group-focus-within:text-rose-400' 
+                        : 'text-slate-400 group-focus-within:text-blue-400'
+                    }`}>
                         <Lock className="w-5 h-5" />
                     </div>
                     <input
                         type="password"
                         value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        className="w-full h-14 bg-slate-900/60 border border-slate-700/50 text-white pl-12 pr-4 rounded-2xl focus:ring-4 focus:ring-blue-500/30 focus:border-blue-500 outline-none transition-all placeholder:text-slate-500 shadow-inner backdrop-blur-md"
+                        onChange={(e) => {
+                            setPassword(e.target.value);
+                            if (errors.password) {
+                                setErrors(prev => ({ ...prev, password: '' }));
+                            }
+                        }}
+                        className={`w-full h-14 bg-slate-900/60 border text-white pl-12 pr-4 rounded-2xl focus:ring-4 outline-none transition-all placeholder:text-slate-500 shadow-inner backdrop-blur-md ${
+                            errors.password 
+                            ? 'border-rose-500/80 focus:ring-rose-500/30 focus:border-rose-500' 
+                            : 'border-slate-700/50 focus:ring-blue-500/30 focus:border-blue-500'
+                        }`}
                         placeholder="••••••••"
                         required
                     />
                 </div>
+                {errors.password && (
+                    <div className="flex items-center gap-2 mt-2 ml-1 text-rose-400 text-sm animate-in fade-in slide-in-from-top-1 duration-200">
+                        <AlertCircle className="w-4 h-4 flex-shrink-0" />
+                        <span>{errors.password}</span>
+                    </div>
+                )}
             </div>
 
             <div className="flex items-center justify-between text-sm px-1 mt-2">
@@ -45,13 +108,13 @@ export default function LoginForm({ email, setEmail, password, setPassword, onSu
                     </div>
                     <span className="font-medium">Recordarme</span>
                 </label>
-                    <button
-                        type="button"
-                        onClick={() => alert('Por favor, contacta al administrador para restablecer tu contraseña.')}
-                        className="text-blue-400 hover:text-blue-300 font-medium transition-colors hover:underline decoration-blue-400/50 underline-offset-4 focus:outline-none"
-                    >
-                        Restablecer contraseña
-                    </button>
+                <button
+                    type="button"
+                    onClick={() => alert('Por favor, contacta al administrador para restablecer tu contraseña.')}
+                    className="text-blue-400 hover:text-blue-300 font-medium transition-colors hover:underline decoration-blue-400/50 underline-offset-4 focus:outline-none"
+                >
+                    Restablecer contraseña
+                </button>
             </div>
 
             <button

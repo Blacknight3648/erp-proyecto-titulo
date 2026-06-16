@@ -1,0 +1,2 @@
+﻿INSERT INTO evaluaciones_negocio (idevn, numero, referencia, cliente_nombre, cliente_id, vendedor_id, estado, fecha_evaluacion, porcentaje_comision, created_at, updated_at) VALUES (1000, 'EVN-2026-1000', 'Postman Test', 'Test', 1, 1, 'APROBADA', CURRENT_DATE, 5.00, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+INSERT INTO evaluacion_negocio_items (idevni, evaluacion_negocio_id, nro_item, articulo_id, tipo_item, cantidad, precio_unitario, moneda_precio_unitario, costo_unitario, moneda_costo_unitario) VALUES (1000, 1000, 1, 1, 'OP', 100, 15000, 'CLP', 5000, 'CLP');

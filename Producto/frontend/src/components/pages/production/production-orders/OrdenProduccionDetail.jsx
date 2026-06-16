@@ -192,7 +192,7 @@ export default function OrdenProduccionDetail({ opId, onBack }) {
                                 {avance?.ordenesTrabajo?.map((ot) => (
                                     <div key={ot.idOT} className="bg-gray-50 p-4 rounded-3xl border border-gray-100 flex items-center justify-between gap-3">
                                         <div>
-                                            <p className="text-[11px] font-black text-gray-800 uppercase tracking-tight">{ot.numeroOT}</p>
+                                            <p className="text-[11px] font-black text-gray-800 uppercase tracking-tight">OT #{ot.idOT}</p>
                                             <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest mt-0.5">{ot.fase} • {ot.estado}</p>
                                         </div>
                                         <span className="text-[10px] font-black text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full uppercase tracking-tighter">

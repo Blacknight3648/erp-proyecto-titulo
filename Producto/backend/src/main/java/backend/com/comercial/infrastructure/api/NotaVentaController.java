@@ -40,13 +40,12 @@ public class NotaVentaController {
 
     /**
      * Devuelve un número tentativo basado en el máximo actual.
-     * NO reserva el número: el valor definitivo lo asigna el backend de forma
-     * atómica al hacer POST (NumeroDocumentoService).
+     * NO reserva el número (operación de solo lectura, no incrementa el contador):
+     * el valor definitivo lo asigna el backend de forma atómica al hacer POST.
      */
-
     @GetMapping("/next-number")
-    public Long previsualizarProximo() {
-        return numeroDocumentoService.siguiente("NV");
+    public String previsualizarProximo() {
+        return numeroDocumentoService.previsualizar("NV").getValue();
     }
 
     @PostMapping

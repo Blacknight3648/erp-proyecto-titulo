@@ -1,0 +1,1 @@
+﻿INSERT INTO evaluaciones_negocio (idevn, numero, referencia, cliente_nombre, cliente_id, vendedor_id, estado, fecha_evaluacion, porcentaje_comision, created_at, updated_at) VALUES (2000, 'EVN-2026-2000', 'No Items', 'Test', 1, 1, 'APROBADA', CURRENT_DATE, 5.00, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);

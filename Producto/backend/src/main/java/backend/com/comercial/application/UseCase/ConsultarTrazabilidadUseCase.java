@@ -86,9 +86,13 @@ public class ConsultarTrazabilidadUseCase {
                     op.getEstado().name(), op.getFechaInicio()));
         }
 
-        // Buscar OTs asociadas (Personalización)
+        // Buscar OTs asociadas (Personalización). La OT es un registro sin número
+        // propio: se referencia por su id y, si existe, por su fase de producción.
         otRepository.findByNotaVentaId(notaVentaId).forEach(ot -> {
-            trazabilidad.add(mapToDto("Orden Trabajo (OT)", ot.getIdOT(), ot.getNumeroOT().getValue().toString(),
+            String referencia = ot.getFase() != null
+                    ? "OT #" + ot.getIdOT() + " - " + ot.getFase().name()
+                    : "OT #" + ot.getIdOT();
+            trazabilidad.add(mapToDto("Orden Trabajo (OT)", ot.getIdOT(), referencia,
                     ot.getEstadoOT().name(), null));
         });
 

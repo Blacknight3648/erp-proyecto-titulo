@@ -1,28 +1,3 @@
-Endpoint: {{baseUrl}}/api/v1/produccion/costeos/disponibles-evn?monto=100
-
-El error que estás viendo **no se debe al parámetro `?monto=100`** que enviaste en la URL (de hecho, este endpoint no recibe parámetros por URL y simplemente los ignora). El error proviene de la base de datos y la forma en que se están mapeando los datos hacia los objetos de dominio.
-
-### 📄 Origen del Error
-El error se dispara específicamente en la clase `Money` (ubicada en `backend/com/shared/valueobjects/Money.java` en la línea 20):
-```java
-public Money(@JsonProperty("amount") BigDecimal amount, @JsonProperty("currency") String currency) {
-    if (amount == null) {
-        throw new IllegalArgumentException("El monto no puede ser null");
-    }
-    // ...
-}
-```
-Como se trata de un `IllegalArgumentException` arrojado desde la lógica de dominio (Value Object), tu manejador global de excepciones (Global Exception Handler) lo captura y lo transforma correctamente en un `400 Bad Request`.
-
-### 🔍 ¿A qué se debe exactamente?
-1. **Datos en la Base de Datos con valores `NULL`**: 
-   En tu archivo `data.sql` estás insertando un registro en la tabla `produccion_costeos` pero sin definir costos, por lo que quedan como `NULL`.
-
-2. **Falla en el Mapeo (`CosteoMapper.java`)**: 
-   El mapper intenta ejecutar `new Money(null, "CLP")`, lo cual activa de inmediato la validación de la clase `Money` lanzando la excepción `"El monto no puede ser null"`.
-
----
-
 # Diagnóstico de Pruebas Fallidas en Postman (15/06/2026)
 
 De las pruebas de Postman ejecutadas, 19 presentan problemas. A continuación, se detalla el diagnóstico y los archivos técnicos involucrados:
@@ -68,9 +43,9 @@ De las pruebas de Postman ejecutadas, 19 presentan problemas. A continuación, s
 
 ### 5. Errores Internos Reales (Errores 500)
 **Endpoints afectados:**
-* `GET {{baseUrl}}/api/v1/comercial/notas-venta`
-* `GET {{baseUrl}}/api/v3/maestros/articulos/tipo/PRENDA_LISTA`
-* `PUT {{baseUrl}}/api/v1/comercial/evaluaciones-negocio/1`
+* `GET http://localhost:8050/api/v1/comercial/notas-venta`
+* `GET http://localhost:8050/api/v3/maestros/articulos/tipo/PRENDA_LISTA`
+* `PUT http://localhost:8050/api/v1/comercial/evaluaciones-negocio/1`
 
 **Diagnóstico:** Estos endpoints están fallando a nivel de código Java. Puede tratarse de punteros nulos, *LazyInitializationExceptions* (al mapear listas anidadas fuera de transacción) o discrepancias en los mappers.
 **Archivos a modificar:** 
@@ -78,4 +53,14 @@ De las pruebas de Postman ejecutadas, 19 presentan problemas. A continuación, s
 - `ArticuloMapper.java`: Validar el mapeo de los subtipos (tela, prenda, accesorio). Si `PRENDA_LISTA` tiene el detalle nulo en base de datos, el mapper podría estar arrojando NullPointerException.
 - `EvaluacionNegocioServiceImpl.java`: Verificar el comportamiento de `CascadeType` al guardar/actualizar los ítems de la EVN en la transacción actual.
 
+### 6. Creación de Nota de Venta (Error 500)
+**Endpoint afectado:**
+* `POST http://localhost:8050/api/v1/comercial/notas-venta`
 
+**Diagnóstico Actualizado:** Inicialmente se pensó que el error era por una violación de llave foránea debido a un desfase entre el ID y el número de documento. Sin embargo, tras validar que `data.sql` fuerza el reinicio de la secuencia a 1000 (`ALTER TABLE evaluaciones_negocio ALTER COLUMN idevn RESTART WITH 1000;`), se confirma que la EVN 1000 **sí existe** correctamente en la base de datos de pruebas. 
+Dado que el request logra llegar a procesarse pero retorna un Error 500 genérico, significa que está ocurriendo una excepción no controlada (`Exception` general) a nivel de código Java (probablemente durante el guardado en cascada, la generación de Órdenes de Producción o la respuesta JSON).
+
+**Archivos a modificar:**
+Para encontrar la causa raíz exacta sin alterar el código de negocio, se debe:
+1. Revisar la consola de la aplicación Spring Boot (`erp_backend`) donde se imprime el log: `[500] Error interno inesperado | ruta=/api/v1/comercial/notas-venta` junto con el *stacktrace* (traza de error) detallado.
+2. Una vez obtenida la excepción exacta (ej. `NullPointerException`, `InvalidDataAccessApiUsageException`, etc.), se podrá apuntar al archivo específico (`CrearNVUseCase`, `CrearOrdenProduccionUseCase`, etc.) que requiere el arreglo.

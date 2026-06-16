@@ -2,7 +2,6 @@ package backend.com.produccion.infrastructure.mapper;
 
 import backend.com.produccion.domain.model.OrdenTrabajo;
 import backend.com.produccion.infrastructure.persistence.entity.OrdenTrabajoJpaEntity;
-import backend.com.shared.valueobjects.DocumentNumber;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -14,7 +13,6 @@ public class OrdenTrabajoMapper {
 
         return new OrdenTrabajo(
                 entity.getIdOT(),
-                entity.getNumeroOT() != null ? new DocumentNumber(entity.getNumeroOT()) : null,
                 entity.getNotaVentaId(),
                 entity.getItemNVId(),
                 entity.getOrdenProduccionId(),
@@ -34,9 +32,6 @@ public class OrdenTrabajoMapper {
 
         OrdenTrabajoJpaEntity entity = new OrdenTrabajoJpaEntity();
         entity.setIdOT(domain.getIdOT());
-        if (domain.getNumeroOT() != null) {
-            entity.setNumeroOT(domain.getNumeroOT().getValue());
-        }
         entity.setNotaVentaId(domain.getNotaVentaId());
         entity.setItemNVId(domain.getItemNVId());
         entity.setOrdenProduccionId(domain.getOrdenProduccionId());

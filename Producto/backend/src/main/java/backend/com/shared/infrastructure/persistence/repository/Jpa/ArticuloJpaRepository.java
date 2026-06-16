@@ -17,7 +17,11 @@ public interface ArticuloJpaRepository extends JpaRepository<ArticuloJpaEntity, 
 
     List<ArticuloJpaEntity> findByActivoTrue();
 
-    List<ArticuloJpaEntity> findByTipoArticulo(TipoArticulo tipoArticulo);
+    // Navega la asociación @ManyToOne 'tipoArticulo' hasta su atributo 'codigo'
+    // (de tipo TipoArticulo). El guion bajo es el separador explícito de Spring Data
+    // para atravesar la relación; sin él, intentaría comparar la entidad relacional
+    // con el enum y lanzaría InvalidDataAccessApiUsageException.
+    List<ArticuloJpaEntity> findByTipoArticulo_Codigo(TipoArticulo tipoArticulo);
 
     List<ArticuloJpaEntity> findByNombreArticuloContainingIgnoreCase(String nombre);
 }

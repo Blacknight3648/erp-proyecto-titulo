@@ -17,9 +17,8 @@ public class GestionarCosteoUseCase {
     public CosteoDTO registrarCosteo(CosteoDTO costeoDTO) {
         if (costeoDTO == null)
             throw new IllegalArgumentException("El costeo no puede ser nulo");
-        if (costeoDTO.getNumeroCosteo() == null || costeoDTO.getNumeroCosteo().isBlank()) {
-            costeoDTO.setNumeroCosteo("COSTEO-" + System.currentTimeMillis());
-        }
+        // El número correlativo propio (C-0000001) lo asigna CosteoService.save
+        // de forma atómica y transaccional.
         return costeoService.save(costeoDTO);
     }
 
@@ -29,9 +28,7 @@ public class GestionarCosteoUseCase {
         if (costeoDTO == null)
             throw new IllegalArgumentException("El costeo no puede ser nulo");
         costeoDTO.setIdCosteo(idCosteo);
-        if (costeoDTO.getNumeroCosteo() == null || costeoDTO.getNumeroCosteo().isBlank()) {
-            costeoDTO.setNumeroCosteo("COSTEO-" + idCosteo);
-        }
+        // En actualización se conserva el número existente (CosteoService.save).
         return costeoService.save(costeoDTO);
     }
 

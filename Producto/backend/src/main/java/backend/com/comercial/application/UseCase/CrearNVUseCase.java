@@ -18,8 +18,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import java.time.LocalDate;
-
 @Service
 @RequiredArgsConstructor
 public class CrearNVUseCase {
@@ -33,13 +31,10 @@ public class CrearNVUseCase {
         // El número se asigna siempre desde el contador atómico,
         // ignorando lo que envíe el cliente (que puede traer un valor obsoleto
         // si dos usuarios consultaron /next-number al mismo tiempo).
-        Long numeroVal = numeroDocumentoService.siguiente("NV");
-
-        String numeroFormateado = String.format("NV-%d-%07d",
-                LocalDate.now().getYear(), numeroVal);
+        DocumentNumber numero = numeroDocumentoService.siguienteFormateado("NV");
 
         NotaVenta nv = NotaVenta.crear(
-                new DocumentNumber(numeroFormateado),
+                numero,
                 command.getEvaluacionNegocioId(),
                 command.getClienteId(),
                 command.getVendedorId(),

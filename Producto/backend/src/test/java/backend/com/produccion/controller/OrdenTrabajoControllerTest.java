@@ -9,7 +9,6 @@ import backend.com.produccion.domain.enums.FaseProduccion;
 import backend.com.produccion.domain.model.OrdenTrabajo;
 import backend.com.produccion.domain.repository.OrdenTrabajoRepository;
 import backend.com.produccion.infrastructure.api.OrdenTrabajoController;
-import backend.com.shared.valueobjects.DocumentNumber;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -54,10 +53,9 @@ class OrdenTrabajoControllerTest {
     private backend.com.shared.infrastructure.persistence.repository.Jpa.IdempotencyTokenJpaRepository idempotencyTokenJpaRepository;
 
     // Helper para simular OrdenTrabajo stubbeando getters clave usados por el mapeador OTResponse
-    private OrdenTrabajo crearOTMock(Long id, String numero, Long opId, EstadoOT estado, FaseProduccion fase) {
+    private OrdenTrabajo crearOTMock(Long id, Long opId, EstadoOT estado, FaseProduccion fase) {
         OrdenTrabajo ot = mock(OrdenTrabajo.class);
         when(ot.getIdOT()).thenReturn(id);
-        when(ot.getNumeroOT()).thenReturn(numero != null ? new DocumentNumber(numero) : null);
         when(ot.getOrdenProduccionId()).thenReturn(opId);
         when(ot.getEstadoOT()).thenReturn(estado);
         when(ot.getFase()).thenReturn(fase);
@@ -74,15 +72,14 @@ class OrdenTrabajoControllerTest {
         @Test
         @DisplayName("GET /nota-venta/{nvId} - Retorna las OTs asociadas a la Nota de Venta")
         void getByNotaVenta_retornaListaDeOTs() throws Exception {
-            OrdenTrabajo ot1 = crearOTMock(1L, "OT-001", 10L, EstadoOT.PENDIENTE, null);
+            OrdenTrabajo ot1 = crearOTMock(1L, 10L, EstadoOT.PENDIENTE, null);
             when(gestionarOTUseCase.listarPorNotaVenta(5L)).thenReturn(List.of(ot1));
 
             mockMvc.perform(get("/api/v1/produccion/ordenes-trabajo/nota-venta/5"))
                     .andExpect(status().isOk())
                     .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                     .andExpect(jsonPath("$.size()").value(1))
-                    .andExpect(jsonPath("$[0].idOT").value(1L))
-                    .andExpect(jsonPath("$[0].numeroOT").value("OT-001"));
+                    .andExpect(jsonPath("$[0].idOT").value(1L));
 
             verify(gestionarOTUseCase).listarPorNotaVenta(5L);
         }
@@ -90,16 +87,16 @@ class OrdenTrabajoControllerTest {
         @Test
         @DisplayName("GET /orden-produccion/{opId} - Retorna las OTs (todas las fases) de una OP")
         void getByOrdenProduccion_retornaListaDeOTs() throws Exception {
-            OrdenTrabajo ot1 = crearOTMock(1L, "OT-CORTE", 10L, EstadoOT.EN_PROCESO, FaseProduccion.CORTE);
-            OrdenTrabajo ot2 = crearOTMock(2L, "OT-CONFECCION", 10L, EstadoOT.PENDIENTE, FaseProduccion.CONFECCION);
+            OrdenTrabajo ot1 = crearOTMock(1L, 10L, EstadoOT.EN_PROCESO, FaseProduccion.CORTE);
+            OrdenTrabajo ot2 = crearOTMock(2L, 10L, EstadoOT.PENDIENTE, FaseProduccion.CONFECCION);
             when(repository.findByOrdenProduccionId(10L)).thenReturn(List.of(ot1, ot2));
 
             mockMvc.perform(get("/api/v1/produccion/ordenes-trabajo/orden-produccion/10"))
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.size()").value(2))
-                    .andExpect(jsonPath("$[0].numeroOT").value("OT-CORTE"))
+                    .andExpect(jsonPath("$[0].idOT").value(1L))
                     .andExpect(jsonPath("$[0].fase").value("CORTE"))
-                    .andExpect(jsonPath("$[1].numeroOT").value("OT-CONFECCION"))
+                    .andExpect(jsonPath("$[1].idOT").value(2L))
                     .andExpect(jsonPath("$[1].fase").value("CONFECCION"));
 
             verify(repository).findByOrdenProduccionId(10L);

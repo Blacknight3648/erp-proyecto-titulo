@@ -51,6 +51,9 @@ class SolicitudCostosServiceImplTest {
     @Mock
     private DescripcionPlantillaRepository descripcionPlantillaRepository;
 
+    @Mock
+    private backend.com.shared.application.service.NumeroDocumentoService numeroDocumentoService;
+
     @InjectMocks
     private SolicitudCostosServiceImpl solicitudCostosServiceImpl;
 
@@ -123,7 +126,7 @@ class SolicitudCostosServiceImplTest {
                 .descripciones(new ArrayList<>())
                 .build();
 
-        when(repository.countByTipo("SCOS")).thenReturn(3L);
+        when(numeroDocumentoService.siguienteFormateado("SCOS")).thenReturn(new DocumentNumber("SCOS-0000004"));
         when(repository.save(any(SolicitudCostos.class)))
                 .thenAnswer(invocation -> persistido(invocation.getArgument(0), 1L));
         when(costeoService.findBySolicitudCostosId(1L)).thenReturn(Optional.empty());
@@ -133,7 +136,7 @@ class SolicitudCostosServiceImplTest {
         SolicitudCostosDTO resultado = solicitudCostosServiceImpl.create(dto);
 
         assertThat(resultado.getId()).isEqualTo(1L);
-        assertThat(resultado.getNumero()).isEqualTo("SCOS-0004");
+        assertThat(resultado.getNumero()).isEqualTo("SCOS-0000004");
         assertThat(resultado.getEstado()).isEqualTo("PENDIENTE");
         assertThat(resultado.getMoneda()).isEqualTo("CLP");
 
@@ -149,7 +152,7 @@ class SolicitudCostosServiceImplTest {
 
         ArgumentCaptor<CosteoDTO> costeoCaptor = ArgumentCaptor.forClass(CosteoDTO.class);
         verify(costeoService).save(costeoCaptor.capture());
-        assertThat(costeoCaptor.getValue().getNumeroCosteo()).isEqualTo("PRE-SCOS-0004");
+        assertThat(costeoCaptor.getValue().getNumeroCosteo()).isEqualTo("PRE-SCOS-0000004");
         assertThat(costeoCaptor.getValue().getSolicitudCostosId()).isEqualTo(1L);
     }
 
@@ -169,7 +172,7 @@ class SolicitudCostosServiceImplTest {
                 .solicitudCostosId(1L)
                 .build();
 
-        when(repository.countByTipo("SCOS")).thenReturn(0L);
+        when(numeroDocumentoService.siguienteFormateado("SCOS")).thenReturn(new DocumentNumber("SCOS-0000001"));
         when(repository.save(any(SolicitudCostos.class)))
                 .thenAnswer(invocation -> persistido(invocation.getArgument(0), 1L));
         when(costeoService.findBySolicitudCostosId(1L)).thenReturn(Optional.of(costeoExistente));
@@ -200,7 +203,7 @@ class SolicitudCostosServiceImplTest {
                 .descripciones(List.of(descripcionDto))
                 .build();
 
-        when(repository.countByTipo("SCOS")).thenReturn(0L);
+        when(numeroDocumentoService.siguienteFormateado("SCOS")).thenReturn(new DocumentNumber("SCOS-0000001"));
         when(repository.save(any(SolicitudCostos.class)))
                 .thenAnswer(invocation -> persistido(invocation.getArgument(0), 1L));
         when(costeoService.findBySolicitudCostosId(1L)).thenReturn(Optional.empty());

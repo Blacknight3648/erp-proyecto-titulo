@@ -18,7 +18,6 @@ public class AvanceOPResponse {
     @Data
     public static class AvanceOT {
         private Long idOT;
-        private String numeroOT;
         private String fase;
         private String estado;
         private Integer cantidadTotal;

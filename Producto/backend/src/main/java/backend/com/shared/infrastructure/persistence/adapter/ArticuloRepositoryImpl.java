@@ -51,7 +51,7 @@ public class ArticuloRepositoryImpl implements ArticuloRepository {
 
     @Override
     public List<Articulo> findByTipoArticulo(TipoArticulo tipoArticulo) {
-        return jpaRepository.findByTipoArticulo(tipoArticulo).stream().map(mapper::toDomain).toList();
+        return jpaRepository.findByTipoArticulo_Codigo(tipoArticulo).stream().map(mapper::toDomain).toList();
     }
 
     @Override

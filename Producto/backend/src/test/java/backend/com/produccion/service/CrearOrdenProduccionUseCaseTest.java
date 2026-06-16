@@ -66,6 +66,8 @@ class CrearOrdenProduccionUseCaseTest {
     private OrdenTrabajoRepository otRepository;
     @Mock
     private CrearVersionCosteoUseCase crearVersionCosteoUseCase;
+    @Mock
+    private backend.com.shared.application.service.NumeroDocumentoService numeroDocumentoService;
 
     @InjectMocks
     private CrearOrdenProduccionUseCase useCase;
@@ -73,6 +75,9 @@ class CrearOrdenProduccionUseCaseTest {
     @BeforeEach
     void setUp() {
         org.mockito.Mockito.lenient().when(repository.save(any(OrdenProduccion.class))).thenAnswer(inv -> inv.getArgument(0));
+        // La OP genera su propio correlativo independiente vía NumeroDocumentoService.
+        org.mockito.Mockito.lenient().when(numeroDocumentoService.siguienteFormateado("OP"))
+                .thenReturn(new DocumentNumber("OP-0000001"));
     }
 
     private NotaVenta notaVenta(Long evaluacionNegocioId, List<ItemNV> items) {
@@ -139,14 +144,14 @@ class CrearOrdenProduccionUseCaseTest {
     }
 
     @Test
-    @DisplayName("sin Evaluación de Negocio crea la OP con el número de la NV y genera las OTs base")
-    void execute_sinEvaluacionNegocio_creaOPConNumeroDeNVYGeneraTresFases() {
+    @DisplayName("sin Evaluación de Negocio crea la OP con su propio correlativo y genera las OTs base")
+    void execute_sinEvaluacionNegocio_creaOPConNumeroPropioYGeneraTresFases() {
         ItemNV item = itemOP(1, 10, "N/A", null);
         NotaVenta nv = notaVenta(null, List.of(item));
 
         OrdenProduccion result = useCase.execute(nv);
 
-        assertThat(result.getNumeroOP().getValue()).isEqualTo("NV-001");
+        assertThat(result.getNumeroOP().getValue()).isEqualTo("OP-0000001");
         assertThat(result.getCosteoVersionId()).isNull();
         assertThat(result.getItems()).hasSize(1);
         assertThat(result.getItems().get(0).getCantidad()).isEqualTo(10);
@@ -170,8 +175,8 @@ class CrearOrdenProduccionUseCaseTest {
     }
 
     @Test
-    @DisplayName("si la EVN no tiene un ítem OP con costeo vinculado, usa el número de la NV como fallback")
-    void execute_conEvnSinItemDeCosteoVinculado_usaNumeroNVComoFallback() {
+    @DisplayName("si la EVN no tiene un ítem OP con costeo vinculado, la OP usa su propio correlativo")
+    void execute_conEvnSinItemDeCosteoVinculado_usaNumeroPropio() {
         ItemNV item = itemOP(1, 5, "N/A", null);
         NotaVenta nv = notaVenta(7L, List.of(item));
         EvaluacionNegocio evnEntity = evn(7L, List.of(itemEvnSinCosteo(1)));
@@ -180,7 +185,7 @@ class CrearOrdenProduccionUseCaseTest {
 
         OrdenProduccion result = useCase.execute(nv);
 
-        assertThat(result.getNumeroOP().getValue()).isEqualTo("NV-001");
+        assertThat(result.getNumeroOP().getValue()).isEqualTo("OP-0000001");
         assertThat(result.getCosteoVersionId()).isNull();
         verify(costeoRepository, never()).findById(any());
         verify(crearVersionCosteoUseCase, never()).ejecutar(any(), any(), any());
@@ -204,8 +209,8 @@ class CrearOrdenProduccionUseCaseTest {
     }
 
     @Test
-    @DisplayName("con Costeo vinculado, usa el número de Costeo y vincula la nueva versión a la OP")
-    void execute_conCosteoVinculado_usaNumeroCosteoYVinculaVersion() {
+    @DisplayName("con Costeo vinculado, la OP usa su propio correlativo (no hereda) y vincula la nueva versión")
+    void execute_conCosteoVinculado_usaNumeroPropioYVinculaVersion() {
         ItemNV item = itemOP(1, 5, "N/A", null);
         NotaVenta nv = notaVenta(7L, List.of(item));
         EvaluacionNegocio evnEntity = evn(7L, List.of(itemEvnConCosteo(1, 50L)));
@@ -219,7 +224,7 @@ class CrearOrdenProduccionUseCaseTest {
 
         OrdenProduccion result = useCase.execute(nv);
 
-        assertThat(result.getNumeroOP().getValue()).isEqualTo("COSTEO-050");
+        assertThat(result.getNumeroOP().getValue()).isEqualTo("OP-0000001");
         assertThat(result.getCosteoVersionId()).isEqualTo(777L);
         verify(crearVersionCosteoUseCase).ejecutar(50L, "Versión inicial al crear OP", "SYSTEM");
     }
@@ -259,8 +264,8 @@ class CrearOrdenProduccionUseCaseTest {
     }
 
     @Test
-    @DisplayName("sin logo, genera 3 fases con numeración correlativa por ítem")
-    void execute_sinLogo_generaTresFasesConNumeracionCorrelativa() {
+    @DisplayName("sin logo, genera 3 fases (registros OT) para el ítem")
+    void execute_sinLogo_generaTresFases() {
         ItemNV item = itemOP(2, 8, "NO", null);
         NotaVenta nv = notaVenta(null, List.of(item));
 
@@ -272,9 +277,9 @@ class CrearOrdenProduccionUseCaseTest {
         List<OrdenTrabajo> ots = captor.getAllValues();
         assertThat(ots).extracting(OrdenTrabajo::getFase)
                 .containsExactly(FaseProduccion.CORTE, FaseProduccion.CONFECCION, FaseProduccion.TERMINACION);
-        assertThat(ots).extracting(ot -> ot.getNumeroOT().getValue())
-                .containsExactly("NV-001-I2-F1", "NV-001-I2-F2", "NV-001-I2-F3");
+        // La OT es un registro sin número propio: se asocia al ítem por su nroItem.
         assertThat(ots).allSatisfy(ot -> {
+            assertThat(ot.getNroItem()).isEqualTo(2);
             assertThat(ot.getCantidadTotal()).isEqualTo(8);
             assertThat(ot.getNotaVentaId()).isEqualTo(result.getNotaVentaId());
             assertThat(ot.getOrdenProduccionId()).isNull();

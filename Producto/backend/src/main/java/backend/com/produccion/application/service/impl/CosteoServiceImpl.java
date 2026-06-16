@@ -9,6 +9,7 @@ import backend.com.produccion.domain.model.Costeo;
 import backend.com.produccion.domain.model.CosteoItem;
 import backend.com.produccion.domain.repository.CosteoRepository;
 import backend.com.produccion.infrastructure.mapper.CosteoMapper;
+import backend.com.shared.application.service.NumeroDocumentoService;
 import backend.com.shared.domain.model.Articulo;
 import backend.com.shared.infrastructure.persistence.repository.ArticuloRepository;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +27,7 @@ public class CosteoServiceImpl implements CosteoService {
     private final SolicitudCostosRepository scosRepository;
     private final ArticuloRepository articuloRepository;
     private final EvaluacionNegocioRepository evnRepository;
+    private final NumeroDocumentoService numeroDocumentoService;
 
     private void enrichWithScosInfo(Costeo domain) {
         if (domain != null && domain.getSolicitudCostosId() != null) {
@@ -68,8 +70,32 @@ public class CosteoServiceImpl implements CosteoService {
     @Transactional
     public CosteoDTO save(CosteoDTO costeoDTO) {
         Costeo domain = mapper.toDomainFromDto(costeoDTO);
+        asignarNumeroSiCorresponde(domain);
         Costeo savedDomain = repository.save(domain);
         return toEnrichedDto(savedDomain);
+    }
+
+    /**
+     * Garantiza que el Costeo tenga su propio número correlativo ({@code C-0000001}).
+     * En creación genera uno nuevo de forma atómica dentro de esta transacción
+     * (sin huecos si el save falla). En actualización conserva el número ya
+     * asignado, recuperándolo de BD si el DTO no lo trajo, para no regenerarlo
+     * ni provocar duplicados.
+     */
+    private void asignarNumeroSiCorresponde(Costeo domain) {
+        if (domain == null || domain.getNumeroCosteo() != null) {
+            return;
+        }
+        // Actualización: conservar el número ya persistido.
+        if (domain.getIdCosteo() != null) {
+            repository.findById(domain.getIdCosteo())
+                    .map(Costeo::getNumeroCosteo)
+                    .ifPresent(domain::setNumeroCosteo);
+        }
+        // Creación (o registro legacy sin número): asignar correlativo propio.
+        if (domain.getNumeroCosteo() == null) {
+            domain.setNumeroCosteo(numeroDocumentoService.siguienteFormateado("C"));
+        }
     }
 
     @Override

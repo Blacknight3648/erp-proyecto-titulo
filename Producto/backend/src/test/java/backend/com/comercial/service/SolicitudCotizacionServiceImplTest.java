@@ -34,6 +34,9 @@ class SolicitudCotizacionServiceImplTest {
     @Mock
     private SolicitudCotizacionRepository repository;
 
+    @Mock
+    private backend.com.shared.application.service.NumeroDocumentoService numeroDocumentoService;
+
     @InjectMocks
     private SolicitudCotizacionServiceImpl solicitudCotizacionServiceImpl;
 
@@ -79,14 +82,14 @@ class SolicitudCotizacionServiceImplTest {
                 .logotipos(List.of(logotipoDto))
                 .build();
 
-        when(repository.countByTipo("SCOT")).thenReturn(2L);
+        when(numeroDocumentoService.siguienteFormateado("SCOT")).thenReturn(new DocumentNumber("SCOT-0000003"));
         when(repository.save(any(SolicitudCotizacion.class)))
                 .thenAnswer(invocation -> persistido(invocation.getArgument(0), 1L));
 
         SolicitudCotizacionesDTO resultado = solicitudCotizacionServiceImpl.create(dto);
 
         assertThat(resultado.getId()).isEqualTo(1L);
-        assertThat(resultado.getNumero()).isEqualTo("SCOT-0003");
+        assertThat(resultado.getNumero()).isEqualTo("SCOT-0000003");
         assertThat(resultado.getEstado()).isEqualTo("PENDIENTE");
         assertThat(resultado.getMoneda()).isEqualTo("CLP");
         assertThat(resultado.getEsMuestra()).isFalse();
@@ -111,13 +114,13 @@ class SolicitudCotizacionServiceImplTest {
                 .cantidad(5)
                 .build();
 
-        when(repository.countByTipo("SCOT")).thenReturn(0L);
+        when(numeroDocumentoService.siguienteFormateado("SCOT")).thenReturn(new DocumentNumber("SCOT-0000001"));
         when(repository.save(any(SolicitudCotizacion.class)))
                 .thenAnswer(invocation -> persistido(invocation.getArgument(0), 1L));
 
         SolicitudCotizacionesDTO resultado = solicitudCotizacionServiceImpl.create(dto);
 
-        assertThat(resultado.getNumero()).isEqualTo("SCOT-0001");
+        assertThat(resultado.getNumero()).isEqualTo("SCOT-0000001");
         assertThat(resultado.getEstado()).isEqualTo("PENDIENTE");
         assertThat(resultado.getPrendas()).isEmpty();
         assertThat(resultado.getLogotipos()).isEmpty();

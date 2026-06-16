@@ -55,8 +55,18 @@ class CosteoServiceImplTest {
     @Mock
     private EvaluacionNegocioRepository evnRepository;
 
+    @Mock
+    private backend.com.shared.application.service.NumeroDocumentoService numeroDocumentoService;
+
     @InjectMocks
     private CosteoServiceImpl costeoService;
+
+    @org.junit.jupiter.api.BeforeEach
+    void setUp() {
+        // save asigna el correlativo propio del Costeo (C-0000001) cuando no lo trae.
+        org.mockito.Mockito.lenient().when(numeroDocumentoService.siguienteFormateado("C"))
+                .thenReturn(new DocumentNumber("C-0000001"));
+    }
 
     // --- Métodos Helper ---
 

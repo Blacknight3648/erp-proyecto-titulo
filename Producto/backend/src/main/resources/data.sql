@@ -332,6 +332,26 @@ MERGE INTO produccion_hoja_compra_items (id_hc_item, hc_id, tipo_insumo, articul
     (3, 1, 'ACCESORIO', 5, 2, 'Botón Snap 15mm Nácar',       4.0000, 50, 200.0000, 150.00);
 
 -- ============================================================
+-- 7.8. CONTADORES DE DOCUMENTOS (document_counter)
+-- ============================================================
+-- Cada documento genera su propio correlativo vía NumeroDocumentoService.siguiente(tipo).
+-- El contador parte en 0 (se crea on-demand), por lo que el primer documento sería
+-- el número 1 y CHOCARÍA con los registros ya sembrados arriba. Por eso inicializamos
+-- 'ultimo_numero' por ENCIMA del máximo existente por tipo: el próximo correlativo
+-- continúa la secuencia (NV-0000003, OP-0000002, ...) sin colisionar ni reiniciar.
+-- 'ultimo_numero' = cantidad de documentos ya existentes de ese tipo en este seed.
+MERGE INTO document_counter (tipo, ultimo_numero)
+    KEY (tipo)
+    VALUES
+    ('NV',   2),
+    ('EVN',  2),
+    ('SCOS', 2),
+    ('SCOT', 0),
+    ('C',    1),
+    ('OP',   1),
+    ('HC',   1);
+
+-- ============================================================
 -- 7.8. MAESTROS GLOBALES (Moneda, Unidad de Medida)
 -- ============================================================
 MERGE INTO moneda (id_moneda, codigo_moneda, nombre_moneda, simbolo)

@@ -43,9 +43,13 @@ public class EvaluacionNegocioController {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Devuelve el próximo número tentativo (NO lo reserva ni incrementa el
+     * contador). El definitivo lo asigna el backend de forma atómica al hacer POST.
+     */
     @GetMapping("/next-number")
-    public Long previsualizarProximo() {
-        return numeroDocumentoService.siguiente("EVN");
+    public String previsualizarProximo() {
+        return numeroDocumentoService.previsualizar("EVN").getValue();
     }
 
     @PostMapping

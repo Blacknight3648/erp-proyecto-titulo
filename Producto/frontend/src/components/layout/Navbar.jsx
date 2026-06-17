@@ -30,29 +30,8 @@ export default function Navbar({ isSidebarOpen = true, setIsSidebarOpen }) {
             }`}
         >
 
-            {/* 1. GESTIÓN DE DATOS MAESTROS Y REPORTES */}
-            <nav className="flex items-center justify-center gap-3 justify-self-center w-full">
-                <button
-                    onClick={() => navigate('/admin/datos-maestros')}
-                    className="flex items-center gap-2 text-xs font-medium text-muted-foreground hover:text-primary bg-transparent hover:bg-primary/5 border border-transparent hover:border-primary/20 px-2.5 py-2 md:px-3 rounded-lg transition-all"
-                    title="Gestión de Datos Maestros"
-                >
-                    <Box className="w-4 h-4 text-muted-foreground group-hover:text-primary" />
-                    <span className="hidden sm:inline">Datos Maestros</span>
-                </button>
-
-                <button
-                    onClick={() => navigate('/admin/reportes')}
-                    className="flex items-center gap-2 text-xs font-medium text-muted-foreground hover:text-primary bg-transparent hover:bg-primary/5 border border-transparent hover:border-primary/20 px-2.5 py-2 md:px-3 rounded-lg transition-all"
-                    title="Reportes"
-                >
-                    <FileText className="w-4 h-4 text-muted-foreground group-hover:text-primary" />
-                    <span className="hidden sm:inline">Reportes</span>
-                </button>
-            </nav>
-
-            {/* 2. Buscador y Menú */}
-            <div className="flex items-center gap-2 md:gap-4 justify-self-start w-full">
+            {/* 1. SECCIÓN IZQUIERDA: Buscador y Menú */}
+            <div className="flex items-center gap-2 md:gap-4 justify-self-start w-full z-20">
                 <button
                     onClick={() => setIsSidebarOpen(!isSidebarOpen)}
                     className="p-2 text-foreground/80 hover:text-foreground hover:bg-surface-2 rounded-lg transition-colors md:hidden"
@@ -61,7 +40,7 @@ export default function Navbar({ isSidebarOpen = true, setIsSidebarOpen }) {
                     <Menu className="w-5 h-5" />
                 </button>
 
-                {/* Buscador inteligente */}
+                {/* Buscador inteligente adaptable */}
                 <div className="flex items-center relative w-full max-w-[40px] md:max-w-xs group">
                     <Search className="w-4 h-4 text-muted-foreground absolute left-3 pointer-events-none group-focus-within:text-primary transition-colors z-10" />
                     <input
@@ -73,35 +52,56 @@ export default function Navbar({ isSidebarOpen = true, setIsSidebarOpen }) {
                 </div>
             </div>
 
+            {/* 2. SECCIÓN CENTRAL: GESTIÓN DE DATOS MAESTROS Y REPORTES (Forzado al centro en pantallas pequeñas/minimizadas) */}
+            <nav className="absolute left-1/2 -translate-x-1/2 md:relative md:left-0 md:translate-x-0 flex items-center justify-center gap-1.5 sm:gap-3 justify-self-center w-auto md:w-full z-10">
+                <button
+                    onClick={() => navigate('/admin/datos-maestros')}
+                    className="flex items-center gap-2 text-xs font-medium text-muted-foreground hover:text-primary bg-transparent hover:bg-primary/5 border border-transparent hover:border-primary/20 px-2 py-2 md:px-3 rounded-lg transition-all whitespace-nowrap"
+                    title="Gestión de Datos Maestros"
+                >
+                    <Box className="w-4 h-4 text-muted-foreground group-hover:text-primary" />
+                    <span className="hidden sm:inline">Datos Maestros</span>
+                </button>
+
+                <button
+                    onClick={() => navigate('/admin/reportes')}
+                    className="flex items-center gap-2 text-xs font-medium text-muted-foreground hover:text-primary bg-transparent hover:bg-primary/5 border border-transparent hover:border-primary/20 px-2 py-2 md:px-3 rounded-lg transition-all whitespace-nowrap"
+                    title="Reportes"
+                >
+                    <FileText className="w-4 h-4 text-muted-foreground group-hover:text-primary" />
+                    <span className="hidden sm:inline">Reportes</span>
+                </button>
+            </nav>
+
             {/* 3. SECCIÓN DERECHA: Acciones de Usuario */}
-            <div className="flex items-center gap-1 md:gap-3 justify-self-end">
+            <div className="flex items-center gap-1 md:gap-3 justify-self-end z-20">
                 
-        {/* Botón Modo Concentración (Estilo iOS Premium) */}
-        <div className="flex items-center gap-3 px-1.5 py-1 select-none">
-            <span className={`text-xs font-semibold tracking-wide transition-colors duration-200 hidden sm:inline ${
-                isFocusMode ? 'text-primary' : 'text-foreground/70'
-            }`}>
-                Modo Concentración
-            </span>
-            
-            <button
-                onClick={() => setIsFocusMode(!isFocusMode)}
-                className={`relative inline-flex h-[22px] w-[42px] flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-250 ease-in-out outline-none focus-visible:ring-2 focus-visible:ring-primary/40 ${
-                    isFocusMode 
-                        ? 'bg-emerald-500' // O puedes mantener 'bg-primary' si es tu verde/azul iOS
-                        : 'bg-zinc-300 dark:bg-zinc-650 hover:bg-zinc-400/80 dark:hover:bg-zinc-500'
-                }`}
-                role="switch"
-                aria-checked={isFocusMode}
-                title={isFocusMode ? "Desactivar modo concentración" : "Activar modo concentración"}
-            >
-                <span
-                    className={`pointer-events-none inline-block h-[18px] w-[18px] transform rounded-full bg-white shadow-md transition duration-250 ease-in-out ${
-                        isFocusMode ? 'translate-x-[20px]' : 'translate-x-0'
-                    }`}
-                />
-            </button>
-        </div>
+                {/* Botón Modo Concentración (Estilo iOS Premium) */}
+                <div className="flex items-center gap-2 sm:gap-3 px-1.5 py-1 select-none">
+                    <span className={`text-xs font-semibold tracking-wide transition-colors duration-200 hidden lg:inline ${
+                        isFocusMode ? 'text-primary' : 'text-foreground/70'
+                    }`}>
+                        Modo Concentración
+                    </span>
+                    
+                    <button
+                        onClick={() => setIsFocusMode(!isFocusMode)}
+                        className={`relative inline-flex h-[22px] w-[42px] flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-250 ease-in-out outline-none focus-visible:ring-2 focus-visible:ring-primary/40 ${
+                            isFocusMode 
+                                ? 'bg-emerald-500' 
+                                : 'bg-zinc-300 dark:bg-zinc-650 hover:bg-zinc-400/80 dark:hover:bg-zinc-500'
+                        }`}
+                        role="switch"
+                        aria-checked={isFocusMode}
+                        title={isFocusMode ? "Desactivar modo concentración" : "Activar modo concentración"}
+                    >
+                        <span
+                            className={`pointer-events-none inline-block h-[18px] w-[18px] transform rounded-full bg-white shadow-md transition duration-250 ease-in-out ${
+                                isFocusMode ? 'translate-x-[20px]' : 'translate-x-0'
+                            }`}
+                        />
+                    </button>
+                </div>
 
                 {/* Configuración */}
                 <button

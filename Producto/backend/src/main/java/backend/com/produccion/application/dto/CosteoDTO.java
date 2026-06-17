@@ -17,6 +17,8 @@ public class CosteoDTO {
     /** Estado del ciclo de vida: BORRADOR | COSTEADO | APROBADO | RECHAZADO. */
     private String estado;
     private String motivoRechazo;
+    /** Iteración de reproceso (incrementa al retomar un costeo rechazado). */
+    private Integer version;
     private Long solicitudCostosId;
     private Long clienteId;
     private String clienteNombre;

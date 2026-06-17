@@ -18,6 +18,7 @@ export default function FormularioCosteo({
     onBack,
     selectedRecord,
     currentSolicitud,
+    costeoVersion,
     handleValidateCostos,
     totalMateriales,
     totalMO,
@@ -79,6 +80,11 @@ export default function FormularioCosteo({
                                 <div className="flex bg-blue-50 px-4 py-1.5 rounded-full border border-blue-100 items-center gap-2 shadow-sm">
                                     <span className="text-[11px] font-black text-blue-500 uppercase tracking-widest leading-none">{currentSolicitud?.clienteNombre || 'S/N'}</span>
                                 </div>
+                                {costeoVersion != null && (
+                                    <div className="flex bg-indigo-50 px-4 py-1.5 rounded-full border border-indigo-100 items-center gap-2 shadow-sm">
+                                        <span className="text-[11px] font-black text-indigo-500 uppercase tracking-widest leading-none">Versión v{costeoVersion}</span>
+                                    </div>
+                                )}
                             </div>
                             <p className="text-[11px] font-bold text-gray-400 uppercase tracking-widest mt-1 italic leading-none">Determinación de costo directo y materiales</p>
 

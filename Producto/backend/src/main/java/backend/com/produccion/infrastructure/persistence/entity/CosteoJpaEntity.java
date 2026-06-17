@@ -24,6 +24,10 @@ public class CosteoJpaEntity {
     @Column(name = "motivo_rechazo", length = 300)
     private String motivoRechazo;
 
+    /** Iteración de reproceso (incrementa al retomar un costeo rechazado). */
+    @Column(nullable = false)
+    private Integer version = 1;
+
     @Column(name = "solicitud_costos_id")
     private Long solicitudCostosId;
 

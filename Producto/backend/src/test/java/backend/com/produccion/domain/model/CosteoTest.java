@@ -174,4 +174,46 @@ class CosteoTest {
             assertThat(c.getMotivoRechazo()).isNull();
         }
     }
+
+    @Nested
+    @DisplayName("Versionado (contador de reproceso)")
+    class Versionado {
+
+        @Test
+        @DisplayName("un costeo nuevo arranca en versión 1")
+        void nuevoEsVersion1() {
+            assertThat(new Costeo().getVersion()).isEqualTo(1);
+        }
+
+        @Test
+        @DisplayName("secuencia borrador → costeado → rechazado → retomar incrementa la versión")
+        void secuenciaReprocesoIncrementaVersion() {
+            Costeo c = new Costeo();
+            assertThat(c.getVersion()).isEqualTo(1);
+
+            c.marcarCosteado();
+            c.rechazar("Diferencias detectadas");
+            assertThat(c.getVersion()).isEqualTo(1); // rechazar NO incrementa: v1 queda como la rechazada
+
+            c.reabrir(); // retomar desde RECHAZADO
+            assertThat(c.getEstado()).isEqualTo(EstadoCosteo.BORRADOR);
+            assertThat(c.getVersion()).isEqualTo(2);
+
+            // segundo ciclo de reproceso
+            c.marcarCosteado();
+            c.rechazar("Sigue habiendo diferencias");
+            c.reabrir();
+            assertThat(c.getVersion()).isEqualTo(3);
+        }
+
+        @Test
+        @DisplayName("reabrir desde COSTEADO (corrección) NO incrementa la versión")
+        void reabrirDesdeCosteadoNoIncrementa() {
+            Costeo c = new Costeo();
+            c.marcarCosteado();
+            c.reabrir(); // COSTEADO → BORRADOR
+            assertThat(c.getEstado()).isEqualTo(EstadoCosteo.BORRADOR);
+            assertThat(c.getVersion()).isEqualTo(1);
+        }
+    }
 }

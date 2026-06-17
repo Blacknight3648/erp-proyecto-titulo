@@ -6,10 +6,12 @@ import backend.com.produccion.application.dto.CosteoDTO;
 import backend.com.produccion.application.dto.CosteoResumenEVNDTO;
 import backend.com.produccion.application.service.CosteoService;
 import backend.com.produccion.application.UseCase.CrearVersionCosteoUseCase;
+import backend.com.produccion.domain.enums.EstadoCosteo;
 import backend.com.produccion.domain.model.Costeo;
 import backend.com.produccion.domain.model.CosteoItem;
 import backend.com.produccion.domain.repository.CosteoRepository;
 import backend.com.produccion.infrastructure.mapper.CosteoMapper;
+import backend.com.shared.application.service.HistorialEstadoService;
 import backend.com.shared.application.service.NumeroDocumentoService;
 import backend.com.shared.domain.model.Articulo;
 import backend.com.shared.exception.EntityNotFoundException;
@@ -31,6 +33,10 @@ public class CosteoServiceImpl implements CosteoService {
     private final EvaluacionNegocioRepository evnRepository;
     private final NumeroDocumentoService numeroDocumentoService;
     private final CrearVersionCosteoUseCase crearVersionCosteoUseCase;
+    private final HistorialEstadoService historialEstadoService;
+
+    /** Tipo de entidad para el registro de historial de estado del Costeo. */
+    private static final String TIPO_ENTIDAD = "COSTEO";
 
     private void enrichWithScosInfo(Costeo domain) {
         if (domain != null && domain.getSolicitudCostosId() != null) {
@@ -193,34 +199,59 @@ public class CosteoServiceImpl implements CosteoService {
     @Transactional
     public CosteoDTO costear(Long id) {
         Costeo costeo = cargar(id);
+        EstadoCosteo estadoAnterior = costeo.getEstado();
         costeo.marcarCosteado();
-        return toEnrichedDto(repository.save(costeo));
+        Costeo guardado = repository.save(costeo);
+        registrarHistorial(guardado, estadoAnterior, "Costeo v" + guardado.getVersion() + " costeado");
+        return toEnrichedDto(guardado);
     }
 
     @Override
     @Transactional
     public CosteoDTO aprobar(Long id) {
         Costeo costeo = cargar(id);
+        EstadoCosteo estadoAnterior = costeo.getEstado();
         costeo.aprobar();
-        return toEnrichedDto(repository.save(costeo));
+        Costeo guardado = repository.save(costeo);
+        registrarHistorial(guardado, estadoAnterior, "Costeo v" + guardado.getVersion() + " aprobado");
+        return toEnrichedDto(guardado);
     }
 
     @Override
     @Transactional
     public CosteoDTO rechazar(Long id, String motivo) {
         Costeo costeo = cargar(id);
-        // Snapshot del costeo tal como está antes de marcarlo rechazado.
-        crearVersionCosteoUseCase.ejecutar(id, "Rechazo: " + motivo, "SYSTEM");
+        EstadoCosteo estadoAnterior = costeo.getEstado();
+        // Snapshot técnico del costeo tal como está antes de marcarlo rechazado.
+        crearVersionCosteoUseCase.ejecutar(id, "Rechazo v" + costeo.getVersion() + ": " + motivo, "SYSTEM");
         costeo.rechazar(motivo);
-        return toEnrichedDto(repository.save(costeo));
+        Costeo guardado = repository.save(costeo);
+        registrarHistorial(guardado, estadoAnterior, "Costeo v" + guardado.getVersion() + " rechazado: " + motivo);
+        return toEnrichedDto(guardado);
     }
 
     @Override
     @Transactional
     public CosteoDTO reabrir(Long id) {
         Costeo costeo = cargar(id);
-        costeo.reabrir();
-        return toEnrichedDto(repository.save(costeo));
+        EstadoCosteo estadoAnterior = costeo.getEstado();
+        costeo.reabrir(); // si venía de RECHAZADO, incrementa la versión
+        Costeo guardado = repository.save(costeo);
+        String obs = estadoAnterior == EstadoCosteo.RECHAZADO
+                ? "Retomado como v" + guardado.getVersion()
+                : "Reabierto a BORRADOR (v" + guardado.getVersion() + ")";
+        registrarHistorial(guardado, estadoAnterior, obs);
+        return toEnrichedDto(guardado);
+    }
+
+    private void registrarHistorial(Costeo costeo, EstadoCosteo estadoAnterior, String observacion) {
+        historialEstadoService.registrar(
+                TIPO_ENTIDAD,
+                costeo.getIdCosteo(),
+                estadoAnterior != null ? estadoAnterior.name() : null,
+                costeo.getEstado() != null ? costeo.getEstado().name() : null,
+                "SYSTEM",
+                observacion);
     }
 
     private Costeo cargar(Long id) {

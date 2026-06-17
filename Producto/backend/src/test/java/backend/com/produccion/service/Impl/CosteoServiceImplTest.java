@@ -33,6 +33,7 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -61,6 +62,9 @@ class CosteoServiceImplTest {
 
     @Mock
     private backend.com.produccion.application.UseCase.CrearVersionCosteoUseCase crearVersionCosteoUseCase;
+
+    @Mock
+    private backend.com.shared.application.service.HistorialEstadoService historialEstadoService;
 
     @InjectMocks
     private CosteoServiceImpl costeoService;
@@ -351,12 +355,37 @@ class CosteoServiceImplTest {
 
         costeoService.rechazar(1L, "Diferencias detectadas");
 
-        verify(crearVersionCosteoUseCase).ejecutar(1L, "Rechazo: Diferencias detectadas", "SYSTEM");
+        verify(crearVersionCosteoUseCase).ejecutar(1L, "Rechazo v1: Diferencias detectadas", "SYSTEM");
         ArgumentCaptor<Costeo> captor = ArgumentCaptor.forClass(Costeo.class);
         verify(repository).save(captor.capture());
         assertThat(captor.getValue().getEstado())
                 .isEqualTo(backend.com.produccion.domain.enums.EstadoCosteo.RECHAZADO);
         assertThat(captor.getValue().getMotivoRechazo()).isEqualTo("Diferencias detectadas");
+        // Se registra el historial de estado con la versión.
+        verify(historialEstadoService).registrar(eq("COSTEO"), eq(1L), eq("COSTEADO"), eq("RECHAZADO"),
+                eq("SYSTEM"), org.mockito.ArgumentMatchers.contains("v1"));
+    }
+
+    @Test
+    @DisplayName("reabrir (retomar) desde RECHAZADO incrementa la versión y registra historial")
+    void reabrir_retomarIncrementaVersion() {
+        Costeo domain = costeo(1L, null, new ArrayList<>());
+        domain.marcarCosteado();
+        domain.rechazar("Diferencias"); // RECHAZADO, version 1
+
+        when(repository.findById(1L)).thenReturn(Optional.of(domain));
+        when(repository.save(any(Costeo.class))).thenAnswer(inv -> inv.getArgument(0));
+        when(mapper.toDto(any(Costeo.class))).thenReturn(CosteoDTO.builder().idCosteo(1L).build());
+
+        costeoService.reabrir(1L);
+
+        ArgumentCaptor<Costeo> captor = ArgumentCaptor.forClass(Costeo.class);
+        verify(repository).save(captor.capture());
+        assertThat(captor.getValue().getEstado())
+                .isEqualTo(backend.com.produccion.domain.enums.EstadoCosteo.BORRADOR);
+        assertThat(captor.getValue().getVersion()).isEqualTo(2);
+        verify(historialEstadoService).registrar(eq("COSTEO"), eq(1L), eq("RECHAZADO"), eq("BORRADOR"),
+                eq("SYSTEM"), org.mockito.ArgumentMatchers.contains("v2"));
     }
 
     @Test

@@ -21,6 +21,13 @@ public class Costeo {
     private EstadoCosteo estado = EstadoCosteo.BORRADOR;
     /** Motivo del último rechazo (solo poblado cuando estado == RECHAZADO). */
     private String motivoRechazo;
+    /**
+     * Iteración de reproceso del costeo. Arranca en 1 y se incrementa cada vez que
+     * se retoma (reabrir) un costeo previamente RECHAZADO. Permite saber cuántas
+     * veces se rechazó/retomó. Es independiente del log técnico de snapshots
+     * (produccion_costeo_versiones).
+     */
+    private Integer version = 1;
     private Long solicitudCostosId;
     /** Referencia suave a la NV que originó este Costeo (solo para costeos auto-creados). */
     private Long notaVentaId;
@@ -148,9 +155,17 @@ public class Costeo {
         this.motivoRechazo = motivo;
     }
 
-    /** Reabre el costeo para reproceso: RECHAZADO/COSTEADO → BORRADOR. Limpia el motivo. */
+    /**
+     * Reabre el costeo a BORRADOR. Cumple el rol de "retomar": si venía de RECHAZADO
+     * incrementa la versión (nueva iteración de reproceso) y limpia el motivo. Desde
+     * COSTEADO es una corrección menor y NO cambia la versión.
+     */
     public void reabrir() {
+        boolean reproceso = this.estado == EstadoCosteo.RECHAZADO;
         transicionarA(EstadoCosteo.BORRADOR);
         this.motivoRechazo = null;
+        if (reproceso) {
+            this.version = (this.version == null ? 1 : this.version) + 1;
+        }
     }
 }

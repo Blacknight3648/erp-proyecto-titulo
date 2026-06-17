@@ -52,6 +52,7 @@ public class CosteoMapper {
         c.setNotaVentaId(entity.getNotaVentaId());
         c.setEstado(entity.getEstado() != null ? entity.getEstado() : backend.com.produccion.domain.enums.EstadoCosteo.BORRADOR);
         c.setMotivoRechazo(entity.getMotivoRechazo());
+        c.setVersion(entity.getVersion() != null ? entity.getVersion() : 1);
         return c;
     }
 
@@ -64,6 +65,7 @@ public class CosteoMapper {
         entity.setNumeroCosteo(domain.getNumeroCosteo() != null ? domain.getNumeroCosteo().getValue() : null);
         entity.setEstado(domain.getEstado() != null ? domain.getEstado() : backend.com.produccion.domain.enums.EstadoCosteo.BORRADOR);
         entity.setMotivoRechazo(domain.getMotivoRechazo());
+        entity.setVersion(domain.getVersion() != null ? domain.getVersion() : 1);
         entity.setSolicitudCostosId(domain.getSolicitudCostosId());
         entity.setNotaVentaId(domain.getNotaVentaId());
         entity.setCostoHilos(domain.getCostoHilos().getAmount());
@@ -100,6 +102,7 @@ public class CosteoMapper {
                 .numeroCosteo(domain.getNumeroCosteo() != null ? domain.getNumeroCosteo().getValue() : null)
                 .estado(domain.getEstado() != null ? domain.getEstado().name() : null)
                 .motivoRechazo(domain.getMotivoRechazo())
+                .version(domain.getVersion())
                 .solicitudCostosId(domain.getSolicitudCostosId())
                 .clienteId(domain.getClienteId())
                 .clienteNombre(domain.getClienteNombre())
@@ -156,6 +159,9 @@ public class CosteoMapper {
             costeo.setEstado(backend.com.produccion.domain.enums.EstadoCosteo.valueOf(dto.getEstado()));
         }
         costeo.setMotivoRechazo(dto.getMotivoRechazo());
+        if (dto.getVersion() != null) {
+            costeo.setVersion(dto.getVersion());
+        }
         return costeo;
     }
 

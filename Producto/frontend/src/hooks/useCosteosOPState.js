@@ -39,6 +39,7 @@ export function useCosteosOPState() {
 
     const [currentSolicitud, setCurrentSolicitud] = useState(null);
     const [insumos, setInsumos] = useState([]);
+    const [costeoVersion, setCosteoVersion] = useState(null);
 
     useEffect(() => {
         loadSolicitudesCostos();
@@ -130,6 +131,7 @@ export function useCosteosOPState() {
                 setCostoEtiqueta(savedCosteo.costoEtiquetas || 0);
                 setCostoEmbalaje(savedCosteo.costoEmbalaje || 0);
                 setCostoFlete(savedCosteo.costoFlete || 0);
+                setCosteoVersion(savedCosteo.version ?? 1);
             } else {
                 setCostoHilo(0);
                 setCostoMoPropia(0);
@@ -137,6 +139,7 @@ export function useCosteosOPState() {
                 setCostoEtiqueta(0);
                 setCostoEmbalaje(0);
                 setCostoFlete(0);
+                setCosteoVersion(null);
             }
         } catch (err) {
             console.error("Error cargando costeo de producción:", err);
@@ -386,6 +389,7 @@ export function useCosteosOPState() {
         totalCostosFijos,
         totalGeneral,
         currentSolicitud,
+        costeoVersion,
         insumos,
         handleOpenForm,
         handleUpdateItem,

@@ -1,0 +1,16 @@
+-- =============================================================================
+-- V18: Versionado de costeo (contador de reproceso)
+-- =============================================================================
+-- Agrega `version` al Costeo: contador de iteraciones que arranca en 1 y se
+-- incrementa cada vez que se retoma (reabrir) un costeo previamente RECHAZADO.
+-- Es independiente del log técnico de snapshots `produccion_costeo_versiones`.
+--
+-- En dev/test (H2) Hibernate (ddl-auto=update) crea la columna `version` desde la
+-- entidad, por lo que este script no la agrega (evita "column already exists").
+--
+-- =============================================================================
+-- BLOQUE MANUAL — SOLO PROD (MySQL) — ejecutar UNA vez
+-- =============================================================================
+--   ALTER TABLE produccion_costeos
+--       ADD COLUMN version INT NOT NULL DEFAULT 1;
+-- =============================================================================

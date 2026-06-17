@@ -79,8 +79,21 @@ class CrearOrdenProduccionUseCaseTest {
         // La OP genera su propio correlativo independiente vía NumeroDocumentoService.
         org.mockito.Mockito.lenient().when(numeroDocumentoService.siguienteFormateado("OP"))
                 .thenReturn(new DocumentNumber("OP-0000001"));
+        org.mockito.Mockito.lenient().when(numeroDocumentoService.siguienteFormateado("COST"))
+                .thenReturn(new DocumentNumber("COST-0000001"));
         org.mockito.Mockito.lenient().when(evnRepository.findById(any()))
                 .thenReturn(Optional.of(evn(7L, List.of())));
+        org.mockito.Mockito.lenient().when(costeoRepository.findByNotaVentaId(any()))
+                .thenReturn(Optional.empty());
+        org.mockito.Mockito.lenient().when(costeoRepository.save(any(Costeo.class))).thenAnswer(inv -> {
+            Costeo c = inv.getArgument(0);
+            if (c.getIdCosteo() == null) {
+                c.setIdCosteo(999L);
+            }
+            return c;
+        });
+        org.mockito.Mockito.lenient().when(crearVersionCosteoUseCase.ejecutar(any(), any(), any()))
+                .thenAnswer(inv -> costeoVersion(888L, inv.getArgument(0), 1));
     }
 
     private NotaVenta notaVenta(Long evaluacionNegocioId, List<ItemNV> items) {
@@ -156,7 +169,7 @@ class CrearOrdenProduccionUseCaseTest {
         OrdenProduccion result = useCase.execute(nv);
 
         assertThat(result.getNumeroOP().getValue()).isEqualTo("OP-0000001");
-        assertThat(result.getCosteoVersionId()).isNull();
+        assertThat(result.getCosteoVersionId()).isEqualTo(888L);
         assertThat(result.getItems()).hasSize(1);
         assertThat(result.getItems().get(0).getCantidad()).isEqualTo(10);
 
@@ -168,7 +181,8 @@ class CrearOrdenProduccionUseCaseTest {
     @Test
     @DisplayName("falla con EntityNotFoundException si la Evaluación de Negocio vinculada no existe")
     void execute_conEvaluacionNegocioInexistente_lanzaEntityNotFoundException() {
-        NotaVenta nv = notaVenta(5L, List.of());
+        ItemNV item = itemOP(1, 5, "N/A", null);
+        NotaVenta nv = notaVenta(5L, List.of(item));
         when(evnRepository.findById(5L)).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> useCase.execute(nv))
@@ -190,9 +204,9 @@ class CrearOrdenProduccionUseCaseTest {
         OrdenProduccion result = useCase.execute(nv);
 
         assertThat(result.getNumeroOP().getValue()).isEqualTo("OP-0000001");
-        assertThat(result.getCosteoVersionId()).isNull();
+        assertThat(result.getCosteoVersionId()).isEqualTo(888L);
         verify(costeoRepository, never()).findById(any());
-        verify(crearVersionCosteoUseCase, never()).ejecutar(any(), any(), any());
+        verify(crearVersionCosteoUseCase).ejecutar(any(), any(), any());
     }
 
     @Test

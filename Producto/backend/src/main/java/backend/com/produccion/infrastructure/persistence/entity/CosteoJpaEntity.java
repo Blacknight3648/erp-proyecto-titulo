@@ -1,5 +1,6 @@
 package backend.com.produccion.infrastructure.persistence.entity;
 
+import backend.com.produccion.domain.enums.EstadoCosteo;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -15,6 +16,13 @@ public class CosteoJpaEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idCosteo;
+
+    @Enumerated(EnumType.STRING)
+    @Column(length = 20, nullable = false)
+    private EstadoCosteo estado = EstadoCosteo.BORRADOR;
+
+    @Column(name = "motivo_rechazo", length = 300)
+    private String motivoRechazo;
 
     @Column(name = "solicitud_costos_id")
     private Long solicitudCostosId;

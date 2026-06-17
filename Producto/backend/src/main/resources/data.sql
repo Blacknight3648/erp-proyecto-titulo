@@ -298,10 +298,10 @@ MERGE INTO notas_venta (idnv, numeronv, evaluacion_negocio_id, cliente_id, vende
 -- ============================================================
 -- 7.7. PLANIFICACIÓN DE PRODUCCIÓN Y HOJAS DE COMPRA
 -- ============================================================
-MERGE INTO produccion_costeos (id_costeo, solicitud_costos_id, numero_costeo)
+MERGE INTO produccion_costeos (id_costeo, solicitud_costos_id, numero_costeo, estado)
     KEY (id_costeo)
     VALUES
-    (1, 2, 'COST-000001');
+    (1, 2, 'COST-000001', 'APROBADO');
 
 MERGE INTO produccion_costeo_versiones (id_costeo_version, costeo_id, numero_version, fecha_creacion, usuario_creador)
     KEY (id_costeo_version)

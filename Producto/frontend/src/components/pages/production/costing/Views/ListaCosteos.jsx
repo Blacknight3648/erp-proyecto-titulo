@@ -11,16 +11,36 @@ import {
     ClipboardList 
 } from 'lucide-react';
 
-export default function ListaCosteos({ 
-    onOpenDashboard, 
-    onOpenCompare, 
-    searchTerm, 
-    setSearchTerm, 
-    statusFilter, 
-    setStatusFilter, 
-    recordsToDisplay, 
-    clientes, 
-    handleOpenForm 
+// Mapeo único estado → etiqueta + estilos del badge. Cubre el ciclo de vida del
+// Costeo (BORRADOR/COSTEADO/APROBADO/RECHAZADO) y los estados legacy de SCOS.
+const ESTADO_BADGE = {
+    BORRADOR:  { label: 'Borrador',  className: 'bg-gray-100 text-gray-600 ring-1 ring-gray-200' },
+    COSTEADO:  { label: 'Costeado',  className: 'bg-blue-100 text-blue-600 ring-1 ring-blue-200' },
+    APROBADO:  { label: '✓ Aprobado', className: 'bg-emerald-100 text-emerald-700 ring-1 ring-emerald-200' },
+    RECHAZADO: { label: 'Rechazado', className: 'bg-red-100 text-red-600 ring-1 ring-red-200' },
+    // Legacy SCOS
+    APROBADA:          { label: '✓ Aprobado', className: 'bg-emerald-100 text-emerald-700 ring-1 ring-emerald-200' },
+    'COSTEO REALIZADO': { label: 'Costeado', className: 'bg-blue-100 text-blue-600 ring-1 ring-blue-200' },
+    PENDIENTE:         { label: 'Pendiente', className: 'bg-amber-100 text-amber-600' },
+};
+
+function badgeFor(estado) {
+    if (!estado) return { label: 'Pendiente', className: 'bg-amber-100 text-amber-600' };
+    return ESTADO_BADGE[estado]
+        ?? ESTADO_BADGE[estado.toUpperCase?.()]
+        ?? { label: estado, className: 'bg-amber-100 text-amber-600' };
+}
+
+export default function ListaCosteos({
+    onOpenDashboard,
+    onOpenCompare,
+    searchTerm,
+    setSearchTerm,
+    statusFilter,
+    setStatusFilter,
+    recordsToDisplay,
+    clientes,
+    handleOpenForm
 }) {
     return (
         <div className="max-w-full p-4 space-y-8 animate-in fade-in duration-700">
@@ -73,9 +93,12 @@ export default function ListaCosteos({
                         onChange={(e) => setStatusFilter(e.target.value)}
                     >
                         <option value="Todos">Todos los Estados</option>
-                        <option value="PENDIENTE">Pendiente Costeo</option>
-                        <option value="APROBADA">Aprobado / Costeado</option>
-                        <option value="Costeado">Costeado (Legacy)</option>
+                        <option value="BORRADOR">Borrador</option>
+                        <option value="COSTEADO">Costeado</option>
+                        <option value="APROBADO">Aprobado</option>
+                        <option value="RECHAZADO">Rechazado</option>
+                        <option value="PENDIENTE">Pendiente (SCOS)</option>
+                        <option value="APROBADA">Aprobado (SCOS legacy)</option>
                     </select>
                 </div>
                 <button
@@ -105,14 +128,8 @@ export default function ListaCosteos({
                                 <div className="flex-1">
                                     <div className="flex items-center gap-2 mb-1">
                                         <span className="text-[10px] font-black text-gray-300 uppercase tracking-widest">{displayId}</span>
-                                    <span className={`px-2 py-0.5 rounded-full text-[8px] font-black uppercase tracking-widest ${
-                                            record.estado === 'APROBADA'
-                                                ? 'bg-emerald-100 text-emerald-700 ring-1 ring-emerald-200'
-                                                : record.estado === 'Costeado' || record.estado === 'COSTEO REALIZADO'
-                                                ? 'bg-green-100 text-green-600'
-                                                : 'bg-amber-100 text-amber-600'
-                                        }`}>
-                                        {record.estado === 'APROBADA' ? '✓ Aprobado' : record.estado}
+                                    <span className={`px-2 py-0.5 rounded-full text-[8px] font-black uppercase tracking-widest ${badgeFor(record.estado).className}`}>
+                                        {badgeFor(record.estado).label}
                                     </span>
                                     </div>
                                     <h3 className="text-md font-black text-gray-800 group-hover:text-green-600 transition-colors uppercase leading-tight">
@@ -149,7 +166,11 @@ export default function ListaCosteos({
                                     className="px-4 py-2 bg-indigo-600 text-white text-[9px] font-black rounded-xl uppercase tracking-widest hover:bg-indigo-700 transition-all flex items-center shadow-lg shadow-indigo-100"
                                 >
                                     <Calculator className="w-3 h-3 mr-2" />
-                                    {record.estado === 'APROBADA' ? 'Ver Costeo' : record.estado === 'Costeado' ? 'Revisar Costos' : 'Añadir Costos'}
+                                    {record.estado === 'APROBADA' || record.estado === 'APROBADO'
+                                        ? 'Ver Costeo'
+                                        : record.estado === 'Costeado' || record.estado === 'COSTEADO'
+                                        ? 'Revisar Costos'
+                                        : 'Añadir Costos'}
                                 </button>
                             </div>
                         </div>

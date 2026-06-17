@@ -47,6 +47,36 @@ public class CosteoController {
         return ResponseEntity.ok(gestionarCosteoUseCase.actualizarCosteo(idCosteo, costeo));
     }
 
+    // --- Transiciones del ciclo de vida (BORRADOR → COSTEADO → APROBADO / RECHAZADO) ---
+
+    /** Producción confirma los costos: BORRADOR → COSTEADO. */
+    @PatchMapping("/{idCosteo}/costear")
+    public ResponseEntity<CosteoDTO> costear(@PathVariable Long idCosteo) {
+        return ResponseEntity.ok(gestionarCosteoUseCase.costear(idCosteo));
+    }
+
+    /** Aprobación que habilita el vínculo con EVN/NV: COSTEADO → APROBADO. */
+    @PatchMapping("/{idCosteo}/aprobar")
+    public ResponseEntity<CosteoDTO> aprobar(@PathVariable Long idCosteo) {
+        return ResponseEntity.ok(gestionarCosteoUseCase.aprobar(idCosteo));
+    }
+
+    /** Rechazo por diferencias: exige motivo y versiona el costeo rechazado. */
+    @PatchMapping("/{idCosteo}/rechazar")
+    public ResponseEntity<CosteoDTO> rechazar(@PathVariable Long idCosteo, @RequestBody RechazoRequest request) {
+        return ResponseEntity.ok(gestionarCosteoUseCase.rechazar(idCosteo, request != null ? request.motivo() : null));
+    }
+
+    /** Reabre para reproceso: RECHAZADO/COSTEADO → BORRADOR. */
+    @PatchMapping("/{idCosteo}/reabrir")
+    public ResponseEntity<CosteoDTO> reabrir(@PathVariable Long idCosteo) {
+        return ResponseEntity.ok(gestionarCosteoUseCase.reabrir(idCosteo));
+    }
+
+    /** Body del rechazo: motivo obligatorio. */
+    public record RechazoRequest(String motivo) {
+    }
+
     /** Resumen para auto-rellenar un ítem tipo OP de una EVN al vincular un costeo. */
     @GetMapping("/{idCosteo}/resumen-evn")
     public ResponseEntity<CosteoResumenEVNDTO> getResumenParaEVN(@PathVariable Long idCosteo) {

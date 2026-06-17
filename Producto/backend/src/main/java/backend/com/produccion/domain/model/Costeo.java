@@ -1,5 +1,7 @@
 package backend.com.produccion.domain.model;
 
+import backend.com.produccion.domain.enums.EstadoCosteo;
+import backend.com.shared.exception.BusinessRuleException;
 import backend.com.shared.valueobjects.DocumentNumber;
 import backend.com.shared.valueobjects.Money;
 import lombok.Getter;
@@ -15,6 +17,10 @@ import lombok.NoArgsConstructor;
 public class Costeo {
     private Long idCosteo;
     private DocumentNumber numeroCosteo;
+    /** Estado del ciclo de vida. Por defecto BORRADOR al construir un costeo nuevo. */
+    private EstadoCosteo estado = EstadoCosteo.BORRADOR;
+    /** Motivo del último rechazo (solo poblado cuando estado == RECHAZADO). */
+    private String motivoRechazo;
     private Long solicitudCostosId;
     /** Referencia suave a la NV que originó este Costeo (solo para costeos auto-creados). */
     private Long notaVentaId;
@@ -105,5 +111,46 @@ public class Costeo {
         this.margenBrutoSugerido = margenBrutoSugerido;
         this.precioVentaSugerido = precioVentaSugerido;
         this.items = items != null ? items : new java.util.ArrayList<>();
+    }
+
+    // ----------------------------------------------------------------------
+    // Transiciones de estado (ciclo de vida del Costeo)
+    // ----------------------------------------------------------------------
+
+    private void transicionarA(EstadoCosteo destino) {
+        EstadoCosteo actual = this.estado != null ? this.estado : EstadoCosteo.BORRADOR;
+        if (!actual.puedeTransicionarA(destino)) {
+            throw new BusinessRuleException(
+                    "Transición de estado inválida para el Costeo: " + actual + " → " + destino);
+        }
+        this.estado = destino;
+    }
+
+    /** Producción confirma los costos: BORRADOR → COSTEADO. */
+    public void marcarCosteado() {
+        transicionarA(EstadoCosteo.COSTEADO);
+    }
+
+    /** Aprobación que habilita el vínculo con EVN/NV: COSTEADO → APROBADO. */
+    public void aprobar() {
+        transicionarA(EstadoCosteo.APROBADO);
+    }
+
+    /**
+     * Rechaza el costeo por diferencias. Exige un motivo y lo conserva.
+     * El versionado (snapshot) del costeo rechazado lo orquesta el caso de uso.
+     */
+    public void rechazar(String motivo) {
+        if (motivo == null || motivo.isBlank()) {
+            throw new BusinessRuleException("Debe indicarse el motivo del rechazo del Costeo");
+        }
+        transicionarA(EstadoCosteo.RECHAZADO);
+        this.motivoRechazo = motivo;
+    }
+
+    /** Reabre el costeo para reproceso: RECHAZADO/COSTEADO → BORRADOR. Limpia el motivo. */
+    public void reabrir() {
+        transicionarA(EstadoCosteo.BORRADOR);
+        this.motivoRechazo = null;
     }
 }

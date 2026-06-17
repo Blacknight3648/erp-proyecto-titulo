@@ -31,6 +31,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -57,6 +58,9 @@ class CosteoServiceImplTest {
 
     @Mock
     private backend.com.shared.application.service.NumeroDocumentoService numeroDocumentoService;
+
+    @Mock
+    private backend.com.produccion.application.UseCase.CrearVersionCosteoUseCase crearVersionCosteoUseCase;
 
     @InjectMocks
     private CosteoServiceImpl costeoService;
@@ -239,10 +243,12 @@ class CosteoServiceImplTest {
     // --- obtenerDisponiblesParaEVN ---
 
     @Test
-    @DisplayName("obtenerDisponiblesParaEVN filtra los costeos ya vinculados a una EVN")
+    @DisplayName("obtenerDisponiblesParaEVN filtra los no vinculados y solo expone costeos APROBADOS")
     void obtenerDisponiblesParaEVN_filtraCosteosVinculados() {
         Costeo costeo1 = costeo(1L, null, new ArrayList<>());
+        costeo1.setEstado(backend.com.produccion.domain.enums.EstadoCosteo.APROBADO); // disponible
         Costeo costeo2 = costeo(2L, null, new ArrayList<>());
+        costeo2.setEstado(backend.com.produccion.domain.enums.EstadoCosteo.APROBADO); // pero vinculado
         CosteoDTO dto1 = CosteoDTO.builder().idCosteo(1L).build();
 
         when(evnRepository.findLinkedCosteoIds()).thenReturn(List.of(2L));
@@ -329,5 +335,55 @@ class CosteoServiceImplTest {
         Optional<CosteoResumenEVNDTO> resultado = costeoService.obtenerResumenEVN(99L);
 
         assertThat(resultado).isEmpty();
+    }
+
+    // --- Transiciones de estado ---
+
+    @Test
+    @DisplayName("rechazar versiona el costeo, fija RECHAZADO y conserva el motivo")
+    void rechazar_versionaYRechaza() {
+        Costeo domain = costeo(1L, null, new ArrayList<>());
+        domain.marcarCosteado(); // BORRADOR → COSTEADO
+
+        when(repository.findById(1L)).thenReturn(Optional.of(domain));
+        when(repository.save(any(Costeo.class))).thenAnswer(inv -> inv.getArgument(0));
+        when(mapper.toDto(any(Costeo.class))).thenReturn(CosteoDTO.builder().idCosteo(1L).build());
+
+        costeoService.rechazar(1L, "Diferencias detectadas");
+
+        verify(crearVersionCosteoUseCase).ejecutar(1L, "Rechazo: Diferencias detectadas", "SYSTEM");
+        ArgumentCaptor<Costeo> captor = ArgumentCaptor.forClass(Costeo.class);
+        verify(repository).save(captor.capture());
+        assertThat(captor.getValue().getEstado())
+                .isEqualTo(backend.com.produccion.domain.enums.EstadoCosteo.RECHAZADO);
+        assertThat(captor.getValue().getMotivoRechazo()).isEqualTo("Diferencias detectadas");
+    }
+
+    @Test
+    @DisplayName("aprobar lleva COSTEADO → APROBADO")
+    void aprobar_ok() {
+        Costeo domain = costeo(1L, null, new ArrayList<>());
+        domain.marcarCosteado();
+
+        when(repository.findById(1L)).thenReturn(Optional.of(domain));
+        when(repository.save(any(Costeo.class))).thenAnswer(inv -> inv.getArgument(0));
+        when(mapper.toDto(any(Costeo.class))).thenReturn(CosteoDTO.builder().idCosteo(1L).build());
+
+        costeoService.aprobar(1L);
+
+        ArgumentCaptor<Costeo> captor = ArgumentCaptor.forClass(Costeo.class);
+        verify(repository).save(captor.capture());
+        assertThat(captor.getValue().getEstado())
+                .isEqualTo(backend.com.produccion.domain.enums.EstadoCosteo.APROBADO);
+        verify(crearVersionCosteoUseCase, never()).ejecutar(any(), any(), any());
+    }
+
+    @Test
+    @DisplayName("transición sobre costeo inexistente lanza EntityNotFoundException")
+    void transicion_costeoInexistente() {
+        when(repository.findById(99L)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> costeoService.aprobar(99L))
+                .isInstanceOf(backend.com.shared.exception.EntityNotFoundException.class);
     }
 }

@@ -14,6 +14,9 @@ import java.math.BigDecimal;
 public class CosteoDTO {
     private Long idCosteo;
     private String numeroCosteo;
+    /** Estado del ciclo de vida: BORRADOR | COSTEADO | APROBADO | RECHAZADO. */
+    private String estado;
+    private String motivoRechazo;
     private Long solicitudCostosId;
     private Long clienteId;
     private String clienteNombre;

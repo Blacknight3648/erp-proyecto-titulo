@@ -5,12 +5,14 @@ import backend.com.comercial.domain.repository.SolicitudCostosRepository;
 import backend.com.produccion.application.dto.CosteoDTO;
 import backend.com.produccion.application.dto.CosteoResumenEVNDTO;
 import backend.com.produccion.application.service.CosteoService;
+import backend.com.produccion.application.UseCase.CrearVersionCosteoUseCase;
 import backend.com.produccion.domain.model.Costeo;
 import backend.com.produccion.domain.model.CosteoItem;
 import backend.com.produccion.domain.repository.CosteoRepository;
 import backend.com.produccion.infrastructure.mapper.CosteoMapper;
 import backend.com.shared.application.service.NumeroDocumentoService;
 import backend.com.shared.domain.model.Articulo;
+import backend.com.shared.exception.EntityNotFoundException;
 import backend.com.shared.infrastructure.persistence.repository.ArticuloRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -28,6 +30,7 @@ public class CosteoServiceImpl implements CosteoService {
     private final ArticuloRepository articuloRepository;
     private final EvaluacionNegocioRepository evnRepository;
     private final NumeroDocumentoService numeroDocumentoService;
+    private final CrearVersionCosteoUseCase crearVersionCosteoUseCase;
 
     private void enrichWithScosInfo(Costeo domain) {
         if (domain != null && domain.getSolicitudCostosId() != null) {
@@ -106,6 +109,12 @@ public class CosteoServiceImpl implements CosteoService {
     }
 
     @Override
+    @Transactional(readOnly = true)
+    public Optional<CosteoDTO> findById(Long id) {
+        return repository.findById(id).map(this::toEnrichedDto);
+    }
+
+    @Override
     public Optional<CosteoDTO> findBySolicitudCostosId(Long scosId) {
         return repository.findBySolicitudCostosId(scosId)
                 .map(this::toEnrichedDto);
@@ -122,8 +131,10 @@ public class CosteoServiceImpl implements CosteoService {
     @Transactional(readOnly = true)
     public java.util.List<CosteoDTO> obtenerDisponiblesParaEVN() {
         java.util.Set<Long> vinculados = new java.util.HashSet<>(evnRepository.findLinkedCosteoIds());
+        // Solo costeos APROBADOS pueden vincularse a un ítem de EVN/NV.
         return repository.findAll().stream()
                 .filter(c -> c.getIdCosteo() != null && !vinculados.contains(c.getIdCosteo()))
+                .filter(c -> c.getEstado() == backend.com.produccion.domain.enums.EstadoCosteo.APROBADO)
                 .map(this::toEnrichedDto)
                 .collect(java.util.stream.Collectors.toList());
     }
@@ -170,5 +181,53 @@ public class CosteoServiceImpl implements CosteoService {
 
             return builder.build();
         });
+    }
+
+    // ----------------------------------------------------------------------
+    // Transiciones del ciclo de vida. La regla de transición vive en el dominio
+    // (Costeo + EstadoCosteo.puedeTransicionarA); aquí solo se orquesta carga,
+    // persistencia y, para el rechazo, el versionado del snapshot.
+    // ----------------------------------------------------------------------
+
+    @Override
+    @Transactional
+    public CosteoDTO costear(Long id) {
+        Costeo costeo = cargar(id);
+        costeo.marcarCosteado();
+        return toEnrichedDto(repository.save(costeo));
+    }
+
+    @Override
+    @Transactional
+    public CosteoDTO aprobar(Long id) {
+        Costeo costeo = cargar(id);
+        costeo.aprobar();
+        return toEnrichedDto(repository.save(costeo));
+    }
+
+    @Override
+    @Transactional
+    public CosteoDTO rechazar(Long id, String motivo) {
+        Costeo costeo = cargar(id);
+        // Snapshot del costeo tal como está antes de marcarlo rechazado.
+        crearVersionCosteoUseCase.ejecutar(id, "Rechazo: " + motivo, "SYSTEM");
+        costeo.rechazar(motivo);
+        return toEnrichedDto(repository.save(costeo));
+    }
+
+    @Override
+    @Transactional
+    public CosteoDTO reabrir(Long id) {
+        Costeo costeo = cargar(id);
+        costeo.reabrir();
+        return toEnrichedDto(repository.save(costeo));
+    }
+
+    private Costeo cargar(Long id) {
+        if (id == null) {
+            throw new IllegalArgumentException("El id del costeo es obligatorio");
+        }
+        return repository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Costeo no encontrado: " + id));
     }
 }

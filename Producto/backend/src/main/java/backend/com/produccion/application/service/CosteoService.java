@@ -8,9 +8,20 @@ import java.util.Optional;
 public interface CosteoService {
     CosteoDTO save(CosteoDTO costeoDTO);
     List<CosteoDTO> findAll();
+    Optional<CosteoDTO> findById(Long id);
     Optional<CosteoDTO> findBySolicitudCostosId(Long scosId);
     List<CosteoDTO> findAllBySolicitudCostosId(Long scosId);
     Optional<CosteoResumenEVNDTO> obtenerResumenEVN(Long idCosteo);
-    /** Costeos no vinculados a ningún ítem de EVN (disponibles para vincular). */
+    /** Costeos APROBADOS y no vinculados a ningún ítem de EVN (disponibles para vincular). */
     List<CosteoDTO> obtenerDisponiblesParaEVN();
+
+    // --- Transiciones del ciclo de vida ---
+    /** BORRADOR → COSTEADO (producción confirma los costos). */
+    CosteoDTO costear(Long id);
+    /** COSTEADO → APROBADO (habilita el vínculo con EVN/NV). */
+    CosteoDTO aprobar(Long id);
+    /** → RECHAZADO; exige motivo y versiona el costeo rechazado. */
+    CosteoDTO rechazar(Long id, String motivo);
+    /** RECHAZADO/COSTEADO → BORRADOR (reproceso). */
+    CosteoDTO reabrir(Long id);
 }

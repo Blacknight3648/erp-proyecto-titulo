@@ -32,6 +32,24 @@ public class GestionarCosteoUseCase {
         return costeoService.save(costeoDTO);
     }
 
+    // --- Transiciones del ciclo de vida del Costeo ---
+
+    public CosteoDTO costear(Long idCosteo) {
+        return costeoService.costear(idCosteo);
+    }
+
+    public CosteoDTO aprobar(Long idCosteo) {
+        return costeoService.aprobar(idCosteo);
+    }
+
+    public CosteoDTO rechazar(Long idCosteo, String motivo) {
+        return costeoService.rechazar(idCosteo, motivo);
+    }
+
+    public CosteoDTO reabrir(Long idCosteo) {
+        return costeoService.reabrir(idCosteo);
+    }
+
     public Optional<CosteoDTO> obtenerPorSCOS(Long scosId) {
         return costeoService.findBySolicitudCostosId(scosId);
     }

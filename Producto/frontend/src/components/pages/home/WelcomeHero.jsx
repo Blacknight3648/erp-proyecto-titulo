@@ -1,4 +1,4 @@
-import { ShieldCheck, UserCircle, Settings, Bell, Activity } from 'lucide-react';
+import { ShieldCheck, UserCircle, Activity } from 'lucide-react';
 
 export function WelcomeHero({ userName, role = "Administrador del Sistema" }) {
     const hour = new Date().getHours();
@@ -43,18 +43,7 @@ export function WelcomeHero({ userName, role = "Administrador del Sistema" }) {
                     </div>
                 </div>
 
-                {/* Derecha: Acciones */}
-                <div className="flex items-center gap-2 border-t border-slate-100 pt-4 md:border-none md:pt-0">
-                    <button className="group relative flex h-9 w-9 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-500 shadow-sm transition-all duration-200 hover:border-blue-200 hover:bg-blue-50 hover:text-blue-600 hover:shadow-md active:scale-95">
-                        <Bell className="h-4 w-4" />
-                        <span className="absolute -right-0.5 -top-0.5 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-red-500 text-[7px] font-bold text-white">
-                            2
-                        </span>
-                    </button>
-                    <button className="group flex h-9 w-9 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-500 shadow-sm transition-all duration-200 hover:border-slate-300 hover:bg-slate-50 hover:text-slate-700 hover:shadow-md active:scale-95">
-                        <Settings className="h-4 w-4 transition-transform duration-300 group-hover:rotate-45" />
-                    </button>
-                </div>
+
             </div>
         </div>
     );

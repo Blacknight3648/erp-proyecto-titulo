@@ -9,7 +9,7 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../../../contexts/AuthContext';
 import { WelcomeHero } from '../home/WelcomeHero';
-import { AdminDashboard } from '../home/AdminDashboard';
+import AdminDashboard from '../home/AdminDashboard';
 import { AdminFastReports } from '../home/AdminFastReports';
 import ModuleCard from '../home/ModuleCard';
 

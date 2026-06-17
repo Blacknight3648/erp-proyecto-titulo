@@ -3,6 +3,7 @@ package backend.com.comercial.application.UseCase;
 import backend.com.comercial.application.dto.CrearEVNCommand;
 import backend.com.comercial.application.dto.EVNResponse;
 import backend.com.comercial.application.dto.ItemEVNDTO;
+import backend.com.comercial.domain.enums.TipoItem;
 import backend.com.comercial.domain.model.EvaluacionNegocio;
 import backend.com.comercial.domain.model.GastoAdicional;
 import backend.com.comercial.domain.model.ItemEVN;
@@ -89,7 +90,7 @@ public class ActualizarEVNUseCase {
                 dto.getCostoProducto() != null ? dto.getCostoProducto() : BigDecimal.ZERO,
                 dto.getCostoLogo() != null ? dto.getCostoLogo() : BigDecimal.ZERO,
                 dto.getCostoOrdenTrabajo() != null ? dto.getCostoOrdenTrabajo() : BigDecimal.ZERO,
-                dto.getTipoItem() != null ? dto.getTipoItem() : "SC",
+                dto.getTipoItem() != null ? dto.getTipoItem() : TipoItem.SC,
                 dto.getTechnicalSpecs() != null ? dto.getTechnicalSpecs() : Collections.emptyList(),
                 dto.getCosteoId(),
                 dto.getSolicitudCostosId());

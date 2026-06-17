@@ -3,6 +3,7 @@ package backend.com.comercial.application.UseCase;
 import backend.com.comercial.application.dto.CrearNVCommand;
 import backend.com.comercial.application.dto.NVResponse;
 import backend.com.comercial.application.dto.ItemNVDTO;
+import backend.com.comercial.domain.enums.TipoItem;
 import backend.com.comercial.domain.model.ItemNV;
 import backend.com.comercial.domain.model.ItemNVTalla;
 import backend.com.comercial.domain.model.NotaVenta;
@@ -64,7 +65,7 @@ public class CrearNVUseCase {
                         null, // codigo (adding it as null for now if not in DTO)
                         dto.getProveedorId(),
                         dto.getLlevaLogo(),
-                        dto.getItemType() != null ? dto.getItemType() : "OP",
+                        dto.getItemType() != null ? dto.getItemType() : TipoItem.OP,
                         dto.getRequiereOt(),
                         dto.getDetalleOt(),
                         dto.getLogoDetalle(),
@@ -78,8 +79,15 @@ public class CrearNVUseCase {
 
         NotaVenta guardada = nvRepository.save(nv);
 
-        // Automaticaly generate OrdenProduccion
-        crearOPUseCase.execute(guardada);
+        // Crear OP y obtener el id asignado para vincularlo a los ítems de la NV
+        boolean tieneItemsOP = guardada.getItems() != null &&
+                guardada.getItems().stream().anyMatch(i -> TipoItem.OP == i.getTipoItem());
+
+        if (tieneItemsOP) {
+            backend.com.produccion.domain.model.OrdenProduccion op = crearOPUseCase.execute(guardada);
+            // Trazabilidad: registrar qué OP fue generada para cada ítem OP de esta NV
+            nvRepository.vincularOpAItems(guardada.getIdNV(), op.getIdOP());
+        }
 
         return NVResponse.fromDomain(guardada);
     }

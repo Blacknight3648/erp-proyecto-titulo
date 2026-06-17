@@ -1,5 +1,6 @@
 package backend.com.comercial.infrastructure.persistence.entity;
 
+import backend.com.comercial.domain.enums.TipoItem;
 import backend.com.shared.infrastructure.persistence.entity.ArticuloJpaEntity;
 import backend.com.gestionUsuarios.infrastructure.persistence.entity.ProveedorJpaEntity;
 import jakarta.persistence.*;
@@ -85,8 +86,9 @@ public class EvaluacionNegocioItemJpaEntity {
     private BigDecimal costoOrdenTrabajo;
 
     // === Clasificación ===
-    @Column(name = "tipo_item", length = 30)
-    private String tipoItem;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "tipo_item", length = 10)
+    private TipoItem tipoItem;
 
     @OneToMany(mappedBy = "evaluacionNegocioItem", cascade = CascadeType.ALL, orphanRemoval = true)
     private java.util.List<EvaluacionNegocioItemSpecJpaEntity> specs = new java.util.ArrayList<>();

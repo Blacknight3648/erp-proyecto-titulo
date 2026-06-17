@@ -13,4 +13,7 @@ public interface CosteoRepository {
     java.util.List<Costeo> findAllBySolicitudCostosId(Long solicitudCostosId);
 
     Optional<Costeo> findById(Long id);
+
+    /** Busca el Costeo auto-creado para una NV específica. Garantiza idempotencia en la creación. */
+    Optional<Costeo> findByNotaVentaId(Long notaVentaId);
 }

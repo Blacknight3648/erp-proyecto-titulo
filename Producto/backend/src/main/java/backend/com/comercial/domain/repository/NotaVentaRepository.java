@@ -12,4 +12,7 @@ public interface NotaVentaRepository {
     Optional<NotaVenta> findByNumero(Long numero);
 
     java.util.List<NotaVenta> findAll();
+
+    /** Asigna el id de la OP a todos los ítems tipo OP de una NV. Operación atómica. */
+    void vincularOpAItems(Long notaVentaId, Long opId);
 }

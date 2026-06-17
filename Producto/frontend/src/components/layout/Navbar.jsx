@@ -55,26 +55,11 @@ export default function Navbar({ isSidebarOpen = true, setIsSidebarOpen }) {
                         <Box className="w-4 h-4 text-muted-foreground" />
                         <span className="hidden xl:inline">Gestión de Datos Maestros</span>
                     </button>
-                    <button
-                        className="flex items-center gap-2 text-sm font-semibold text-foreground/80 hover:text-primary bg-surface-2 hover:bg-primary/10 border border-border hover:border-primary/20 px-3 py-2 xl:px-4 xl:py-2 rounded-xl transition-all shadow-sm hover:shadow"
-                        title="Versiones del Sistema"
-                    >
-                        <History className="w-4 h-4 text-muted-foreground" />
-                        <span className="hidden xl:inline">Versiones del Sistema</span>
-                    </button>
                 </nav>
             </div>
 
             {/* Derecha — Usuario y notificaciones */}
             <div className="flex items-center gap-5">
-
-                <div className="hidden xl:flex items-center gap-2 bg-success-bg border border-success/20 px-3 py-1.5 rounded-lg mr-2">
-                    <span className="relative flex h-2.5 w-2.5">
-                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-success opacity-75" />
-                        <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-success" />
-                    </span>
-                    <span className="text-[11px] font-bold text-success uppercase tracking-wider">ERP Operativo</span>
-                </div>
 
                 <button
                     className="hidden sm:flex items-center gap-2 px-3 py-2 text-foreground/80 hover:text-primary hover:bg-primary/10 rounded-xl transition-all border border-transparent hover:border-primary/10 group"
@@ -113,8 +98,7 @@ export default function Navbar({ isSidebarOpen = true, setIsSidebarOpen }) {
                             <User className="w-5 h-5" strokeWidth={2} />
                         </div>
                         <div className="hidden lg:block text-left">
-                            <p className="text-sm font-bold text-foreground leading-tight">{user?.name || 'Administrador'}</p>
-                            <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mt-0.5">{user?.role || 'Admin'}</p>
+                            <p className="text-sm font-bold text-foreground leading-tight">{'Ajustes de Perfil'}</p>
                         </div>
                         <ChevronDown className="w-4 h-4 text-muted-foreground ml-0.5 group-hover:text-foreground transition-colors" />
                     </div>

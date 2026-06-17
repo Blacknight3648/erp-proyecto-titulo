@@ -2,6 +2,7 @@ package backend.com.produccion.service;
 
 import backend.com.comercial.domain.enums.EstadoEVN;
 import backend.com.comercial.domain.enums.EstadoNV;
+import backend.com.comercial.domain.enums.TipoItem;
 import backend.com.comercial.domain.model.EvaluacionNegocio;
 import backend.com.comercial.domain.model.ItemEVN;
 import backend.com.comercial.domain.model.ItemNV;
@@ -91,13 +92,13 @@ class CrearOrdenProduccionUseCaseTest {
 
     private ItemNV itemOP(int nroItem, Integer cantidad, String llevaLogo, String logoDetalle) {
         return new ItemNV((long) (100 + nroItem), nroItem, 1, "Polera Basica", "Algodón", "100% Algodón",
-                "Azul", "M", "Unisex", "COD-" + nroItem, 5L, llevaLogo, "OP", true, "Detalle OT",
+                "Azul", "M", "Unisex", "COD-" + nroItem, 5L, llevaLogo, TipoItem.OP, true, "Detalle OT",
                 logoDetalle, cantidad, new Money(new BigDecimal("5000"), "CLP"), List.of());
     }
 
     private ItemNV itemNoOP(int nroItem) {
         return new ItemNV((long) (200 + nroItem), nroItem, 2, "Tela Insumo", null, null, null, null, null,
-                "COD-X" + nroItem, null, "N/A", "INSUMO", false, null, null, 10,
+                "COD-X" + nroItem, null, "N/A", TipoItem.SC, false, null, null, 10,
                 new Money(new BigDecimal("1000"), "CLP"), List.of());
     }
 
@@ -105,14 +106,14 @@ class CrearOrdenProduccionUseCaseTest {
         return new ItemEVN(1, 5L, nroItem, "Polera", "Polera Basica", "Algodón", "100% Algodón", "Unisex",
                 "COD-INT", "COD-PROV", "Proveedor", 50, new Money(new BigDecimal("5000"), "CLP"),
                 new Money(new BigDecimal("3000"), "CLP"), BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO,
-                "OP", List.of(), costeoId, 30L);
+                TipoItem.OP, List.of(), costeoId, 30L);
     }
 
     private ItemEVN itemEvnSinCosteo(Integer nroItem) {
         return new ItemEVN(1, 5L, nroItem, "Polera", "Polera Basica", "Algodón", "100% Algodón", "Unisex",
                 "COD-INT", "COD-PROV", "Proveedor", 50, new Money(new BigDecimal("5000"), "CLP"),
                 new Money(new BigDecimal("3000"), "CLP"), BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO,
-                "OP", List.of(), null, 30L);
+                TipoItem.OP, List.of(), null, 30L);
     }
 
     private EvaluacionNegocio evn(Long evnId, List<ItemEVN> items) {

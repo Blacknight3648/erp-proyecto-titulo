@@ -16,6 +16,8 @@ public class Costeo {
     private Long idCosteo;
     private DocumentNumber numeroCosteo;
     private Long solicitudCostosId;
+    /** Referencia suave a la NV que originó este Costeo (solo para costeos auto-creados). */
+    private Long notaVentaId;
     private Long clienteId;
     private String clienteNombre;
     private Long vendedorId;
@@ -42,6 +44,34 @@ public class Costeo {
     private BigDecimal margenBrutoSugerido;
     private Money precioVentaSugerido;
     private java.util.List<CosteoItem> items = new java.util.ArrayList<>();
+
+    /**
+     * Crea un Costeo con todos los valores en cero, listo para ser completado por el equipo
+     * de producción. Se usa cuando una NV contiene ítems OP sin Costeo pre-vinculado en la EVN.
+     */
+    public static Costeo crearVacio(DocumentNumber numero, Long notaVentaId) {
+        Costeo c = new Costeo();
+        c.numeroCosteo = numero;
+        c.notaVentaId = notaVentaId;
+        c.solicitudCostosId = null;
+        c.costoHilos = new Money(java.math.BigDecimal.ZERO, "CLP");
+        c.costoManoObra = new Money(java.math.BigDecimal.ZERO, "CLP");
+        c.costoEtiquetas = new Money(java.math.BigDecimal.ZERO, "CLP");
+        c.costoEmbalaje = new Money(java.math.BigDecimal.ZERO, "CLP");
+        c.costoFlete = new Money(java.math.BigDecimal.ZERO, "CLP");
+        c.porcentajeCostoFijo = java.math.BigDecimal.ZERO;
+        c.precioCinta1 = new Money(java.math.BigDecimal.ZERO, "CLP");
+        c.cantidadCinta1 = java.math.BigDecimal.ZERO;
+        c.precioCinta2 = new Money(java.math.BigDecimal.ZERO, "CLP");
+        c.cantidadCinta2 = java.math.BigDecimal.ZERO;
+        c.vivoReflectivo = new Money(java.math.BigDecimal.ZERO, "CLP");
+        c.cantidadVivo = java.math.BigDecimal.ZERO;
+        c.costoTotalMateriaPrima = new Money(java.math.BigDecimal.ZERO, "CLP");
+        c.margenBrutoSugerido = java.math.BigDecimal.ZERO;
+        c.precioVentaSugerido = new Money(java.math.BigDecimal.ZERO, "CLP");
+        c.items = new java.util.ArrayList<>();
+        return c;
+    }
 
     public Costeo(Long id, DocumentNumber numero, Long solicitudCostosId, 
             Long clienteId, String clienteNombre, Long vendedorId, String vendedorNombre,

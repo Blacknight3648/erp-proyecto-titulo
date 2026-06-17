@@ -1,5 +1,6 @@
 package backend.com.comercial.application.UseCase;
 
+import backend.com.comercial.domain.enums.TipoItem;
 import backend.com.comercial.domain.model.NotaVenta;
 import backend.com.comercial.domain.repository.EvaluacionNegocioRepository;
 import backend.com.comercial.domain.repository.NotaVentaRepository;
@@ -41,7 +42,7 @@ public class ConsultarTrazabilidadUseCase {
 
                 // Buscar Costeos vinculados a los ítems tipo OP de la EVN
                 evn.getItems().stream()
-                        .filter(i -> "OP".equalsIgnoreCase(i.getTipoItem()) && i.getCosteoId() != null)
+                        .filter(i -> TipoItem.OP == i.getTipoItem() && i.getCosteoId() != null)
                         .map(backend.com.comercial.domain.model.ItemEVN::getCosteoId)
                         .distinct()
                         .forEach(costeoId -> {

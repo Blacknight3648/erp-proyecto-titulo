@@ -2,6 +2,7 @@ package backend.com.integration;
 
 import backend.com.comercial.application.dto.CrearNVCommand;
 import backend.com.comercial.application.dto.ItemNVDTO;
+import backend.com.comercial.domain.enums.TipoItem;
 import backend.com.shared.application.dto.FirmaAprobacionRequest;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.junit.jupiter.api.DisplayName;
@@ -48,7 +49,7 @@ class NotaVentaFlujoTest extends AbstractIntegrationTest {
 
         ItemNVDTO item = new ItemNVDTO();
         item.setModelo("Polera Pique");
-        item.setItemType("VD"); // prenda lista (no genera fases de producción)
+        item.setItemType(TipoItem.SC); // prenda lista (no genera fases de producción)
         item.setCantidad(10);
         item.setPrecioUnitario(new java.math.BigDecimal("5990"));
         item.setLlevaLogo("N/A");

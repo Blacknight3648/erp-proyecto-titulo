@@ -62,6 +62,12 @@ public class CosteoRepositoryImpl implements CosteoRepository {
     }
 
     @Override
+    public Optional<Costeo> findByNotaVentaId(Long notaVentaId) {
+        if (notaVentaId == null) return Optional.empty();
+        return jpaRepository.findByNotaVentaId(notaVentaId).map(mapper::toDomain);
+    }
+
+    @Override
     public Optional<Costeo> findById(Long id) {
         if (id == null)
             return Optional.empty();

@@ -21,7 +21,7 @@ public class OrdenProduccionJpaEntity extends AuditableJpaEntity {
     private Long idOP;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "costeo_version_id", foreignKey = @ForeignKey(name = "fk_op_costeo_version"))
+    @JoinColumn(name = "costeo_version_id", nullable = false, foreignKey = @ForeignKey(name = "fk_op_costeo_version"))
     private CosteoVersionJpaEntity costeoVersion;
 
     @Column(unique = true, length = 20, nullable = false)

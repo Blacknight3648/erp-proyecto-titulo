@@ -16,8 +16,12 @@ public class CosteoJpaEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idCosteo;
 
-    @Column(name = "solicitud_costos_id", nullable = false)
+    @Column(name = "solicitud_costos_id")
     private Long solicitudCostosId;
+
+    /** Referencia suave a la NV (solo para costeos auto-creados sin solicitud de costos). */
+    @Column(name = "nota_venta_id", unique = true)
+    private Long notaVentaId;
 
     @OneToMany(mappedBy = "costeo", cascade = CascadeType.ALL, orphanRemoval = true)
     private java.util.List<CosteoItemJpaEntity> items = new java.util.ArrayList<>();

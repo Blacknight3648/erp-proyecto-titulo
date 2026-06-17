@@ -1,5 +1,6 @@
 package backend.com.comercial.application.dto;
 
+import backend.com.comercial.domain.enums.TipoItem;
 import lombok.Data;
 import java.math.BigDecimal;
 import java.util.List;
@@ -19,7 +20,7 @@ public class ItemNVDTO {
     private Long proveedorId;
     private String llevaLogo;
     private String logoDetalle;
-    private String itemType; // OP, SC, o SCI
+    private TipoItem itemType;
     private Boolean requiereOt;
     private String detalleOt;
     private List<TallaDTO> tallas;

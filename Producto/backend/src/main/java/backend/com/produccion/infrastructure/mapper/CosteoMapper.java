@@ -25,7 +25,7 @@ public class CosteoMapper {
         if (entity == null)
             return null;
 
-        return new Costeo(
+        Costeo c = new Costeo(
                 entity.getIdCosteo(),
                 entity.getNumeroCosteo() != null ? new DocumentNumber(entity.getNumeroCosteo()) : null,
                 entity.getSolicitudCostosId(),
@@ -49,6 +49,8 @@ public class CosteoMapper {
                 entity.getMargenBrutoSugerido() != null ? entity.getMargenBrutoSugerido() : BigDecimal.ZERO,
                 new Money(entity.getPrecioVentaSugerido() != null ? entity.getPrecioVentaSugerido() : BigDecimal.ZERO, "CLP"),
                 entity.getItems() != null ? entity.getItems().stream().map(this::mapItemToDomain).collect(Collectors.toList()) : new ArrayList<>());
+        c.setNotaVentaId(entity.getNotaVentaId());
+        return c;
     }
 
     public CosteoJpaEntity toJpaEntity(Costeo domain) {
@@ -59,6 +61,7 @@ public class CosteoMapper {
         entity.setIdCosteo(domain.getIdCosteo());
         entity.setNumeroCosteo(domain.getNumeroCosteo() != null ? domain.getNumeroCosteo().getValue() : null);
         entity.setSolicitudCostosId(domain.getSolicitudCostosId());
+        entity.setNotaVentaId(domain.getNotaVentaId());
         entity.setCostoHilos(domain.getCostoHilos().getAmount());
         entity.setCostoManoObra(domain.getCostoManoObra().getAmount());
         entity.setCostoEtiquetas(domain.getCostoEtiquetas().getAmount());

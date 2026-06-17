@@ -35,9 +35,9 @@ const QUICK_LINKS = [
 
 export function AdminFastReports({ onNavigate }) {
     return (
-        <div className="flex flex-col gap-3">
-            <div className="mb-1">
-                <h3 className="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-400">
+        <div className="flex flex-col gap-2 w-full">
+            <div className="mb-1 pl-1">
+                <h3 className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/80">
                     Acceso Rápido
                 </h3>
             </div>
@@ -53,77 +53,76 @@ export function AdminFastReports({ onNavigate }) {
                             group
                             flex
                             items-center
-                            gap-4
-                            rounded-2xl
+                            gap-3.5
+                            rounded-xl
                             border
-                            border-slate-200/70
-                            bg-white/80
+                            border-border/60
+                            bg-surface-1
                             px-4
-                            py-3.5
+                            py-3
                             text-left
-                            backdrop-blur-md
-                            shadow-sm
                             transition-all
-                            duration-300
-                            hover:-translate-y-0.5
-                            hover:border-[#6610f2]/20
-                            hover:bg-white
-                            hover:shadow-lg
-                            hover:shadow-slate-200/50
+                            duration-200
+                            hover:border-primary/30
+                            hover:bg-surface-2/40
                         "
                     >
-                        {/* Ícono */}
+                        {/* Contenedor del Ícono */}
                         <div
                             className="
                                 flex
-                                h-10
-                                w-10
+                                h-9
+                                w-9
                                 shrink-0
                                 items-center
                                 justify-center
-                                rounded-xl
-                                bg-slate-100
+                                rounded-lg
+                                bg-surface-2
+                                border
+                                border-border/40
                                 transition-all
-                                duration-300
-                                group-hover:bg-[#6610f2]/10
+                                duration-200
+                                group-hover:bg-primary/10
+                                group-hover:border-primary/20
                             "
                         >
                             <Icon
                                 className="
-                                    h-5
-                                    w-5
-                                    text-slate-600
+                                    h-4
+                                    w-4
+                                    text-muted-foreground
                                     transition-colors
-                                    duration-300
-                                    group-hover:text-[#6610f2]
+                                    duration-200
+                                    group-hover:text-primary
                                 "
-                                strokeWidth={1.75}
+                                strokeWidth={2}
                             />
                         </div>
 
-                        {/* Texto */}
+                        {/* Textos Informativos */}
                         <div className="min-w-0 flex-1">
-                            <p className="text-sm font-semibold text-slate-800">
+                            <p className="text-xs font-semibold text-foreground/90 tracking-tight transition-colors group-hover:text-primary">
                                 {link.label}
                             </p>
 
-                            <p className="mt-0.5 text-xs text-slate-500">
+                            <p className="mt-0.5 text-[11px] text-muted-foreground/80 truncate">
                                 {link.description}
                             </p>
                         </div>
 
-                        {/* Flecha */}
+                        {/* Flecha Indicadora de Acción */}
                         <ChevronRight
                             className="
                                 h-4
                                 w-4
                                 shrink-0
-                                text-slate-400
+                                text-muted-foreground/50
                                 transition-all
-                                duration-300
-                                group-hover:translate-x-1
-                                group-hover:text-[#6610f2]
+                                duration-200
+                                group-hover:translate-x-0.5
+                                group-hover:text-primary
                             "
+                            strokeWidth={2}
                         />
                     </button>
                 );

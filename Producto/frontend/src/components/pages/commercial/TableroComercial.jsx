@@ -58,7 +58,7 @@ export default function TableroComercial() {
 
         const nvMapped = notasVenta.map(nv => ({
             ...nv,
-            idSolicitud: nv.numeroNV ? `NV-${nv.numeroNV}` : `NV-${nv.id}`,
+            idSolicitud: nv.numeroNV ? nv.numeroNV : `NV-${nv.id}`,
             clienteNombre: nv.clienteNombre || 'S/N',
             estado: 'Evaluado' // Las NVs ya están evaluadas/adjudicadas
         }));

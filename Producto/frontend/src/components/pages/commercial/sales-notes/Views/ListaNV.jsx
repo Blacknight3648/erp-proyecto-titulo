@@ -70,7 +70,7 @@ export default function ListaNV({
                         >
                             <div className="flex justify-between items-start mb-4">
                                 <div>
-                                    <span className="text-[10px] font-black text-gray-300 uppercase tracking-widest">NV-{record.numeroNV}</span>
+                                    <span className="text-[10px] font-black text-gray-300 uppercase tracking-widest">{record.numeroNV || `NV-${record.idNV || record.id}`}</span>
                                     <h3 className="text-md font-black text-gray-800 group-hover:text-blue-600 uppercase mt-1">{record.clienteNombre}</h3>
                                 </div>
                                 <span className="px-3 py-1 bg-green-100 text-green-600 rounded-full text-[9px] font-black uppercase">Emitida</span>

@@ -274,8 +274,8 @@ MERGE INTO modelo_plantilla (id_modelo_plantilla, id_articulo, id_plantilla)
 MERGE INTO solicitudes_costos (idscos, numero, estado, tipo, cliente_id, vendedor_id, articulo_descripcion, nombre_prenda, genero, tallaje, es_muestra, has_logo, cantidad, fecha, costo_total)
     KEY (idscos)
     VALUES
-    (1, 'SCOS-2024-001', 'PENDIENTE', 'SCOS', 1, 1, 'POLERA', 'Polera Piqué Corporativa', 'UNISEX', 'Antuan SA', false, true,  100, CURRENT_DATE, 150000.00),
-    (2, 'SCOS-2024-002', 'APROBADA',  'SCOS', 2, 2, 'PANTALON', 'Pantalón Cargo Operario', 'MASCULINO', 'Cliente', false, false, 50, CURRENT_DATE, 250000.00);
+    (1, 'SCOS-000001', 'PENDIENTE', 'SCOS', 1, 1, 'POLERA', 'Polera Piqué Corporativa', 'UNISEX', 'Antuan SA', false, true,  100, CURRENT_DATE, 150000.00),
+    (2, 'SCOS-000002', 'APROBADA',  'SCOS', 2, 2, 'PANTALON', 'Pantalón Cargo Operario', 'MASCULINO', 'Cliente', false, false, 50, CURRENT_DATE, 250000.00);
 
 -- ============================================================
 -- 7.5. EVALUACIONES DE NEGOCIO (EVN)
@@ -283,8 +283,8 @@ MERGE INTO solicitudes_costos (idscos, numero, estado, tipo, cliente_id, vendedo
 MERGE INTO evaluaciones_negocio (idevn, numero, referencia, cliente_nombre, cliente_id, vendedor_id, estado, fecha_evaluacion, porcentaje_comision, created_at, updated_at)
     KEY (idevn)
     VALUES
-    (1, 'EVN-2024-001', 'Cotización Poleras Hites', 'HITES S.A.', 1, 1, 'EVALUACION', CURRENT_DATE, 5.00, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-    (2, 'EVN-2024-002', 'Licitación Pantalones', 'LABORATORIO MEDCELL', 2, 2, 'APROBADA', CURRENT_DATE, 3.50, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+    (1, 'EVN-000001', 'Cotización Poleras Hites', 'HITES S.A.', 1, 1, 'EVALUACION', CURRENT_DATE, 5.00, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+    (2, 'EVN-000002', 'Licitación Pantalones', 'LABORATORIO MEDCELL', 2, 2, 'APROBADA', CURRENT_DATE, 3.50, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
 -- ============================================================
 -- 7.6. NOTAS DE VENTA (NV)
@@ -292,8 +292,8 @@ MERGE INTO evaluaciones_negocio (idevn, numero, referencia, cliente_nombre, clie
 MERGE INTO notas_venta (idnv, numeronv, evaluacion_negocio_id, cliente_id, vendedor_id, estado, es_kit, fecha_emision, fecha_entrega_estimada, monto_subtotal, moneda_subtotal, monto_iva, moneda_iva, monto_total, moneda_total, created_at, updated_at)
     KEY (idnv)
     VALUES
-    (1, 'NV-2024-001', 2, 2, 2, 'BORRADOR', false, CURRENT_DATE, DATEADD('DAY', 30, CURRENT_DATE), 300000.00, 'CLP', 57000.00, 'CLP', 357000.00, 'CLP', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-    (2, 'NV-2024-002', 1, 1, 1, 'EN_PRODUCCION', false, CURRENT_DATE, DATEADD('DAY', 45, CURRENT_DATE), 850000.00, 'CLP', 161500.00, 'CLP', 1011500.00, 'CLP', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+    (1, 'NV-00001', 2, 2, 2, 'BORRADOR', false, CURRENT_DATE, DATEADD('DAY', 30, CURRENT_DATE), 300000.00, 'CLP', 57000.00, 'CLP', 357000.00, 'CLP', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+    (2, 'NV-00002', 1, 1, 1, 'EN_PRODUCCION', false, CURRENT_DATE, DATEADD('DAY', 45, CURRENT_DATE), 850000.00, 'CLP', 161500.00, 'CLP', 1011500.00, 'CLP', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
 -- ============================================================
 -- 7.7. PLANIFICACIÓN DE PRODUCCIÓN Y HOJAS DE COMPRA
@@ -301,7 +301,7 @@ MERGE INTO notas_venta (idnv, numeronv, evaluacion_negocio_id, cliente_id, vende
 MERGE INTO produccion_costeos (id_costeo, solicitud_costos_id, numero_costeo)
     KEY (id_costeo)
     VALUES
-    (1, 2, 'COST-2024-001');
+    (1, 2, 'COST-000001');
 
 MERGE INTO produccion_costeo_versiones (id_costeo_version, costeo_id, numero_version, fecha_creacion, usuario_creador)
     KEY (id_costeo_version)
@@ -311,7 +311,7 @@ MERGE INTO produccion_costeo_versiones (id_costeo_version, costeo_id, numero_ver
 MERGE INTO orden_produccion (idop, costeo_version_id, numeroop, nota_venta_id, estado, fecha_inicio, fecha_entrega_programada, observaciones, created_at, updated_at)
     KEY (idop)
     VALUES
-    (1, 1, 'OP-2024-001', 2, 'EN_PROCESO', CURRENT_DATE, DATEADD('DAY', 30, CURRENT_DATE), 'Producción Pantalón Cargo Operario - Laboratorio Medcell', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+    (1, 1, 'OP- 00001', 2, 'EN_PROCESO', CURRENT_DATE, DATEADD('DAY', 30, CURRENT_DATE), 'Producción Pantalón Cargo Operario - Laboratorio Medcell', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
 MERGE INTO produccion_orden_items (idopitem, orden_produccion_id, articulo_id, nro_item, modelo, tela, color, talla, genero, codigo, lleva_logo, cantidad)
     KEY (idopitem)
@@ -322,7 +322,7 @@ MERGE INTO produccion_orden_items (idopitem, orden_produccion_id, articulo_id, n
 MERGE INTO produccion_hojas_compra (id_hc, numero_hc, op_id, costeo_version_id, estado, fecha_generacion, observaciones)
     KEY (id_hc)
     VALUES
-    (1, 'HC-2024-001', 1, 1, 'APROBADA', CURRENT_DATE, 'HC generada para OP-2024-001');
+    (1, 'HC-000001', 1, 1, 'APROBADA', CURRENT_DATE, 'HC generada para OP-000001');
 
 MERGE INTO produccion_hoja_compra_items (id_hc_item, hc_id, tipo_insumo, articulo_id, proveedor_id, nombre_insumo, consumo_unitario, cantidad_op, cantidad_requerida, precio_unitario_ref)
     KEY (id_hc_item)

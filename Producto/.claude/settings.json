@@ -1,9 +1,0 @@
-{
-  "permissions": {
-    "allow": [
-      "Bash(./mvnw -q -o test -Dtest=\"backend.com.shared.service.*\" -DfailIfNoTests=false)",
-      "Bash(./mvnw -q -o test-compile)",
-      "Bash(./mvnw -q -o test -Dtest=\"ArticuloServiceImplTest,AtributoTecnicoServiceImplTest,ComposicionServiceImplTest,CategoriaTelaServiceImplTest,SubCategoriaTelaServiceImplTest,ColorTelaServiceImplTest,GramajeTelaServiceImplTest,PrecioServiceImplTest,PermisoServiceImplTest,DatoBancarioServiceImplTest,DireccionServiceImplTest\" -DfailIfNoTests=false)"
-    ]
-  }
-}

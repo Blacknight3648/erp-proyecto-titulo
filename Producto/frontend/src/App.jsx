@@ -1,11 +1,13 @@
 import { useState } from "react";
-import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from "react-router-dom";
 
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
 import { NotificationProvider } from "./contexts/NotificationContext";
 
 import Sidebar from "./components/layout/Sidebar";
 import Navbar from "./components/layout/Navbar";
+import ModuleTabBar, { getActiveModule } from "./components/layout/ModuleTabBar";
+import ModuleLandingPage from "./components/layout/ModuleLandingPage";
 
 /* AUTH */
 import Login from "./components/pages/auth/Login";
@@ -73,6 +75,8 @@ function PrivateRoute({ children }) {
 function MainLayout({ children }) {
 
   const [isSidebarOpen, setIsSidebarOpen] = useState(() => window.innerWidth >= 768);
+  const location   = useLocation();
+  const hasModule  = !!getActiveModule(location.pathname);
 
   return (
     <div className="flex min-h-screen">
@@ -83,13 +87,21 @@ function MainLayout({ children }) {
       />
 
       <div
-        className={`flex-1 transition-all duration-300 ${isSidebarOpen ? "md:ml-64" : "md:ml-20"
-          } ml-0 flex flex-col min-h-screen overflow-hidden`}
+        className={`flex-1 transition-all duration-300 ${
+          isSidebarOpen ? "md:ml-64" : "md:ml-20"
+        } ml-0 flex flex-col min-h-screen overflow-hidden`}
       >
 
         <Navbar isSidebarOpen={isSidebarOpen} setIsSidebarOpen={setIsSidebarOpen} />
 
-        <main className="mt-20 p-4 sm:p-6 lg:p-8 flex-1 animate-in fade-in duration-500 overflow-auto">
+        {/* Tab bar superior contextual por módulo */}
+        <ModuleTabBar isSidebarOpen={isSidebarOpen} />
+
+        <main
+          className={`${
+            hasModule ? 'mt-[120px]' : 'mt-[76px]'
+          } p-4 sm:p-6 lg:p-8 flex-1 animate-in fade-in duration-500 overflow-auto`}
+        >
           {children}
         </main>
 
@@ -268,6 +280,24 @@ function App() {
               element={<PrivateRoute><MainLayout><GestionPermisosRol /></MainLayout></PrivateRoute>}
             />
 
+
+            {/* MÓDULO LANDING PAGES */}
+            <Route
+              path="/comercial"
+              element={<PrivateRoute><MainLayout><ModuleLandingPage moduleId="comercial" /></MainLayout></PrivateRoute>}
+            />
+            <Route
+              path="/produccion"
+              element={<PrivateRoute><MainLayout><ModuleLandingPage moduleId="produccion" /></MainLayout></PrivateRoute>}
+            />
+            <Route
+              path="/gestion-usuarios"
+              element={<PrivateRoute><MainLayout><ModuleLandingPage moduleId="gestion-usuarios" /></MainLayout></PrivateRoute>}
+            />
+            <Route
+              path="/trazabilidad"
+              element={<PrivateRoute><MainLayout><ModuleLandingPage moduleId="trazabilidad" /></MainLayout></PrivateRoute>}
+            />
 
             {/* DEFAULT */}
             <Route path="*" element={<Navigate to="/" />} />

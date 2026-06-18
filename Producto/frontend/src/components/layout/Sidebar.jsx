@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { NavLink, useLocation } from 'react-router-dom';
+import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import {
   ShoppingCart, Factory, Package, Users, Activity,
   ChevronLeft, ChevronRight, BarChart3, Wallet, Shield,
@@ -35,6 +35,7 @@ const menuItems = [
   { path: '/', label: 'Dashboard General', icon: BarChart3 },
   {
     id: 'comercial', label: 'Área Comercial', icon: Wallet,
+    homeRoute: '/comercial',
     submenu: [
       { path: '/comercial/tablero',            label: 'Tablero Comercial',       icon: LayoutDashboard },
       { path: '/comercial/solicitudes-costos',        label: 'Solicitudes de Costos',      icon: DollarSign },
@@ -60,6 +61,7 @@ const menuItems = [
   },
   {
     id: 'produccion', label: 'Producción', icon: Factory,
+    homeRoute: '/produccion',
     submenu: [
       { path: '/dashboard-op',           label: 'Producción',         icon: FactoryIcon },
       { path: '/produccion/tablero-op',  label: 'Seguimiento de OP', icon: LayoutDashboard },
@@ -74,6 +76,7 @@ const menuItems = [
   { path: '/contabilidad', label: 'Finanzas y Contabilidad', icon: Wallet,  disabled: true },
   {
     id: 'usuarios', label: 'Gestión de Usuarios', icon: Users,
+    homeRoute: '/gestion-usuarios',
     submenu: [
       { path: '/gestion-usuarios/colaboradores', label: 'Colaboradores',     icon: Users },
       { path: '/admin/areas',                    label: 'Áreas y departamentos',  icon: Briefcase },
@@ -85,6 +88,7 @@ const menuItems = [
   },
   {
     id: 'trazabilidad', label: 'Trazabilidad Crítica', icon: Activity,
+    homeRoute: '/trazabilidad',
     submenu: [
       { path: '/trazabilidad/completa',  label: 'Trazabilidad de Lote',  icon: Activity },
       { path: '/trazabilidad/global',    label: 'Despachos y Logística', icon: Truck },
@@ -96,6 +100,7 @@ const menuItems = [
 
 export default function Sidebar({ isOpen, setIsOpen }) {
   const location = useLocation();
+  const navigate  = useNavigate();
   const [openSubmenu, setOpenSubmenu]   = useState(null);
   const [hoveredItem, setHoveredItem]   = useState(null);
   const [hoveredSub,  setHoveredSub]    = useState(null);
@@ -249,6 +254,7 @@ export default function Sidebar({ isOpen, setIsOpen }) {
               const isSubmenuOpen = openSubmenu === item.id;
               const isActive =
                 location.pathname === item.path ||
+                (item.homeRoute && location.pathname === item.homeRoute) ||
                 (hasSubmenu && item.submenu.some((s) => location.pathname === s.path));
 
               const itemStyle = {
@@ -280,12 +286,11 @@ export default function Sidebar({ isOpen, setIsOpen }) {
                       style={{ ...itemStyle, textAlign: 'left' }}
                       onClick={() => {
                         if (item.disabled) return;
-                        if (!isOpen) { 
-                          setIsOpen(true); 
-                          setOpenSubmenu(item.id); 
-                        } else {
-                          toggleSubmenu(item.id);
-                        }
+                        // Navegar al landing del módulo
+                        if (item.homeRoute) navigate(item.homeRoute);
+                        // Asegurar que el sidebar esté abierto y el submenú visible
+                        if (!isOpen) setIsOpen(true);
+                        setOpenSubmenu(item.id);
                       }}
                     >
                       <Icon style={{ width: '18px', height: '18px', flexShrink: 0, color: iconColor }} />

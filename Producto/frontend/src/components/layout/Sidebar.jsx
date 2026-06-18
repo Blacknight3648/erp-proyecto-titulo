@@ -59,7 +59,7 @@ const menuItems = [
     ],
   },
   {
-    id: 'produccion', label: 'Producción e Hilados', icon: Factory,
+    id: 'produccion', label: 'Producción', icon: Factory,
     submenu: [
       { path: '/dashboard-op',           label: 'Producción',         icon: FactoryIcon },
       { path: '/produccion/tablero-op',  label: 'Seguimiento de OP', icon: LayoutDashboard },

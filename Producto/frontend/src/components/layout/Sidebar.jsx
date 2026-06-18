@@ -170,13 +170,12 @@ export default function Sidebar({ isOpen, setIsOpen }) {
         borderRight: `1px solid ${C.border}`,
         transition: 'width 250ms cubic-bezier(0.4, 0, 0.2, 1)',
         width: isOpen ? '260px' : '72px',
-        overflowX: 'hidden',
       }}>
 
         {/* ── Cabecera ── */}
         <div style={{
           padding: '0 16px',
-          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+          display: 'flex', alignItems: 'center', justifyBox: 'space-between', justifyContent: 'space-between',
           height: '72px', flexShrink: 0,
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px', overflow: 'hidden' }}>
@@ -185,8 +184,7 @@ export default function Sidebar({ isOpen, setIsOpen }) {
               backgroundColor: C.bgPanel,
               border: `1px solid ${C.border}`,
               borderRadius: '8px',
-              display: 'flex', alignItems: 'center', justifyCenter: 'center',
-              justifyContent: 'center'
+              display: 'flex', alignItems: 'center', justifyContent: 'center'
             }}>
               <span style={{ fontWeight: 700, color: C.textPrimary, fontSize: '13px' }}>A</span>
             </div>
@@ -223,7 +221,7 @@ export default function Sidebar({ isOpen, setIsOpen }) {
         </div>
 
         {/* ── Navegación ── */}
-        <nav id="sb-nav" style={{ flex: 1, overflowY: 'auto', overflowX: 'hidden', padding: '12px 8px' }}>
+        <nav id="sb-nav" style={{ flex: 1, overflowY: 'visible', overflowX: 'visible', padding: '12px 8px' }}>
 
           {!isOpen && (
             <button
@@ -273,8 +271,8 @@ export default function Sidebar({ isOpen, setIsOpen }) {
                 <div
                   key={item.id || item.path}
                   style={{ position: 'relative' }}
-                  onMouseEnter={() => !isOpen && setHoveredItem(item.id)}
-                  onMouseLeave={() => !isOpen && setHoveredItem(null)}
+                  onMouseEnter={() => setHoveredItem(item.id || item.path)}
+                  onMouseLeave={() => setHoveredItem(null)}
                 >
                   {/* Item Con Submenú */}
                   {hasSubmenu ? (
@@ -282,8 +280,12 @@ export default function Sidebar({ isOpen, setIsOpen }) {
                       style={{ ...itemStyle, textAlign: 'left' }}
                       onClick={() => {
                         if (item.disabled) return;
-                        if (!isOpen) { setIsOpen(true); setOpenSubmenu(item.id); }
-                        else toggleSubmenu(item.id);
+                        if (!isOpen) { 
+                          setIsOpen(true); 
+                          setOpenSubmenu(item.id); 
+                        } else {
+                          toggleSubmenu(item.id);
+                        }
                       }}
                     >
                       <Icon style={{ width: '18px', height: '18px', flexShrink: 0, color: iconColor }} />
@@ -326,7 +328,7 @@ export default function Sidebar({ isOpen, setIsOpen }) {
                     </NavLink>
                   )}
 
-                  {/* Submenú Desplegado (Sidebar Abierto) */}
+                  {/* Submenú Desplegado (Sidebar Abierto en modo acordeón tradicional) */}
                   {isOpen && hasSubmenu && isSubmenuOpen && (
                     <div style={{
                       marginLeft: '20px', marginTop: '4px',
@@ -338,24 +340,40 @@ export default function Sidebar({ isOpen, setIsOpen }) {
                     </div>
                   )}
 
-                  {/* Submenú Flotante Estilo Píldora (Sidebar Cerrado) */}
+                  {/* Submenú Flotante Hacia la Derecha (Sidebar Cerrado) */}
                   {!isOpen && hasSubmenu && hoveredItem === item.id && (
                     <div style={{
-                      position: 'absolute', left: '100%', top: '-4px', marginLeft: '8px',
-                      backgroundColor: C.bgPanel, border: `1px solid ${C.border}`,
-                      borderRadius: '10px', padding: '6px', width: '220px',
-                      boxShadow: '0 12px 24px -4px rgba(0,0,0,0.4)', zIndex: 50,
-                      backdropFilter: 'blur(16px)'
+                      position: 'absolute', 
+                      left: '100%', 
+                      top: '0px', 
+                      paddingLeft: '12px', // Espaciado inteligente para no perder el puente del cursor
+                      zIndex: 100,
                     }}>
                       <div style={{
-                        padding: '6px 12px', marginBottom: '4px',
-                        fontSize: '11px', fontWeight: 600, color: C.textMuted,
-                        textTransform: 'uppercase', letterSpacing: '0.04em',
+                        backgroundColor: C.bgPanel, 
+                        border: `1px solid ${C.border}`,
+                        borderRadius: '10px', 
+                        padding: '6px', 
+                        width: '220px',
+                        boxShadow: '0 12px 30px -4px rgba(0,0,0,0.6)', 
+                        backdropFilter: 'blur(20px)'
                       }}>
-                        {item.label}
-                      </div>
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
-                        {renderSubItems(item.submenu)}
+                        <div style={{
+                          padding: '6px 12px', 
+                          marginBottom: '4px',
+                          fontSize: '11px', 
+                          fontWeight: 600, 
+                          color: C.textMuted,
+                          textTransform: 'uppercase', 
+                          letterSpacing: '0.04em',
+                          borderBottom: '1px solid rgba(255,255,255,0.02)',
+                          paddingBottom: '6px'
+                        }}>
+                          {item.label}
+                        </div>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                          {renderSubItems(item.submenu)}
+                        </div>
                       </div>
                     </div>
                   )}

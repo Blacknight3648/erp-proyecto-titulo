@@ -5,7 +5,7 @@ import {
   ChevronLeft, ChevronRight, BarChart3, Wallet, Shield,
   LayoutDashboard, ClipboardList, Target, FileText,
   Briefcase, Truck, DollarSign, AlertCircle, History,
-  Settings, Scissors,
+  Settings, Scissors, Home,
   FactoryIcon
 } from 'lucide-react';
 

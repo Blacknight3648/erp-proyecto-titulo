@@ -1,17 +1,27 @@
 import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Bell, User, LogOut, ChevronDown, Search, Box, Settings, Menu } from 'lucide-react';
+import { Bell, User, LogOut, ChevronDown, Search, Box, Settings, Menu, Clock } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useNotifications } from '../../contexts/NotificationContext';
 import NotificationDropdown from './NotificationDropdown';
 
 export default function Navbar({ isSidebarOpen = true, setIsSidebarOpen }) {
     const { user, logout } = useAuth();
-    const { unreadCount } = useNotifications();
+    const { unreadCount }  = useNotifications();
+
     const [isNotifOpen, setIsNotifOpen] = useState(false);
+    const [now, setNow]                 = useState(new Date());
+
     const notifRef = useRef(null);
     const navigate = useNavigate();
 
+    /* ── Reloj en tiempo real ── */
+    useEffect(() => {
+        const id = setInterval(() => setNow(new Date()), 1000);
+        return () => clearInterval(id);
+    }, []);
+
+    /* ── Cerrar notificaciones al click fuera ── */
     useEffect(() => {
         function handleClickOutside(event) {
             if (notifRef.current && !notifRef.current.contains(event.target)) {
@@ -22,14 +32,29 @@ export default function Navbar({ isSidebarOpen = true, setIsSidebarOpen }) {
         return () => document.removeEventListener('mousedown', handleClickOutside);
     }, []);
 
+    /* ── Formateo ── */
+    const formattedDate = now.toLocaleDateString('es-CL', {
+        weekday: 'short',
+        day:     'numeric',
+        month:   'short',
+        year:    'numeric',
+    });
+    const formattedTime = now.toLocaleTimeString('es-CL', {
+        hour:   '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+    });
+
     return (
-        <header 
+        <header
             className={`bg-[#0b1220]/95 backdrop-blur-xl border-b border-slate-800 h-[76px] px-5 md:px-7 flex items-center justify-between fixed top-0 right-0 z-40 transition-all duration-300 ease-in-out left-0 ${
                 isSidebarOpen ? 'md:left-[260px]' : 'md:left-[72px]'
             }`}
         >
-            {/* ── SECCIÓN IZQUIERDA: Buscador Profesional de Alto Contraste ── */}
+
+            {/* ── IZQUIERDA: Buscador ── */}
             <div className="flex items-center gap-3 w-full max-w-md">
+
                 {/* Botón menú móvil */}
                 <button
                     onClick={() => setIsSidebarOpen(!isSidebarOpen)}
@@ -39,53 +64,51 @@ export default function Navbar({ isSidebarOpen = true, setIsSidebarOpen }) {
                     <Menu className="w-5 h-5" />
                 </button>
 
-                {/* Input iOS Estilo Profesional Maduro */}
+                {/* Input de búsqueda */}
                 <div className="relative flex items-center w-full group">
-                    <Search 
-                        className="absolute left-3.5 z-10 w-4 h-4 text-slate-400 pointer-events-none transition-colors group-focus-within:text-sky-400" 
-                        strokeWidth={2} 
+                    <Search
+                        className="absolute left-3.5 z-10 w-4 h-4 text-slate-400 pointer-events-none transition-colors group-focus-within:text-sky-400"
+                        strokeWidth={2}
                     />
                     <input
                         type="text"
                         placeholder="Buscar en el sistema..."
                         className="
-                            w-full
-                            rounded-xl
-                            border border-slate-700
-                            bg-[#111827]
-                            py-2.5
-                            pl-10
-                            pr-4
-                            text-sm
-                            text-slate-100
-                            placeholder:text-slate-400
-                            transition-all
-                            focus:outline-none
-                            focus:border-sky-500
-                            focus:ring-2
-                            focus:ring-sky-500/10
+                            w-full rounded-xl border border-slate-700 bg-[#111827]
+                            py-2.5 pl-10 pr-4 text-sm text-slate-100 placeholder:text-slate-400
+                            transition-all focus:outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-500/10
                         "
                     />
                 </div>
             </div>
 
-            {/* ── SECCIÓN DERECHA: Acciones y Estados de Hover Consistentes ── */}
+            {/* ── CENTRO: Fecha y Hora (zona roja del diseño) ── */}
+            <div className="hidden md:flex flex-col items-center justify-center px-5 flex-shrink-0 select-none">
+                <div className="flex items-center gap-1.5">
+                    <Clock className="w-3 h-3 text-sky-400/80 flex-shrink-0" strokeWidth={2} />
+                    <span className="text-[13.5px] font-semibold tabular-nums text-slate-100 tracking-wide">
+                        {formattedTime}
+                    </span>
+                </div>
+                <span className="text-[10px] text-slate-500 capitalize tracking-wide mt-0.5">
+                    {formattedDate}
+                </span>
+            </div>
+
+            {/* ── DERECHA: Acciones ── */}
             <div className="flex items-center gap-1 sm:gap-2">
-                
-                {/* Datos Maestros (Corrección de clase group y hover activo) */}
+
+                {/* Datos Maestros */}
                 <button
                     onClick={() => navigate('/admin/datos-maestros')}
                     className="group flex items-center gap-2 text-[13px] font-medium text-slate-200 hover:text-white hover:bg-white/[0.03] border border-transparent hover:border-slate-700 px-3 py-2 rounded-lg transition-all whitespace-nowrap"
                     title="Gestión de Datos Maestros"
                 >
-                    <Box 
-                        className="w-4 h-4 text-slate-400 group-hover:text-sky-400 transition-colors" 
-                        strokeWidth={1.8} 
-                    />
+                    <Box className="w-4 h-4 text-slate-400 group-hover:text-sky-400 transition-colors" strokeWidth={1.8} />
                     <span className="hidden sm:inline">Datos Maestros</span>
                 </button>
 
-                {/* Separador Optimizado */}
+                {/* Separador */}
                 <div className="h-5 w-px bg-slate-700/60 mx-2 hidden sm:block" />
 
                 {/* Configuración */}
@@ -111,10 +134,10 @@ export default function Navbar({ isSidebarOpen = true, setIsSidebarOpen }) {
                     <NotificationDropdown isOpen={isNotifOpen} onClose={() => setIsNotifOpen(false)} />
                 </div>
 
-                {/* Separador Optimizado */}
+                {/* Separador */}
                 <div className="h-5 w-px bg-slate-700/60 mx-2" />
 
-                {/* Perfil de Usuario con mejor Contraste Legible */}
+                {/* Perfil */}
                 <div className="flex items-center gap-1.5">
                     <div className="flex items-center gap-2.5 p-1.5 rounded-lg transition-all cursor-pointer border border-transparent hover:border-slate-700 hover:bg-white/[0.02] group">
                         <div className="w-[26px] h-[26px] bg-sky-500/10 border border-sky-500/15 text-sky-400 rounded-md flex items-center justify-center font-semibold text-[11px]">
@@ -123,13 +146,10 @@ export default function Navbar({ isSidebarOpen = true, setIsSidebarOpen }) {
                         <span className="hidden md:block text-[13px] font-medium text-slate-200 group-hover:text-white transition-colors">
                             {user?.name || 'Administrador'}
                         </span>
-                        <ChevronDown 
-                            className="hidden sm:block w-3.5 h-3.5 text-slate-400 group-hover:text-slate-200 transition-colors" 
-                            strokeWidth={1.5} 
-                        />
+                        <ChevronDown className="hidden sm:block w-3.5 h-3.5 text-slate-400 group-hover:text-slate-200 transition-colors" strokeWidth={1.5} />
                     </div>
 
-                    {/* Botón de Salir con consistencia visual */}
+                    {/* Cerrar sesión */}
                     <button
                         onClick={logout}
                         title="Cerrar Sesión"
@@ -139,6 +159,7 @@ export default function Navbar({ isSidebarOpen = true, setIsSidebarOpen }) {
                     </button>
                 </div>
             </div>
+
         </header>
     );
 }

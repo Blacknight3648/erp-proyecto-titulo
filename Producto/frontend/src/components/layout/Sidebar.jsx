@@ -32,7 +32,7 @@ const C = {
    DATOS DEL MENÚ
 ───────────────────────────────────────── */
 const menuItems = [
-  { path: '/', label: 'Dashboard General', icon: BarChart3 },
+  { path: '/', label: 'Inicio', icon: Home },
   {
     id: 'comercial', label: 'Área Comercial', icon: Wallet,
     homeRoute: '/comercial',

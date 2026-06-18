@@ -1,88 +1,132 @@
-import { useEffect, useState } from 'react';
-import { ShieldCheck, UserCircle } from 'lucide-react';
+import { NavLink, useLocation } from 'react-router-dom';
+import { useAuth } from '../../../contexts/AuthContext';
+import {
+  BarChart3, Wallet, ShoppingCart, Factory, Package, Users, Activity
+} from 'lucide-react';
 
-export function WelcomeHero({ userName, role = "Administrador del Sistema" }) {
-    const [currentDateTime, setCurrentDateTime] = useState(new Date());
+/* Reutilizamos los tokens de color del sistema para consistencia visual */
+const C = {
+  bgPanel:      '#0e1424',
+  bgHover:      '#172036',
+  bgActive:     '#1e2942',
+  border:       'rgba(255,255,255,0.04)',
+  textPrimary:  '#ffffff',
+  textSub:      '#94a3b8',
+  textMuted:    '#64748b',
+  textDisabled: '#334155',
+  iconActive:   '#38bdf8',
+};
 
-    useEffect(() => {
-        const interval = setInterval(() => {
-            setCurrentDateTime(new Date());
-        }, 1000);
+/* Módulos principales extraídos directamente de tus rutas */
+const modules = [
+  { path: '/', label: 'Dashboard General', icon: BarChart3 },
+  { path: '/comercial', id: 'comercial', label: 'Área Comercial', icon: Wallet },
+  { path: '/adquisiciones', id: 'adquisiciones', label: 'Adquisiciones', icon: ShoppingCart, disabled: true },
+  { path: '/produccion', id: 'produccion', label: 'Producción', icon: Factory },
+  { path: '/bodega', label: 'Inventario y Bodega', icon: Package, disabled: true },
+  { path: '/contabilidad', label: 'Finanzas y Contabilidad', icon: Wallet, disabled: true },
+  { path: '/gestion-usuarios', id: 'usuarios', label: 'Gestión de Usuarios', icon: Users },
+  { path: '/trazabilidad', id: 'trazabilidad', label: 'Trazabilidad Crítica', icon: Activity },
+];
 
-        return () => clearInterval(interval);
-    }, []);
+export function WelcomeHero() {
+  const { user } = useAuth();
+  const location = useLocation();
 
-    const hour = currentDateTime.getHours();
+  return (
+    <div className="w-full flex flex-col gap-6 p-6 rounded-2xl border border-slate-800/60 bg-[#0e1424] shadow-xl">
+      
+      {/* ── 1. BLOQUE DE BIENVENIDA (SERIO / CORPORATIVO) ── */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800/50 pb-5">
+        <div className="flex items-center gap-4">
+          {/* Avatar discreto */}
+          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-slate-800/50 border border-slate-700/40 text-slate-300 font-semibold text-sm">
+            {user?.name ? user.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() : 'AD'}
+          </div>
 
-    const greeting =
-        hour < 12
-            ? 'Buenos días'
-            : hour < 18
-                ? 'Buenas tardes'
-                : 'Buenas noches';
-
-    const formattedDate = currentDateTime.toLocaleDateString('es-CL', {
-        weekday: 'long',
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
-    });
-
-    const formattedTime = currentDateTime.toLocaleTimeString('es-CL', {
-        hour: '2-digit',
-        minute: '2-digit',
-        second: '2-digit',
-    });
-
-    return (
-        <div className="relative overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-sm">
-            <div className="absolute left-0 right-0 top-0 h-[3px] bg-gradient-to-r from-blue-500 via-indigo-500 to-violet-500" />
-
-            <div className="absolute -right-16 -top-16 h-64 w-64 rounded-full bg-gradient-to-br from-blue-400/8 to-indigo-400/8 blur-3xl" />
-
-            <div className="relative z-10 flex flex-col gap-4 p-6 md:flex-row md:items-center md:justify-between md:p-7">
-                <div className="flex items-center gap-4">
-                    <div className="relative flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-blue-50 to-indigo-100 border border-blue-100/60 shadow-inner">
-                        <UserCircle className="h-9 w-9 text-blue-600" strokeWidth={1.5} />
-                        <span className="absolute -bottom-0.5 -right-0.5 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-white shadow-sm p-0.5">
-                            <span className="h-full w-full rounded-full bg-emerald-500 animate-pulse" />
-                        </span>
-                    </div>
-
-                    <div>
-                        <p className="text-[11px] font-semibold uppercase tracking-widest text-slate-400">
-                            {greeting}
-                        </p>
-
-                        <h1 className="text-xl font-bold tracking-tight text-slate-900 md:text-2xl">
-                            {userName ?? 'Usuario'}
-                        </h1>
-
-                        {/* Fecha y hora */}
-                        <p className="mt-1 text-sm text-slate-500 capitalize">
-                            {formattedDate} · {formattedTime}
-                        </p>
-
-                        <div className="mt-3 flex flex-wrap items-center gap-2">
-                            <span className="
-                                inline-flex items-center gap-2
-                                rounded-full
-                                border border-slate-200/70
-                                bg-white/80
-                                px-4 py-1.5
-                                text-xs font-medium
-                                tracking-wide
-                                text-slate-700
-                                shadow-md shadow-slate-200/50
-                                backdrop-blur-md
-                            ">
-                                {role}
-                            </span>
-                        </div>
-                        
-                    </div>
-                </div>
+          <div>
+            <div className="flex items-center gap-2">
+              <h1 className="text-xl font-bold tracking-tight text-white">
+                ERP de Gestión
+              </h1>
+              <span className="inline-flex items-center h-2 w-2 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.6)]" />
             </div>
+          </div>
         </div>
-    );
+
+        {/* Timestamp decorativo o Badge de estado interno */}
+        <div className="hidden md:block text-right">
+          <span className="text-[10px] font-mono tracking-widest text-slate-500 uppercase bg-slate-900/60 border border-slate-800 px-2.5 py-1 rounded-md">
+            AMBIENTE PRODUCTIVO
+          </span>
+        </div>
+      </div>
+
+      {/* ── 2. TAP BAR DE MÓDULOS PRINCIPALES (VISTA HORIZONTAL) ── */}
+      <div className="w-full overflow-x-auto pb-1" id="modules-tapbar">
+        <style>{`
+          #modules-tapbar::-webkit-scrollbar { height: 4px; }
+          #modules-tapbar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.06); border-radius: 2px; }
+          #modules-tapbar::-webkit-scrollbar-track { background: transparent; }
+        `}</style>
+
+        <div className="flex items-center gap-2 min-w-max">
+          {modules.map((mod) => {
+            const Icon = mod.icon;
+            
+            // Lógica exacta de coincidencia de ruta activa
+            const isTabActive = mod.path === '/' 
+              ? location.pathname === '/' 
+              : location.pathname.startsWith(mod.path);
+
+            if (mod.disabled) {
+              return (
+                <div
+                  key={mod.path}
+                  className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-transparent opacity-35 cursor-not-allowed text-[13px] font-medium"
+                  style={{ color: C.textDisabled }}
+                >
+                  <Icon className="w-4 h-4 shrink-0" />
+                  <span>{mod.label}</span>
+                  <span className="text-[9px] font-semibold bg-slate-900 px-1.5 py-0.5 rounded text-slate-600">Pronto</span>
+                </div>
+              );
+            }
+
+            return (
+              <NavLink
+                key={mod.path}
+                to={mod.path}
+                className="flex items-center gap-2 px-4 py-2.5 rounded-xl border text-[13px] font-medium transition-all duration-200 select-none no-underline"
+                style={{
+                  background: isTabActive ? C.bgActive : 'transparent',
+                  borderColor: isTabActive ? C.border : 'transparent',
+                  color: isTabActive ? C.textPrimary : C.textSub,
+                }}
+                onMouseEnter={(e) => {
+                  if (!isTabActive) {
+                    e.currentTarget.style.backgroundColor = C.bgHover;
+                    e.currentTarget.style.color = C.textPrimary;
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (!isTabActive) {
+                    e.currentTarget.style.backgroundColor = 'transparent';
+                    e.currentTarget.style.color = C.textSub;
+                  }
+                }}
+              >
+                <Icon 
+                  className="w-4 h-4 shrink-0 transition-colors" 
+                  style={{ color: isTabActive ? C.iconActive : C.textMuted }}
+                />
+                <span>{mod.label}</span>
+              </NavLink>
+            );
+          })}
+        </div>
+      </div>
+
+    </div>
+  );
 }

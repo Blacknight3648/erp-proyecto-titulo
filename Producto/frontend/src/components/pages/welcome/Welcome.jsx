@@ -1,89 +1,90 @@
 import { useNavigate } from 'react-router-dom';
 import {
-    Building2,
+    Wallet,
     Users,
-    FolderKanban,
-    Package,
-    ShieldCheck,
-    BarChart3
+    Factory,
+    Activity,
+    BarChart3,
+    Settings,
 } from 'lucide-react';
-import { useAuth } from '../../../contexts/AuthContext';
 import { WelcomeHero } from '../home/WelcomeHero';
 import AdminDashboard from '../home/AdminDashboard';
 import { AdminFastReports } from '../home/AdminFastReports';
 import ModuleCard from '../home/ModuleCard';
 
+/* ─────────────────────────────────────────
+   MÓDULOS — apuntan a los landing pages
+───────────────────────────────────────── */
 const MODULES = [
     {
-        title: 'Proyectos Antuan SA',
-        description: 'Visión general, métricas y KPIs principales de la organización.',
-        icon: Building2,
-        path: '/comercial/administracion-negocios',
-        color: 'from-blue-600 to-indigo-700',
+        title:       'Área Comercial',
+        description: 'Tablero, cotizaciones, gestión de negocios, notas de venta y proyectos comerciales.',
+        icon:        Wallet,
+        path:        '/comercial',
+        color:       'from-sky-500 to-blue-600',
     },
     {
-        title: 'Gestión de Usuarios',
-        description: 'Administración de accesos, perfiles, roles y permisos del personal.',
-        icon: Users,
-        path: '/gestion-usuarios/colaboradores',
-        color: 'from-violet-600 to-purple-700',
+        title:       'Producción',
+        description: 'Órdenes de producción, seguimiento de planta, costeo de materia prima y compras.',
+        icon:        Factory,
+        path:        '/produccion',
+        color:       'from-orange-500 to-amber-600',
     },
     {
-        title: 'Proyectos',
-        description: 'Control, planificación y seguimiento de proyectos activos e inactivos.',
-        icon: FolderKanban,
-        path: '/comercial/gestion-proyectos',
-        color: 'from-indigo-500 to-blue-600',
+        title:       'Gestión de Usuarios',
+        description: 'Colaboradores, clientes, proveedores, vendedores, áreas y roles del sistema.',
+        icon:        Users,
+        path:        '/gestion-usuarios',
+        color:       'from-violet-500 to-purple-600',
     },
     {
-        title: 'Activos',
-        description: 'Gestión de inventario físico, maquinaria, equipos y recursos.',
-        icon: Package,
-        path: '/produccion/tablero-op',
-        color: 'from-amber-500 to-orange-600',
+        title:       'Trazabilidad Crítica',
+        description: 'Seguimiento integral de lotes, control de despachos y logística de entrega.',
+        icon:        Activity,
+        path:        '/trazabilidad',
+        color:       'from-emerald-500 to-teal-600',
     },
     {
-        title: 'Trazabilidad',
-        description: 'Seguimiento integral de procesos, control de lotes y flujo operativo.',
-        icon: ShieldCheck,
-        path: '/trazabilidad/completa',
-        color: 'from-emerald-500 to-teal-600',
+        title:       'Datos Maestros',
+        description: 'Configuración de materiales, artículos, parámetros base y tablas del sistema.',
+        icon:        Settings,
+        path:        '/admin/datos-maestros',
+        color:       'from-slate-500 to-gray-600',
     },
     {
-        title: 'Comercial',
-        description: 'Gestión de ventas, cotizaciones, análisis de costos y facturación.',
-        icon: BarChart3,
-        path: '/comercial/tablero',
-        color: 'from-cyan-600 to-blue-600',
+        title:       'Reportes y KPIs',
+        description: 'Métricas de ventas, márgenes, utilidad neta y análisis de rentabilidad.',
+        icon:        BarChart3,
+        path:        '/comercial/tablero',
+        color:       'from-cyan-500 to-blue-600',
     },
 ];
 
 const QUICK_NAV = {
-    reportes: '/comercial/tablero',
-    comercial: '/comercial/administracion-negocios',
-    produccion: '/produccion/tablero-op',
-    usuarios: '/gestion-usuarios/colaboradores',
+    reportes:   '/comercial/tablero',
+    comercial:  '/comercial',
+    produccion: '/produccion',
+    usuarios:   '/gestion-usuarios',
 };
 
+/* ─────────────────────────────────────────
+   COMPONENTE
+───────────────────────────────────────── */
 export default function Welcome() {
-    const { user } = useAuth();
     const navigate = useNavigate();
 
     return (
         <div className="mx-auto max-w-7xl space-y-6 px-4 py-6 animate-in fade-in slide-in-from-bottom-4 duration-700">
 
-            {/* Hero de bienvenida */}
-            <WelcomeHero
-                userName={user?.name ?? 'Usuario'}
-                role="Administrador del Sistema"
-            />
+            {/* Identidad del usuario (sin saludo, sin fecha/hora) */}
+            <WelcomeHero />
 
             {/* KPIs del sistema */}
             <AdminDashboard
                 stats={{ usuarios: 2, registros: 3, sistema: 'v1.0.0', auditoria: '●' }}
             />
 
-            {/* Cuerpo principal: módulos + acceso rápido */}
+            {/* Cuerpo: módulos + acceso rápido */}
             <div className="grid grid-cols-1 gap-6 lg:grid-cols-[1fr_280px]">
 
                 {/* Izquierda: grid de módulos */}
@@ -98,6 +99,7 @@ export default function Welcome() {
                             </p>
                         </div>
                     </div>
+
                     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
                         {MODULES.map((module, idx) => (
                             <ModuleCard

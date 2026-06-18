@@ -28,6 +28,8 @@ export default function CosteosOP() {
         handleRemoveItem,
         handleAddItem,
         handleValidateCostos,
+        handleAprobarCosteo,
+        handleRechazarCosteo,
         clientes,
         moPrenda, setMoPrenda,
         moCinta, setMoCinta,
@@ -65,6 +67,8 @@ export default function CosteosOP() {
                     recordsToDisplay={filteredRecords}
                     clientes={clientes}
                     handleOpenForm={handleOpenForm}
+                    onAprobar={handleAprobarCosteo}
+                    onRechazar={handleRechazarCosteo}
                 />
             ) : (
                 <FormularioCosteo

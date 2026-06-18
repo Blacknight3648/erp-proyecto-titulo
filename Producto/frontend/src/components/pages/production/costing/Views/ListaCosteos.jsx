@@ -1,14 +1,16 @@
-import React from 'react';
-import { 
-    DollarSign, 
-    PieChart, 
-    TrendingUp, 
-    Search, 
-    Filter, 
-    X, 
-    Layers, 
-    Calculator, 
-    ClipboardList 
+import React, { useState } from 'react';
+import {
+    DollarSign,
+    PieChart,
+    TrendingUp,
+    Search,
+    Filter,
+    X,
+    Layers,
+    Calculator,
+    ClipboardList,
+    CheckCircle2,
+    XCircle
 } from 'lucide-react';
 
 // Mapeo único estado → etiqueta + estilos del badge. Cubre el ciclo de vida del
@@ -40,8 +42,21 @@ export default function ListaCosteos({
     setStatusFilter,
     recordsToDisplay,
     clientes,
-    handleOpenForm
+    handleOpenForm,
+    onAprobar,
+    onRechazar
 }) {
+    // Modal de rechazo: record en curso + motivo obligatorio.
+    const [rechazoRecord, setRechazoRecord] = useState(null);
+    const [motivo, setMotivo] = useState('');
+
+    const confirmarRechazo = () => {
+        if (!motivo.trim()) return;
+        onRechazar?.(rechazoRecord, motivo.trim());
+        setRechazoRecord(null);
+        setMotivo('');
+    };
+
     return (
         <div className="max-w-full p-4 space-y-8 animate-in fade-in duration-700">
             {/* Header */}
@@ -118,6 +133,10 @@ export default function ListaCosteos({
                 {recordsToDisplay.map((record) => {
                     const cliente = clientes.find(c => (c.clienteId || c.id)?.toString() === record.clienteId?.toString());
                     const displayId = record.numero || record.id;
+                    // Estado real del Costeo (si la tarjeta ya tiene costeo vinculado).
+                    const estadoCosteo = record.costeoEstado;
+                    const puedeAprobar = estadoCosteo === 'COSTEADO';
+                    const puedeRechazar = estadoCosteo === 'BORRADOR' || estadoCosteo === 'COSTEADO';
                     return (
                         <div
                             key={displayId}
@@ -128,9 +147,12 @@ export default function ListaCosteos({
                                 <div className="flex-1">
                                     <div className="flex items-center gap-2 mb-1">
                                         <span className="text-[10px] font-black text-gray-300 uppercase tracking-widest">{displayId}</span>
-                                    <span className={`px-2 py-0.5 rounded-full text-[8px] font-black uppercase tracking-widest ${badgeFor(record.estado).className}`}>
-                                        {badgeFor(record.estado).label}
+                                    <span className={`px-2 py-0.5 rounded-full text-[8px] font-black uppercase tracking-widest ${badgeFor(estadoCosteo ?? record.estado).className}`}>
+                                        {badgeFor(estadoCosteo ?? record.estado).label}
                                     </span>
+                                    {record.costeoVersion != null && (
+                                        <span className="px-2 py-0.5 rounded-full text-[8px] font-black uppercase tracking-widest bg-indigo-50 text-indigo-500">v{record.costeoVersion}</span>
+                                    )}
                                     </div>
                                     <h3 className="text-md font-black text-gray-800 group-hover:text-green-600 transition-colors uppercase leading-tight">
                                         {record.clienteNombre || cliente?.nombreCliente || cliente?.nombre || 'Cliente SCOS'}
@@ -173,6 +195,32 @@ export default function ListaCosteos({
                                         : 'Añadir Costos'}
                                 </button>
                             </div>
+
+                            {/* Decisión sobre el costeo: Aprobar / Rechazar (Épica 3) */}
+                            <div className="flex items-center gap-2 mt-3">
+                                <button
+                                    onClick={(e) => { e.stopPropagation(); onAprobar?.(record); }}
+                                    disabled={!puedeAprobar}
+                                    title={puedeAprobar ? 'Aprobar costeo' : 'Solo se puede aprobar un costeo COSTEADO'}
+                                    className={`flex-1 px-3 py-2 text-[9px] font-black rounded-xl uppercase tracking-widest flex items-center justify-center gap-2 transition-all ${puedeAprobar
+                                        ? 'bg-emerald-600 text-white hover:bg-emerald-700 active:scale-95 shadow-lg shadow-emerald-100'
+                                        : 'bg-gray-100 text-gray-300 cursor-not-allowed'}`}
+                                >
+                                    <CheckCircle2 className="w-3 h-3" />
+                                    Aprobar
+                                </button>
+                                <button
+                                    onClick={(e) => { e.stopPropagation(); setRechazoRecord(record); setMotivo(''); }}
+                                    disabled={!puedeRechazar}
+                                    title={puedeRechazar ? 'Rechazar costeo' : 'Solo se puede rechazar un costeo BORRADOR o COSTEADO'}
+                                    className={`flex-1 px-3 py-2 text-[9px] font-black rounded-xl uppercase tracking-widest flex items-center justify-center gap-2 transition-all ${puedeRechazar
+                                        ? 'bg-red-600 text-white hover:bg-red-700 active:scale-95 shadow-lg shadow-red-100'
+                                        : 'bg-gray-100 text-gray-300 cursor-not-allowed'}`}
+                                >
+                                    <XCircle className="w-3 h-3" />
+                                    Rechazar
+                                </button>
+                            </div>
                         </div>
                     );
                 })}
@@ -185,6 +233,51 @@ export default function ListaCosteos({
                     </div>
                 )}
             </div>
+
+            {/* Modal pequeño: motivo obligatorio para rechazar */}
+            {rechazoRecord && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4" onClick={() => setRechazoRecord(null)}>
+                    <div className="bg-white w-full max-w-md rounded-[2rem] p-6 shadow-2xl" onClick={(e) => e.stopPropagation()}>
+                        <div className="flex items-center gap-3 mb-4">
+                            <div className="w-10 h-10 rounded-2xl bg-red-50 flex items-center justify-center">
+                                <XCircle className="w-5 h-5 text-red-500" />
+                            </div>
+                            <div>
+                                <h3 className="text-sm font-black text-gray-800 uppercase tracking-tight">Rechazar costeo</h3>
+                                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+                                    {rechazoRecord.numero || rechazoRecord.id}
+                                </p>
+                            </div>
+                        </div>
+                        <label className="text-[9px] font-black text-gray-400 uppercase tracking-widest">Motivo del rechazo *</label>
+                        <textarea
+                            value={motivo}
+                            onChange={(e) => setMotivo(e.target.value)}
+                            rows={3}
+                            autoFocus
+                            placeholder="Describe la diferencia o el motivo del rechazo…"
+                            className="w-full mt-1 p-3 bg-gray-50 border-none rounded-2xl text-sm font-bold focus:ring-2 focus:ring-red-400 outline-none resize-none"
+                        />
+                        <div className="flex items-center justify-end gap-2 mt-4">
+                            <button
+                                onClick={() => setRechazoRecord(null)}
+                                className="px-4 py-2 text-[10px] font-black uppercase tracking-widest text-gray-500 rounded-xl hover:bg-gray-100 transition-all"
+                            >
+                                Cancelar
+                            </button>
+                            <button
+                                onClick={confirmarRechazo}
+                                disabled={!motivo.trim()}
+                                className={`px-5 py-2 text-[10px] font-black uppercase tracking-widest rounded-xl transition-all ${motivo.trim()
+                                    ? 'bg-red-600 text-white hover:bg-red-700 active:scale-95'
+                                    : 'bg-gray-100 text-gray-300 cursor-not-allowed'}`}
+                            >
+                                Confirmar rechazo
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

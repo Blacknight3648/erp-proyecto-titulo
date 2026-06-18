@@ -33,17 +33,49 @@ export function useCosteosOPState() {
     const [costoFlete, setCostoFlete] = useState(0);
 
     const { solicitudesCostos, loading: loadingComercial, loadSolicitudesCostos, updateSolicitudCostos } = useComercial();
-    const { getCosteoBySCOS, saveCosteo, loading: loadingProduccion } = useProduccion();
+    const { getCosteoBySCOS, saveCosteo, getAllCosteos, aprobarCosteo, rechazarCosteo, loading: loadingProduccion } = useProduccion();
     const { clientes, loading: loadingClientes } = useClientes();
     const { proveedores, loading: loadingProveedores } = useProveedores();
 
     const [currentSolicitud, setCurrentSolicitud] = useState(null);
     const [insumos, setInsumos] = useState([]);
     const [costeoVersion, setCosteoVersion] = useState(null);
+    // Costeos reales indexados por solicitudCostosId, para conocer estado/versión por tarjeta.
+    const [costeosByScos, setCosteosByScos] = useState({});
+
+    const loadCosteos = useCallback(async () => {
+        try {
+            const all = await getAllCosteos();
+            const map = {};
+            (all || []).forEach(c => {
+                if (c.solicitudCostosId != null) map[c.solicitudCostosId.toString()] = c;
+            });
+            setCosteosByScos(map);
+        } catch (err) {
+            console.error("Error cargando costeos para la lista:", err);
+        }
+    }, [getAllCosteos]);
 
     useEffect(() => {
         loadSolicitudesCostos();
+        loadCosteos();
     }, []);
+
+    // Identidad del actor (firma). El proyecto no persiste el usuario actual de forma
+    // fiable; se intenta leer de localStorage y, si no hay, se usa un actor por defecto
+    // con un rol autorizado (entorno sin RBAC real).
+    const getActor = () => {
+        try {
+            const raw = localStorage.getItem('user');
+            if (raw) {
+                const u = JSON.parse(raw);
+                const rol = u.rol || u.roles?.[0]?.nombre || u.roles?.[0];
+                const aprobador = u.nombre || u.email || 'JEFE_PRODUCCION';
+                if (rol) return { aprobador, rol };
+            }
+        } catch (_) { /* noop */ }
+        return { aprobador: 'JEFE_PRODUCCION', rol: 'JEFE_PRODUCCION' };
+    };
 
     const isLoading = loadingComercial || loadingClientes || loadingProveedores || loadingProduccion;
 
@@ -86,19 +118,64 @@ export function useCosteosOPState() {
     }, [solicitudesFiltradas]);
 
     const filteredRecords = useMemo(() => {
-        return allRecords.filter(r => {
-            const cliente = clientes.find(c => (c.clienteId || c.id)?.toString() === r.clienteId?.toString());
-            const clienteNombre = r.clienteNombre || cliente?.nombreCliente || cliente?.nombre || 'Cliente Desconocido';
+        return allRecords
+            .map(r => {
+                // Enriquecer con el Costeo real (estado/versión/id) para el badge y los botones.
+                const costeo = costeosByScos[r.id?.toString()];
+                return costeo
+                    ? { ...r, costeoId: costeo.idCosteo, costeoEstado: costeo.estado, costeoVersion: costeo.version }
+                    : r;
+            })
+            .filter(r => {
+                const cliente = clientes.find(c => (c.clienteId || c.id)?.toString() === r.clienteId?.toString());
+                const clienteNombre = r.clienteNombre || cliente?.nombreCliente || cliente?.nombre || 'Cliente Desconocido';
 
-            const matchesSearch = clienteNombre.toUpperCase().includes(searchTerm.toUpperCase()) ||
-                (r.id?.toString() || '').toUpperCase().includes(searchTerm.toUpperCase()) ||
-                (r.numero?.toString() || '').toUpperCase().includes(searchTerm.toUpperCase());
+                const matchesSearch = clienteNombre.toUpperCase().includes(searchTerm.toUpperCase()) ||
+                    (r.id?.toString() || '').toUpperCase().includes(searchTerm.toUpperCase()) ||
+                    (r.numero?.toString() || '').toUpperCase().includes(searchTerm.toUpperCase());
 
-            const matchesStatus = statusFilter === 'Todos' || r.estado === statusFilter;
+                // El filtro de estado usa el estado real del Costeo si existe; si no, el de la SCOS.
+                const estadoParaFiltro = r.costeoEstado || r.estado;
+                const matchesStatus = statusFilter === 'Todos' || estadoParaFiltro === statusFilter;
 
-            return matchesSearch && matchesStatus;
-        });
-    }, [allRecords, clientes, searchTerm, statusFilter]);
+                return matchesSearch && matchesStatus;
+            });
+    }, [allRecords, clientes, searchTerm, statusFilter, costeosByScos]);
+
+    // --- Acciones de decisión sobre el costeo (Épica 3) ---
+    const handleAprobarCosteo = useCallback(async (record) => {
+        const costeoId = record?.costeoId;
+        if (!costeoId) {
+            toast.error("Esta solicitud aún no tiene un costeo para aprobar");
+            return;
+        }
+        try {
+            await aprobarCosteo(costeoId, getActor());
+            toast.success("Costeo aprobado");
+            await Promise.all([loadSolicitudesCostos(), loadCosteos()]);
+        } catch (error) {
+            toast.error("No se pudo aprobar: " + (error.response?.data?.mensaje || error.message));
+        }
+    }, [aprobarCosteo, loadCosteos]);
+
+    const handleRechazarCosteo = useCallback(async (record, motivo) => {
+        const costeoId = record?.costeoId;
+        if (!costeoId) {
+            toast.error("Esta solicitud aún no tiene un costeo para rechazar");
+            return;
+        }
+        if (!motivo || !motivo.trim()) {
+            toast.error("El motivo del rechazo es obligatorio");
+            return;
+        }
+        try {
+            await rechazarCosteo(costeoId, { ...getActor(), motivo: motivo.trim() });
+            toast.success("Costeo rechazado");
+            await Promise.all([loadSolicitudesCostos(), loadCosteos()]);
+        } catch (error) {
+            toast.error("No se pudo rechazar: " + (error.response?.data?.mensaje || error.message));
+        }
+    }, [rechazarCosteo, loadCosteos]);
 
     const totalMateriales = useMemo(() => {
         return insumos.reduce((acc, current) => acc + (current.costo * current.cantidad), 0);
@@ -396,6 +473,8 @@ export function useCosteosOPState() {
         handleRemoveItem,
         handleAddItem,
         handleValidateCostos,
+        handleAprobarCosteo,
+        handleRechazarCosteo,
         clientes,
         proveedores
     };

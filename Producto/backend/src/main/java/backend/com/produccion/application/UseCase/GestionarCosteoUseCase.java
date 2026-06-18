@@ -38,12 +38,12 @@ public class GestionarCosteoUseCase {
         return costeoService.costear(idCosteo);
     }
 
-    public CosteoDTO aprobar(Long idCosteo) {
-        return costeoService.aprobar(idCosteo);
+    public CosteoDTO aprobar(Long idCosteo, String usuario, String rol) {
+        return costeoService.aprobar(idCosteo, usuario, rol);
     }
 
-    public CosteoDTO rechazar(Long idCosteo, String motivo) {
-        return costeoService.rechazar(idCosteo, motivo);
+    public CosteoDTO rechazar(Long idCosteo, String motivo, String usuario, String rol) {
+        return costeoService.rechazar(idCosteo, motivo, usuario, rol);
     }
 
     public CosteoDTO reabrir(Long idCosteo) {

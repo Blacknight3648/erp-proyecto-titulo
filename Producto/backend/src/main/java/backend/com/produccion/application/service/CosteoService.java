@@ -18,10 +18,10 @@ public interface CosteoService {
     // --- Transiciones del ciclo de vida ---
     /** BORRADOR → COSTEADO (producción confirma los costos). */
     CosteoDTO costear(Long id);
-    /** COSTEADO → APROBADO (habilita el vínculo con EVN/NV). */
-    CosteoDTO aprobar(Long id);
-    /** → RECHAZADO; exige motivo y versiona el costeo rechazado. */
-    CosteoDTO rechazar(Long id, String motivo);
+    /** COSTEADO → APROBADO (habilita el vínculo con EVN/NV). Requiere firma y rol autorizado. */
+    CosteoDTO aprobar(Long id, String usuario, String rol);
+    /** → RECHAZADO; exige motivo, firma y rol autorizado; versiona el costeo rechazado. */
+    CosteoDTO rechazar(Long id, String motivo, String usuario, String rol);
     /** RECHAZADO/COSTEADO → BORRADOR (reproceso). */
     CosteoDTO reabrir(Long id);
 }

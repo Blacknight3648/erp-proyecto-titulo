@@ -353,17 +353,34 @@ class CosteoServiceImplTest {
         when(repository.save(any(Costeo.class))).thenAnswer(inv -> inv.getArgument(0));
         when(mapper.toDto(any(Costeo.class))).thenReturn(CosteoDTO.builder().idCosteo(1L).build());
 
-        costeoService.rechazar(1L, "Diferencias detectadas");
+        costeoService.rechazar(1L, "Diferencias detectadas", "Ana", "JEFE_PRODUCCION");
 
-        verify(crearVersionCosteoUseCase).ejecutar(1L, "Rechazo v1: Diferencias detectadas", "SYSTEM");
+        verify(crearVersionCosteoUseCase).ejecutar(1L, "Rechazo v1: Diferencias detectadas", "Ana");
         ArgumentCaptor<Costeo> captor = ArgumentCaptor.forClass(Costeo.class);
         verify(repository).save(captor.capture());
         assertThat(captor.getValue().getEstado())
                 .isEqualTo(backend.com.produccion.domain.enums.EstadoCosteo.RECHAZADO);
         assertThat(captor.getValue().getMotivoRechazo()).isEqualTo("Diferencias detectadas");
-        // Se registra el historial de estado con la versión.
+        // Se registra el historial de estado con la versión y el actor real.
         verify(historialEstadoService).registrar(eq("COSTEO"), eq(1L), eq("COSTEADO"), eq("RECHAZADO"),
-                eq("SYSTEM"), org.mockito.ArgumentMatchers.contains("v1"));
+                eq("Ana"), org.mockito.ArgumentMatchers.contains("v1"));
+    }
+
+    @Test
+    @DisplayName("aprobar/rechazar con rol no autorizado lanza ForbiddenException (403)")
+    void decision_rolNoAutorizado() {
+        assertThatThrownBy(() -> costeoService.aprobar(1L, "Pedro", "VENDEDOR"))
+                .isInstanceOf(backend.com.shared.exception.ForbiddenException.class);
+        assertThatThrownBy(() -> costeoService.rechazar(1L, "x", "Pedro", "OPERARIO_PRODUCCION"))
+                .isInstanceOf(backend.com.shared.exception.ForbiddenException.class);
+        verify(repository, never()).save(any());
+    }
+
+    @Test
+    @DisplayName("aprobar sin firma del actor lanza ValidationException")
+    void aprobar_sinActor() {
+        assertThatThrownBy(() -> costeoService.aprobar(1L, "  ", "JEFE_PRODUCCION"))
+                .isInstanceOf(backend.com.shared.exception.ValidationException.class);
     }
 
     @Test
@@ -398,13 +415,15 @@ class CosteoServiceImplTest {
         when(repository.save(any(Costeo.class))).thenAnswer(inv -> inv.getArgument(0));
         when(mapper.toDto(any(Costeo.class))).thenReturn(CosteoDTO.builder().idCosteo(1L).build());
 
-        costeoService.aprobar(1L);
+        costeoService.aprobar(1L, "Ana", "JEFE_PRODUCCION");
 
         ArgumentCaptor<Costeo> captor = ArgumentCaptor.forClass(Costeo.class);
         verify(repository).save(captor.capture());
         assertThat(captor.getValue().getEstado())
                 .isEqualTo(backend.com.produccion.domain.enums.EstadoCosteo.APROBADO);
         verify(crearVersionCosteoUseCase, never()).ejecutar(any(), any(), any());
+        verify(historialEstadoService).registrar(eq("COSTEO"), eq(1L), eq("COSTEADO"), eq("APROBADO"),
+                eq("Ana"), org.mockito.ArgumentMatchers.contains("aprobado"));
     }
 
     @Test
@@ -412,7 +431,7 @@ class CosteoServiceImplTest {
     void transicion_costeoInexistente() {
         when(repository.findById(99L)).thenReturn(Optional.empty());
 
-        assertThatThrownBy(() -> costeoService.aprobar(99L))
+        assertThatThrownBy(() -> costeoService.aprobar(99L, "Ana", "JEFE_PRODUCCION"))
                 .isInstanceOf(backend.com.shared.exception.EntityNotFoundException.class);
     }
 }

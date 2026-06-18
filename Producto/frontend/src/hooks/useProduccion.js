@@ -95,6 +95,17 @@ export const useProduccion = () => {
     };
 
 
+    // Decisión sobre el costeo (Épica 3). Requieren firma del actor + rol autorizado (403 si no).
+    const aprobarCosteo = async (id, { aprobador, rol, observacion } = {}) => {
+        const res = await api.patch(`/produccion/costeos/${id}/aprobar`, { aprobador, rol, observacion });
+        return res.data;
+    };
+
+    const rechazarCosteo = async (id, { aprobador, rol, motivo } = {}) => {
+        const res = await api.patch(`/produccion/costeos/${id}/rechazar`, { aprobador, rol, motivo });
+        return res.data;
+    };
+
     return {
         loading,
         getCosteoBySCOS,
@@ -102,6 +113,8 @@ export const useProduccion = () => {
         getAllCosteos,
         getCosteosDisponiblesEVN,
         getCosteoResumenEVN,
-        saveCosteo
+        saveCosteo,
+        aprobarCosteo,
+        rechazarCosteo
     };
 };

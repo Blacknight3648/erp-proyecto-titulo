@@ -3,6 +3,8 @@ package backend.com.produccion.infrastructure.api;
 import backend.com.produccion.application.UseCase.GestionarCosteoUseCase;
 import backend.com.produccion.application.dto.CosteoDTO;
 import backend.com.produccion.application.dto.CosteoResumenEVNDTO;
+import backend.com.shared.application.dto.FirmaAprobacionRequest;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -55,26 +57,32 @@ public class CosteoController {
         return ResponseEntity.ok(gestionarCosteoUseCase.costear(idCosteo));
     }
 
-    /** Aprobación que habilita el vínculo con EVN/NV: COSTEADO → APROBADO. */
+    /**
+     * Aprobación que habilita el vínculo con EVN/NV: COSTEADO → APROBADO.
+     * Requiere firma del actor ({@code aprobador}) y rol autorizado ({@code rol}); 403 si no.
+     */
     @PatchMapping("/{idCosteo}/aprobar")
-    public ResponseEntity<CosteoDTO> aprobar(@PathVariable Long idCosteo) {
-        return ResponseEntity.ok(gestionarCosteoUseCase.aprobar(idCosteo));
+    public ResponseEntity<CosteoDTO> aprobar(@PathVariable Long idCosteo,
+            @Valid @RequestBody FirmaAprobacionRequest body) {
+        return ResponseEntity.ok(
+                gestionarCosteoUseCase.aprobar(idCosteo, body.getAprobador(), body.getRol()));
     }
 
-    /** Rechazo por diferencias: exige motivo y versiona el costeo rechazado. */
+    /**
+     * Rechazo por diferencias: exige motivo, firma del actor y rol autorizado (403 si no);
+     * versiona el costeo rechazado.
+     */
     @PatchMapping("/{idCosteo}/rechazar")
-    public ResponseEntity<CosteoDTO> rechazar(@PathVariable Long idCosteo, @RequestBody RechazoRequest request) {
-        return ResponseEntity.ok(gestionarCosteoUseCase.rechazar(idCosteo, request != null ? request.motivo() : null));
+    public ResponseEntity<CosteoDTO> rechazar(@PathVariable Long idCosteo,
+            @Valid @RequestBody FirmaAprobacionRequest body) {
+        return ResponseEntity.ok(
+                gestionarCosteoUseCase.rechazar(idCosteo, body.getMotivo(), body.getAprobador(), body.getRol()));
     }
 
     /** Reabre para reproceso: RECHAZADO/COSTEADO → BORRADOR. */
     @PatchMapping("/{idCosteo}/reabrir")
     public ResponseEntity<CosteoDTO> reabrir(@PathVariable Long idCosteo) {
         return ResponseEntity.ok(gestionarCosteoUseCase.reabrir(idCosteo));
-    }
-
-    /** Body del rechazo: motivo obligatorio. */
-    public record RechazoRequest(String motivo) {
     }
 
     /** Resumen para auto-rellenar un ítem tipo OP de una EVN al vincular un costeo. */

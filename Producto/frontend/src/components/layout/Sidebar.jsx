@@ -5,7 +5,8 @@ import {
   ChevronLeft, ChevronRight, BarChart3, Wallet, Shield,
   LayoutDashboard, ClipboardList, Target, FileText,
   Briefcase, Truck, DollarSign, AlertCircle, History,
-  Settings, Scissors
+  Settings, Scissors,
+  FactoryIcon
 } from 'lucide-react';
 
 /* ─────────────────────────────────────────
@@ -36,37 +37,37 @@ const menuItems = [
     id: 'comercial', label: 'Área Comercial', icon: Wallet,
     submenu: [
       { path: '/comercial/tablero',            label: 'Tablero Comercial',       icon: LayoutDashboard },
-      { path: '/comercial/solicitudes-costos',        label: 'Análisis de Costos',      icon: DollarSign },
+      { path: '/comercial/solicitudes-costos',        label: 'Solicitudes de Costos',      icon: DollarSign },
       { path: '/comercial/solicitudes-cotizaciones',  label: 'Cotizaciones',            icon: FileText },
       { path: '/comercial/administracion-negocios',   label: 'Gestión de Negocios',     icon: Target },
       { path: '/registros-nv',                        label: 'Notas de Venta (NV)',     icon: FileText },
-      { path: '/comercial/registros-sc',              label: 'Solicitudes Comerciales', icon: ClipboardList },
-      { path: '/comercial/gestion-proyectos',         label: 'Proyectos Textiles',      icon: Briefcase },
-      { path: '/detalle-nv',                          label: 'Seguimiento Operativo',   icon: Activity },
-      { path: '/comercial/gestion-plantillas',        label: 'Modelos y Plantillas',    icon: Settings },
+      { path: '/comercial/registros-sc',              label: 'Solicitudes de Compra', icon: ClipboardList },
+      { path: '/comercial/gestion-proyectos',         label: 'Gestión de proyectos',      icon: Briefcase },
+      { path: '/detalle-nv',                          label: 'Detalle de NV',   icon: Activity },
+      { path: '/comercial/gestion-plantillas',        label: 'Gestión de Plantillas',    icon: Settings },
     ],
   },
   {
     id: 'adquisiciones', label: 'Adquisiciones', icon: ShoppingCart, disabled: true,
     submenu: [
-      { path: '/dashboard-sc',               label: 'Métricas de Compra',       icon: LayoutDashboard },
+      { path: '/dashboard-sc',               label: 'Adquisiciones',       icon: LayoutDashboard },
       { path: '/adquisiciones/tablero-sc',   label: 'Tablero SC',               icon: LayoutDashboard },
-      { path: '/adquisiciones/cotizaciones', label: 'Comparativa Proveedores',  icon: FileText },
-      { path: '/adquisiciones/estado-sc',    label: 'Monitoreo de Solicitudes', icon: Activity },
+      { path: '/adquisiciones/cotizaciones', label: 'Cotizaciones',  icon: FileText },
+      { path: '/adquisiciones/estado-sc',    label: 'Solicitudes de Compra', icon: Activity },
       { path: '/adquisiciones/emitir-oc',    label: 'Órdenes de Compra',        icon: FileText },
-      { path: '/recepcionar-oc',             label: 'Control de Recepción',     icon: Truck },
+      { path: '/recepcionar-oc',             label: 'Control de OC',     icon: Truck },
     ],
   },
   {
     id: 'produccion', label: 'Producción e Hilados', icon: Factory,
     submenu: [
-      { path: '/dashboard-op',           label: 'Estado de Planta',         icon: LayoutDashboard },
-      { path: '/produccion/tablero-op',  label: 'Planificación Preventiva', icon: LayoutDashboard },
-      { path: '/produccion/ordenes',     label: 'Ficha Técnica Textil',     icon: Scissors },
-      { path: '/op-registro',            label: 'Órdenes de Producción',     icon: ClipboardList },
+      { path: '/dashboard-op',           label: 'Producción',         icon: FactoryIcon },
+      { path: '/produccion/tablero-op',  label: 'Seguimiento de OP', icon: LayoutDashboard },
+      { path: '/produccion/ordenes',     label: 'Órdenes de Producción',     icon: Scissors },
+      { path: '/op-registro',            label: 'Registro de OP',     icon: ClipboardList },
       { path: '/produccion/costeo-mp',   label: 'Costeo de Materia Prima',  icon: DollarSign },
-      { path: '/produccion/hoja-compra', label: 'Hojas de Requerimiento',   icon: ClipboardList },
-      { path: '/produccion/compras',     label: 'Suministros de Fábrica',   icon: ShoppingCart },
+      { path: '/produccion/hoja-compra', label: 'Hojas de Compra',   icon: ClipboardList },
+      { path: '/produccion/compras',     label: 'Compras de producción',   icon: ShoppingCart },
     ],
   },
   { path: '/bodega',       label: 'Inventario y Bodega',     icon: Package, disabled: true },
@@ -74,12 +75,12 @@ const menuItems = [
   {
     id: 'usuarios', label: 'Gestión de Usuarios', icon: Users,
     submenu: [
-      { path: '/gestion-usuarios/colaboradores', label: 'Personal Técnico',     icon: Users },
-      { path: '/admin/areas',                    label: 'Secciones de Planta',  icon: Briefcase },
-      { path: '/admin/roles',                    label: 'Permisos de Sistema',  icon: Shield },
-      { path: '/gestion-usuarios/clientes',      label: 'Cartera Clientes',     icon: Users },
-      { path: '/gestion-usuarios/proveedores',   label: 'Proveedores Hilados',  icon: Truck },
-      { path: '/gestion-usuarios/vendedores',    label: 'Gestores Comerciales', icon: BarChart3 },
+      { path: '/gestion-usuarios/colaboradores', label: 'Colaboradores',     icon: Users },
+      { path: '/admin/areas',                    label: 'Áreas y departamentos',  icon: Briefcase },
+      { path: '/admin/roles',                    label: 'Gestión de Roles',  icon: Shield },
+      { path: '/gestion-usuarios/clientes',      label: 'Clientes',     icon: Users },
+      { path: '/gestion-usuarios/proveedores',   label: 'Proveedores',  icon: Truck },
+      { path: '/gestion-usuarios/vendedores',    label: 'Vendedores (Comerciales)', icon: BarChart3 },
     ],
   },
   {

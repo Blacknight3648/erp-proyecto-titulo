@@ -22,6 +22,8 @@ export default function CosteosOP() {
         totalGeneral,
         currentSolicitud,
         costeoVersion,
+        costeoEstado,
+        motivoRechazo,
         insumos,
         handleOpenForm,
         handleUpdateItem,
@@ -30,6 +32,7 @@ export default function CosteosOP() {
         handleValidateCostos,
         handleAprobarCosteo,
         handleRechazarCosteo,
+        handleReabrirCosteo,
         clientes,
         moPrenda, setMoPrenda,
         moCinta, setMoCinta,
@@ -69,12 +72,15 @@ export default function CosteosOP() {
                     handleOpenForm={handleOpenForm}
                     onAprobar={handleAprobarCosteo}
                     onRechazar={handleRechazarCosteo}
+                    onReabrir={handleReabrirCosteo}
                 />
             ) : (
                 <FormularioCosteo
                     onBack={() => setView('list')}
                     currentSolicitud={currentSolicitud}
                     costeoVersion={costeoVersion}
+                    costeoEstado={costeoEstado}
+                    motivoRechazo={motivoRechazo}
                     handleValidateCostos={handleValidateCostos}
                     totalMateriales={totalMateriales}
                     totalMO={totalMO}

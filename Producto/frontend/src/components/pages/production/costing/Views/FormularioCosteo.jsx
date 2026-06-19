@@ -9,16 +9,20 @@ import {
     ChevronUp, 
     ChevronDown, 
     TrendingDown,
-    ShieldCheck
+    ShieldCheck,
+    AlertTriangle
 } from 'lucide-react';
 import CosteoTable from '../../../commercial/costing/components/shared/CosteoTable';
 import { FIELD_LABELS } from '../../../../../hooks/usePlantillas';
+import EstadoCosteo, { ESTADO_COSTEO_LABEL } from '../../../../../remote/DTO/EstadoCosteo';
 
 export default function FormularioCosteo({
     onBack,
     selectedRecord,
     currentSolicitud,
     costeoVersion,
+    costeoEstado,
+    motivoRechazo,
     handleValidateCostos,
     totalMateriales,
     totalMO,
@@ -59,6 +63,17 @@ export default function FormularioCosteo({
         </button>
     );
 
+    // Mapeo estado → estilos del badge para el header del formulario.
+    const estadoBadgeConfig = {
+        [EstadoCosteo.BORRADOR]:  { bg: 'bg-gray-100', text: 'text-gray-600', ring: 'ring-gray-200', dot: 'bg-gray-400' },
+        [EstadoCosteo.COSTEADO]:  { bg: 'bg-blue-100', text: 'text-blue-700', ring: 'ring-blue-200', dot: 'bg-blue-500' },
+        [EstadoCosteo.APROBADO]:  { bg: 'bg-emerald-100', text: 'text-emerald-700', ring: 'ring-emerald-200', dot: 'bg-emerald-500' },
+        [EstadoCosteo.RECHAZADO]: { bg: 'bg-red-100', text: 'text-red-700', ring: 'ring-red-200', dot: 'bg-red-500' },
+    };
+    const estadoStyle = estadoBadgeConfig[costeoEstado] || estadoBadgeConfig[EstadoCosteo.BORRADOR];
+    const estadoLabel = ESTADO_COSTEO_LABEL[costeoEstado] || (costeoEstado ? costeoEstado : 'Sin estado');
+
+
     return (
         <div className="min-h-screen bg-transparent pt-4 pb-4 pr-4 pl-1 animate-in slide-in-from-bottom-8 duration-700">
             {/* Header & Financial Summary Unified - Vertical Tiered Layout */}
@@ -87,6 +102,27 @@ export default function FormularioCosteo({
                                 )}
                             </div>
                             <p className="text-[11px] font-bold text-gray-400 uppercase tracking-widest mt-1 italic leading-none">Determinación de costo directo y materiales</p>
+
+                            {/* Estado del Costeo - Badge prominente */}
+                            <div className="flex items-center gap-3 mt-3">
+                                <div className={`flex items-center gap-2 px-4 py-2 rounded-full ring-1 ${estadoStyle.bg} ${estadoStyle.ring} shadow-sm`}>
+                                    <span className={`w-2 h-2 rounded-full ${estadoStyle.dot} animate-pulse`} />
+                                    <span className={`text-[11px] font-black uppercase tracking-widest leading-none ${estadoStyle.text}`}>
+                                        Estado: {estadoLabel}
+                                    </span>
+                                </div>
+                            </div>
+
+                            {/* Motivo de rechazo (solo visible si rechazado) */}
+                            {costeoEstado === EstadoCosteo.RECHAZADO && motivoRechazo && (
+                                <div className="mt-3 flex items-start gap-3 p-4 bg-red-50 rounded-2xl border border-red-100 max-w-[600px]">
+                                    <AlertTriangle className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" />
+                                    <div>
+                                        <span className="text-[9px] font-black text-red-400 uppercase tracking-widest block mb-1">Motivo del rechazo</span>
+                                        <p className="text-sm font-bold text-red-700 leading-relaxed">{motivoRechazo}</p>
+                                    </div>
+                                </div>
+                            )}
 
                             {(selectedRecord || currentSolicitud) && (
                                 <button

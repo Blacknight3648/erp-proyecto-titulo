@@ -67,7 +67,7 @@ const menuItems = [
       { path: '/produccion/tablero-op',  label: 'Seguimiento de OP', icon: LayoutDashboard },
       { path: '/produccion/ordenes',     label: 'Órdenes de Producción',     icon: Scissors },
       { path: '/op-registro',            label: 'Registro de OP',     icon: ClipboardList },
-      { path: '/produccion/costeo-mp',   label: 'Costeo de Materia Prima',  icon: DollarSign },
+      { path: '/produccion/costeo-mp',   label: 'Costeos',  icon: DollarSign },
       { path: '/produccion/hoja-compra', label: 'Hojas de Compra',   icon: ClipboardList },
       { path: '/produccion/compras',     label: 'Compras de producción',   icon: ShoppingCart },
     ],

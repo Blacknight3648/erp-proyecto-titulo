@@ -47,4 +47,5 @@ public class CosteoDTO {
     private BigDecimal precioVentaSugerido;
     
     private java.util.List<CosteoItemDTO> items;
+    
 }

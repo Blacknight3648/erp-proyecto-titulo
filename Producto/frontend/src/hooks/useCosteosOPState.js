@@ -6,6 +6,7 @@ import { useClientes } from './useClientes';
 import { useProveedores } from './useProveedores';
 import { mockOperaciones } from '../data/mockData';
 import { parseId } from '../utils/formUtils';
+import EstadoCosteo from '../remote/DTO/EstadoCosteo';
 
 export function useCosteosOPState() {
     const [view, setView] = useState('list'); // 'list', 'form'
@@ -33,13 +34,15 @@ export function useCosteosOPState() {
     const [costoFlete, setCostoFlete] = useState(0);
 
     const { solicitudesCostos, loading: loadingComercial, loadSolicitudesCostos, updateSolicitudCostos } = useComercial();
-    const { getCosteoBySCOS, saveCosteo, getAllCosteos, aprobarCosteo, rechazarCosteo, loading: loadingProduccion } = useProduccion();
+    const { getCosteoBySCOS, saveCosteo, getAllCosteos, costearCosteo, aprobarCosteo, rechazarCosteo, reabrirCosteo, getHistorialVersionesCosteo, loading: loadingProduccion } = useProduccion();
     const { clientes, loading: loadingClientes } = useClientes();
     const { proveedores, loading: loadingProveedores } = useProveedores();
 
     const [currentSolicitud, setCurrentSolicitud] = useState(null);
     const [insumos, setInsumos] = useState([]);
     const [costeoVersion, setCosteoVersion] = useState(null);
+    const [costeoEstado, setCosteoEstado] = useState(null);
+    const [motivoRechazo, setMotivoRechazo] = useState(null);
     // Costeos reales indexados por solicitudCostosId, para conocer estado/versión por tarjeta.
     const [costeosByScos, setCosteosByScos] = useState({});
 
@@ -177,6 +180,21 @@ export function useCosteosOPState() {
         }
     }, [rechazarCosteo, loadCosteos]);
 
+    const handleReabrirCosteo = useCallback(async (record) => {
+        const costeoId = record?.costeoId;
+        if (!costeoId) {
+            toast.error("Esta solicitud aún no tiene un costeo para reabrir");
+            return;
+        }
+        try {
+            await reabrirCosteo(costeoId);
+            toast.success("Costeo reabierto a Borrador");
+            await Promise.all([loadSolicitudesCostos(), loadCosteos()]);
+        } catch (error) {
+            toast.error("No se pudo reabrir: " + (error.response?.data?.mensaje || error.message));
+        }
+    }, [reabrirCosteo, loadCosteos]);
+
     const totalMateriales = useMemo(() => {
         return insumos.reduce((acc, current) => acc + (current.costo * current.cantidad), 0);
     }, [insumos]);
@@ -209,6 +227,8 @@ export function useCosteosOPState() {
                 setCostoEmbalaje(savedCosteo.costoEmbalaje || 0);
                 setCostoFlete(savedCosteo.costoFlete || 0);
                 setCosteoVersion(savedCosteo.version ?? 1);
+                setCosteoEstado(savedCosteo.estado || null);
+                setMotivoRechazo(savedCosteo.motivoRechazo || null);
             } else {
                 setCostoHilo(0);
                 setCostoMoPropia(0);
@@ -217,6 +237,8 @@ export function useCosteosOPState() {
                 setCostoEmbalaje(0);
                 setCostoFlete(0);
                 setCosteoVersion(null);
+                setCosteoEstado(null);
+                setMotivoRechazo(null);
             }
         } catch (err) {
             console.error("Error cargando costeo de producción:", err);
@@ -392,10 +414,16 @@ export function useCosteosOPState() {
             // Paso 2: guardar/actualizar costeo de producción
             // Si ya existe un costeo para esta SCOS, actualizamos; si no, creamos
             const existingCosteo = await getCosteoBySCOS(parseId(currentSolicitud.id));
+            let savedCosteoResult;
             if (existingCosteo?.idCosteo) {
-                await saveCosteo({ ...productionPayload, idCosteo: existingCosteo.idCosteo });
+                savedCosteoResult = await saveCosteo({ 
+                    ...productionPayload, 
+                    idCosteo: existingCosteo.idCosteo,
+                    estado: existingCosteo.estado,
+                    version: existingCosteo.version
+                });
             } else {
-                await saveCosteo(productionPayload);
+                savedCosteoResult = await saveCosteo(productionPayload);
             }
 
 
@@ -429,7 +457,19 @@ export function useCosteosOPState() {
             }
 
             toast.success("Costeo validado y guardado correctamente");
+
+            // Transicionar BORRADOR → COSTEADO automáticamente al confirmar costos.
+            try {
+                if (savedCosteoResult?.idCosteo && (!savedCosteoResult.estado || savedCosteoResult.estado === EstadoCosteo.BORRADOR)) {
+                    await costearCosteo(savedCosteoResult.idCosteo);
+                    toast.success("Estado del costeo actualizado a COSTEADO");
+                }
+            } catch (costearErr) {
+                console.warn("No se pudo transicionar a COSTEADO (puede que ya lo esté):", costearErr);
+            }
+
             loadSolicitudesCostos();
+            loadCosteos();
             setView('list');
         } catch (error) {
             console.error("Error al validar costos:", error);
@@ -458,6 +498,7 @@ export function useCosteosOPState() {
         costoEtiqueta, setCostoEtiqueta,
         costoEmbalaje, setCostoEmbalaje,
         costoFlete, setCostoFlete,
+        getHistorialVersionesCosteo,
         isLoading,
         dashboardStats,
         filteredRecords,
@@ -467,6 +508,8 @@ export function useCosteosOPState() {
         totalGeneral,
         currentSolicitud,
         costeoVersion,
+        costeoEstado,
+        motivoRechazo,
         insumos,
         handleOpenForm,
         handleUpdateItem,
@@ -475,6 +518,7 @@ export function useCosteosOPState() {
         handleValidateCostos,
         handleAprobarCosteo,
         handleRechazarCosteo,
+        handleReabrirCosteo,
         clientes,
         proveedores
     };

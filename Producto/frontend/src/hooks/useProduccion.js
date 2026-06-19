@@ -95,6 +95,12 @@ export const useProduccion = () => {
     };
 
 
+    // Transición BORRADOR → COSTEADO (producción confirma los costos).
+    const costearCosteo = async (id) => {
+        const res = await api.patch(`/produccion/costeos/${id}/costear`);
+        return res.data;
+    };
+
     // Decisión sobre el costeo (Épica 3). Requieren firma del actor + rol autorizado (403 si no).
     const aprobarCosteo = async (id, { aprobador, rol, observacion } = {}) => {
         const res = await api.patch(`/produccion/costeos/${id}/aprobar`, { aprobador, rol, observacion });
@@ -106,6 +112,23 @@ export const useProduccion = () => {
         return res.data;
     };
 
+    // Reapertura: RECHAZADO/COSTEADO → BORRADOR.
+    const reabrirCosteo = async (id) => {
+        const res = await api.patch(`/produccion/costeos/${id}/reabrir`);
+        return res.data;
+    };
+
+    // Historial de versiones del costeo
+    const getHistorialVersionesCosteo = useCallback(async (idCosteo) => {
+        try {
+            const res = await api.get(`/produccion/costeos/${idCosteo}/historial-versiones`);
+            return res.data || [];
+        } catch (error) {
+            console.error("Error fetching historial versiones costeo:", error);
+            return [];
+        }
+    }, []);
+
     return {
         loading,
         getCosteoBySCOS,
@@ -114,7 +137,10 @@ export const useProduccion = () => {
         getCosteosDisponiblesEVN,
         getCosteoResumenEVN,
         saveCosteo,
+        costearCosteo,
         aprobarCosteo,
-        rechazarCosteo
+        rechazarCosteo,
+        reabrirCosteo,
+        getHistorialVersionesCosteo
     };
 };

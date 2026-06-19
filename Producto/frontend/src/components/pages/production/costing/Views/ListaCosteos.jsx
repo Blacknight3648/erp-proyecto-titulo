@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import {
     DollarSign,
     PieChart,
@@ -10,8 +10,10 @@ import {
     Calculator,
     ClipboardList,
     CheckCircle2,
-    XCircle
+    XCircle,
+    RotateCcw
 } from 'lucide-react';
+import EstadoCosteo from '../../../../../remote/DTO/EstadoCosteo';
 
 // Mapeo único estado → etiqueta + estilos del badge. Cubre el ciclo de vida del
 // Costeo (BORRADOR/COSTEADO/APROBADO/RECHAZADO) y los estados legacy de SCOS.
@@ -41,14 +43,25 @@ export default function ListaCosteos({
     statusFilter,
     setStatusFilter,
     recordsToDisplay,
-    clientes,
+    clientes = [],
     handleOpenForm,
     onAprobar,
-    onRechazar
+    onRechazar,
+    onReabrir
 }) {
     // Modal de rechazo: record en curso + motivo obligatorio.
     const [rechazoRecord, setRechazoRecord] = useState(null);
     const [motivo, setMotivo] = useState('');
+
+    // Optimización O(1) para evitar el .find en cada iteración del .map
+    const clienteMap = useMemo(() => {
+        const map = new Map();
+        clientes.forEach(c => {
+            const id = (c.clienteId || c.id)?.toString();
+            if (id) map.set(id, c);
+        });
+        return map;
+    }, [clientes]);
 
     const confirmarRechazo = () => {
         if (!motivo.trim()) return;
@@ -100,10 +113,18 @@ export default function ListaCosteos({
                         onChange={(e) => setSearchTerm(e.target.value)}
                     />
                 </div>
+                
+                {/* Desplegable Estilizado */}
                 <div className="relative">
-                    <Filter className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 w-3 h-3" />
-                        <select
-                        className="w-full pl-10 pr-4 py-3 bg-gray-50 border-none rounded-2xl text-xs font-black uppercase tracking-widest focus:ring-2 focus:ring-green-500 transition-all outline-none appearance-none cursor-pointer"
+                    <Filter className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 w-3 h-3 pointer-events-none" />
+                    <select
+                        className="w-full pl-10 pr-10 py-3 bg-gray-50 border border-transparent rounded-2xl text-xs font-black uppercase tracking-widest focus:ring-2 focus:ring-green-500 focus:bg-white transition-all outline-none appearance-none cursor-pointer text-gray-700 shadow-sm hover:bg-gray-100/70"
+                        style={{
+                            backgroundImage: `url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%236b7280'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2.5' d='M19 9l-7 7-7-7'/%3E%3C/svg%3E")`,
+                            backgroundPosition: 'right 1rem center',
+                            backgroundSize: '1rem',
+                            backgroundRepeat: 'no-repeat'
+                        }}
                         value={statusFilter}
                         onChange={(e) => setStatusFilter(e.target.value)}
                     >
@@ -112,10 +133,9 @@ export default function ListaCosteos({
                         <option value="COSTEADO">Costeado</option>
                         <option value="APROBADO">Aprobado</option>
                         <option value="RECHAZADO">Rechazado</option>
-                        <option value="PENDIENTE">Pendiente (SCOS)</option>
-                        <option value="APROBADA">Aprobado (SCOS legacy)</option>
                     </select>
                 </div>
+
                 <button
                     onClick={() => {
                         setSearchTerm('');
@@ -129,14 +149,18 @@ export default function ListaCosteos({
             </div>
 
             {/* Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 ">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {recordsToDisplay.map((record) => {
-                    const cliente = clientes.find(c => (c.clienteId || c.id)?.toString() === record.clienteId?.toString());
+                    const recordClienteId = record.clienteId?.toString();
+                    const cliente = clienteMap.get(recordClienteId);
+                    
                     const displayId = record.numero || record.id;
-                    // Estado real del Costeo (si la tarjeta ya tiene costeo vinculado).
                     const estadoCosteo = record.costeoEstado;
-                    const puedeAprobar = estadoCosteo === 'COSTEADO';
-                    const puedeRechazar = estadoCosteo === 'BORRADOR' || estadoCosteo === 'COSTEADO';
+                    
+                    const puedeAprobar = estadoCosteo === EstadoCosteo.COSTEADO;
+                    const puedeRechazar = estadoCosteo === EstadoCosteo.BORRADOR || estadoCosteo === EstadoCosteo.COSTEADO;
+                    const puedeReabrir = estadoCosteo === EstadoCosteo.RECHAZADO || estadoCosteo === EstadoCosteo.COSTEADO;
+                    
                     return (
                         <div
                             key={displayId}
@@ -147,12 +171,12 @@ export default function ListaCosteos({
                                 <div className="flex-1">
                                     <div className="flex items-center gap-2 mb-1">
                                         <span className="text-[10px] font-black text-gray-300 uppercase tracking-widest">{displayId}</span>
-                                    <span className={`px-2 py-0.5 rounded-full text-[8px] font-black uppercase tracking-widest ${badgeFor(estadoCosteo ?? record.estado).className}`}>
-                                        {badgeFor(estadoCosteo ?? record.estado).label}
-                                    </span>
-                                    {record.costeoVersion != null && (
-                                        <span className="px-2 py-0.5 rounded-full text-[8px] font-black uppercase tracking-widest bg-indigo-50 text-indigo-500">v{record.costeoVersion}</span>
-                                    )}
+                                        <span className={`px-2 py-0.5 rounded-full text-[8px] font-black uppercase tracking-widest ${badgeFor(estadoCosteo ?? record.estado).className}`}>
+                                            {badgeFor(estadoCosteo ?? record.estado).label}
+                                        </span>
+                                        {record.costeoVersion != null && (
+                                            <span className="px-2 py-0.5 rounded-full text-[8px] font-black uppercase tracking-widest bg-indigo-50 text-indigo-500">v{record.costeoVersion}</span>
+                                        )}
                                     </div>
                                     <h3 className="text-md font-black text-gray-800 group-hover:text-green-600 transition-colors uppercase leading-tight">
                                         {record.clienteNombre || cliente?.nombreCliente || cliente?.nombre || 'Cliente SCOS'}
@@ -188,15 +212,15 @@ export default function ListaCosteos({
                                     className="px-4 py-2 bg-indigo-600 text-white text-[9px] font-black rounded-xl uppercase tracking-widest hover:bg-indigo-700 transition-all flex items-center shadow-lg shadow-indigo-100"
                                 >
                                     <Calculator className="w-3 h-3 mr-2" />
-                                    {record.estado === 'APROBADA' || record.estado === 'APROBADO'
+                                    {estadoCosteo === EstadoCosteo.APROBADO
                                         ? 'Ver Costeo'
-                                        : record.estado === 'Costeado' || record.estado === 'COSTEADO'
+                                        : estadoCosteo === EstadoCosteo.COSTEADO
                                         ? 'Revisar Costos'
                                         : 'Añadir Costos'}
                                 </button>
                             </div>
 
-                            {/* Decisión sobre el costeo: Aprobar / Rechazar (Épica 3) */}
+                            {/* Decisión sobre el costeo */}
                             <div className="flex items-center gap-2 mt-3">
                                 <button
                                     onClick={(e) => { e.stopPropagation(); onAprobar?.(record); }}
@@ -221,6 +245,20 @@ export default function ListaCosteos({
                                     Rechazar
                                 </button>
                             </div>
+
+                            {/* Reabrir costeo */}
+                            {puedeReabrir && (
+                                <div className="mt-2">
+                                    <button
+                                        onClick={(e) => { e.stopPropagation(); onReabrir?.(record); }}
+                                        title="Reabrir costeo a Borrador"
+                                        className="w-full px-3 py-2 text-[9px] font-black rounded-xl uppercase tracking-widest flex items-center justify-center gap-2 transition-all bg-amber-500 text-white hover:bg-amber-600 active:scale-95 shadow-lg shadow-amber-100"
+                                    >
+                                        <RotateCcw className="w-3 h-3" />
+                                        Reabrir
+                                    </button>
+                                </div>
+                            )}
                         </div>
                     );
                 })}
@@ -234,7 +272,7 @@ export default function ListaCosteos({
                 )}
             </div>
 
-            {/* Modal pequeño: motivo obligatorio para rechazar */}
+            {/* Modal pequeño */}
             {rechazoRecord && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4" onClick={() => setRechazoRecord(null)}>
                     <div className="bg-white w-full max-w-md rounded-[2rem] p-6 shadow-2xl" onClick={(e) => e.stopPropagation()}>

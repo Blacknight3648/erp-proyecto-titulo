@@ -81,6 +81,23 @@ public class CosteoServiceImpl implements CosteoService {
     @Transactional
     public CosteoDTO save(CosteoDTO costeoDTO) {
         Costeo domain = mapper.toDomainFromDto(costeoDTO);
+        
+        // Si es una actualización, conservar el estado, versión y motivo de rechazo ya persistidos en BD
+        // si no fueron suministrados explícitamente en el DTO.
+        if (domain.getIdCosteo() != null) {
+            repository.findById(domain.getIdCosteo()).ifPresent(existing -> {
+                if (costeoDTO.getEstado() == null || costeoDTO.getEstado().isBlank()) {
+                    domain.setEstado(existing.getEstado());
+                }
+                if (costeoDTO.getVersion() == null) {
+                    domain.setVersion(existing.getVersion());
+                }
+                if (costeoDTO.getMotivoRechazo() == null) {
+                    domain.setMotivoRechazo(existing.getMotivoRechazo());
+                }
+            });
+        }
+        
         asignarNumeroSiCorresponde(domain);
         Costeo savedDomain = repository.save(domain);
         return toEnrichedDto(savedDomain);

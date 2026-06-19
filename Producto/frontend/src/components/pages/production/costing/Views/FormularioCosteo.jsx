@@ -9,16 +9,22 @@ import {
     ChevronUp, 
     ChevronDown, 
     TrendingDown,
-    ShieldCheck
+    ShieldCheck,
+    AlertTriangle
 } from 'lucide-react';
 import CosteoTable from '../../../commercial/costing/components/shared/CosteoTable';
 import { FIELD_LABELS } from '../../../../../hooks/usePlantillas';
+import EstadoCosteo, { ESTADO_COSTEO_LABEL } from '../../../../../remote/DTO/EstadoCosteo';
+import HistorialVersionCosteo from '../HistorialVersionCosteo';
+import { useState } from 'react';
 
 export default function FormularioCosteo({
     onBack,
     selectedRecord,
     currentSolicitud,
     costeoVersion,
+    costeoEstado,
+    motivoRechazo,
     handleValidateCostos,
     totalMateriales,
     totalMO,
@@ -44,8 +50,21 @@ export default function FormularioCosteo({
     costoGratificacion, setCostoGratificacion,
     costoEtiqueta, setCostoEtiqueta,
     costoEmbalaje, setCostoEmbalaje,
-    costoFlete, setCostoFlete
+    costoFlete, setCostoFlete,
+    getHistorialVersionesCosteo
 }) {
+    const [showHistorial, setShowHistorial] = useState(false);
+    const [historialData, setHistorialData] = useState([]);
+
+    const handleViewHistorial = async () => {
+        const idCosteo = currentSolicitud?.costeoId || selectedRecord?.idCosteo || selectedRecord?.costeoId;
+        if (idCosteo && getHistorialVersionesCosteo) {
+            const data = await getHistorialVersionesCosteo(idCosteo);
+            setHistorialData(data);
+        }
+        setShowHistorial(true);
+    };
+
     const TabButton = ({ id, label, icon: Icon, color = 'green' }) => (
         <button
             onClick={() => setActiveTab(id)}
@@ -58,6 +77,17 @@ export default function FormularioCosteo({
             <span className="text-[10px] font-black uppercase tracking-widest">{label}</span>
         </button>
     );
+
+    // Mapeo estado → estilos del badge para el header del formulario.
+    const estadoBadgeConfig = {
+        [EstadoCosteo.BORRADOR]:  { bg: 'bg-gray-100', text: 'text-gray-600', ring: 'ring-gray-200', dot: 'bg-gray-400' },
+        [EstadoCosteo.COSTEADO]:  { bg: 'bg-blue-100', text: 'text-blue-700', ring: 'ring-blue-200', dot: 'bg-blue-500' },
+        [EstadoCosteo.APROBADO]:  { bg: 'bg-emerald-100', text: 'text-emerald-700', ring: 'ring-emerald-200', dot: 'bg-emerald-500' },
+        [EstadoCosteo.RECHAZADO]: { bg: 'bg-red-100', text: 'text-red-700', ring: 'ring-red-200', dot: 'bg-red-500' },
+    };
+    const estadoStyle = estadoBadgeConfig[costeoEstado] || estadoBadgeConfig[EstadoCosteo.BORRADOR];
+    const estadoLabel = ESTADO_COSTEO_LABEL[costeoEstado] || (costeoEstado ? costeoEstado : 'Sin estado');
+
 
     return (
         <div className="min-h-screen bg-transparent pt-4 pb-4 pr-4 pl-1 animate-in slide-in-from-bottom-8 duration-700">
@@ -88,7 +118,35 @@ export default function FormularioCosteo({
                             </div>
                             <p className="text-[11px] font-bold text-gray-400 uppercase tracking-widest mt-1 italic leading-none">Determinación de costo directo y materiales</p>
 
-                            {(selectedRecord || currentSolicitud) && (
+                            {/* Estado del Costeo - Badge prominente */}
+                            <div className="flex items-center gap-3 mt-3">
+                                <div className={`flex items-center gap-2 px-4 py-2 rounded-full ring-1 ${estadoStyle.bg} ${estadoStyle.ring} shadow-sm`}>
+                                    <span className={`w-2 h-2 rounded-full ${estadoStyle.dot} animate-pulse`} />
+                                    <span className={`text-[11px] font-black uppercase tracking-widest leading-none ${estadoStyle.text}`}>
+                                        Estado: {estadoLabel}
+                                    </span>
+                                </div>
+                                <button 
+                                    onClick={handleViewHistorial}
+                                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-full hover:bg-gray-100 text-gray-500 hover:text-gray-700 transition-colors border border-gray-200"
+                                >
+                                    <Activity className="w-3.5 h-3.5" />
+                                    <span className="text-[10px] font-black uppercase tracking-widest">Historial</span>
+                                </button>
+                            </div>
+
+                            {/* Motivo de rechazo (solo visible si rechazado) */}
+                            {costeoEstado === EstadoCosteo.RECHAZADO && motivoRechazo && (
+                                <div className="mt-3 flex items-start gap-3 p-4 bg-red-50 rounded-2xl border border-red-100 max-w-[600px]">
+                                    <AlertTriangle className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" />
+                                    <div>
+                                        <span className="text-[9px] font-black text-red-400 uppercase tracking-widest block mb-1">Motivo del rechazo</span>
+                                        <p className="text-sm font-bold text-red-700 leading-relaxed">{motivoRechazo}</p>
+                                    </div>
+                                </div>
+                            )}
+
+                            {(selectedRecord || currentSolicitud) && costeoEstado !== EstadoCosteo.APROBADO && (
                                 <button
                                     onClick={handleValidateCostos}
                                     className="absolute top-1/2 right-0 translate-y-[calc(-50%-4px)] group h-[64px] bg-green-600 text-white rounded-2xl font-black text-[10px] uppercase tracking-widest shadow-lg shadow-green-100 hover:bg-green-700 transition-all flex items-center justify-self-end gap-3 active:scale-95 px-6 max-w-[160px]"
@@ -100,6 +158,19 @@ export default function FormularioCosteo({
                         </div>
                     </div>
                 </div>
+
+                {/* Modal de Historial de Versiones */}
+                {showHistorial && (
+                    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
+                        <div className="relative" onClick={(e) => e.stopPropagation()}>
+                            <HistorialVersionCosteo 
+                                historial={historialData}
+                                onClose={() => setShowHistorial(false)}
+                                numeroCosteo={currentSolicitud?.numero || selectedRecord?.numero}
+                            />
+                        </div>
+                    </div>
+                )}
 
                 {/* Tier 2: Financial Summary & Actions - Compressed Single Row Layout */}
                 <div className="bg-white p-6 rounded-[2.5rem] border border-gray-100 shadow-xl flex items-center justify-between gap-10 ring-1 ring-black/[0.02]">
@@ -207,6 +278,7 @@ export default function FormularioCosteo({
                                                 onUpdateItem={handleUpdateItem}
                                                 onRemoveItem={handleRemoveItem}
                                                 onAddItem={() => handleAddItem('telas')}
+                                                disabled={costeoEstado === EstadoCosteo.APROBADO}
                                             />
 
                                             {/* SCOS Telas Colapsable */}
@@ -249,6 +321,7 @@ export default function FormularioCosteo({
                                                 onUpdateItem={handleUpdateItem}
                                                 onRemoveItem={handleRemoveItem}
                                                 onAddItem={() => handleAddItem('accesorios')}
+                                                disabled={costeoEstado === EstadoCosteo.APROBADO}
                                             />
 
                                             {/* SCOS Accesorios Colapsable */}
@@ -290,6 +363,7 @@ export default function FormularioCosteo({
                                             onUpdateItem={handleUpdateItem}
                                             onRemoveItem={handleRemoveItem}
                                             onAddItem={() => handleAddItem('logotipo')}
+                                            disabled={costeoEstado === EstadoCosteo.APROBADO}
                                         />
                                         <CosteoTable
                                             title="Detalle Insumos"
@@ -297,6 +371,7 @@ export default function FormularioCosteo({
                                             onUpdateItem={handleUpdateItem}
                                             onRemoveItem={handleRemoveItem}
                                             onAddItem={() => handleAddItem('insumos')}
+                                            disabled={costeoEstado === EstadoCosteo.APROBADO}
                                         />
                                     </div>
                                 )}
@@ -317,9 +392,10 @@ export default function FormularioCosteo({
                                                         <input
                                                             type="number"
                                                             min="0"
+                                                            disabled={costeoEstado === EstadoCosteo.APROBADO}
                                                             value={field.value}
                                                             onChange={(e) => field.setter(Math.max(0, parseFloat(e.target.value) || 0))}
-                                                            className="w-full pl-8 pr-4 py-4 bg-gray-50 border-none rounded-2xl text-md font-black text-gray-700 focus:ring-2 focus:ring-blue-500 transition-all outline-none"
+                                                            className={`w-full pl-8 pr-4 py-4 bg-gray-50 border-none rounded-2xl text-md font-black ${costeoEstado === EstadoCosteo.APROBADO ? 'text-gray-400' : 'text-gray-700'} focus:ring-2 focus:ring-blue-500 transition-all outline-none`}
                                                         />
                                                     </div>
                                                 </div>
@@ -360,9 +436,10 @@ export default function FormularioCosteo({
                                                             <input
                                                                 type="number"
                                                                 min="0"
+                                                                disabled={costeoEstado === EstadoCosteo.APROBADO}
                                                                 value={field.value}
                                                                 onChange={(e) => field.setter(Math.max(0, parseFloat(e.target.value) || 0))}
-                                                                className="w-full pl-8 pr-4 py-4 bg-white border border-gray-100 rounded-2xl text-md font-black text-gray-700 focus:ring-2 focus:ring-orange-500 transition-all outline-none"
+                                                                className={`w-full pl-8 pr-4 py-4 bg-white border border-gray-100 rounded-2xl text-md font-black ${costeoEstado === EstadoCosteo.APROBADO ? 'text-gray-400' : 'text-gray-700'} focus:ring-2 focus:ring-orange-500 transition-all outline-none`}
                                                             />
                                                         </div>
                                                     </div>

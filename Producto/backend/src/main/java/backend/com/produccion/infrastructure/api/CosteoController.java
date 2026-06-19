@@ -92,4 +92,10 @@ public class CosteoController {
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
+
+    /** Historial de versiones (snapshots + estado actual) */
+    @GetMapping("/{idCosteo}/historial-versiones")
+    public ResponseEntity<java.util.List<backend.com.produccion.application.dto.HistorialVersionCosteoDTO>> getHistorialVersiones(@PathVariable Long idCosteo) {
+        return ResponseEntity.ok(gestionarCosteoUseCase.obtenerHistorialVersiones(idCosteo));
+    }
 }

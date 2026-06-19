@@ -53,13 +53,6 @@ export function WelcomeHero() {
             </div>
           </div>
         </div>
-
-        {/* Timestamp decorativo o Badge de estado interno */}
-        <div className="hidden md:block text-right">
-          <span className="text-[10px] font-mono tracking-widest text-slate-500 uppercase bg-slate-900/60 border border-slate-800 px-2.5 py-1 rounded-md">
-            AMBIENTE PRODUCTIVO
-          </span>
-        </div>
       </div>
 
       {/* ── 2. TAP BAR DE MÓDULOS PRINCIPALES (VISTA HORIZONTAL) ── */}

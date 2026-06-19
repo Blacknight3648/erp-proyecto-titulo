@@ -187,6 +187,34 @@ class CosteoServiceImplTest {
         verify(articuloRepository, never()).findById(any());
     }
 
+    @Test
+    @DisplayName("save actualizando costeo preserva estado y version si no vienen en el DTO")
+    void save_actualizandoCosteo_preservaEstadoYVersionDeLaBD() {
+        CosteoDTO dto = CosteoDTO.builder().idCosteo(1L).items(List.of()).build(); // Sin estado ni versión
+        Costeo domain = costeo(1L, null, new ArrayList<>());
+        domain.setEstado(backend.com.produccion.domain.enums.EstadoCosteo.BORRADOR); // valor mapeado por defecto
+        domain.setVersion(1); // valor mapeado por defecto
+
+        Costeo existingInDb = costeo(1L, null, new ArrayList<>());
+        existingInDb.setEstado(backend.com.produccion.domain.enums.EstadoCosteo.RECHAZADO);
+        existingInDb.setVersion(3);
+        existingInDb.setMotivoRechazo("Faltan insumos");
+
+        when(mapper.toDomainFromDto(dto)).thenReturn(domain);
+        when(repository.findById(1L)).thenReturn(Optional.of(existingInDb));
+        when(repository.save(domain)).thenReturn(domain);
+        when(mapper.toDto(any(Costeo.class))).thenReturn(CosteoDTO.builder().idCosteo(1L).build());
+
+        costeoService.save(dto);
+
+        ArgumentCaptor<Costeo> captor = ArgumentCaptor.forClass(Costeo.class);
+        verify(repository).save(captor.capture());
+        Costeo saved = captor.getValue();
+        assertThat(saved.getEstado()).isEqualTo(backend.com.produccion.domain.enums.EstadoCosteo.RECHAZADO);
+        assertThat(saved.getVersion()).isEqualTo(3);
+        assertThat(saved.getMotivoRechazo()).isEqualTo("Faltan insumos");
+    }
+
     // --- findAll / findBySolicitudCostosId / findAllBySolicitudCostosId ---
 
     @Test

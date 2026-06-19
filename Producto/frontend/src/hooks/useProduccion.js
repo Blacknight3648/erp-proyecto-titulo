@@ -118,6 +118,17 @@ export const useProduccion = () => {
         return res.data;
     };
 
+    // Historial de versiones del costeo
+    const getHistorialVersionesCosteo = useCallback(async (idCosteo) => {
+        try {
+            const res = await api.get(`/produccion/costeos/${idCosteo}/historial-versiones`);
+            return res.data || [];
+        } catch (error) {
+            console.error("Error fetching historial versiones costeo:", error);
+            return [];
+        }
+    }, []);
+
     return {
         loading,
         getCosteoBySCOS,
@@ -129,6 +140,7 @@ export const useProduccion = () => {
         costearCosteo,
         aprobarCosteo,
         rechazarCosteo,
-        reabrirCosteo
+        reabrirCosteo,
+        getHistorialVersionesCosteo
     };
 };

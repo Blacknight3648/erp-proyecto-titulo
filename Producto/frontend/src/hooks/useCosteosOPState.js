@@ -34,7 +34,7 @@ export function useCosteosOPState() {
     const [costoFlete, setCostoFlete] = useState(0);
 
     const { solicitudesCostos, loading: loadingComercial, loadSolicitudesCostos, updateSolicitudCostos } = useComercial();
-    const { getCosteoBySCOS, saveCosteo, getAllCosteos, costearCosteo, aprobarCosteo, rechazarCosteo, reabrirCosteo, loading: loadingProduccion } = useProduccion();
+    const { getCosteoBySCOS, saveCosteo, getAllCosteos, costearCosteo, aprobarCosteo, rechazarCosteo, reabrirCosteo, getHistorialVersionesCosteo, loading: loadingProduccion } = useProduccion();
     const { clientes, loading: loadingClientes } = useClientes();
     const { proveedores, loading: loadingProveedores } = useProveedores();
 
@@ -414,10 +414,16 @@ export function useCosteosOPState() {
             // Paso 2: guardar/actualizar costeo de producción
             // Si ya existe un costeo para esta SCOS, actualizamos; si no, creamos
             const existingCosteo = await getCosteoBySCOS(parseId(currentSolicitud.id));
+            let savedCosteoResult;
             if (existingCosteo?.idCosteo) {
-                await saveCosteo({ ...productionPayload, idCosteo: existingCosteo.idCosteo });
+                savedCosteoResult = await saveCosteo({ 
+                    ...productionPayload, 
+                    idCosteo: existingCosteo.idCosteo,
+                    estado: existingCosteo.estado,
+                    version: existingCosteo.version
+                });
             } else {
-                await saveCosteo(productionPayload);
+                savedCosteoResult = await saveCosteo(productionPayload);
             }
 
 
@@ -454,11 +460,8 @@ export function useCosteosOPState() {
 
             // Transicionar BORRADOR → COSTEADO automáticamente al confirmar costos.
             try {
-                const costeoGuardado = existingCosteo?.idCosteo
-                    ? await getCosteoBySCOS(parseId(currentSolicitud.id))
-                    : await getCosteoBySCOS(parseId(currentSolicitud.id));
-                if (costeoGuardado?.idCosteo && (!costeoGuardado.estado || costeoGuardado.estado === EstadoCosteo.BORRADOR)) {
-                    await costearCosteo(costeoGuardado.idCosteo);
+                if (savedCosteoResult?.idCosteo && (!savedCosteoResult.estado || savedCosteoResult.estado === EstadoCosteo.BORRADOR)) {
+                    await costearCosteo(savedCosteoResult.idCosteo);
                     toast.success("Estado del costeo actualizado a COSTEADO");
                 }
             } catch (costearErr) {
@@ -495,6 +498,7 @@ export function useCosteosOPState() {
         costoEtiqueta, setCostoEtiqueta,
         costoEmbalaje, setCostoEmbalaje,
         costoFlete, setCostoFlete,
+        getHistorialVersionesCosteo,
         isLoading,
         dashboardStats,
         filteredRecords,

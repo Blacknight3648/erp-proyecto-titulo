@@ -43,7 +43,8 @@ export default function CosteosOP() {
         costoGratificacion, setCostoGratificacion,
         costoEtiqueta, setCostoEtiqueta,
         costoEmbalaje, setCostoEmbalaje,
-        costoFlete, setCostoFlete
+        costoFlete, setCostoFlete,
+        getHistorialVersionesCosteo
     } = useCosteosOPState();
 
     if (isLoading) {
@@ -103,6 +104,7 @@ export default function CosteosOP() {
                     costoEtiqueta={costoEtiqueta} setCostoEtiqueta={setCostoEtiqueta}
                     costoEmbalaje={costoEmbalaje} setCostoEmbalaje={setCostoEmbalaje}
                     costoFlete={costoFlete} setCostoFlete={setCostoFlete}
+                    getHistorialVersionesCosteo={getHistorialVersionesCosteo}
                 />
             )}
 

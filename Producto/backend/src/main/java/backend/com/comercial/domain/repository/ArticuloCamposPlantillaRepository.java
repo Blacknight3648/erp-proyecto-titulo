@@ -21,5 +21,9 @@ public interface ArticuloCamposPlantillaRepository {
 
     void deleteById(Long id);
 
+    List<ArticuloCamposPlantilla> findByArticuloNombreArticulo(String nombreArticulo);
+
     void deleteByArticuloId(Integer idArticulo);
+
+    List<ArticuloCamposPlantilla> saveAll(List<ArticuloCamposPlantilla> modelo);
 }

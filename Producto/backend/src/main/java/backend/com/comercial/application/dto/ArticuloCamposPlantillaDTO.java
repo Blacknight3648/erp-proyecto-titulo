@@ -2,6 +2,7 @@ package backend.com.comercial.application.dto;
 
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
+import java.util.List;
 
 @Data
 @Builder

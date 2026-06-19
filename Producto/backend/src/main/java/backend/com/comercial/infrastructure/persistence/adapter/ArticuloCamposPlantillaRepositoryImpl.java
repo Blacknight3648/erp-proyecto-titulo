@@ -30,6 +30,12 @@ public class ArticuloCamposPlantillaRepositoryImpl implements ArticuloCamposPlan
     }
 
     @Override
+    public List<ArticuloCamposPlantilla> findByArticuloNombreArticulo(String nombreArticulo) {
+        return jpaRepository.findByArticulo_NombreArticulo(nombreArticulo).stream()
+                .map(mapper::toDomain).toList();
+    }
+
+    @Override
     public List<ArticuloCamposPlantilla> findByArticuloId(Integer idArticulo) {
         return jpaRepository.findByArticulo_IdArticulo(idArticulo)
                 .stream().map(mapper::toDomain).toList();
@@ -59,5 +65,13 @@ public class ArticuloCamposPlantillaRepositoryImpl implements ArticuloCamposPlan
     @Transactional
     public void deleteByArticuloId(Integer idArticulo) {
         jpaRepository.deleteByArticulo_IdArticulo(idArticulo);
+    }
+
+    @Override
+    @Transactional
+    public List<ArticuloCamposPlantilla> saveAll(List<ArticuloCamposPlantilla> modelos) {
+        List<backend.com.comercial.infrastructure.persistence.entity.ArticuloCamposPlantillaJpaEntity> entities = 
+            modelos.stream().map(mapper::toEntity).toList();
+        return jpaRepository.saveAll(entities).stream().map(mapper::toDomain).toList();
     }
 }

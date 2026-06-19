@@ -11,6 +11,8 @@ public interface ArticuloCamposPlantillaJpaRepository extends JpaRepository<Arti
 
     List<ArticuloCamposPlantillaJpaEntity> findByArticulo_IdArticulo(Integer idArticulo);
 
+    List<ArticuloCamposPlantillaJpaEntity> findByArticulo_NombreArticulo(String nombreArticulo);
+
     boolean existsByArticulo_IdArticuloAndPlantilla_IdPlantilla(Integer idArticulo, Long idPlantilla);
 
     void deleteByArticulo_IdArticulo(Integer idArticulo);

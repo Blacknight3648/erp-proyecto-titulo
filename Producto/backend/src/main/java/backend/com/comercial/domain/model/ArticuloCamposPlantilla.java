@@ -2,6 +2,7 @@ package backend.com.comercial.domain.model;
 
 import backend.com.shared.domain.model.Articulo;
 import lombok.*;
+import java.util.List;
 
 /**
  * Configuración que define qué Plantilla (campo) se sugiere por defecto

@@ -50,6 +50,13 @@ public class ArticulosCamposPlantillaServiceImpl implements ArticuloCamposPlanti
 
     @Override
     @Transactional(readOnly = true)
+    public List<ArticuloCamposPlantillaDTO> listarPorNombreArticulo(String nombreArticulo) {
+        return modeloPlantillaRepository.findByArticuloNombreArticulo(nombreArticulo)
+                .stream().map(mapper::toDTO).toList();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public List<ArticuloCamposPlantillaDTO> listarPorArticulo(Integer idArticulo) {
         return modeloPlantillaRepository.findByArticuloId(idArticulo)
                 .stream().map(mapper::toDTO).toList();
@@ -62,4 +69,32 @@ public class ArticulosCamposPlantillaServiceImpl implements ArticuloCamposPlanti
         }
         modeloPlantillaRepository.deleteById(id);
     }
+
+    @Override
+    @Transactional
+    public List<ArticuloCamposPlantillaDTO> guardarCampos(List<ArticuloCamposPlantillaDTO> dtoList) {
+        if (dtoList == null || dtoList.isEmpty()) {
+            return List.of();
+        }
+        
+        List<ArticuloCamposPlantilla> entities = dtoList.stream().map(dto -> {
+            Articulo articulo = articuloRepository.findById(dto.getIdArticulo())
+                    .orElseThrow(() -> new EntityNotFoundException(
+                            "Articulo con id " + dto.getIdArticulo() + " no encontrado"));
+            CamposPlantilla plantilla = plantillaRepository.findById(dto.getIdPlantilla())
+                    .orElseThrow(() -> new EntityNotFoundException(
+                            "Plantilla con id " + dto.getIdPlantilla() + " no encontrada"));
+            return ArticuloCamposPlantilla.builder()
+                    .articulo(articulo)
+                    .plantilla(plantilla)
+                    .build();
+        }).toList();
+        
+        List<ArticuloCamposPlantilla> guardados = modeloPlantillaRepository.saveAll(entities);
+
+        return guardados.stream()
+                .map(mapper::toDTO)
+                .toList();
+    }
+
 }

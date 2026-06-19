@@ -9,6 +9,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
 @RestController
 @RequestMapping("/api/v3/comercial/modelos-plantilla")
@@ -20,6 +24,17 @@ public class ArticuloCamposPlantillaController {
     @PostMapping
     public ResponseEntity<ArticuloCamposPlantillaDTO> crear(@Valid @RequestBody ArticuloCamposPlantillaDTO request) {
         return ResponseEntity.status(HttpStatus.CREATED).body(modeloPlantillaService.crear(request));
+    }
+
+    @PostMapping("/bulk")
+    public ResponseEntity<List<ArticuloCamposPlantillaDTO>> guardarCampos(
+            @Valid @RequestBody List<ArticuloCamposPlantillaDTO> request) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(modeloPlantillaService.guardarCampos(request));
+    }
+
+    @GetMapping("/nombre-articulo/{nombreArticulo}")
+    public ResponseEntity<List<ArticuloCamposPlantillaDTO>> listarPorNombreArticulo(@PathVariable String nombreArticulo) {
+        return ResponseEntity.ok(modeloPlantillaService.listarPorNombreArticulo(nombreArticulo));
     }
 
     @GetMapping("/articulo/{idArticulo}")

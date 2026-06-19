@@ -34,7 +34,7 @@ export function usePlantillas() {
     const fetchAll = useCallback(async () => {
         try {
             setLoading(true);
-            const { data } = await api.get('/configuracion-plantillas');
+            const { data } = await api.get('http://127.0.0.1:8050/api/v3/maestros/articulos/activos');
             setPlantillas(Array.isArray(data) ? data : []);
         } catch (err) {
             console.error("[usePlantillas] Error fetching all:", err);
@@ -54,27 +54,19 @@ export function usePlantillas() {
         if (!tipo) return new Set(ALL_FIELDS);
         if (cache[tipo]) return cache[tipo];
 
-        // Intento encontrar en las plantillas ya cargadas antes de llamar al API
-        const localMatch = plantillas.find(p => p.nombrePrenda?.toUpperCase() === tipo);
-        if (localMatch?.camposActivos) {
-            const campos = new Set(localMatch.camposActivos);
-            setCache(prev => ({ ...prev, [tipo]: campos }));
-            return campos;
-        }
+        const articulo = plantillas.find(p => p.nombre?.toUpperCase() === tipo || p.nombreArticulo?.toUpperCase() === tipo);
+        if (!articulo || !articulo.idArticulo) return new Set(ALL_FIELDS);
 
         try {
             setLoading(true);
-            const { data } = await api.get(
-                `/configuracion-plantillas/by-nombre`,
-                { params: { nombre: tipo } }
-            );
+            const { data } = await api.get(`http://127.0.0.1:8050/api/v3/comercial/modelos-plantilla/articulo/${articulo.idArticulo}`);
 
-            const campos = data?.camposActivos
-                ? new Set(data.camposActivos)
-                : new Set(ALL_FIELDS);
-
-            setCache(prev => ({ ...prev, [tipo]: campos }));
-            return campos;
+            if (data && data.length > 0) {
+                const campos = new Set(data.map(d => d.nombreCampo));
+                setCache(prev => ({ ...prev, [tipo]: campos }));
+                return campos;
+            }
+            return new Set(ALL_FIELDS);
         } catch (err) {
             console.error(`[usePlantillas] Error al obtener campos para "${tipo}":`, err);
             return new Set(ALL_FIELDS);

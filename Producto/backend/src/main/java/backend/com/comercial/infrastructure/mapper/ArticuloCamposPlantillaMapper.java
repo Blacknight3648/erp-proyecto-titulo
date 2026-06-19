@@ -21,7 +21,8 @@ public class ArticuloCamposPlantillaMapper {
     private final ArticuloJpaRepository articuloJpaRepository;
 
     public ArticuloCamposPlantilla toDomain(ArticuloCamposPlantillaJpaEntity entity) {
-        if (entity == null) return null;
+        if (entity == null)
+            return null;
         return ArticuloCamposPlantilla.builder()
                 .idModeloPlantilla(entity.getIdModeloPlantilla())
                 .articulo(articuloMapper.toDomain(entity.getArticulo()))
@@ -30,13 +31,14 @@ public class ArticuloCamposPlantillaMapper {
     }
 
     public ArticuloCamposPlantillaJpaEntity toEntity(ArticuloCamposPlantilla domain) {
-        if (domain == null) return null;
+        if (domain == null)
+            return null;
         ArticuloJpaEntity articulo = resolverArticulo(domain.getArticulo());
         CamposPlantillaJpaEntity plantilla = domain.getPlantilla() != null
                 ? CamposPlantillaJpaEntity.builder()
-                    .idPlantilla(domain.getPlantilla().getIdPlantilla())
-                    .nombreCampo(domain.getPlantilla().getNombreCampo())
-                    .build()
+                        .idPlantilla(domain.getPlantilla().getIdPlantilla())
+                        .nombreCampo(domain.getPlantilla().getNombreCampo())
+                        .build()
                 : null;
         return ArticuloCamposPlantillaJpaEntity.builder()
                 .idModeloPlantilla(domain.getIdModeloPlantilla())
@@ -46,7 +48,8 @@ public class ArticuloCamposPlantillaMapper {
     }
 
     public ArticuloCamposPlantillaDTO toDTO(ArticuloCamposPlantilla domain) {
-        if (domain == null) return null;
+        if (domain == null)
+            return null;
         CamposPlantilla p = domain.getPlantilla();
         Articulo a = domain.getArticulo();
         return ArticuloCamposPlantillaDTO.builder()
@@ -58,7 +61,8 @@ public class ArticuloCamposPlantillaMapper {
     }
 
     private ArticuloJpaEntity resolverArticulo(Articulo articulo) {
-        if (articulo == null || articulo.getIdArticulo() == null) return null;
+        if (articulo == null || articulo.getIdArticulo() == null)
+            return null;
         return articuloJpaRepository.findById(articulo.getIdArticulo()).orElse(null);
     }
 }

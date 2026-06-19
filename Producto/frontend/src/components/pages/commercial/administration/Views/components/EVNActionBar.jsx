@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { ChevronLeft, CheckCircle2, Download, FileText, FileSpreadsheet, Eye, Edit3, Plus } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { ChevronLeft, CheckCircle2, Download, FileText, FileSpreadsheet, Eye, Edit3, Plus, ShoppingCart } from 'lucide-react';
 import { exportToPDF, exportToExcel } from '../../../../../../utils/exportUtils';
 
 const MODE_CONFIG = {
@@ -39,8 +40,16 @@ export default function EVNActionBar({
     onGenerarPropuesta
 }) {
     const [showExportMenu, setShowExportMenu] = useState(false);
+    const navigate = useNavigate();
     const cfg = MODE_CONFIG[mode] || MODE_CONFIG.create;
     const ModeIcon = cfg.icon;
+
+    // Una EVN adjudicada puede generar su Nota de Venta manualmente (plantilla pre-cargada).
+    const puedeGenerarNV = mode === 'view' && initialEval?.estado === 'ADJUDICADA';
+
+    const handleGenerarNV = () => {
+        navigate('/registros-nv', { state: { initialData: initialEval } });
+    };
 
     const handleExportPDF = () => {
         exportToPDF({
@@ -160,6 +169,17 @@ export default function EVNActionBar({
                             </div>
                         )}
                     </div>
+
+                    {/* Generar Nota de Venta — solo al visualizar una EVN ADJUDICADA */}
+                    {puedeGenerarNV && (
+                        <button
+                            onClick={handleGenerarNV}
+                            className="px-7 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-black text-[10px] uppercase tracking-widest shadow-lg shadow-emerald-200 hover:-translate-y-0.5 transition-all flex items-center gap-2 group"
+                        >
+                            <ShoppingCart className="w-3.5 h-3.5 group-hover:rotate-12 transition-transform" />
+                            Generar Nota de Venta
+                        </button>
+                    )}
 
                     {/* Save button — only in create/edit modes */}
                     {cfg.actionLabel && (

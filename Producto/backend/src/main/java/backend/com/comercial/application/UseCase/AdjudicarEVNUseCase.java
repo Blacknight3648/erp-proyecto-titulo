@@ -3,23 +3,17 @@ package backend.com.comercial.application.UseCase;
 import backend.com.comercial.domain.enums.EstadoEVN;
 import backend.com.comercial.domain.model.EvaluacionNegocio;
 import backend.com.comercial.domain.repository.EvaluacionNegocioRepository;
-import backend.com.comercial.application.dto.CrearNVCommand;
 import backend.com.comercial.application.dto.EVNResponse;
-import backend.com.comercial.application.dto.ItemNVDTO;
 import backend.com.shared.application.service.HistorialEstadoService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class AdjudicarEVNUseCase {
 
     private final EvaluacionNegocioRepository evnRepository;
-    private final CrearNVUseCase crearNVUseCase;
     private final HistorialEstadoService historialService;
 
     @Transactional
@@ -46,53 +40,8 @@ public class AdjudicarEVNUseCase {
                         ? observacion
                         : "Adjudicación de la Evaluación de Negocio");
 
-        // 2. Crear Nota de Venta automáticamente
-        try {
-            CrearNVCommand nvCommand = new CrearNVCommand();
-            nvCommand.setEvaluacionNegocioId(evn.getEvaluacionNegocioId());
-            nvCommand.setClienteId(evn.getClienteId());
-            nvCommand.setVendedorId(evn.getVendedorId());
-            nvCommand.setEsKit(false); // Por defecto
-            nvCommand.setFechaEntregaEstimada(evn.getFechaEvaluacion().plusDays(15)); // Default 15 days
-
-            List<ItemNVDTO> nvItems = evn.getItems().stream().map(itemEvn -> {
-                ItemNVDTO itemNv = new ItemNVDTO();
-                itemNv.setArticuloId(itemEvn.getArticuloId());
-                itemNv.setProveedorId(itemEvn.getProveedorId());
-                itemNv.setCantidad(itemEvn.getCantidad());
-                itemNv.setPrecioUnitario(itemEvn.getPrecioUnitario().getAmount());
-                itemNv.setItemType(itemEvn.getTipoItem());
-
-                // Mapear campos descriptivos del ítem EVN → NV
-                itemNv.setModelo(itemEvn.getModelo());
-                itemNv.setTela(itemEvn.getTela());
-                itemNv.setComposicion(itemEvn.getComposicion());
-                itemNv.setGenero(itemEvn.getGenero());
-                // color y talla vienen de technicalSpecs si están presentes como specs dinámicas
-                if (itemEvn.getTechnicalSpecs() != null) {
-                    itemEvn.getTechnicalSpecs().stream()
-                            .filter(s -> "color".equals(s.getClave()))
-                            .findFirst().ifPresent(s -> itemNv.setColor(s.getValor()));
-                    itemEvn.getTechnicalSpecs().stream()
-                            .filter(s -> "talla".equals(s.getClave()))
-                            .findFirst().ifPresent(s -> itemNv.setTalla(s.getValor()));
-                }
-
-                itemNv.setRequiereOt(true); // Por defecto para Pre-NV
-                return itemNv;
-            }).collect(Collectors.toList());
-
-            nvCommand.setItems(nvItems);
-
-            // Ejecutar creación de NV (esto ya gatilla OP/SC internamente)
-            crearNVUseCase.ejecutar(nvCommand);
-
-        } catch (Exception e) {
-            // Log error but don't fail adjudication?
-            // Better to fail if NV cannot be created as it is a requirement.
-            throw new RuntimeException("Error al crear la Nota de Venta automática: " + e.getMessage(), e);
-        }
-
+        // La Nota de Venta ya NO se crea automáticamente al adjudicar: el usuario comercial
+        // la genera manualmente desde el frontend usando la EVN adjudicada como plantilla.
         return EVNResponse.fromDomain(evn);
     }
 }

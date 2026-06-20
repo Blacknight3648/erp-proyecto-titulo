@@ -30,6 +30,13 @@ public class DescripcionPlantillaController {
         return ResponseEntity.status(HttpStatus.CREATED).body(descripcionService.crear(request));
     }
 
+    /** Guarda en lote (atómico) todas las descripciones de una SCOS en una sola petición. */
+    @PostMapping("/api/v3/comercial/descripciones-plantilla/bulk")
+    public ResponseEntity<List<DescripcionPlantillaDTO>> guardarMultiples(
+            @Valid @RequestBody List<DescripcionPlantillaDTO> request) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(descripcionService.guardarMultiples(request));
+    }
+
     @PutMapping("/api/v3/comercial/descripciones-plantilla/{id}")
     public ResponseEntity<DescripcionPlantillaDTO> actualizar(@PathVariable Long id,
                                                               @Valid @RequestBody DescripcionPlantillaDTO request) {

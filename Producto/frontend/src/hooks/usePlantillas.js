@@ -61,14 +61,19 @@ export function usePlantillas() {
             setLoading(true);
             const { data } = await api.get(`http://127.0.0.1:8050/api/v3/comercial/modelos-plantilla/articulo/${articulo.idArticulo}`);
 
-            if (data && data.length > 0) {
-                const campos = new Set(data.map(d => d.nombreCampo));
+            // El endpoint ahora devuelve UN objeto { idArticulo, nombreArticulo, camposPlantilla:[...] }.
+            const lista = data?.camposPlantilla ?? [];
+            if (lista.length > 0) {
+                const campos = new Set(lista);
                 setCache(prev => ({ ...prev, [tipo]: campos }));
                 return campos;
             }
             return new Set(ALL_FIELDS);
         } catch (err) {
-            console.error(`[usePlantillas] Error al obtener campos para "${tipo}":`, err);
+            // 404 (artículo sin configuración) → se usan todos los campos por defecto.
+            if (err.response?.status !== 404) {
+                console.error(`[usePlantillas] Error al obtener campos para "${tipo}":`, err);
+            }
             return new Set(ALL_FIELDS);
         } finally {
             setLoading(false);

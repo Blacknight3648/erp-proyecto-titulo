@@ -361,4 +361,47 @@ class DescripcionPlantillaServiceImplTest {
 
         verify(descripcionRepository, never()).deleteById(any());
     }
+
+    // ---------------- guardarMultiples (bulk) ----------------
+
+    @Test
+    @DisplayName("guardarMultiples persiste todas las descripciones del lote")
+    void guardarMultiples_ok() {
+        CamposPlantilla p2 = plantilla(2L);
+        CamposPlantilla p3 = plantilla(3L);
+        DescripcionPlantillaDTO d1 = DescripcionPlantillaDTO.builder().idSCOS(1L).idPlantilla(2L).valorDescripcion("polar").build();
+        DescripcionPlantillaDTO d2 = DescripcionPlantillaDTO.builder().idSCOS(1L).idPlantilla(3L).valorDescripcion("redondo").build();
+
+        when(plantillaRepository.findById(2L)).thenReturn(Optional.of(p2));
+        when(plantillaRepository.findById(3L)).thenReturn(Optional.of(p3));
+        when(descripcionRepository.save(any(DescripcionPlantilla.class))).thenAnswer(inv -> inv.getArgument(0));
+        when(mapper.toDTO(any(DescripcionPlantilla.class))).thenReturn(DescripcionPlantillaDTO.builder().build());
+
+        List<DescripcionPlantillaDTO> resultado = descripcionPlantillaServiceImpl.guardarMultiples(List.of(d1, d2));
+
+        assertThat(resultado).hasSize(2);
+        verify(descripcionRepository, times(2)).save(any(DescripcionPlantilla.class));
+    }
+
+    @Test
+    @DisplayName("guardarMultiples revierte (lanza) si un idPlantilla del lote no existe")
+    void guardarMultiples_plantillaInexistente() {
+        DescripcionPlantillaDTO d1 = DescripcionPlantillaDTO.builder().idSCOS(1L).idPlantilla(2L).valorDescripcion("polar").build();
+        DescripcionPlantillaDTO d2 = DescripcionPlantillaDTO.builder().idSCOS(1L).idPlantilla(99L).valorDescripcion("x").build();
+
+        when(plantillaRepository.findById(2L)).thenReturn(Optional.of(plantilla(2L)));
+        when(plantillaRepository.findById(99L)).thenReturn(Optional.empty());
+        when(descripcionRepository.save(any(DescripcionPlantilla.class))).thenAnswer(inv -> inv.getArgument(0));
+
+        assertThatThrownBy(() -> descripcionPlantillaServiceImpl.guardarMultiples(List.of(d1, d2)))
+                .isInstanceOf(EntityNotFoundException.class);
+    }
+
+    @Test
+    @DisplayName("guardarMultiples con lista vacía o null no persiste nada")
+    void guardarMultiples_vacio() {
+        assertThat(descripcionPlantillaServiceImpl.guardarMultiples(List.of())).isEmpty();
+        assertThat(descripcionPlantillaServiceImpl.guardarMultiples(null)).isEmpty();
+        verify(descripcionRepository, never()).save(any());
+    }
 }

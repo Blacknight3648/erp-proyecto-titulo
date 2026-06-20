@@ -19,5 +19,6 @@ public class ArticuloCamposPlantilla {
 
     private Long idModeloPlantilla;
     private Articulo articulo;
-    private CamposPlantilla plantilla;
+    /** Nombres de los campos de plantilla asignados al artículo. */
+    private List<String> campos;
 }

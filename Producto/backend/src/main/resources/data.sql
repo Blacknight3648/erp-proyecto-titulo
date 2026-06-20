@@ -254,19 +254,13 @@ MERGE INTO plantilla (id_plantilla, nombre_campo)
 -- ============================================================
 -- 7.3. MODELO PLANTILLA (Mapeo Artículo e Id Plantilla)
 -- ============================================================
-MERGE INTO modelo_plantilla (id_modelo_plantilla, id_articulo, id_plantilla)
+-- Una sola fila por artículo: los campos de su plantilla en CSV (nombres de `plantilla`).
+MERGE INTO modelo_plantilla (id_modelo_plantilla, id_articulo, campos)
     KEY (id_modelo_plantilla)
     VALUES
-    (1,  1, 4),   -- Polar Fleece -> gorro
-    (2,  1, 11),  -- Polar Fleece -> bolsillos
-    (3,  1, 9),   -- Polar Fleece -> mangas
-    (4,  1, 1),   -- Polar Fleece -> forro
-    (5,  2, 5),   -- Ripstop -> cuello
-    (6,  2, 2),   -- Ripstop -> relleno
-    (7,  2, 11),  -- Ripstop -> bolsillos
-    (8,  2, 6),   -- Ripstop -> abotonaduraCierre
-    (9,  3, 9),   -- Jersey  -> mangas
-    (10, 3, 10);  -- Jersey  -> pretinasRuedo
+    (1, 1, 'gorro,bolsillos,mangas,forro'),                  -- Polar Fleece
+    (2, 2, 'cuello,relleno,bolsillos,abotonaduraCierre'),    -- Ripstop
+    (3, 3, 'mangas,pretinasRuedo');                          -- Jersey
 
 -- ============================================================
 -- 7.4. SOLICITUDES DE COSTOS (SCOS)

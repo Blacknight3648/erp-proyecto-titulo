@@ -15,8 +15,8 @@ public class ArticuloCamposPlantillaDTO {
     @NotNull(message = "El idArticulo es obligatorio")
     private Integer idArticulo;
 
-    @NotNull(message = "El idPlantilla es obligatorio")
-    private Long idPlantilla;
+    private String nombreArticulo;        // espejo del Articulo para reads
 
-    private String nombreCampo;  // espejo desde Plantilla para reads
+    /** Lista completa de campos de la plantilla del artículo. Ej: ["forro","cuello"]. */
+    private List<String> camposPlantilla;
 }

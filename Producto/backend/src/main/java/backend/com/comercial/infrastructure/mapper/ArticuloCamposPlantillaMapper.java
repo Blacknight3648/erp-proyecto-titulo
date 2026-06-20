@@ -2,9 +2,7 @@ package backend.com.comercial.infrastructure.mapper;
 
 import backend.com.comercial.application.dto.ArticuloCamposPlantillaDTO;
 import backend.com.comercial.domain.model.ArticuloCamposPlantilla;
-import backend.com.comercial.domain.model.CamposPlantilla;
 import backend.com.comercial.infrastructure.persistence.entity.ArticuloCamposPlantillaJpaEntity;
-import backend.com.comercial.infrastructure.persistence.entity.CamposPlantillaJpaEntity;
 import backend.com.shared.domain.model.Articulo;
 import backend.com.shared.infrastructure.mapper.ArticuloMapper;
 import backend.com.shared.infrastructure.persistence.entity.ArticuloJpaEntity;
@@ -12,11 +10,13 @@ import backend.com.shared.infrastructure.persistence.repository.Jpa.ArticuloJpaR
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.util.Arrays;
+import java.util.List;
+
 @Component
 @RequiredArgsConstructor
 public class ArticuloCamposPlantillaMapper {
 
-    private final CamposPlantillaMapper plantillaMapper;
     private final ArticuloMapper articuloMapper;
     private final ArticuloJpaRepository articuloJpaRepository;
 
@@ -26,38 +26,47 @@ public class ArticuloCamposPlantillaMapper {
         return ArticuloCamposPlantilla.builder()
                 .idModeloPlantilla(entity.getIdModeloPlantilla())
                 .articulo(articuloMapper.toDomain(entity.getArticulo()))
-                .plantilla(plantillaMapper.toDomain(entity.getPlantilla()))
+                .campos(parseCampos(entity.getCampos()))
                 .build();
     }
 
     public ArticuloCamposPlantillaJpaEntity toEntity(ArticuloCamposPlantilla domain) {
         if (domain == null)
             return null;
-        ArticuloJpaEntity articulo = resolverArticulo(domain.getArticulo());
-        CamposPlantillaJpaEntity plantilla = domain.getPlantilla() != null
-                ? CamposPlantillaJpaEntity.builder()
-                        .idPlantilla(domain.getPlantilla().getIdPlantilla())
-                        .nombreCampo(domain.getPlantilla().getNombreCampo())
-                        .build()
-                : null;
         return ArticuloCamposPlantillaJpaEntity.builder()
                 .idModeloPlantilla(domain.getIdModeloPlantilla())
-                .articulo(articulo)
-                .plantilla(plantilla)
+                .articulo(resolverArticulo(domain.getArticulo()))
+                .campos(joinCampos(domain.getCampos()))
                 .build();
     }
 
     public ArticuloCamposPlantillaDTO toDTO(ArticuloCamposPlantilla domain) {
         if (domain == null)
             return null;
-        CamposPlantilla p = domain.getPlantilla();
         Articulo a = domain.getArticulo();
         return ArticuloCamposPlantillaDTO.builder()
                 .idModeloPlantilla(domain.getIdModeloPlantilla())
                 .idArticulo(a != null ? a.getIdArticulo() : null)
-                .idPlantilla(p != null ? p.getIdPlantilla() : null)
-                .nombreCampo(p != null ? p.getNombreCampo() : null)
+                .nombreArticulo(a != null ? a.getNombreArticulo() : null)
+                .camposPlantilla(domain.getCampos())
                 .build();
+    }
+
+    /** "forro,cuello,mangas" -> ["forro","cuello","mangas"] (trim, descarta vacíos). */
+    public static List<String> parseCampos(String csv) {
+        if (csv == null || csv.isBlank())
+            return List.of();
+        return Arrays.stream(csv.split(","))
+                .map(String::trim)
+                .filter(s -> !s.isEmpty())
+                .toList();
+    }
+
+    /** ["forro","cuello"] -> "forro,cuello". */
+    public static String joinCampos(List<String> campos) {
+        if (campos == null || campos.isEmpty())
+            return "";
+        return String.join(",", campos);
     }
 
     private ArticuloJpaEntity resolverArticulo(Articulo articulo) {

@@ -141,12 +141,12 @@ class ComercialWriteTest extends AbstractIntegrationTest {
     }
 
     @Test
-    @DisplayName("ArticuloCamposPlantilla: vincular articulo+plantilla (combo libre) → 2xx")
+    @DisplayName("ArticuloCamposPlantilla: upsert de campos del articulo → 2xx")
     void modeloPlantilla_crear() throws Exception {
-        // (articulo 1, plantilla 3) no está sembrado en data.sql → evita el 422 de duplicado
+        // Upsert: una sola fila por articulo con la lista de campos.
         mockMvc.perform(post("/api/v3/comercial/modelos-plantilla")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(json(Map.of("idArticulo", 1, "idPlantilla", 3))))
+                        .content(json(Map.of("idArticulo", 1, "camposPlantilla", java.util.List.of("forro", "cuello")))))
                 .andExpect(status().is2xxSuccessful());
     }
 

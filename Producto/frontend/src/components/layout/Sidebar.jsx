@@ -96,6 +96,16 @@ const menuItems = [
       { path: '/trazabilidad/historial', label: 'Auditoría Histórica',   icon: History },
     ],
   },
+  {
+    id: 'datos-maestros', label: 'Datos Maestros', icon: Package,
+    homeRoute: '/admin/datos-maestros',
+    submenu: [
+      { path: '/admin/datos-maestros',           label: 'Datos Maestros', icon: Settings },
+      { path: '/gestion-usuarios/clientes',      label: 'Clientes',     icon: Users },
+      { path: '/gestion-usuarios/proveedores',   label: 'Proveedores',  icon: Truck },
+      { path: '/gestion-usuarios/vendedores',    label: 'Vendedores (Comerciales)', icon: BarChart3 },
+    ],
+  },
 ];
 
 export default function Sidebar({ isOpen, setIsOpen }) {

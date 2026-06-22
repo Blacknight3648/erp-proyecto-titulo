@@ -21,6 +21,7 @@ export default function CosteosOP() {
         totalCostosFijos,
         totalGeneral,
         currentSolicitud,
+        selectedRecord,
         costeoVersion,
         costeoEstado,
         motivoRechazo,
@@ -79,10 +80,12 @@ export default function CosteosOP() {
                 <FormularioCosteo
                     onBack={() => setView('list')}
                     currentSolicitud={currentSolicitud}
+                    selectedRecord={selectedRecord}
                     costeoVersion={costeoVersion}
                     costeoEstado={costeoEstado}
                     motivoRechazo={motivoRechazo}
                     handleValidateCostos={handleValidateCostos}
+                    onReabrir={handleReabrirCosteo}
                     totalMateriales={totalMateriales}
                     totalMO={totalMO}
                     totalCostosFijos={totalCostosFijos}

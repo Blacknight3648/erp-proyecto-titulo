@@ -253,13 +253,21 @@ export default function ListaCosteos({
                             key={displayId}
                             onClick={() => handleOpenForm(record)}
                             className={`group bg-white p-6 rounded-[2.5rem] border-2 transition-all cursor-pointer relative overflow-hidden flex flex-col ${
-                                tieneInconsistencia 
+                                record.isCorrupted
+                                ? 'border-red-400 bg-red-50/30 shadow-md shadow-red-100'
+                                : tieneInconsistencia 
                                 ? 'border-amber-300 bg-amber-50/20 shadow-sm' 
                                 : 'border-gray-50 hover:border-green-500 hover:shadow-2xl hover:shadow-green-50'
                             }`}
                         >
                             {/* Alerta de Registro Incompleto / Inconsistente */}
-                            {tieneInconsistencia && (
+                            {record.isCorrupted && (
+                                <div className="mb-3 px-3 py-2 bg-red-100 text-red-800 rounded-xl flex items-center gap-2 text-[9px] font-black uppercase tracking-wider border border-red-200">
+                                    <AlertTriangle className="w-4 h-4 text-red-600" />
+                                    Excepción: Costeo vacío o corrupto
+                                </div>
+                            )}
+                            {!record.isCorrupted && tieneInconsistencia && (
                                 <div className="mb-3 px-3 py-1.5 bg-amber-100 text-amber-800 rounded-xl flex items-center gap-2 text-[9px] font-black uppercase tracking-wider">
                                     <AlertTriangle className="w-3 h-3 text-amber-600" />
                                     Cantidad faltante o invalida en SCOS
@@ -295,6 +303,11 @@ export default function ListaCosteos({
                                         ) : (
                                             <p className="text-sm font-black text-amber-500 italic uppercase tracking-wider">Por Calcular</p>
                                         )
+                                    ) : record.isCorrupted ? (
+                                        <div className="flex items-center gap-1.5 text-red-600">
+                                            <AlertTriangle className="w-4 h-4" />
+                                            <span className="text-[10px] font-black uppercase tracking-wider">Datos Corruptos ($0 real)</span>
+                                        </div>
                                     ) : (
                                         <p className={`text-xl font-black tracking-tight ${record.costoTotal <= 0 ? 'text-red-500' : 'text-gray-800'}`}>
                                             ${(record.costoTotal || 0).toLocaleString('es-CL')}

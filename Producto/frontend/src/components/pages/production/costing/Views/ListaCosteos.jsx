@@ -284,11 +284,22 @@ export default function ListaCosteos({
                             </div>
 
                             <div className="space-y-3 mb-4">
-                                <div className="p-4 bg-gray-50 rounded-2xl flex flex-col justify-center">
+                                <div className="p-4 bg-gray-50 rounded-2xl flex flex-col justify-center min-h-[76px]">
                                     <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-1">Costo Total Costeo OP</p>
-                                    <p className={`text-xl font-black tracking-tight ${record.costoTotal <= 0 ? 'text-red-500' : 'text-gray-800'}`}>
-                                        ${(record.costoTotal || 0).toLocaleString('es-CL')}
-                                    </p>
+                                    { (estadoCosteo === EstadoCosteo.BORRADOR || estadoCosteo === EstadoCosteo.PENDIENTE) ? (
+                                        record.costoTotal > 0 ? (
+                                            <div className="flex items-center gap-1.5 text-red-500">
+                                                <AlertTriangle className="w-4 h-4" />
+                                                <span className="text-[10px] font-black uppercase tracking-wider">Error: Residuo en Base de Datos</span>
+                                            </div>
+                                        ) : (
+                                            <p className="text-sm font-black text-amber-500 italic uppercase tracking-wider">Por Calcular</p>
+                                        )
+                                    ) : (
+                                        <p className={`text-xl font-black tracking-tight ${record.costoTotal <= 0 ? 'text-red-500' : 'text-gray-800'}`}>
+                                            ${(record.costoTotal || 0).toLocaleString('es-CL')}
+                                        </p>
+                                    )}
                                 </div>
                                 <div className="flex items-center gap-2 px-1">
                                     <Layers className="w-3 h-3 text-gray-300" />

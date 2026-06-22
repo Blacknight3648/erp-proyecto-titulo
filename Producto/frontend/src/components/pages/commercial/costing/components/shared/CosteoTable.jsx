@@ -88,7 +88,10 @@ export default function CosteoTable({ title, insumos, onUpdateItem, onRemoveItem
                                                 disabled={disabled}
                                                 className={`w-20 bg-transparent border-none text-sm font-black ${disabled || !isNew ? 'text-gray-400' : 'text-gray-800'} text-center focus:ring-0`}
                                                 value={item.cantidad}
-                                                onChange={(e) => onUpdateItem(item.id, 'cantidad', parseFloat(e.target.value) || 0)}
+                                                onChange={(e) => {
+                                                    const val = e.target.value;
+                                                    onUpdateItem(item.id, 'cantidad', val === '' ? '' : Math.max(0, parseFloat(val) || 0));
+                                                }}
                                             />
                                         </td>
                                         <td className="px-6 py-4 text-center">
@@ -114,13 +117,16 @@ export default function CosteoTable({ title, insumos, onUpdateItem, onRemoveItem
                                                     disabled={disabled}
                                                     className={`w-24 bg-transparent border-none text-sm font-black ${disabled ? 'text-gray-400' : 'text-gray-800'} text-right focus:ring-0`}
                                                     value={item.costo}
-                                                    onChange={(e) => onUpdateItem(item.id, 'costo', parseFloat(e.target.value) || 0)}
+                                                    onChange={(e) => {
+                                                        const val = e.target.value;
+                                                        onUpdateItem(item.id, 'costo', val === '' ? '' : Math.max(0, parseFloat(val) || 0));
+                                                    }}
                                                 />
                                             </div>
                                         </td>
                                         <td className="px-6 py-4 text-right">
                                             <span className="text-sm font-black text-indigo-600">
-                                                ${(item.costo * item.cantidad).toLocaleString('es-CL')}
+                                                ${((parseFloat(item.costo) || 0) * (parseFloat(item.cantidad) || 0)).toLocaleString('es-CL')}
                                             </span>
                                         </td>
                                         <td className="px-6 py-4 text-center">
@@ -169,7 +175,10 @@ export default function CosteoTable({ title, insumos, onUpdateItem, onRemoveItem
                                                 disabled={disabled}
                                                 className={`w-20 bg-transparent border-none text-sm font-black ${disabled || !isNew ? 'text-gray-400' : 'text-gray-800'} text-center focus:ring-0`}
                                                 value={item.cantidad}
-                                                onChange={(e) => onUpdateItem(item.id, 'cantidad', parseFloat(e.target.value) || 0)}
+                                                onChange={(e) => {
+                                                    const val = e.target.value;
+                                                    onUpdateItem(item.id, 'cantidad', val === '' ? '' : Math.max(0, parseFloat(val) || 0));
+                                                }}
                                             />
                                         </td>
                                         <td className="px-6 py-4">
@@ -180,13 +189,16 @@ export default function CosteoTable({ title, insumos, onUpdateItem, onRemoveItem
                                                     disabled={disabled}
                                                     className={`w-24 bg-transparent border-none text-sm font-black ${disabled ? 'text-gray-400' : 'text-gray-800'} text-right focus:ring-0`}
                                                     value={item.costo}
-                                                    onChange={(e) => onUpdateItem(item.id, 'costo', parseFloat(e.target.value) || 0)}
+                                                    onChange={(e) => {
+                                                        const val = e.target.value;
+                                                        onUpdateItem(item.id, 'costo', val === '' ? '' : Math.max(0, parseFloat(val) || 0));
+                                                    }}
                                                 />
                                             </div>
                                         </td>
                                         <td className="px-6 py-4 text-right">
                                             <span className="text-sm font-black text-indigo-600">
-                                                ${(item.costo * item.cantidad).toLocaleString('es-CL')}
+                                                ${((parseFloat(item.costo) || 0) * (parseFloat(item.cantidad) || 0)).toLocaleString('es-CL')}
                                             </span>
                                         </td>
                                         <td className="px-6 py-4 text-center">

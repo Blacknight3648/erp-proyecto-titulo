@@ -10,13 +10,14 @@ import {
     ChevronDown, 
     TrendingDown,
     ShieldCheck,
-    AlertTriangle
+    AlertTriangle,
+    X
 } from 'lucide-react';
 import CosteoTable from '../../../commercial/costing/components/shared/CosteoTable';
 import { FIELD_LABELS } from '../../../../../hooks/usePlantillas';
 import EstadoCosteo, { ESTADO_COSTEO_LABEL } from '../../../../../remote/DTO/EstadoCosteo';
 import HistorialVersionCosteo from '../HistorialVersionCosteo';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 export default function FormularioCosteo({
     onBack,
@@ -55,6 +56,40 @@ export default function FormularioCosteo({
 }) {
     const [showHistorial, setShowHistorial] = useState(false);
     const [historialData, setHistorialData] = useState([]);
+    const [errorUI, setErrorUI] = useState({ visible: false, message: '' });
+
+    const triggerWarning = (message) => {
+        setErrorUI({ visible: true, message });
+        setTimeout(() => {
+            setErrorUI({ visible: false, message: '' });
+        }, 6000);
+    };
+
+    const ejecutarGuardadoPreFlight = () => {
+        // Validación 1: Costo no nulo
+        if (!totalGeneral || totalGeneral <= 0) {
+            triggerWarning('El costo total del costeo no puede ser 0 o nulo.');
+            return;
+        }
+
+        // Validación 2: Campos numéricos incompletos
+        const isMOIncompleta = [moPrenda, moCinta, moCosturaSellada, moAcolchado].some(v => v === '');
+        if (isMOIncompleta) {
+            triggerWarning('Existen campos de Mano de Obra vacíos. Ingrese 0 si no aplica costo.');
+            setActiveTab('mo');
+            return;
+        }
+
+        const isCIFIncompleto = [costoHilo, costoMoPropia, costoGratificacion, costoEtiqueta, costoEmbalaje, costoFlete].some(v => v === '');
+        if (isCIFIncompleto) {
+            triggerWarning('Existen campos de Costos Fijos vacíos. Ingrese 0 si no aplica costo.');
+            setActiveTab('costosFijos');
+            return;
+        }
+
+        // Enviar a la validación del hook padre
+        handleValidateCostos();
+    };
 
     const handleViewHistorial = async () => {
         const idCosteo = currentSolicitud?.costeoId || selectedRecord?.idCosteo || selectedRecord?.costeoId;
@@ -91,6 +126,22 @@ export default function FormularioCosteo({
 
     return (
         <div className="min-h-screen bg-transparent pt-4 pb-4 pr-4 pl-1 animate-in slide-in-from-bottom-8 duration-700">
+            {/* Banner Global de Errores */}
+            {errorUI.visible && (
+                <div className="fixed top-4 right-4 z-50 max-w-md bg-red-50 border-l-4 border-red-600 p-4 rounded-r-xl shadow-xl animate-in slide-in-from-top-4 duration-300">
+                    <div className="flex items-start gap-3">
+                        <AlertTriangle className="w-5 h-5 text-red-600 shrink-0 mt-0.5" />
+                        <div className="flex-1">
+                            <h4 className="text-xs font-black text-red-800 uppercase tracking-wider">Error de Validación Interna</h4>
+                            <p className="text-xs font-bold text-red-700 mt-1">{errorUI.message}</p>
+                        </div>
+                        <button onClick={() => setErrorUI({ visible: false, message: '' })} className="text-red-400 hover:text-red-600">
+                            <X className="w-4 h-4" />
+                        </button>
+                    </div>
+                </div>
+            )}
+            
             {/* Header & Financial Summary Unified - Vertical Tiered Layout */}
             <div className="max-w-full pr-96 mb-10 animate-in fade-in slide-in-from-top-4 duration-1000 space-y-4">
                 {/* Tier 1: Navigation & Title */}
@@ -148,8 +199,13 @@ export default function FormularioCosteo({
 
                             {(selectedRecord || currentSolicitud) && costeoEstado !== EstadoCosteo.APROBADO && (
                                 <button
-                                    onClick={handleValidateCostos}
-                                    className="absolute top-1/2 right-0 translate-y-[calc(-50%-4px)] group h-[64px] bg-green-600 text-white rounded-2xl font-black text-[10px] uppercase tracking-widest shadow-lg shadow-green-100 hover:bg-green-700 transition-all flex items-center justify-self-end gap-3 active:scale-95 px-6 max-w-[160px]"
+                                    onClick={ejecutarGuardadoPreFlight}
+                                    disabled={errorUI.visible}
+                                    className={`absolute top-1/2 right-0 translate-y-[calc(-50%-4px)] group h-[64px] rounded-2xl font-black text-[10px] uppercase tracking-widest shadow-lg flex items-center justify-self-end gap-3 transition-all px-6 max-w-[160px] ${
+                                        errorUI.visible
+                                        ? 'bg-gray-300 text-gray-500 cursor-not-allowed shadow-none'
+                                        : 'bg-green-600 text-white hover:bg-green-700 active:scale-95 shadow-green-100'
+                                    }`}
                                 >
                                     <Save className="w-5 h-5 group-hover:rotate-12 transition-transform flex-shrink-0" />
                                     <span className="leading-tight text-center">Finalizar y Guardar</span>
@@ -394,7 +450,11 @@ export default function FormularioCosteo({
                                                             min="0"
                                                             disabled={costeoEstado === EstadoCosteo.APROBADO}
                                                             value={field.value}
-                                                            onChange={(e) => field.setter(Math.max(0, parseFloat(e.target.value) || 0))}
+                                                            onChange={(e) => {
+                                                                const val = e.target.value;
+                                                                if (val === '') field.setter('');
+                                                                else field.setter(Math.max(0, parseFloat(val) || 0));
+                                                            }}
                                                             className={`w-full pl-8 pr-4 py-4 bg-gray-50 border-none rounded-2xl text-md font-black ${costeoEstado === EstadoCosteo.APROBADO ? 'text-gray-400' : 'text-gray-700'} focus:ring-2 focus:ring-blue-500 transition-all outline-none`}
                                                         />
                                                     </div>
@@ -438,7 +498,11 @@ export default function FormularioCosteo({
                                                                 min="0"
                                                                 disabled={costeoEstado === EstadoCosteo.APROBADO}
                                                                 value={field.value}
-                                                                onChange={(e) => field.setter(Math.max(0, parseFloat(e.target.value) || 0))}
+                                                                onChange={(e) => {
+                                                                    const val = e.target.value;
+                                                                    if (val === '') field.setter('');
+                                                                    else field.setter(Math.max(0, parseFloat(val) || 0));
+                                                                }}
                                                                 className={`w-full pl-8 pr-4 py-4 bg-white border border-gray-100 rounded-2xl text-md font-black ${costeoEstado === EstadoCosteo.APROBADO ? 'text-gray-400' : 'text-gray-700'} focus:ring-2 focus:ring-orange-500 transition-all outline-none`}
                                                             />
                                                         </div>

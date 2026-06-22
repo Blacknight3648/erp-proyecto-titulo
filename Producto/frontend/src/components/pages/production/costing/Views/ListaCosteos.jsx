@@ -233,21 +233,32 @@ export default function ListaCosteos({
                                     <CheckCircle2 className="w-3 h-3" />
                                     Aprobar
                                 </button>
-                                <button
-                                    onClick={(e) => { e.stopPropagation(); setRechazoRecord(record); setMotivo(''); }}
-                                    disabled={!puedeRechazar}
-                                    title={puedeRechazar ? 'Rechazar costeo' : 'Solo se puede rechazar un costeo BORRADOR o COSTEADO'}
-                                    className={`flex-1 px-3 py-2 text-[9px] font-black rounded-xl uppercase tracking-widest flex items-center justify-center gap-2 transition-all ${puedeRechazar
-                                        ? 'bg-red-600 text-white hover:bg-red-700 active:scale-95 shadow-lg shadow-red-100'
-                                        : 'bg-gray-100 text-gray-300 cursor-not-allowed'}`}
-                                >
-                                    <XCircle className="w-3 h-3" />
-                                    Rechazar
-                                </button>
+                                {estadoCosteo === EstadoCosteo.RECHAZADO ? (
+                                    <button
+                                        onClick={(e) => { e.stopPropagation(); onReabrir?.(record); }}
+                                        title="El costeo ya fue rechazado. Haz clic para reabrir a borrador y realizar modificaciones"
+                                        className="flex-1 px-3 py-2 text-[9px] font-black rounded-xl uppercase tracking-widest flex items-center justify-center gap-2 transition-all bg-amber-500 text-white hover:bg-amber-600 active:scale-95 shadow-lg shadow-amber-100"
+                                    >
+                                        <RotateCcw className="w-3 h-3" />
+                                        Reabrir
+                                    </button>
+                                ) : (
+                                    <button
+                                        onClick={(e) => { e.stopPropagation(); setRechazoRecord(record); setMotivo(''); }}
+                                        disabled={!puedeRechazar}
+                                        title={puedeRechazar ? 'Rechazar costeo' : 'Solo se puede rechazar un costeo BORRADOR o COSTEADO'}
+                                        className={`flex-1 px-3 py-2 text-[9px] font-black rounded-xl uppercase tracking-widest flex items-center justify-center gap-2 transition-all ${puedeRechazar
+                                            ? 'bg-red-600 text-white hover:bg-red-700 active:scale-95 shadow-lg shadow-red-100'
+                                            : 'bg-gray-100 text-gray-300 cursor-not-allowed'}`}
+                                    >
+                                        <XCircle className="w-3 h-3" />
+                                        Rechazar
+                                    </button>
+                                )}
                             </div>
 
                             {/* Reabrir costeo */}
-                            {puedeReabrir && (
+                            {puedeReabrir && estadoCosteo !== EstadoCosteo.RECHAZADO && (
                                 <div className="mt-2">
                                     <button
                                         onClick={(e) => { e.stopPropagation(); onReabrir?.(record); }}

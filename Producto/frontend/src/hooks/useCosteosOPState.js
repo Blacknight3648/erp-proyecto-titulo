@@ -187,8 +187,19 @@ export function useCosteosOPState() {
             .map(r => {
                 // Enriquecer con el Costeo real (estado/versión/id) para el badge y los botones.
                 const costeo = costeosByScos[r.id?.toString()];
+                
+                let isCorrupted = false;
+                if (costeo && (costeo.estado === 'APROBADO' || costeo.estado === 'COSTEADO')) {
+                    const noCosto = (!costeo.costoManoObra || costeo.costoManoObra <= 0) && 
+                                    (!costeo.costoHilos || costeo.costoHilos <= 0) &&
+                                    (!costeo.costoFlete || costeo.costoFlete <= 0);
+                    if (noCosto) {
+                        isCorrupted = true;
+                    }
+                }
+
                 return costeo
-                    ? { ...r, costeoId: costeo.idCosteo, costeoEstado: costeo.estado, costeoVersion: costeo.version }
+                    ? { ...r, costeoId: costeo.idCosteo, costeoEstado: costeo.estado, costeoVersion: costeo.version, isCorrupted }
                     : r;
             })
             .filter(r => {
@@ -212,6 +223,10 @@ export function useCosteosOPState() {
         const costeoId = record?.costeoId;
         if (!costeoId) {
             toast.error("Esta solicitud aún no tiene un costeo para aprobar");
+            return;
+        }
+        if (record?.isCorrupted) {
+            toast.error("Excepción: El costeo no puede ser aprobado porque sus datos base están vacíos.");
             return;
         }
         try {
@@ -285,9 +300,25 @@ export function useCosteosOPState() {
         let savedCosteo = null;
         try {
             savedCosteo = await getCosteoBySCOS(record.id);
+            
+            // Si el backend devuelve un arreglo (por tener historial o múltiples), tomamos el más reciente o el primero
+            if (Array.isArray(savedCosteo)) {
+                savedCosteo = savedCosteo.length > 0 ? savedCosteo[savedCosteo.length - 1] : null;
+            }
+
+            // Fallback: Si falló la consulta o retornó null, intentamos sacarlo de la lista global que ya teníamos cargada
+            if (!savedCosteo && costeosByScos[record.id?.toString()]) {
+                savedCosteo = costeosByScos[record.id?.toString()];
+            }
+
             if (savedCosteo) {
+                setMoPrenda(savedCosteo.costoManoObra || 0);
+                setMoCinta(0);
+                setMoCosturaSellada(0);
+                setMoAcolchado(0);
+
                 setCostoHilo(savedCosteo.costoHilos || 0);
-                setCostoMoPropia(savedCosteo.costoManoObra || 0);
+                setCostoMoPropia(0); // MO se carga en moPrenda para visualización
                 setCostoGratificacion(0);
                 setCostoEtiqueta(savedCosteo.costoEtiquetas || 0);
                 setCostoEmbalaje(savedCosteo.costoEmbalaje || 0);
@@ -326,11 +357,39 @@ export function useCosteosOPState() {
             });
         });
 
+        // Cargar Telas de la ficha si existen
+        const sourceTelas = record.telas?.length > 0 ? record.telas : (record.plantillas?.[0]?.telas || []);
+        sourceTelas.forEach((t, idx) => {
+            initialInsumos.push({
+                id: t.id || `TELA-${idx}`,
+                producto: t.nombre || t.aplicacion || 'Tela',
+                costo: 0,
+                cantidad: t.consumo || 0,
+                unidad: t.unidadMedida || 'm',
+                categoryId: 'telas',
+                composicion: t.composicion,
+                color: t.color
+            });
+        });
+
+        // Cargar Accesorios de la ficha si existen
+        const sourceAccesorios = record.accesorios?.length > 0 ? record.accesorios : (record.plantillas?.[0]?.accesorios || []);
+        sourceAccesorios.forEach((a, idx) => {
+            initialInsumos.push({
+                id: a.id || `ACC-${idx}`,
+                producto: a.nombreAccesorio || a.tipo || 'Accesorio',
+                costo: 0,
+                cantidad: a.consumo || a.cantidad || 0,
+                unidad: a.unidadMedida || 'un',
+                categoryId: 'accesorios'
+            });
+        });
+
         if (savedCosteo && savedCosteo.items && savedCosteo.items.length > 0) {
             savedCosteo.items.forEach(savedItem => {
                 const matchIndex = initialInsumos.findIndex(i =>
                     i.producto === savedItem.nombreInsumo &&
-                    i.categoryId === savedItem.tipoInsumo?.toUpperCase()
+                    i.categoryId.toLowerCase() === (savedItem.tipoInsumo || '').toLowerCase()
                 );
 
                 if (matchIndex !== -1) {

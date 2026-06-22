@@ -21,6 +21,7 @@ import { useState, useEffect } from 'react';
 
 export default function FormularioCosteo({
     onBack,
+    onReabrir,
     selectedRecord,
     currentSolicitud,
     costeoVersion,
@@ -123,6 +124,14 @@ export default function FormularioCosteo({
     const estadoStyle = estadoBadgeConfig[costeoEstado] || estadoBadgeConfig[EstadoCosteo.BORRADOR];
     const estadoLabel = ESTADO_COSTEO_LABEL[costeoEstado] || (costeoEstado ? costeoEstado : 'Sin estado');
 
+    const isDataCorrupted = (costeoEstado === EstadoCosteo.APROBADO || costeoEstado === EstadoCosteo.COSTEADO) && totalGeneral <= 0;
+
+    const handleForzarReapertura = () => {
+        if (onReabrir && (selectedRecord || currentSolicitud)) {
+            onReabrir(selectedRecord || currentSolicitud);
+            onBack();
+        }
+    };
 
     return (
         <div className="min-h-screen bg-transparent pt-4 pb-4 pr-4 pl-1 animate-in slide-in-from-bottom-8 duration-700">
@@ -138,6 +147,32 @@ export default function FormularioCosteo({
                         <button onClick={() => setErrorUI({ visible: false, message: '' })} className="text-red-400 hover:text-red-600">
                             <X className="w-4 h-4" />
                         </button>
+                    </div>
+                </div>
+            )}
+
+            {/* Overlay de Excepción (Datos Corruptos) */}
+            {isDataCorrupted && (
+                <div className="mb-6 bg-red-50 border-l-4 border-red-600 p-6 rounded-r-2xl shadow-sm animate-in slide-in-from-top-4">
+                    <div className="flex items-start gap-4">
+                        <div className="p-3 bg-red-100 rounded-xl shrink-0">
+                            <AlertTriangle className="w-8 h-8 text-red-600" />
+                        </div>
+                        <div className="flex-1">
+                            <h3 className="text-sm font-black text-red-900 uppercase tracking-widest mb-2">
+                                Excepción Crítica: Costeo sin Datos Base
+                            </h3>
+                            <p className="text-xs font-bold text-red-700 leading-relaxed mb-4">
+                                Este costeo figura como <span className="uppercase">{costeoEstado}</span> en el sistema, pero no posee ningún detalle de materiales, mano de obra ni costos fijos ($0). Esto indica que fue guardado incorrectamente o los datos se corrompieron. No se puede proceder operacionalmente con un costeo vacío.
+                            </p>
+                            <button
+                                onClick={handleForzarReapertura}
+                                className="inline-flex items-center gap-2 px-5 py-2.5 bg-red-600 hover:bg-red-700 text-white text-[10px] font-black uppercase tracking-widest rounded-xl transition-all shadow-md shadow-red-200"
+                            >
+                                <TrendingDown className="w-4 h-4" />
+                                Forzar Reapertura a Borrador
+                            </button>
+                        </div>
                     </div>
                 </div>
             )}

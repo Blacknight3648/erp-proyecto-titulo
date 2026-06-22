@@ -50,6 +50,7 @@ class EvaluacionNegocioControllerTest {
     @MockitoBean private ActualizarEVNUseCase actualizarEVNUseCase;
     @MockitoBean private AdjudicarEVNUseCase adjudicarEVNUseCase;
     @MockitoBean private AprobarEVNUseCase aprobarEVNUseCase;
+    @MockitoBean private CerrarEVNUseCase cerrarEVNUseCase;
 
     @MockitoBean private EvaluacionNegocioRepository repository;
     @MockitoBean private HistorialEstadoService historialService;
@@ -222,6 +223,22 @@ class EvaluacionNegocioControllerTest {
                     .thenReturn(evn(1L, "EVN-001"));
 
             mockMvc.perform(patch("/api/v1/comercial/evaluaciones-negocio/1/rechazar")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(req)))
+                    .andExpect(status().isOk());
+        }
+
+        @Test
+        @DisplayName("PATCH /cerrar")
+        void cerrar() throws Exception {
+
+            FirmaAprobacionRequest req = new FirmaAprobacionRequest();
+            req.setAprobador("Juan");
+
+            when(cerrarEVNUseCase.ejecutar(eq(1L), any(), any()))
+                    .thenReturn(evn(1L, "EVN-001"));
+
+            mockMvc.perform(patch("/api/v1/comercial/evaluaciones-negocio/1/cerrar")
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(objectMapper.writeValueAsString(req)))
                     .andExpect(status().isOk());

@@ -94,6 +94,9 @@ export default function ListaNV({
             ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {evaluaciones
+                        // Solo una EVN ADJUDICADA puede usarse como plantilla para una NV
+                        // (una EVN CERRADA u otro estado es rechazada por el backend).
+                        .filter(e => e.estado === 'ADJUDICADA')
                         .filter(e => String(e.evaluacionNegocioId || e.id).includes(searchTerm) || (e.clienteNombre || e.cliente)?.toLowerCase().includes(searchTerm.toLowerCase()))
                         .map((evn) => (
                         <div key={evn.evaluacionNegocioId || evn.id} className="bg-white p-6 rounded-[2.5rem] border border-gray-100 hover:shadow-xl transition-all flex flex-col">

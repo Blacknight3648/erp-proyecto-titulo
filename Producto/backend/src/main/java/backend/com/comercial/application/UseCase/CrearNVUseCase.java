@@ -3,13 +3,17 @@ package backend.com.comercial.application.UseCase;
 import backend.com.comercial.application.dto.CrearNVCommand;
 import backend.com.comercial.application.dto.NVResponse;
 import backend.com.comercial.application.dto.ItemNVDTO;
+import backend.com.comercial.domain.enums.EstadoEVN;
 import backend.com.comercial.domain.enums.TipoItem;
+import backend.com.comercial.domain.model.EvaluacionNegocio;
 import backend.com.comercial.domain.model.ItemNV;
 import backend.com.comercial.domain.model.ItemNVTalla;
 import backend.com.comercial.domain.model.NotaVenta;
+import backend.com.comercial.domain.repository.EvaluacionNegocioRepository;
 import backend.com.comercial.domain.repository.NotaVentaRepository;
 import backend.com.produccion.application.UseCase.CrearOrdenProduccionUseCase;
 import backend.com.shared.application.service.NumeroDocumentoService;
+import backend.com.shared.exception.EVNBusinessException;
 import backend.com.shared.valueobjects.DocumentNumber;
 import backend.com.shared.valueobjects.Money;
 import lombok.RequiredArgsConstructor;
@@ -26,9 +30,25 @@ public class CrearNVUseCase {
     private final NotaVentaRepository nvRepository;
     private final CrearOrdenProduccionUseCase crearOPUseCase;
     private final NumeroDocumentoService numeroDocumentoService;
+    private final EvaluacionNegocioRepository evnRepository;
 
     @Transactional
     public NVResponse ejecutar(CrearNVCommand command) {
+        // Gate de consistencia: la NV se genera a partir de una EVN, que debe estar
+        // ADJUDICADA. Una EVN CERRADA (o en cualquier otro estado) bloquea la
+        // generación de nuevas Notas de Venta. La guarda != null es defensiva: el
+        // dominio NotaVenta ya exige un evaluacionNegocioId obligatorio.
+        if (command.getEvaluacionNegocioId() != null) {
+            EvaluacionNegocio evn = evnRepository.findById(command.getEvaluacionNegocioId())
+                    .orElseThrow(() -> new EVNBusinessException(
+                            "Evaluación de Negocio no encontrada: " + command.getEvaluacionNegocioId()));
+            if (evn.getEstado() != EstadoEVN.ADJUDICADA) {
+                throw new EVNBusinessException(
+                        "No se puede generar una Nota de Venta: la EVN debe estar ADJUDICADA (estado actual: "
+                                + evn.getEstado() + ")");
+            }
+        }
+
         // El número se asigna siempre desde el contador atómico,
         // ignorando lo que envíe el cliente (que puede traer un valor obsoleto
         // si dos usuarios consultaron /next-number al mismo tiempo).

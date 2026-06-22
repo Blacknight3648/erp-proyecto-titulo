@@ -38,7 +38,8 @@ export default function FirmaAprobacionModal({
     const colorMap = {
         emerald: { bg: 'bg-emerald-600', hover: 'hover:bg-emerald-700', ring: 'focus:ring-emerald-500', text: 'text-emerald-600' },
         red: { bg: 'bg-red-600', hover: 'hover:bg-red-700', ring: 'focus:ring-red-500', text: 'text-red-600' },
-        indigo: { bg: 'bg-indigo-600', hover: 'hover:bg-indigo-700', ring: 'focus:ring-indigo-500', text: 'text-indigo-600' }
+        indigo: { bg: 'bg-indigo-600', hover: 'hover:bg-indigo-700', ring: 'focus:ring-indigo-500', text: 'text-indigo-600' },
+        slate: { bg: 'bg-slate-800', hover: 'hover:bg-slate-900', ring: 'focus:ring-slate-500', text: 'text-slate-700' }
     };
     const c = colorMap[accentColor] || colorMap.emerald;
 

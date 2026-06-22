@@ -39,6 +39,16 @@ class NotaVentaFlujoTest extends AbstractIntegrationTest {
     @Test
     @DisplayName("aprobar una NV con ítem requiereOt genera la OT de modificación vinculada")
     void aprobarNV_generaOrdenTrabajo() throws Exception {
+        // 0) La NV solo puede generarse desde una EVN ADJUDICADA. La EVN 2 sembrada
+        //    está APROBADA, así que la adjudicamos primero.
+        FirmaAprobacionRequest firmaEvn = new FirmaAprobacionRequest();
+        firmaEvn.setAprobador("tester");
+        mockMvc.perform(patch("/api/v1/comercial/evaluaciones-negocio/{id}/adjudicar", 2L)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(firmaEvn)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.estado").value("ADJUDICADA"));
+
         // 1) Crear NV con un ítem que requiere OT (prenda lista, tipoItem != OP)
         CrearNVCommand cmd = new CrearNVCommand();
         cmd.setEvaluacionNegocioId(2L);

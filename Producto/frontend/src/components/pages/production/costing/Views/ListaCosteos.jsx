@@ -179,7 +179,7 @@ export default function ListaCosteos({
                                         )}
                                     </div>
                                     <h3 className="text-md font-black text-gray-800 group-hover:text-green-600 transition-colors uppercase leading-tight">
-                                        {record.clienteNombre || cliente?.nombreCliente || cliente?.nombre || 'Cliente SCOS'}
+                                        {record.clienteNombre || cliente?.razonSocial || cliente?.nombreCliente || cliente?.nombre || 'Cliente SCOS'}
                                     </h3>
                                 </div>
                             </div>

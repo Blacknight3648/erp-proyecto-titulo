@@ -69,7 +69,7 @@ export default function FormularioNV({
                             <option value="">{loadingClientes ? 'Cargando clientes...' : 'Seleccione un cliente...'}</option>
                             {clientes.map(c => (
                                 <option key={c.clienteId} value={c.clienteId}>
-                                    {c.nombreCliente} {c.apellidoCliente} ({c.runCliente})
+                                    {c.razonSocial || `${c.nombreCliente} ${c.apellidoCliente}`.trim()} ({c.runCliente})
                                 </option>
                             ))}
                         </select>

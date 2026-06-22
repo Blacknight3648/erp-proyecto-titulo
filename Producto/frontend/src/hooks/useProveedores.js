@@ -9,7 +9,19 @@ export const useProveedores = () => {
    const loadProveedores = async () => {
       try {
          const response = await api.get("/proveedores");
-         setProveedores(response.data);
+         const mapped = (response.data || []).map(p => {
+            const id = p.proveedorId || p.id;
+            const nombre = p.razonSocialProveedor || p.nombreProveedor || p.nombre || '';
+            return {
+               ...p,
+               id: id,
+               proveedorId: id,
+               nombreProveedor: nombre,
+               nombre: nombre,
+               razonSocialProveedor: nombre
+            };
+         });
+         setProveedores(mapped);
       } catch (error) {
          console.error("Error al cargar proveedores:", error);
          toast.error("Error de conexión al cargar la lista de proveedores");

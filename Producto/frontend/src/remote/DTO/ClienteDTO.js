@@ -5,8 +5,9 @@
 export class ClienteDTO {
     constructor(data = {}) {
         this.clienteId = data.clienteId || null;
-        this.nombreCliente = data.nombreCliente || '';
+        this.nombreCliente = data.nombreCliente || data.razonSocial || '';
         this.apellidoCliente = data.apellidoCliente || '';
+        this.razonSocial = data.razonSocial || '';
         this.runCliente = data.runCliente || '';
         this.correoCliente = data.correoCliente || '';
         this.telefonoCliente = data.telefonoCliente || '';

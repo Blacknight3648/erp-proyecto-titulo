@@ -225,7 +225,7 @@ export default function FormularioCosteo({
                                         type="text"
                                         disabled
                                         className="w-full p-4 bg-gray-50 border-none rounded-2xl text-md font-bold text-gray-400 cursor-not-allowed"
-                                        value={currentSolicitud?.clienteNombre || clientes.find(c => (c.clienteId || c.id)?.toString() === currentSolicitud?.clienteId?.toString())?.nombreCliente || 'N/A'}
+                                        value={currentSolicitud?.clienteNombre || clientes.find(c => (c.clienteId || c.id)?.toString() === currentSolicitud?.clienteId?.toString())?.razonSocial || clientes.find(c => (c.clienteId || c.id)?.toString() === currentSolicitud?.clienteId?.toString())?.nombreCliente || 'N/A'}
                                     />
                                 </div>
                                 <div className="space-y-2">

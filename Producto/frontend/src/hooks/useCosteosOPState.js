@@ -8,6 +8,68 @@ import { mockOperaciones } from '../data/mockData';
 import { parseId } from '../utils/formUtils';
 import EstadoCosteo from '../remote/DTO/EstadoCosteo';
 
+/**
+ * Reconstruye la "ficha técnica" (plantillas) que el formulario y el panel de
+ * Especificación Técnica del costeo esperan, a partir de las `descripciones`
+ * que hoy entrega el backend de SCOS (antes venía como `plantillas`).
+ *
+ * Es solo para visualización: agrupa los campos de la receta como propiedades
+ * directas (forro, cuello, obsModelo, …), adjunta telas/accesorios con sus
+ * datos completos y los vínculos material↔campo. Espeja el mapeo de
+ * SolicitudCostosContainer.handleOpenForm.
+ */
+const construirFichaPlantillas = (record) => {
+    if (!record) return [];
+    if (record.plantillas?.length) return record.plantillas; // compatibilidad
+
+    const descripciones = record.descripciones || [];
+    if (descripciones.length === 0) return [];
+
+    const detalles = {};
+    const vinculos = [];
+    descripciones.forEach(d => {
+        detalles[d.nombreCampo] = d.valorDescripcion;
+        (d.vinculos || []).forEach(v => {
+            vinculos.push({
+                id: v.id || v.tempId,
+                fieldName: d.nombreCampo,
+                materialType: v.materialType,
+                materialId: v.materialId || v.tempMaterialId,
+                cantidad: v.cantidad || 1
+            });
+        });
+    });
+
+    const telas = (record.telas || []).map(t => ({
+        id: t.id ?? t.tempId,
+        aplicacion: t.aplicacion,
+        nombre: t.nombre,
+        proveedorReferencia: t.proveedorReferencia,
+        composicion: t.composicion,
+        color: t.color,
+        peso: t.peso,
+        unidadMedida: t.unidadMedida || 'MTRS'
+    }));
+
+    const accesorios = (record.accesorios || []).map(a => ({
+        id: a.id ?? a.tempId,
+        tipo: a.tipo,
+        nombreAccesorio: a.nombreAccesorio,
+        cantidad: a.cantidad
+    }));
+
+    return [{
+        id: record.id,
+        nombre: record.nombrePrenda,
+        nombrePrenda: record.nombrePrenda,
+        ...detalles,
+        telas,
+        accesorios,
+        logotipos: record.logotipos || [],
+        vinculos
+    }];
+};
+
 export function useCosteosOPState() {
     const [view, setView] = useState('list'); // 'list', 'form'
     const [activeTab, setActiveTab] = useState('materiales');
@@ -131,7 +193,7 @@ export function useCosteosOPState() {
             })
             .filter(r => {
                 const cliente = clientes.find(c => (c.clienteId || c.id)?.toString() === r.clienteId?.toString());
-                const clienteNombre = r.clienteNombre || cliente?.nombreCliente || cliente?.nombre || 'Cliente Desconocido';
+                const clienteNombre = r.clienteNombre || cliente?.razonSocial || cliente?.nombreCliente || cliente?.nombre || 'Cliente Desconocido';
 
                 const matchesSearch = clienteNombre.toUpperCase().includes(searchTerm.toUpperCase()) ||
                     (r.id?.toString() || '').toUpperCase().includes(searchTerm.toUpperCase()) ||
@@ -213,8 +275,12 @@ export function useCosteosOPState() {
     const handleOpenForm = async (record) => {
         if (!record) return;
 
-        setSelectedRecord(record);
-        setCurrentSolicitud(record);
+        // El backend de SCOS ya no envía `plantillas`; se reconstruye la ficha
+        // técnica desde `descripciones` para alimentar el panel de visualización.
+        const enriched = { ...record, plantillas: construirFichaPlantillas(record) };
+
+        setSelectedRecord(enriched);
+        setCurrentSolicitud(enriched);
 
         let savedCosteo = null;
         try {
@@ -434,6 +500,7 @@ export function useCosteosOPState() {
                 const newOpId = `OP-${numericId}`;
                 const existingOpIndex = mockOperaciones.findIndex(op => op.idOP === newOpId);
                 const cliente = currentSolicitud.clienteNombre ||
+                    clientes.find(c => (c.clienteId || c.id)?.toString() === currentSolicitud.clienteId?.toString())?.razonSocial ||
                     clientes.find(c => (c.clienteId || c.id)?.toString() === currentSolicitud.clienteId?.toString())?.nombreCliente ||
                     'Cliente SCOS';
 

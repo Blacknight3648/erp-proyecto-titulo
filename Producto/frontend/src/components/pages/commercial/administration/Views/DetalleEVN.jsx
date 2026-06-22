@@ -20,6 +20,7 @@ import EVNResumenSidebar from "./components/EVNResumenSidebar";
 import QuotationSelectionModal from "./components/QuotationSelectionModal";
 import CosteoSelectionModal from "./components/CosteoSelectionModal";
 import FirmaAprobacionModal from "./Modals/FirmaAprobacionModal";
+import EvaluacionForm from "./EvaluacionForm";
 import { useEVNState, parseId, DEFAULT_ITEM } from '../../../../../hooks/useEVNState';
 import { EvaluacionNegocioService } from '../../../../../remote/service/EvaluacionNegocioService';
 import { useAuth } from '../../../../../contexts/AuthContext';
@@ -145,13 +146,13 @@ export default function DetalleEVN({ initialEval, onBack, mode = 'create' }) {
                                         setSolicitud(prev => ({
                                             ...prev,
                                             clienteId: id,
-                                            clienteNombre: c ? `${c.nombreCliente} ${c.apellidoCliente || ''}`.trim() : ''
+                                            clienteNombre: c ? (c.razonSocial || `${c.nombreCliente} ${c.apellidoCliente || ''}`.trim()) : ''
                                         }));
                                     }}
                                 >
                                     <option value="">Seleccionar Cliente...</option>
                                     {clientes.map(c => (
-                                        <option key={c.clienteId || c.id} value={c.clienteId || c.id}>{c.nombreCliente} {c.apellidoCliente || ''}</option>
+                                        <option key={c.clienteId || c.id} value={c.clienteId || c.id}>{c.razonSocial || `${c.nombreCliente} ${c.apellidoCliente || ''}`.trim()}</option>
                                     ))}
                                 </select>
                             </div>

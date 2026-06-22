@@ -30,7 +30,7 @@ import {
     Building2,
     Loader2
 } from 'lucide-react';
-import { ProveedorService } from '../../../../../remote/service/ProveedorService';
+import { useProveedores } from '../../../../../hooks/useProveedores';
 
 const STATUS_BADGE = {
     BORRADOR: 'bg-amber-50 text-amber-600 border-amber-100',
@@ -39,8 +39,7 @@ const STATUS_BADGE = {
 };
 
 export default function HCModificacion({ hc, onBack, onConsolidar, formatCLP }) {
-    const [proveedores, setProveedores] = useState([]);
-    const [loadingProveedores, setLoadingProveedores] = useState(false);
+    const { proveedores, loading: loadingProveedores } = useProveedores();
     const [proveedorId, setProveedorId] = useState('');
     const [fechaEntrega, setFechaEntrega] = useState('');
     const [observaciones, setObservaciones] = useState('');
@@ -48,16 +47,6 @@ export default function HCModificacion({ hc, onBack, onConsolidar, formatCLP }) 
     const [submitting, setSubmitting] = useState(false);
     const [localError, setLocalError] = useState(null);
     const [successMsg, setSuccessMsg] = useState(null);
-
-    useEffect(() => {
-        let cancelled = false;
-        setLoadingProveedores(true);
-        ProveedorService.getAll()
-            .then((data) => { if (!cancelled) setProveedores(data || []); })
-            .catch(() => { if (!cancelled) setProveedores([]); })
-            .finally(() => { if (!cancelled) setLoadingProveedores(false); });
-        return () => { cancelled = true; };
-    }, []);
 
     if (!hc) return (
         <div className="p-10 text-center bg-white/50 backdrop-blur-md rounded-3xl border border-dashed border-slate-200">

@@ -35,7 +35,7 @@ export default function BulkEditOP({
                                     {selectedOPIds.map((id, idx) => (
                                         <div key={idx} className="flex items-center justify-between text-[11px] font-bold tracking-tight">
                                             <span className="text-gray-300">#{idx + 1}</span>
-                                            <span className="text-white">{id.replace('OP-2024-', 'OP ')}</span>
+                                            <span className="text-white">{String(id || '').replace('OP-2024-', 'OP ')}</span>
                                         </div>
                                     ))}
                                 </div>

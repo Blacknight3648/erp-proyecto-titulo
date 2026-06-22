@@ -53,7 +53,7 @@ export default function DetalleOP({
                     <h2 className="text-2xl font-medium text-gray-500 tracking-tight">
                         {isReadOnly ? 'Detalles de OP' : 'Modificar OP'}
                         <span className="font-black text-blue-600 text-3xl ml-1">
-                            {selectedOP ? selectedOP.id.replace('OP-2024-', '') : '20549'}
+                            {selectedOP ? String(selectedOP.id || '').replace('OP-2024-', '') : '20549'}
                         </span>
                     </h2>
                     {selectedOP && (

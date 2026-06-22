@@ -123,8 +123,13 @@ export const useEVNState = (initialEval = null) => {
     // Initial hydration
     useEffect(() => {
         if (initialEval) {
+            const foundClient = clientes?.find(c => (c.clienteId || c.id) === initialEval.clienteId);
+            const resolvedClienteNombre = (initialEval.clienteNombre && !initialEval.clienteNombre.startsWith("Cliente #"))
+                ? initialEval.clienteNombre
+                : (foundClient?.razonSocial || foundClient?.nombreCliente || initialEval.clienteNombre || ("Cliente #" + initialEval.clienteId));
+
             setSolicitud({
-                clienteNombre: initialEval.clienteNombre || "Cliente #" + initialEval.clienteId,
+                clienteNombre: resolvedClienteNombre,
                 clienteId: initialEval.clienteId,
                 vendedorId: initialEval.vendedorId
             });
@@ -255,7 +260,7 @@ export const useEVNState = (initialEval = null) => {
         } else {
             resetState();
         }
-    }, [initialEval]);
+    }, [initialEval, clientes]);
 
     // Totals Calculation Engine (useMemo)
     const totals = useMemo(() => {

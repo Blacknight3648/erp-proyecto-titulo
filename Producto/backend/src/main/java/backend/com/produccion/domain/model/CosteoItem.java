@@ -7,6 +7,8 @@ import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 
+import backend.com.shared.domain.model.Articulo;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -14,9 +16,10 @@ import java.math.BigDecimal;
 public class CosteoItem {
     private Long idCosteoItem;
     private String tipoInsumo;
-    private Long insumoId;
+    private Integer articuloId; // FK al Articulo maestro (TELA/ACCESORIO); null para logo/insumo
     private String nombreInsumo;
     private BigDecimal consumo;
     private BigDecimal precioUnitario;
     private BigDecimal costoTotal;
+    private Articulo articulo;
 }

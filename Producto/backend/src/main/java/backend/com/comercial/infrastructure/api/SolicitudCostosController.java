@@ -33,7 +33,7 @@ public class SolicitudCostosController {
     @GetMapping("/{id}")
     public SolicitudCostosDTO findById(@PathVariable Long id) {
         return solicitudCostosService.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Solicitud no encontrada"));
+                .orElseThrow(() -> new jakarta.persistence.EntityNotFoundException("Solicitud no encontrada"));
     }
 
     @GetMapping

@@ -9,8 +9,11 @@ import java.util.List;
 @Repository
 public interface EvaluacionNegocioJpaRepository extends JpaRepository<EvaluacionNegocioJpaEntity, Long> {
     List<EvaluacionNegocioJpaEntity> findByEstado(String estado);
-    @org.springframework.data.jpa.repository.Query("SELECT MAX(CAST(e.numero AS long)) FROM EvaluacionNegocioJpaEntity e")
-    java.util.Optional<Long> findMaxNumero();
+
+    /** IDs de costeos ya vinculados a algún ítem de cualquier EVN. */
+    @org.springframework.data.jpa.repository.Query(
+            "SELECT DISTINCT i.costeoId FROM EvaluacionNegocioItemJpaEntity i WHERE i.costeoId IS NOT NULL")
+    List<Long> findLinkedCosteoIds();
 
     @org.springframework.data.jpa.repository.Modifying
     @org.springframework.data.jpa.repository.Query("UPDATE EvaluacionNegocioJpaEntity e SET e.vendedor = null WHERE e.vendedor.idVendedor = :vendedorId")
@@ -18,5 +21,3 @@ public interface EvaluacionNegocioJpaRepository extends JpaRepository<Evaluacion
 
     void deleteByCliente_ClienteId(Long clienteId);
 }
-
-

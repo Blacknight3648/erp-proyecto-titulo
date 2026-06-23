@@ -5,7 +5,7 @@ import backend.com.produccion.application.dto.DespachoOSDTO;
 import backend.com.produccion.application.dto.OrdenServicioDTO;
 import backend.com.produccion.application.dto.RecepcionOSDTO;
 import backend.com.produccion.application.service.OrdenServicioService;
-import backend.com.produccion.domain.model.EstadoOS;
+import backend.com.produccion.domain.enums.EstadoOS;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

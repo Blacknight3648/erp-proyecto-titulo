@@ -1,6 +1,5 @@
 package backend.com.produccion.application.dto;
 
-import backend.com.produccion.domain.model.TipoServicioOS;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.PositiveOrZero;
@@ -9,6 +8,8 @@ import lombok.Data;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+
+import backend.com.produccion.domain.enums.TipoServicioOS;
 
 @Data
 public class CrearOSRequest {

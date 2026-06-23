@@ -34,8 +34,8 @@ public class CosteoItemVersionJpaEntity {
     @Column(name = "tipo_insumo", length = 30, nullable = false)
     private String tipoInsumo;
 
-    @Column(name = "insumo_id")
-    private Long insumoId;
+    @Column(name = "articulo_id")
+    private Integer articuloId; // referencia blanda a articulo(id_articulo); snapshot conserva nombreInsumo
 
     @Column(name = "nombre_insumo")
     private String nombreInsumo;

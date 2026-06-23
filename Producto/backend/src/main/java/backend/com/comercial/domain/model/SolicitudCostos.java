@@ -1,14 +1,15 @@
 package backend.com.comercial.domain.model;
 
+import backend.com.comercial.domain.enums.EstadoSCOS;
 import backend.com.shared.events.DomainEvent;
 import backend.com.shared.valueobjects.DocumentNumber;
 import lombok.Getter;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.math.BigDecimal;
 
 @Getter
 public class SolicitudCostos {
@@ -20,7 +21,6 @@ public class SolicitudCostos {
     private String clienteNombre;
     private Long vendedorId;
     private String vendedorNombre;
-    private Long especificacionTecnicaId;
     private String articuloDescripcion;
     private String nombrePrenda;
     private Boolean esMuestra;
@@ -31,22 +31,20 @@ public class SolicitudCostos {
     private LocalDate fecha;
     private List<SCOSTela> telas = new ArrayList<>();
     private List<SCOSAccesorio> accesorios = new ArrayList<>();
-    private List<SCOSPlantilla> plantillas = new ArrayList<>();
-    private List<SCOTPrendaLista> productos = new ArrayList<>();
     private List<SCOSLogotipo> logotipos = new ArrayList<>();
+    private List<DescripcionPlantilla> descripciones = new ArrayList<>();
     private BigDecimal costoTotal;
 
     private transient List<DomainEvent> domainEvents = new ArrayList<>();
 
     // Constructor for creating new records
     private SolicitudCostos(DocumentNumber numeroSCOS, String tipo, Long clienteId, Long vendedorId,
-            Long especificacionTecnicaId, String articuloDescripcion, String nombrePrenda,
+            String articuloDescripcion, String nombrePrenda,
             Boolean esMuestra, Boolean hasLogo, Integer cantidad, String genero, String tallaje) {
         this.numeroSCOS = numeroSCOS;
         this.tipo = tipo;
         this.clienteId = clienteId;
         this.vendedorId = vendedorId;
-        this.especificacionTecnicaId = especificacionTecnicaId;
         this.articuloDescripcion = articuloDescripcion;
         this.nombrePrenda = nombrePrenda;
         this.esMuestra = esMuestra != null ? esMuestra : false;
@@ -60,11 +58,11 @@ public class SolicitudCostos {
     }
 
     public SolicitudCostos(Long idSCOS, DocumentNumber numeroSCOS, EstadoSCOS estado, String tipo, Long clienteId,
-            String clienteNombre, Long vendedorId, String vendedorNombre, Long especificacionTecnicaId, 
+            String clienteNombre, Long vendedorId, String vendedorNombre,
             String articuloDescripcion, String nombrePrenda,
             Boolean esMuestra, Boolean hasLogo, Integer cantidad, String genero, String tallaje, LocalDate fecha,
-            List<SCOSTela> telas, List<SCOSAccesorio> accesorios, List<SCOSPlantilla> plantillas,
-            List<SCOTPrendaLista> productos, List<SCOSLogotipo> logotipos,
+            List<SCOSTela> telas, List<SCOSAccesorio> accesorios, List<SCOSLogotipo> logotipos,
+            List<DescripcionPlantilla> descripciones,
             BigDecimal costoTotal) {
         this.idSCOS = idSCOS;
         this.numeroSCOS = numeroSCOS;
@@ -74,7 +72,6 @@ public class SolicitudCostos {
         this.clienteNombre = clienteNombre;
         this.vendedorId = vendedorId;
         this.vendedorNombre = vendedorNombre;
-        this.especificacionTecnicaId = especificacionTecnicaId;
         this.articuloDescripcion = articuloDescripcion;
         this.nombrePrenda = nombrePrenda;
         this.esMuestra = esMuestra;
@@ -85,16 +82,15 @@ public class SolicitudCostos {
         this.fecha = fecha;
         this.telas = telas != null ? new ArrayList<>(telas) : new ArrayList<>();
         this.accesorios = accesorios != null ? new ArrayList<>(accesorios) : new ArrayList<>();
-        this.plantillas = plantillas != null ? new ArrayList<>(plantillas) : new ArrayList<>();
-        this.productos = productos != null ? new ArrayList<>(productos) : new ArrayList<>();
         this.logotipos = logotipos != null ? new ArrayList<>(logotipos) : new ArrayList<>();
+        this.descripciones = descripciones != null ? new ArrayList<>(descripciones) : new ArrayList<>();
         this.costoTotal = costoTotal;
     }
 
     public static SolicitudCostos crear(DocumentNumber numero, String tipo, Long clienteId, Long vendedorId,
-            Long especificacionTecnicaId, String articuloDescripcion, String nombrePrenda,
+            String articuloDescripcion, String nombrePrenda,
             Boolean esMuestra, Boolean hasLogo, Integer cantidad, String genero, String tallaje) {
-        return new SolicitudCostos(numero, tipo, clienteId, vendedorId, especificacionTecnicaId,
+        return new SolicitudCostos(numero, tipo, clienteId, vendedorId,
                 articuloDescripcion, nombrePrenda, esMuestra, hasLogo, cantidad, genero, tallaje);
     }
 
@@ -108,17 +104,15 @@ public class SolicitudCostos {
         }
     }
 
-    public void addPlantilla(SCOSPlantilla plantilla) {
-        this.plantillas.add(plantilla);
-    }
-
-    public void addProducto(SCOTPrendaLista producto) {
-        this.productos.add(producto);
-    }
-
     public void addLogotipo(SCOSLogotipo logotipo) {
         if (logotipo != null) {
             this.logotipos.add(logotipo);
+        }
+    }
+
+    public void addDescripcion(DescripcionPlantilla descripcion) {
+        if (descripcion != null) {
+            this.descripciones.add(descripcion);
         }
     }
 

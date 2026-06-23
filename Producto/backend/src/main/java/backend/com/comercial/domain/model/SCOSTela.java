@@ -7,7 +7,7 @@ import java.math.BigDecimal;
 
 @Getter
 public class SCOSTela {
-    private Long idTela;
+    private Integer idArticulo;
     private String tempId;
     private String aplicacion;
     private String descripcion;
@@ -21,10 +21,10 @@ public class SCOSTela {
     private Money precioUnitario;
     private Money costoTotal;
 
-    public SCOSTela(Long idTela, String aplicacion, String descripcion, Long proveedorId, String proveedorReferencia,
+    public SCOSTela(Integer idArticulo, String aplicacion, String descripcion, Long proveedorId, String proveedorReferencia,
             String composicion, String color, BigDecimal peso,
             BigDecimal consumo, String unidadMedida, Money precioUnitario, String tempId) {
-        this.idTela = idTela;
+        this.idArticulo = idArticulo;
         this.tempId = tempId;
         this.aplicacion = aplicacion;
         this.descripcion = descripcion;

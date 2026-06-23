@@ -5,7 +5,7 @@ import lombok.Getter;
 @Getter
 public class OrdenProduccionItem {
     private Long idOPItem;
-    private Long productoId;
+    private Integer articuloId;
     private Integer nroItem;
     private String modelo;
     private String tela;
@@ -17,11 +17,11 @@ public class OrdenProduccionItem {
     private String llevaLogo;
     private Integer cantidad;
 
-    public OrdenProduccionItem(Long id, Long productoId, Integer nroItem, String modelo, String tela,
+    public OrdenProduccionItem(Long id, Integer articuloId, Integer nroItem, String modelo, String tela,
             String composicion, String color, String talla, String genero,
             String codigo, String llevaLogo, Integer cantidad) {
         this.idOPItem = id;
-        this.productoId = productoId;
+        this.articuloId = articuloId;
         this.nroItem = nroItem;
         this.modelo = modelo;
         this.tela = tela;

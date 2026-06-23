@@ -34,13 +34,6 @@ public class SolicitudCostosDTO {
     private String moneda;
     private List<SCOSTelaDTO> telas;
     private List<SCOSAccesorioDTO> accesorios;
-    private List<SCOSPlantillaDTO> plantillas;
-    private List<SCOTPrendaListaDTO> prendas;
     private List<SCOSLogotipoDTO> logotipos;
-    private SCOSCostoFijoDTO costoFijo;
-    
-    // Mano de Obra Fields
-    private BigDecimal moPrenda;
-    private BigDecimal moCosturaSellada;
-    private BigDecimal moAcolchado;
+    private List<DescripcionPlantillaDTO> descripciones;
 }

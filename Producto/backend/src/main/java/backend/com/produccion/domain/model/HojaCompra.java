@@ -1,5 +1,6 @@
 package backend.com.produccion.domain.model;
 
+import backend.com.produccion.domain.enums.EstadoHC;
 import backend.com.shared.valueobjects.DocumentNumber;
 import lombok.Getter;
 

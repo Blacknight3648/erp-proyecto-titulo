@@ -12,5 +12,4 @@ public class Banco {
     private Integer bancoId;
     private String nombreBanco;
     private String codigoBanco;
-
 }

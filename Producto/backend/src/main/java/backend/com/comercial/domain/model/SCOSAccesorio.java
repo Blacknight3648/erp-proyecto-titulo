@@ -7,7 +7,7 @@ import java.math.BigDecimal;
 
 @Getter
 public class SCOSAccesorio {
-    private Long idAccesorio;
+    private Integer idArticulo;
     private String tempId;
     private String tipo;
     private String descripcion;
@@ -19,9 +19,9 @@ public class SCOSAccesorio {
     private Money precioUnitario;
     private Money costoTotal;
 
-    public SCOSAccesorio(Long idAccesorio, String tipo, String descripcion, Integer cantidad, Long proveedorId,
+    public SCOSAccesorio(Integer idArticulo, String tipo, String descripcion, Integer cantidad, Long proveedorId,
             String proveedorReferencia, BigDecimal consumo, String unidadMedida, Money precioUnitario, String tempId) {
-        this.idAccesorio = idAccesorio;
+        this.idArticulo = idArticulo;
         this.tempId = tempId;
         this.tipo = tipo;
         this.descripcion = descripcion;

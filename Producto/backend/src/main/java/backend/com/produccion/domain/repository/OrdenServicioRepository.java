@@ -1,6 +1,6 @@
 package backend.com.produccion.domain.repository;
 
-import backend.com.produccion.domain.model.EstadoOS;
+import backend.com.produccion.domain.enums.EstadoOS;
 import backend.com.produccion.domain.model.OrdenServicio;
 
 import java.util.List;

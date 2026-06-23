@@ -18,8 +18,8 @@ public class OrdenProduccionItemJpaEntity {
     @JoinColumn(name = "orden_produccion_id", nullable = false)
     private OrdenProduccionJpaEntity ordenProduccion;
 
-    @Column(name = "producto_id", nullable = true)
-    private Long productoId;
+    @Column(name = "articulo_id", nullable = true)
+    private Integer articuloId;
 
     @Column(name = "nro_item")
     private Integer nroItem;

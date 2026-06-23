@@ -1,5 +1,6 @@
 package backend.com.comercial.domain.model;
 
+import backend.com.comercial.domain.enums.EstadoNV;
 import backend.com.shared.events.DomainEvent;
 import backend.com.shared.valueobjects.DocumentNumber;
 import backend.com.shared.valueobjects.Money;

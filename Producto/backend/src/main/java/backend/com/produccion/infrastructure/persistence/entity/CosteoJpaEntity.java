@@ -40,7 +40,7 @@ public class CosteoJpaEntity {
     @Column(name = "costo_flete", precision = 12, scale = 2)
     private BigDecimal costoFlete;
 
-    @Column(name = "porcentaje_costo_fijo", precision = 5, scale = 2)
+    @Column(name = "porcentaje_costo_fijo", precision = 12, scale = 2)
     private BigDecimal porcentajeCostoFijo;
 
     @Column(name = "precio_cinta_1", precision = 12, scale = 2)
@@ -64,7 +64,7 @@ public class CosteoJpaEntity {
     @Column(name = "costo_total_materia_prima", precision = 12, scale = 2)
     private BigDecimal costoTotalMateriaPrima;
 
-    @Column(name = "margen_bruto_sugerido", precision = 5, scale = 2)
+    @Column(name = "margen_bruto_sugerido", precision = 12, scale = 2)
     private BigDecimal margenBrutoSugerido;
 
     @Column(name = "precio_venta_sugerido", precision = 12, scale = 2)

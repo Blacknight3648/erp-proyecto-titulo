@@ -1,20 +1,21 @@
 package backend.com.comercial.domain.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
-@AllArgsConstructor
-@NoArgsConstructor
+/**
+ * Vincula un material (Tela o Accesorio) a una DescripcionPlantilla.
+ * Una DescripcionPlantilla puede tener N vínculos si el campo usa varios
+ * materiales.
+ */
 @Getter
 @Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class SCOSPlantillaMaterialVinculo {
+
     private Long id;
-    private String tempId;
-    private String fieldName;
-    private String materialType; // "TELA" or "ACCESORIO"
-    private Long materialId;
-    private String tempMaterialId;
+    private String materialType;   // "TELA" | "ACCESORIO"
+    private Long materialId;       // FK lógica a SCOSTela.idArticulo o SCOSAccesorio.idArticulo
     private Integer cantidad;
 }

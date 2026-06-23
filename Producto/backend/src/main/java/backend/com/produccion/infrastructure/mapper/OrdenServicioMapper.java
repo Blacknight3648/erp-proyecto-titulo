@@ -1,6 +1,6 @@
 package backend.com.produccion.infrastructure.mapper;
 
-import backend.com.gestionUsuarios.proveedor.infrastructure.persistence.entity.ProveedorJpaEntity;
+import backend.com.gestionUsuarios.infrastructure.persistence.entity.ProveedorJpaEntity;
 import backend.com.produccion.domain.model.DespachoOS;
 import backend.com.produccion.domain.model.OrdenServicio;
 import backend.com.produccion.domain.model.RecepcionOS;

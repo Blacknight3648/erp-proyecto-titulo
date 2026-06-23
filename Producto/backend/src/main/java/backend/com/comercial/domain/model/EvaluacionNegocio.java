@@ -1,5 +1,6 @@
 package backend.com.comercial.domain.model;
 
+import backend.com.comercial.domain.enums.EstadoEVN;
 import backend.com.shared.events.DomainEvent;
 import backend.com.shared.exception.EVNBusinessException;
 import backend.com.shared.valueobjects.DocumentNumber;
@@ -21,8 +22,6 @@ public class EvaluacionNegocio {
     private Long vendedorId;
     private EstadoEVN estado;
     private LocalDate fechaEvaluacion;
-    private Long costeoId;
-    private Long solicitudCotizacionId;
     private BigDecimal porcentajeComision;
     private String clienteNombre; 
     private String referencia; 
@@ -46,7 +45,7 @@ public class EvaluacionNegocio {
     public EvaluacionNegocio(Long evaluacionNegocioId, DocumentNumber numeroEvn, Long clienteId, Long vendedorId,
             EstadoEVN estado, LocalDate fechaEvaluacion,
             TomaTallaje tomaTallaje, List<GastoAdicional> gastosAdicionales, List<ItemEVN> items,
-            Long costeoId, Long solicitudCotizacionId, BigDecimal porcentajeComision,
+            BigDecimal porcentajeComision,
             String clienteNombre, String referencia, String vendedorNombre) {
         this.evaluacionNegocioId = evaluacionNegocioId;
         this.numeroEvn = numeroEvn;
@@ -55,8 +54,6 @@ public class EvaluacionNegocio {
         this.estado = estado;
         this.fechaEvaluacion = fechaEvaluacion;
         this.tomaTallaje = tomaTallaje;
-        this.costeoId = costeoId;
-        this.solicitudCotizacionId = solicitudCotizacionId;
         this.porcentajeComision = porcentajeComision != null ? porcentajeComision : BigDecimal.ZERO;
         this.clienteNombre = clienteNombre;
         this.referencia = referencia;
@@ -72,11 +69,9 @@ public class EvaluacionNegocio {
     }
 
     public static EvaluacionNegocio crear(DocumentNumber numero, Long clienteId, Long vendedorId,
-            Long costeoId, Long solicitudCotizacionId, BigDecimal porcentajeComision,
+            BigDecimal porcentajeComision,
             String clienteNombre, String referencia, String vendedorNombre) {
         EvaluacionNegocio evn = new EvaluacionNegocio(numero, clienteId, vendedorId);
-        evn.costeoId = costeoId;
-        evn.solicitudCotizacionId = solicitudCotizacionId;
         evn.porcentajeComision = porcentajeComision != null ? porcentajeComision : BigDecimal.ZERO;
         evn.clienteNombre = clienteNombre;
         evn.referencia = referencia;

@@ -11,14 +11,14 @@
 --   * FK recepcion_item.oc_item_id  ON DELETE RESTRICT
 -- =============================================================================
 
-CREATE INDEX IF NOT EXISTS idx_recoc_oc
+CREATE INDEX idx_recoc_oc
     ON produccion_recepciones_oc (oc_id);
 
-CREATE INDEX IF NOT EXISTS idx_recoc_fecha
+CREATE INDEX idx_recoc_fecha
     ON produccion_recepciones_oc (fecha_recepcion);
 
-CREATE INDEX IF NOT EXISTS idx_reci_recepcion
+CREATE INDEX idx_reci_recepcion
     ON produccion_recepcion_oc_items (recepcion_id);
 
-CREATE INDEX IF NOT EXISTS idx_reci_oci
+CREATE INDEX idx_reci_oci
     ON produccion_recepcion_oc_items (oc_item_id);

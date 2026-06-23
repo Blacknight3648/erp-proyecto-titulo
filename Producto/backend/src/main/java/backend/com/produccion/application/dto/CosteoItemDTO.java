@@ -1,5 +1,6 @@
 package backend.com.produccion.application.dto;
 
+import backend.com.shared.application.dto.ArticuloDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -14,9 +15,12 @@ import java.math.BigDecimal;
 public class CosteoItemDTO {
     private Long idCosteoItem;
     private String tipoInsumo;
-    private Long insumoId;
+    private Integer articuloId; // FK al Articulo maestro (TELA/ACCESORIO); null para logo/insumo
     private String nombreInsumo;
     private BigDecimal consumo;
     private BigDecimal precioUnitario;
     private BigDecimal costoTotal;
+
+    // Datos del artículo asociado (articuloId), cargados en lectura. Solo informativo.
+    private ArticuloDTO articulo;
 }

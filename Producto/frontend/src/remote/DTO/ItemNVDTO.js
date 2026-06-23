@@ -20,7 +20,7 @@ export class ItemNVDTO {
         this.logoDetalle = data.logoDetalle || '';
         this.tallas = data.tallas || [];
         this.itemType = data.itemType || data.tipoItem || '';
-        this.generaOt = data.generaOt || false;
+        this.requiereOt = data.requiereOt || data.generaOt || false;
         this.detalleOt = data.detalleOt || '';
         this.currency = 'CLP';
         this.totalItem = data.total || data.totalItem || 0;

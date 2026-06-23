@@ -1,5 +1,7 @@
 package backend.com.produccion.domain.model;
 
+import backend.com.produccion.domain.enums.EstadoOT;
+import backend.com.produccion.domain.enums.FaseProduccion;
 import backend.com.shared.valueobjects.DocumentNumber;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -25,6 +27,7 @@ class OrdenTrabajoTest {
         return OrdenTrabajo.crearParaFase(
                 new DocumentNumber(1L),
                 1L,                 // notaVentaId
+                1L,                 // itemNVId
                 1L,                 // ordenProduccionId
                 1,                  // nroItem
                 FaseProduccion.CORTE,

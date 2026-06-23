@@ -1,7 +1,7 @@
 package backend.com.comercial.infrastructure.persistence.entity;
 
-import backend.com.gestionUsuarios.cliente.infrastructure.persistence.entity.ClienteJpaEntity;
-import backend.com.gestionUsuarios.vendedor.infrastructure.persistence.entity.VendedorJpaEntity;
+import backend.com.gestionUsuarios.infrastructure.persistence.entity.ClienteJpaEntity;
+import backend.com.gestionUsuarios.infrastructure.persistence.entity.VendedorJpaEntity;
 import backend.com.shared.infrastructure.persistence.entity.AuditableJpaEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -43,12 +43,6 @@ public class EvaluacionNegocioJpaEntity extends AuditableJpaEntity {
 
     @Column(name = "fecha_evaluacion", nullable = false)
     private LocalDate fechaEvaluacion;
-
-    @Column(name = "costeo_id")
-    private Long costeoId;
-
-    @Column(name = "solicitud_cotizacion_id")
-    private Long solicitudCotizacionId;
 
     @Column(name = "porcentaje_comision", precision = 5, scale = 2)
     private java.math.BigDecimal porcentajeComision;

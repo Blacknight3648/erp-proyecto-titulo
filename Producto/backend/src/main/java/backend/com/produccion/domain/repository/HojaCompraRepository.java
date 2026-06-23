@@ -1,6 +1,6 @@
 package backend.com.produccion.domain.repository;
 
-import backend.com.produccion.domain.model.EstadoHC;
+import backend.com.produccion.domain.enums.EstadoHC;
 import backend.com.produccion.domain.model.HojaCompra;
 
 import java.util.List;

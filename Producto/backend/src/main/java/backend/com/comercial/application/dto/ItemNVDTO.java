@@ -8,7 +8,7 @@ import java.util.List;
 public class ItemNVDTO {
 
     private Integer nroItem;
-    private Long productoId;
+    private Integer articuloId;
     private Integer cantidad; // Restaurado
     private String modelo;
     private String tela;
@@ -20,7 +20,7 @@ public class ItemNVDTO {
     private String llevaLogo;
     private String logoDetalle;
     private String itemType; // OP, SC, o SCI
-    private Boolean generaOt;
+    private Boolean requiereOt;
     private String detalleOt;
     private List<TallaDTO> tallas;
     private BigDecimal precioUnitario;

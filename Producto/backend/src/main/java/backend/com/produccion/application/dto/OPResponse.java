@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 @Data
 public class OPResponse {
     private Long idOP;
+    private Long costeoVersionId;
     private String numeroOP;
     private Long notaVentaId;
     private String estado;
@@ -20,9 +21,11 @@ public class OPResponse {
     private List<OPItemResponse> items;
 
     public static OPResponse fromDomain(OrdenProduccion op) {
-        if (op == null) return null;
+        if (op == null)
+            return null;
         OPResponse r = new OPResponse();
         r.idOP = op.getIdOP();
+        r.costeoVersionId = op.getCosteoVersionId();
         r.numeroOP = op.getNumeroOP() != null ? op.getNumeroOP().getValue() : null;
         r.notaVentaId = op.getNotaVentaId();
         r.estado = op.getEstado() != null ? op.getEstado().name() : null;
@@ -38,7 +41,7 @@ public class OPResponse {
     @Data
     public static class OPItemResponse {
         private Long idOPItem;
-        private Long productoId;
+        private Integer articuloId;
         private Integer nroItem;
         private String modelo;
         private String tela;
@@ -50,7 +53,7 @@ public class OPResponse {
         public static OPItemResponse fromDomain(OrdenProduccionItem item) {
             OPItemResponse r = new OPItemResponse();
             r.idOPItem = item.getIdOPItem();
-            r.productoId = item.getProductoId();
+            r.articuloId = item.getArticuloId();
             r.nroItem = item.getNroItem();
             r.modelo = item.getModelo();
             r.tela = item.getTela();

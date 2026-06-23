@@ -23,6 +23,8 @@ export const DEFAULT_ITEM = {
     genero: "",
     tela: "",
     composicion: "",
+    costeoId: null,
+    solicitudCostosId: null,
     costoProducto: 0,
     costoLogo: 0,
     costoOrdenTrabajo: 0,
@@ -47,12 +49,12 @@ export const DEFAULT_OTROS_COSTOS = {
     tomaTallaje: {
         diasRecinto: 1,
         persRecinto: 2,
-        colacionPers: 20000,
-        asignacionPers: 10000,
+        colacionPorPersona: 20000,
+        asignacionPorPersona: 10000,
         peajes: 0,
         bencinaPorLitro: 900,
         kmTotal: 0,
-        rendKmLt: 10,
+        rendimiento: 10,
         costoPersonal: 0,
         costoMovilizacion: 0,
         total: 0
@@ -80,7 +82,7 @@ export const useEVNState = (initialEval = null) => {
     const { clientes } = useClientes();
     const { vendedores } = useVendedores();
     const { solicitudesCostos, loadSolicitudesCostos } = useComercial();
-    const { getAllCosteosBySCOS } = useProduccion();
+    const { getAllCosteosBySCOS, getCosteosDisponiblesEVN, getCosteoResumenEVN } = useProduccion();
 
     // States
     const [items, setItems] = useState([{ ...DEFAULT_ITEM }]);
@@ -108,6 +110,12 @@ export const useEVNState = (initialEval = null) => {
     const [availableQuotations, setAvailableQuotations] = useState([]);
     const [pendingSCOS, setPendingSCOS] = useState(null);
 
+    // Modal de selección de costeo para ítems OP
+    const [costeosDisponibles, setCosteosDisponibles] = useState([]);
+    const [showCosteoModal, setShowCosteoModal] = useState(false);
+    const [costeoModalItemId, setCosteoModalItemId] = useState(null);
+    const [loadingCosteos, setLoadingCosteos] = useState(false);
+
     useEffect(() => {
         loadSolicitudesCostos();
     }, [loadSolicitudesCostos]);
@@ -115,12 +123,12 @@ export const useEVNState = (initialEval = null) => {
     // Initial hydration
     useEffect(() => {
         if (initialEval) {
-            setSolicitud({ 
+            setSolicitud({
                 clienteNombre: initialEval.clienteNombre || "Cliente #" + initialEval.clienteId,
                 clienteId: initialEval.clienteId,
                 vendedorId: initialEval.vendedorId
             });
-            
+
             setItems((initialEval.items || []).map(it => ({
                 ...DEFAULT_ITEM,
                 id: it.idItemEVN || it.id || Math.random(),
@@ -128,6 +136,7 @@ export const useEVNState = (initialEval = null) => {
                 cant: it.cantidad || 0,
                 tipo: it.tipoItem || it.tipo || "SC",
                 producto: it.descripcion || it.producto || "",
+                descripcion: it.descripcion || "",
                 modelo: it.modelo || "",
                 tela: it.tela || "",
                 composicion: it.composicion || "",
@@ -136,10 +145,14 @@ export const useEVNState = (initialEval = null) => {
                 codigoProveedor: it.codigoProveedor || "",
                 proveedorId: it.proveedorId || null,
                 proveedor: it.proveedorNombre || "",
+                articuloId: it.articuloId || null,
                 costoProducto: it.costoProducto || it.costoUnitario || 0,
                 costoLogo: it.costoLogo || 0,
                 costoOrdenTrabajo: it.costoOrdenTrabajo || 0,
                 precioVentaNeto: it.precioUnitario || 0,
+                costeoId: it.costeoId || null,
+                solicitudCostosId: it.solicitudCostosId || null,
+                technicalSpecs: it.technicalSpecs || [],
             })));
 
             const hydratedOtrosCostos = { ...DEFAULT_OTROS_COSTOS };
@@ -159,24 +172,43 @@ export const useEVNState = (initialEval = null) => {
                 });
             }
 
-            // Hidratar metadatos JSON para desgloses operativos
-            if (initialEval.tomaTallajeMetadata) {
-                try {
-                    const ttData = JSON.parse(initialEval.tomaTallajeMetadata);
-                    hydratedOtrosCostos.tomaTallaje = { ...DEFAULT_OTROS_COSTOS.tomaTallaje, ...ttData };
-                } catch (e) { console.error("Error parsing TT metadata:", e); }
-            } else if (initialEval.tomaTallaje) {
+            // Hidratar Toma de Tallaje desde campos estructurados (3FN)
+            if (initialEval.tomaTallaje) {
+                const tt = initialEval.tomaTallaje;
                 hydratedOtrosCostos.tomaTallaje = {
                     ...DEFAULT_OTROS_COSTOS.tomaTallaje,
-                    ...(initialEval.tomaTallaje || {})
+                    diasRecinto:        tt.diasXRecinto        ?? DEFAULT_OTROS_COSTOS.tomaTallaje.diasRecinto,
+                    persRecinto:        tt.persXRecinto        ?? DEFAULT_OTROS_COSTOS.tomaTallaje.persRecinto,
+                    colacionPorPersona: tt.colaccionXPers      ?? DEFAULT_OTROS_COSTOS.tomaTallaje.colacionPorPersona,
+                    asignacionPorPersona: tt.asignacionXPers   ?? DEFAULT_OTROS_COSTOS.tomaTallaje.asignacionPorPersona,
+                    peajes:             tt.peajes              ?? DEFAULT_OTROS_COSTOS.tomaTallaje.peajes,
+                    bencinaPorLitro:    tt.bencinaXLt          ?? DEFAULT_OTROS_COSTOS.tomaTallaje.bencinaPorLitro,
+                    kmTotal:            tt.kmTotal             ?? DEFAULT_OTROS_COSTOS.tomaTallaje.kmTotal,
+                    rendimiento:        tt.rendKmLt            ?? DEFAULT_OTROS_COSTOS.tomaTallaje.rendimiento,
+                    cantRecintos:       tt.recintos            ?? 1,
+                    observaciones:      tt.observaciones       ?? '',
+                    detalles:           tt.detalles            || []
                 };
             }
 
-            if (initialEval.pegadoCintaMetadata) {
-                try {
-                    const pcData = JSON.parse(initialEval.pegadoCintaMetadata);
-                    hydratedOtrosCostos.pegadoCinta = pcData;
-                } catch (e) { console.error("Error parsing PC metadata:", e); }
+            // Hidratar Pegado de Cinta desde [{clave, valor}] (3FN)
+            const pcDetalles = initialEval.pegadoCintaDetalles || [];
+            if (pcDetalles.length > 0) {
+                hydratedOtrosCostos.pegadoCinta = pcDetalles.map((d, idx) => {
+                    try {
+                        const parsed = JSON.parse(d.valor);
+                        return {
+                            id: idx + 1,
+                            etiqueta: d.clave,
+                            costoCinta: parsed.costoCinta || 0,
+                            costoMO:    parsed.costoMO    || 0,
+                            mtsCinta:   parsed.mtsCinta   || 0,
+                            total: 0
+                        };
+                    } catch {
+                        return { id: idx + 1, etiqueta: d.clave, costoCinta: 0, costoMO: 0, mtsCinta: 0, total: 0 };
+                    }
+                });
             }
 
             const rebuiltVinculados = { scos: [], scot: [] };
@@ -231,9 +263,10 @@ export const useEVNState = (initialEval = null) => {
         const currentOtros = otrosCostos || DEFAULT_OTROS_COSTOS;
         const tt = currentOtros.tomaTallaje || DEFAULT_OTROS_COSTOS.tomaTallaje;
 
-        const costoPersonalTT = (Number(tt.diasRecinto || 0) * Number(tt.persRecinto || 0)) * (Number(tt.colacionPers || 0) + Number(tt.asignacionPers || 0));
-        const divisorKmLt = Math.max(Number(tt.rendKmLt || 1), 1);
+        const costoPersonalTT = (Number(tt.diasRecinto || 0) * Number(tt.persRecinto || 0)) * (Number(tt.colacionPorPersona || 0) + Number(tt.asignacionPorPersona || 0));
+        const divisorKmLt = Math.max(Number(tt.rendimiento || 1), 1);
         const costoMovilizacionTT = Number(tt.peajes || 0) + (Number(tt.bencinaPorLitro || 0) * (Number(tt.kmTotal || 0) / divisorKmLt));
+        const costoRecintosTT = (Number(tt.diasRecinto || 0) * Number(tt.persRecinto || 0)) * Number(tt.peajes || 0);
         const totalTT = (isNaN(costoPersonalTT) ? 0 : costoPersonalTT) + (isNaN(costoMovilizacionTT) ? 0 : costoMovilizacionTT);
 
         const listaCinta = currentOtros.pegadoCinta || [];
@@ -269,7 +302,7 @@ export const useEVNState = (initialEval = null) => {
                 costoCintaUnitario +
                 prorrateoLineal;
 
-            const precioVenta20MG = costoTotalUnitario / 0.8;
+            const precioVenta20MG = costoTotalUnitario / 0.75;
             const precioVentaTotal = pVentaNeto * cant;
             const costoTotalItem = costoTotalUnitario * cant;
 
@@ -303,6 +336,7 @@ export const useEVNState = (initialEval = null) => {
             prorrateoLineal,
             costoPersonalTT,
             costoMovilizacionTT,
+            costoRecintosTT: isNaN(costoRecintosTT) ? 0 : costoRecintosTT,
             totalOtrosCostos,
             itemsCintaCalculados
         };
@@ -352,6 +386,67 @@ export const useEVNState = (initialEval = null) => {
         setItems(prev => prev.map(item => item.id === id ? { ...item, [field]: (typeof value === 'string' && field !== 'tipo' && field !== 'producto' && field !== 'modelo' && field !== 'tela' && field !== 'composicion' && field !== 'genero' && field !== 'codigoInterno' && field !== 'codigoProveedor' && field !== 'proveedor') ? (parseFloat(value) || 0) : value } : item));
     }, []);
 
+    /**
+     * Vincula un costeo a un ítem (tipo OP) y auto-rellena modelo/tela/composición/género
+     * desde el resumen del costeo. Si idCosteo es null, desvincula.
+     */
+    const applyCosteoToItem = useCallback(async (itemId, idCosteo) => {
+        if (!idCosteo) {
+            setItems(prev => prev.map(it => it.id === itemId
+                ? { ...it, costeoId: null, solicitudCostosId: null }
+                : it));
+            return;
+        }
+        try {
+            const resumen = await getCosteoResumenEVN(idCosteo);
+            setItems(prev => prev.map(it => {
+                if (it.id !== itemId) return it;
+                return {
+                    ...it,
+                    costeoId: idCosteo,
+                    solicitudCostosId: resumen?.solicitudCostosId ?? null,
+                    modelo: resumen?.modelo || it.modelo,
+                    tela: resumen?.tela || it.tela,
+                    composicion: resumen?.composicion || it.composicion,
+                    genero: resumen?.genero || it.genero,
+                    producto: it.producto || resumen?.modelo || '',
+                    codigoInterno: resumen?.numeroCosteo || it.codigoInterno,
+                };
+            }));
+            toast.success(`Costeo ${resumen?.numeroCosteo || idCosteo} vinculado al ítem`);
+        } catch (e) {
+            console.error("Error vinculando costeo al ítem:", e);
+            toast.error("No se pudo vincular el costeo");
+        }
+    }, [getCosteoResumenEVN]);
+
+    // Abre el modal de selección de costeo para un ítem OP y carga los disponibles
+    const openCosteoSelector = useCallback(async (itemId) => {
+        setCosteoModalItemId(itemId);
+        setShowCosteoModal(true);
+        setLoadingCosteos(true);
+        try {
+            const data = await getCosteosDisponiblesEVN();
+            setCosteosDisponibles(data || []);
+        } finally {
+            setLoadingCosteos(false);
+        }
+    }, [getCosteosDisponiblesEVN]);
+
+    const closeCosteoSelector = useCallback(() => {
+        setShowCosteoModal(false);
+        setCosteoModalItemId(null);
+    }, []);
+
+    // Selección desde el modal: vincula (o desvincula si idCosteo es null) y cierra
+    const handleSelectCosteo = useCallback(async (idCosteo) => {
+        if (costeoModalItemId != null) {
+            await applyCosteoToItem(costeoModalItemId, idCosteo);
+        }
+        setShowCosteoModal(false);
+        setCosteoModalItemId(null);
+    }, [costeoModalItemId, applyCosteoToItem]);
+
     const applySCOSQuotation = useCallback((doc, quote) => {
         setSolicitud(prev => ({
             ...prev,
@@ -377,7 +472,6 @@ export const useEVNState = (initialEval = null) => {
             cant: doc.cantidad || 0,
             tipo: 'SC',
             codigoInterno: doc.numero || "",
-            costeoId: quote?.idCosteo || null,
             costoProducto: totalCosto,
             costoTotalUnitario: totalCosto,
             costoTotal: totalCosto * (doc.cantidad || 0)
@@ -489,21 +583,21 @@ export const useEVNState = (initialEval = null) => {
         const hasCliente = solicitud.clienteId || initialEval?.clienteId || solicitud.clienteNombre || initialEval?.clienteNombre;
 
         if (!hasCliente) {
-            toast.error("Debe seleccionar un cliente para generar la propuesta.");
+            toast.error("Debe seleccionar un cliente para guardar la propuesta.");
             return;
         }
 
         setIsSaving(true);
+        const evnId = initialEval?.evaluacionNegocioId || initialEval?.id || null;
+        const isUpdate = !!evnId;
+
         try {
             const payload = {
-                // numero: Math.floor(10000 + Math.random() * 90000), // Eliminado: El backend genera el correlativo real
                 clienteId: parseId(solicitud.clienteId || initialEval?.clienteId),
                 vendedorId: parseId(solicitud.vendedorId || initialEval?.vendedorId) || user?.id || 1,
                 clienteNombre: solicitud.clienteNombre || initialEval?.clienteNombre || '',
-                costeoId: parseId(vinculados.scos[0]?.id || initialEval?.costeoId),
-                solicitudCotizacionId: parseId(vinculados.scot[0]?.id || initialEval?.solicitudCotizacionId),
                 referencia: evalData.referencia || '',
-                estado: 'BORRADOR',
+                estado: initialEval?.estado || 'BORRADOR',
                 porcentajeComision: otrosCostos.porcentajeComision || 0,
                 garantiaSeriedad: otrosCostos.garantiaSeriedad || 0,
                 garantiaFielCumplimiento: otrosCostos.garantiaFielCumplimiento || 0,
@@ -511,21 +605,33 @@ export const useEVNState = (initialEval = null) => {
                 certificacion: otrosCostos.certificacion || 0,
                 muestras: otrosCostos.muestras || 0,
                 entregaPersonalizada: otrosCostos.entregaPersonalizada || 0,
-                
-                // Campos aplanados según CrearEVNCommand.java
-                tomaTallajeMonto: totals.totalTT || 0,
-                tomaTallajeObservaciones: otrosCostos.tomaTallaje.observaciones || '',
-                tomaTallajeMetadata: JSON.stringify(otrosCostos.tomaTallaje),
-                
-                pegadoCinta: (otrosCostos.pegadoCinta || []).reduce((acc, c) => acc + (c.total || 0), 0),
-                pegadoCintaMetadata: JSON.stringify(otrosCostos.pegadoCinta),
-                
-                costeoIds: vinculados.scos.map(s => parseId(s.id)).filter(Boolean),
-                solicitudCotizacionIds: vinculados.scot.map(s => parseId(s.id)).filter(Boolean),
+
+                // Toma de Tallaje — campos individuales tipados (3FN)
+                tomaTallajeObservaciones:    otrosCostos.tomaTallaje.observaciones      || '',
+                tomaTallajeDiasXRecinto:     otrosCostos.tomaTallaje.diasRecinto        || null,
+                tomaTallajePersonasXRecinto: otrosCostos.tomaTallaje.persRecinto        || null,
+                tomaTallajeColaccionXPers:   otrosCostos.tomaTallaje.colacionPorPersona || null,
+                tomaTallajeAsignacionXPers:  otrosCostos.tomaTallaje.asignacionPorPersona || null,
+                tomaTallajePeajes:           otrosCostos.tomaTallaje.peajes             || null,
+                tomaTallajeBencinaXLt:       otrosCostos.tomaTallaje.bencinaPorLitro    || null,
+                tomaTallajeKmTotal:          otrosCostos.tomaTallaje.kmTotal            || null,
+                tomaTallajeRendKmLt:         otrosCostos.tomaTallaje.rendimiento        || null,
+                tomaTallajeRecintos:         otrosCostos.tomaTallaje.cantRecintos       || 1,
+                tomaTallajeDetalles:         otrosCostos.tomaTallaje.detalles           || [],
+
+                // Pegado de cinta — monto total + detalles [{clave, valor}] (3FN)
+                pegadoCinta: totals.totalPC,
+                pegadoCintaDetalles: (otrosCostos.pegadoCinta || []).map(c => ({
+                    clave: c.etiqueta || 'ITEM',
+                    valor: JSON.stringify({ costoCinta: c.costoCinta, costoMO: c.costoMO, mtsCinta: c.mtsCinta })
+                })),
+
                 items: (items || []).map((item, idx) => ({
                     nroItem: idx + 1,
-                    productoId: parseId(item.productoId),
+                    articuloId: parseId(item.articuloId || item.productoId),
                     proveedorId: parseId(item.proveedorId),
+                    costeoId: parseId(item.costeoId),
+                    solicitudCostosId: parseId(item.solicitudCostosId),
                     descripcion: item.producto || item.descripcion || '',
                     modelo: item.modelo || '',
                     tela: item.tela || '',
@@ -534,16 +640,7 @@ export const useEVNState = (initialEval = null) => {
                     codigoInterno: item.codigoInterno || '',
                     codigoProveedor: item.codigoProveedor || '',
                     proveedorNombre: item.proveedor || '',
-                    technicalSpecs: {
-                        descripcion: item.producto || item.descripcion || '',
-                        modelo: item.modelo || '',
-                        tela: item.tela || '',
-                        composicion: item.composicion || '',
-                        genero: item.genero || '',
-                        codigoInterno: item.codigoInterno || '',
-                        codigoProveedor: item.codigoProveedor || '',
-                        proveedor: item.proveedor || ''
-                    },
+                    technicalSpecs: item.technicalSpecs || [],
                     cantidad: item.cant || 1,
                     precioUnitario: item.precioVentaNeto || 0,
                     costoUnitario: item.costoProducto || 0,
@@ -553,9 +650,15 @@ export const useEVNState = (initialEval = null) => {
                     tipoItem: item.tipo || 'SC',
                 })),
             };
-            await EvaluacionNegocioService.save(payload);
-            resetState();
-            toast.success("Propuesta generada correctamente");
+
+            if (isUpdate) {
+                await EvaluacionNegocioService.update(evnId, payload);
+                toast.success("EVN actualizada correctamente");
+            } else {
+                await EvaluacionNegocioService.save(payload);
+                resetState();
+                toast.success("Propuesta creada correctamente");
+            }
             return true;
         } catch (error) {
             console.error("Error al guardar la propuesta:", error);
@@ -593,9 +696,18 @@ export const useEVNState = (initialEval = null) => {
         availableQuotations,
         pendingSCOS,
         totals,
-        
-        // Handlers
+
+        // Selección de costeo (ítems OP)
+        costeosDisponibles,
+        showCosteoModal,
+        costeoModalItemId,
+        loadingCosteos,
+        openCosteoSelector,
+        closeCosteoSelector,
+        handleSelectCosteo,
+
         handleUpdateItem,
+        applyCosteoToItem,
         handleBulkLink,
         handleSingleSCOSLink,
         applySCOSQuotation,
@@ -603,7 +715,7 @@ export const useEVNState = (initialEval = null) => {
         resetState,
         handleGenerarPropuesta,
         handleAdjudicar,
-        
+
         // Context data needed
         proveedores,
         clientes,

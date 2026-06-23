@@ -1,7 +1,7 @@
 package backend.com.comercial.infrastructure.persistence.entity;
 
-import backend.com.shared.infrastructure.persistence.entity.Accesorio;
-import backend.com.gestionUsuarios.proveedor.infrastructure.persistence.entity.ProveedorJpaEntity;
+import backend.com.gestionUsuarios.infrastructure.persistence.entity.ProveedorJpaEntity;
+import backend.com.shared.infrastructure.persistence.entity.ArticuloJpaEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -25,8 +25,8 @@ public class SCOSAccesorioJpaEntity {
     private SolicitudCostosJpaEntity solicitudCostos;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "accesorio_id")
-    private Accesorio accesorio;
+    @JoinColumn(name = "articulo_id")
+    private ArticuloJpaEntity articulo;
 
     private String tipo;
     private String descripcion;

@@ -33,9 +33,8 @@ public class SolicitudCostosCreateDTO {
 
     private List<SCOSTelaDTO> telas;
     private List<SCOSAccesorioDTO> accesorios;
-    private List<SCOSPlantillaDTO> plantillas;
-    private List<SCOTPrendaListaDTO> prendas;
     private List<SCOSLogotipoDTO> logotipos;
+    private List<DescripcionPlantillaDTO> descripciones;
 
     private String tipo;
     private String estado;

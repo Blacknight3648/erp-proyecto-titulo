@@ -31,7 +31,7 @@ export interface ItemNV {
     tipoItem: ItemType;
     logo: string;
     proveedorId: string | number | null;
-    generaOt: boolean;
+    requiereOt: boolean;
     detalleOt: string;
     logoDetalle?: string;
 }

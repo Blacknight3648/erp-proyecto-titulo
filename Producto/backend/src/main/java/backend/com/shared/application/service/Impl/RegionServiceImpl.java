@@ -1,4 +1,4 @@
-package backend.com.shared.application.service.Impl;
+package backend.com.shared.application.service.impl;
 
 import backend.com.shared.application.dto.RegionDTO;
 import backend.com.shared.application.service.RegionService;

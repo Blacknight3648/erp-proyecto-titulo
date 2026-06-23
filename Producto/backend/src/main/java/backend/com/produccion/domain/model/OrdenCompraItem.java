@@ -13,7 +13,7 @@ public class OrdenCompraItem {
     private Long idOCItem;
     private Long ocId;
     private String tipoInsumo;
-    private Long insumoId;
+    private Integer articuloId; // referencia blanda al Articulo; el registro conserva nombreInsumo congelado
     private String nombreInsumo;
     private BigDecimal cantidadRequerida;   // demanda original (suma de HCItems asignados)
     private BigDecimal cantidadStock;        // disponible en bodega (hoy = 0)
@@ -22,13 +22,13 @@ public class OrdenCompraItem {
     private BigDecimal subtotal;             // cantidadComprada * precioUnitario
     private List<HCItemOCItemLink> hcLinks = new ArrayList<>();
 
-    public OrdenCompraItem(Long idOCItem, Long ocId, String tipoInsumo, Long insumoId, String nombreInsumo,
+    public OrdenCompraItem(Long idOCItem, Long ocId, String tipoInsumo, Integer articuloId, String nombreInsumo,
             BigDecimal cantidadRequerida, BigDecimal cantidadStock, BigDecimal cantidadComprada,
             BigDecimal precioUnitario, BigDecimal subtotal, List<HCItemOCItemLink> hcLinks) {
         this.idOCItem = idOCItem;
         this.ocId = ocId;
         this.tipoInsumo = tipoInsumo;
-        this.insumoId = insumoId;
+        this.articuloId = articuloId;
         this.nombreInsumo = nombreInsumo;
         this.cantidadRequerida = cantidadRequerida != null ? cantidadRequerida : BigDecimal.ZERO;
         this.cantidadStock = cantidadStock != null ? cantidadStock : BigDecimal.ZERO;

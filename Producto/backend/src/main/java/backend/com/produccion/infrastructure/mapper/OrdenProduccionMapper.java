@@ -65,7 +65,7 @@ public class OrdenProduccionMapper {
     private OrdenProduccionItem itemToDomain(OrdenProduccionItemJpaEntity entity) {
         return new OrdenProduccionItem(
                 entity.getIdOPItem(),
-                entity.getProductoId(),
+                entity.getArticuloId(),
                 entity.getNroItem(),
                 entity.getModelo(),
                 entity.getTela(),
@@ -83,7 +83,7 @@ public class OrdenProduccionMapper {
         OrdenProduccionItemJpaEntity entity = new OrdenProduccionItemJpaEntity();
         entity.setIdOPItem(domain.getIdOPItem());
         entity.setOrdenProduccion(opEntity);
-        entity.setProductoId(domain.getProductoId());
+        entity.setArticuloId(domain.getArticuloId());
         entity.setNroItem(domain.getNroItem());
         entity.setModelo(domain.getModelo());
         entity.setTela(domain.getTela());

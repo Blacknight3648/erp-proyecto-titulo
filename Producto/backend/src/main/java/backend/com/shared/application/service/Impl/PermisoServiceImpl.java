@@ -1,4 +1,4 @@
-package backend.com.shared.application.service.Impl;
+package backend.com.shared.application.service.impl;
 
 import backend.com.shared.infrastructure.mapper.PermisoMapper;
 import backend.com.shared.domain.model.Permiso;

@@ -1,6 +1,6 @@
 package backend.com.produccion.infrastructure.persistence.adapter;
 
-import backend.com.produccion.domain.model.EstadoOC;
+import backend.com.produccion.domain.enums.EstadoOC;
 import backend.com.produccion.domain.model.OrdenCompra;
 import backend.com.produccion.domain.repository.OrdenCompraRepository;
 import backend.com.produccion.infrastructure.mapper.OrdenCompraMapper;
@@ -64,5 +64,12 @@ public class OrdenCompraRepositoryImpl implements OrdenCompraRepository {
         return jpaRepository.findAllByHcItemId(hcItemId).stream()
                 .map(mapper::toDomain)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public void deleteById(Long idOC) {
+        if (idOC != null) {
+            jpaRepository.deleteById(idOC);
+        }
     }
 }

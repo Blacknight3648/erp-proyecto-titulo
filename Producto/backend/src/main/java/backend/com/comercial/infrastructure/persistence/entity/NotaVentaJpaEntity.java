@@ -1,7 +1,7 @@
 package backend.com.comercial.infrastructure.persistence.entity;
 
-import backend.com.gestionUsuarios.cliente.infrastructure.persistence.entity.ClienteJpaEntity;
-import backend.com.gestionUsuarios.vendedor.infrastructure.persistence.entity.VendedorJpaEntity;
+import backend.com.gestionUsuarios.infrastructure.persistence.entity.ClienteJpaEntity;
+import backend.com.gestionUsuarios.infrastructure.persistence.entity.VendedorJpaEntity;
 import backend.com.shared.infrastructure.persistence.entity.AuditableJpaEntity;
 import jakarta.persistence.*;
 import lombok.Getter;

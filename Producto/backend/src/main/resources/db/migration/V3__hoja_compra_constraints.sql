@@ -13,14 +13,14 @@
 --   * FK hoja_compra_item.hc_id         ON DELETE CASCADE
 -- =============================================================================
 
-CREATE INDEX IF NOT EXISTS idx_hc_estado
+CREATE INDEX idx_hc_estado
     ON produccion_hojas_compra (estado);
 
-CREATE INDEX IF NOT EXISTS idx_hc_costeo_version
+CREATE INDEX idx_hc_costeo_version
     ON produccion_hojas_compra (costeo_version_id);
 
-CREATE INDEX IF NOT EXISTS idx_hci_hc
+CREATE INDEX idx_hci_hc
     ON produccion_hoja_compra_items (hc_id);
 
-CREATE INDEX IF NOT EXISTS idx_hci_insumo
-    ON produccion_hoja_compra_items (insumo_id);
+CREATE INDEX idx_hci_articulo
+    ON produccion_hoja_compra_items (articulo_id);

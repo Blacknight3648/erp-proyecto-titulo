@@ -1,14 +1,10 @@
 package backend.com.shared.domain.model;
 
-import backend.com.gestionUsuarios.role.domain.model.Role;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-
-import java.util.HashSet;
-import java.util.Set;
 
 @Entity
 @Table(name = "permisos")
@@ -30,8 +26,4 @@ public class Permiso {
 
     @Column(name = "modulo", nullable = false)
     private String modulo; // e.g. "Clientes", "Proveedores", "Administración"
-
-    @Builder.Default
-    @ManyToMany(mappedBy = "permisos")
-    private Set<Role> roles = new HashSet<>();
 }

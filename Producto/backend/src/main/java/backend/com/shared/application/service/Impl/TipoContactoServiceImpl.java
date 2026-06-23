@@ -1,4 +1,4 @@
-package backend.com.shared.application.service.Impl;
+package backend.com.shared.application.service.impl;
 
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;

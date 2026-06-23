@@ -1,16 +1,17 @@
 package backend.com.comercial.infrastructure.api;
 
+import backend.com.comercial.application.UseCase.ConsultarTrazabilidadUseCase;
+import backend.com.comercial.application.UseCase.CrearNVUseCase;
+import backend.com.comercial.application.UseCase.GestionarNVUseCase;
 import backend.com.comercial.application.dto.CrearNVCommand;
 import backend.com.comercial.application.dto.NVResponse;
-import backend.com.comercial.application.service.CrearNVUseCase;
-import backend.com.comercial.application.service.ConsultarTrazabilidadUseCase;
-import backend.com.comercial.application.service.GestionarNVUseCase;
 import backend.com.comercial.domain.repository.NotaVentaRepository;
 import backend.com.shared.application.dto.DocumentTraceDTO;
 import backend.com.shared.application.dto.FirmaAprobacionRequest;
 import backend.com.shared.application.dto.HistorialEstadoDTO;
 import backend.com.shared.application.service.HistorialEstadoService;
 import backend.com.shared.exception.EntityNotFoundException;
+import backend.com.shared.application.service.NumeroDocumentoService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -28,6 +29,7 @@ public class NotaVentaController {
     private final GestionarNVUseCase gestionarNVUseCase;
     private final NotaVentaRepository repository;
     private final HistorialEstadoService historialService;
+    private final NumeroDocumentoService numeroDocumentoService;
 
     @GetMapping
     public List<NVResponse> listar() {
@@ -41,9 +43,10 @@ public class NotaVentaController {
      * NO reserva el número: el valor definitivo lo asigna el backend de forma
      * atómica al hacer POST (NumeroDocumentoService).
      */
+
     @GetMapping("/next-number")
-    public Long getNextNumber() {
-        return repository.findMaxNumero().orElse(0L) + 1;
+    public Long previsualizarProximo() {
+        return numeroDocumentoService.siguiente("NV");
     }
 
     @PostMapping

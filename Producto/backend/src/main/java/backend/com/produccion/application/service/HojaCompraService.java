@@ -1,7 +1,7 @@
 package backend.com.produccion.application.service;
 
 import backend.com.produccion.application.dto.HojaCompraDTO;
-import backend.com.produccion.domain.model.EstadoHC;
+import backend.com.produccion.domain.enums.EstadoHC;
 
 import java.util.List;
 import java.util.Optional;

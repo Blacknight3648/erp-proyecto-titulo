@@ -20,11 +20,11 @@
 --         (los items snapshot mueren con su versión)
 -- =============================================================================
 
-CREATE INDEX IF NOT EXISTS idx_op_costeo_version
+CREATE INDEX idx_op_costeo_version
     ON orden_produccion (costeo_version_id);
 
-CREATE INDEX IF NOT EXISTS idx_cv_costeo
+CREATE INDEX idx_cv_costeo
     ON produccion_costeo_versiones (costeo_id);
 
-CREATE INDEX IF NOT EXISTS idx_civ_version
+CREATE INDEX idx_civ_version
     ON produccion_costeo_item_versiones (costeo_version_id);

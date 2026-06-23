@@ -1,7 +1,7 @@
 package backend.com.comercial.infrastructure.persistence.entity;
 
-import backend.com.shared.infrastructure.persistence.entity.ProductoJpaEntity;
-import backend.com.gestionUsuarios.proveedor.infrastructure.persistence.entity.ProveedorJpaEntity;
+import backend.com.shared.infrastructure.persistence.entity.ArticuloJpaEntity;
+import backend.com.gestionUsuarios.infrastructure.persistence.entity.ProveedorJpaEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -18,6 +18,7 @@ public class NotaVentaItemJpaEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id_item_nv")
     private Long idItemNV;
 
     @Column(name = "nro_item")
@@ -28,8 +29,8 @@ public class NotaVentaItemJpaEntity {
     private NotaVentaJpaEntity notaVenta;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "producto_id", nullable = true)
-    private ProductoJpaEntity producto;
+    @JoinColumn(name = "articulo_id", nullable = true)
+    private ArticuloJpaEntity articulo;
 
     @Column(length = 100)
     private String modelo;
@@ -62,8 +63,8 @@ public class NotaVentaItemJpaEntity {
     @Column(name = "tipo_item", length = 30)
     private String tipoItem;
 
-    @Column(name = "is_personalized")
-    private Boolean isPersonalized;
+    @Column(name = "requiere_ot")
+    private Boolean requiereOt;
 
     @Column(name = "detalle_ot", columnDefinition = "TEXT")
     private String detalleOt;

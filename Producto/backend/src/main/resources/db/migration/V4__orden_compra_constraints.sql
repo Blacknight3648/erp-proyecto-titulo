@@ -13,23 +13,23 @@
 --   * FK hc_item_oc_item.oc_item_id   ON DELETE CASCADE
 -- =============================================================================
 
-CREATE INDEX IF NOT EXISTS idx_oc_estado
+CREATE INDEX idx_oc_estado
     ON produccion_ordenes_compra (estado);
 
-CREATE INDEX IF NOT EXISTS idx_oc_proveedor
+CREATE INDEX idx_oc_proveedor
     ON produccion_ordenes_compra (proveedor_id);
 
-CREATE INDEX IF NOT EXISTS idx_oc_fecha_emision
+CREATE INDEX idx_oc_fecha_emision
     ON produccion_ordenes_compra (fecha_emision);
 
-CREATE INDEX IF NOT EXISTS idx_oci_oc
+CREATE INDEX idx_oci_oc
     ON produccion_orden_compra_items (oc_id);
 
-CREATE INDEX IF NOT EXISTS idx_oci_insumo
-    ON produccion_orden_compra_items (insumo_id);
+CREATE INDEX idx_oci_articulo
+    ON produccion_orden_compra_items (articulo_id);
 
-CREATE INDEX IF NOT EXISTS idx_link_hci
+CREATE INDEX idx_link_hci
     ON produccion_hc_item_oc_item (hc_item_id);
 
-CREATE INDEX IF NOT EXISTS idx_link_oci
+CREATE INDEX idx_link_oci
     ON produccion_hc_item_oc_item (oc_item_id);

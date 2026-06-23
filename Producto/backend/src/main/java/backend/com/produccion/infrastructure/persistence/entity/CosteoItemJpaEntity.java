@@ -25,10 +25,10 @@ public class CosteoItemJpaEntity {
     private CosteoJpaEntity costeo;
 
     @Column(name = "tipo_insumo", length = 30, nullable = false)
-    private String tipoInsumo; // TELA, ACCESORIO, LOGOTIPO, CINTA
+    private String tipoInsumo; // TELAS, ACCESORIOS, LOGOTIPO, INSUMOS
 
-    @Column(name = "insumo_id")
-    private Long insumoId;
+    @Column(name = "articulo_id")
+    private Integer articuloId; // FK a articulo(id_articulo); null para logo/insumo
 
     @Column(name = "nombre_insumo")
     private String nombreInsumo;

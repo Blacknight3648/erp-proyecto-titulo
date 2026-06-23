@@ -10,25 +10,51 @@ public class HojaCompraItem {
     private Long idHCItem;
     private Long hcId;
     private String tipoInsumo;
-    private Long insumoId;
+    private Integer articuloId; // referencia blanda al Articulo; el registro conserva nombreInsumo congelado
     private String nombreInsumo;
     private BigDecimal consumoUnitario;
     private Integer cantidadOP;
     private BigDecimal cantidadRequerida;
     private BigDecimal precioUnitarioRef;
+    
+    private Long proveedorId;
+    private String proveedorNombre;
+    private Long ocId;
+    private String numeroOC;
 
-    public HojaCompraItem(Long idHCItem, Long hcId, String tipoInsumo, Long insumoId, String nombreInsumo,
+    public HojaCompraItem(Long idHCItem, Long hcId, String tipoInsumo, Integer articuloId, String nombreInsumo,
             BigDecimal consumoUnitario, Integer cantidadOP, BigDecimal cantidadRequerida,
             BigDecimal precioUnitarioRef) {
+        this(idHCItem, hcId, tipoInsumo, articuloId, nombreInsumo, consumoUnitario, cantidadOP, cantidadRequerida,
+                precioUnitarioRef, null, null, null, null);
+    }
+
+    public HojaCompraItem(Long idHCItem, Long hcId, String tipoInsumo, Integer articuloId, String nombreInsumo,
+            BigDecimal consumoUnitario, Integer cantidadOP, BigDecimal cantidadRequerida,
+            BigDecimal precioUnitarioRef, Long proveedorId, String proveedorNombre, Long ocId, String numeroOC) {
         this.idHCItem = idHCItem;
         this.hcId = hcId;
         this.tipoInsumo = tipoInsumo;
-        this.insumoId = insumoId;
+        this.articuloId = articuloId;
         this.nombreInsumo = nombreInsumo;
         this.consumoUnitario = consumoUnitario;
         this.cantidadOP = cantidadOP;
         this.cantidadRequerida = cantidadRequerida;
         this.precioUnitarioRef = precioUnitarioRef;
+        this.proveedorId = proveedorId;
+        this.proveedorNombre = proveedorNombre;
+        this.ocId = ocId;
+        this.numeroOC = numeroOC;
+    }
+
+    public void asignarProveedor(Long proveedorId, String proveedorNombre) {
+        this.proveedorId = proveedorId;
+        this.proveedorNombre = proveedorNombre;
+    }
+
+    public void vincularOC(Long ocId, String numeroOC) {
+        this.ocId = ocId;
+        this.numeroOC = numeroOC;
     }
 
     /**
@@ -44,11 +70,15 @@ public class HojaCompraItem {
                 null,
                 null,
                 origen.getTipoInsumo(),
-                origen.getInsumoId(),
+                origen.getArticuloId(),
                 origen.getNombreInsumo(),
                 origen.getConsumo(),
                 cantidadOP,
                 cantidadRequerida,
-                origen.getPrecioUnitario());
+                origen.getPrecioUnitario(),
+                null,
+                null,
+                null,
+                null);
     }
 }

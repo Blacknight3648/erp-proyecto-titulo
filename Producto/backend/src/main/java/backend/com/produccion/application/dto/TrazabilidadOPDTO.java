@@ -1,6 +1,5 @@
 package backend.com.produccion.application.dto;
 
-import backend.com.produccion.domain.model.EstadoOP;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -8,6 +7,8 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.util.List;
+
+import backend.com.produccion.domain.enums.EstadoOP;
 
 /**
  * Vista consolidada de toda la cadena de trazabilidad partiendo de una OP:

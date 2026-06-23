@@ -1,33 +1,32 @@
 package backend.com.comercial.infrastructure.persistence.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 @Entity
-@Table(name = "scos_plantilla_material_vinculos")
+@Table(name = "scos_plantilla_material_vinculo")
 @Getter
 @Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class SCOSPlantillaMaterialVinculoJpaEntity {
-    @Transient
-    private String tempMaterialId;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "plantilla_id", nullable = false)
-    private SCOSPlantillaJpaEntity plantilla;
+    @JoinColumn(name = "id_descripcion_plantilla", nullable = false)
+    private DescripcionPlantillaJpaEntity descripcionPlantilla;
 
-    @Column(name = "field_name", nullable = false)
-    private String fieldName; // e.g. "forro", "mangas"
+    @Column(name = "material_type", nullable = false, length = 20)
+    private String materialType;   // "TELA" | "ACCESORIO"
 
-    @Column(name = "material_type", nullable = false)
-    private String materialType; // "TELA" or "ACCESORIO"
-
-    @Column(name = "material_id")
-    private Long materialId; // ID of SCOSTelaJpaEntity or SCOSAccesorioJpaEntity
+    @Column(name = "material_id", nullable = false)
+    private Long materialId;
 
     @Column(name = "cantidad")
     private Integer cantidad;

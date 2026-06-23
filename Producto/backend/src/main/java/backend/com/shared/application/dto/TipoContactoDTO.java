@@ -7,7 +7,7 @@ import lombok.*;
 @NoArgsConstructor
 public class TipoContactoDTO {
 
-    private Long idTipoContacto;
+    private Long tipoContactoId;
     private String descripcionTipoContacto;
 
 }

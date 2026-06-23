@@ -6,15 +6,20 @@ import backend.com.produccion.domain.model.Costeo;
 import backend.com.produccion.domain.model.CosteoItem;
 import backend.com.produccion.infrastructure.persistence.entity.CosteoJpaEntity;
 import backend.com.produccion.infrastructure.persistence.entity.CosteoItemJpaEntity;
+import backend.com.shared.infrastructure.mapper.ArticuloMapper;
 import backend.com.shared.valueobjects.DocumentNumber;
 import backend.com.shared.valueobjects.Money;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.stream.Collectors;
 
 @Component
+@RequiredArgsConstructor
 public class CosteoMapper {
+
+    private final ArticuloMapper articuloMapper;
 
     public Costeo toDomain(CosteoJpaEntity entity) {
         if (entity == null)
@@ -28,21 +33,21 @@ public class CosteoMapper {
                 null, // clienteNombre (populated in service)
                 null, // vendedorId (populated in service)
                 null, // vendedorNombre (populated in service)
-                new Money(entity.getCostoHilos(), "CLP"),
-                new Money(entity.getCostoManoObra(), "CLP"),
-                new Money(entity.getCostoEtiquetas(), "CLP"),
-                new Money(entity.getCostoEmbalaje(), "CLP"),
-                new Money(entity.getCostoFlete(), "CLP"),
-                entity.getPorcentajeCostoFijo(),
-                new Money(entity.getPrecioCinta1(), "CLP"),
-                entity.getCantidadCinta1(),
-                new Money(entity.getPrecioCinta2(), "CLP"),
-                entity.getCantidadCinta2(),
-                new Money(entity.getVivoReflectivo(), "CLP"),
-                entity.getCantidadVivo(),
-                new Money(entity.getCostoTotalMateriaPrima(), "CLP"),
-                entity.getMargenBrutoSugerido(),
-                new Money(entity.getPrecioVentaSugerido(), "CLP"),
+                new Money(entity.getCostoHilos() != null ? entity.getCostoHilos() : BigDecimal.ZERO, "CLP"),
+                new Money(entity.getCostoManoObra() != null ? entity.getCostoManoObra() : BigDecimal.ZERO, "CLP"),
+                new Money(entity.getCostoEtiquetas() != null ? entity.getCostoEtiquetas() : BigDecimal.ZERO, "CLP"),
+                new Money(entity.getCostoEmbalaje() != null ? entity.getCostoEmbalaje() : BigDecimal.ZERO, "CLP"),
+                new Money(entity.getCostoFlete() != null ? entity.getCostoFlete() : BigDecimal.ZERO, "CLP"),
+                entity.getPorcentajeCostoFijo() != null ? entity.getPorcentajeCostoFijo() : BigDecimal.ZERO,
+                new Money(entity.getPrecioCinta1() != null ? entity.getPrecioCinta1() : BigDecimal.ZERO, "CLP"),
+                entity.getCantidadCinta1() != null ? entity.getCantidadCinta1() : BigDecimal.ZERO,
+                new Money(entity.getPrecioCinta2() != null ? entity.getPrecioCinta2() : BigDecimal.ZERO, "CLP"),
+                entity.getCantidadCinta2() != null ? entity.getCantidadCinta2() : BigDecimal.ZERO,
+                new Money(entity.getVivoReflectivo() != null ? entity.getVivoReflectivo() : BigDecimal.ZERO, "CLP"),
+                entity.getCantidadVivo() != null ? entity.getCantidadVivo() : BigDecimal.ZERO,
+                new Money(entity.getCostoTotalMateriaPrima() != null ? entity.getCostoTotalMateriaPrima() : BigDecimal.ZERO, "CLP"),
+                entity.getMargenBrutoSugerido() != null ? entity.getMargenBrutoSugerido() : BigDecimal.ZERO,
+                new Money(entity.getPrecioVentaSugerido() != null ? entity.getPrecioVentaSugerido() : BigDecimal.ZERO, "CLP"),
                 entity.getItems() != null ? entity.getItems().stream().map(this::mapItemToDomain).collect(Collectors.toList()) : new ArrayList<>());
     }
 
@@ -143,7 +148,7 @@ public class CosteoMapper {
         return CosteoItem.builder()
                 .idCosteoItem(entity.getIdCosteoItem())
                 .tipoInsumo(entity.getTipoInsumo())
-                .insumoId(entity.getInsumoId())
+                .articuloId(entity.getArticuloId())
                 .nombreInsumo(entity.getNombreInsumo())
                 .consumo(entity.getConsumo())
                 .precioUnitario(entity.getPrecioUnitario())
@@ -155,7 +160,7 @@ public class CosteoMapper {
         return CosteoItemJpaEntity.builder()
                 .idCosteoItem(domain.getIdCosteoItem())
                 .tipoInsumo(domain.getTipoInsumo())
-                .insumoId(domain.getInsumoId())
+                .articuloId(domain.getArticuloId())
                 .nombreInsumo(domain.getNombreInsumo())
                 .consumo(domain.getConsumo())
                 .precioUnitario(domain.getPrecioUnitario())
@@ -167,11 +172,12 @@ public class CosteoMapper {
         return CosteoItemDTO.builder()
                 .idCosteoItem(domain.getIdCosteoItem())
                 .tipoInsumo(domain.getTipoInsumo())
-                .insumoId(domain.getInsumoId())
+                .articuloId(domain.getArticuloId())
                 .nombreInsumo(domain.getNombreInsumo())
                 .consumo(domain.getConsumo())
                 .precioUnitario(domain.getPrecioUnitario())
                 .costoTotal(domain.getCostoTotal())
+                .articulo(articuloMapper.toDTO(domain.getArticulo()))
                 .build();
     }
 
@@ -179,7 +185,7 @@ public class CosteoMapper {
         return CosteoItem.builder()
                 .idCosteoItem(dto.getIdCosteoItem())
                 .tipoInsumo(dto.getTipoInsumo())
-                .insumoId(dto.getInsumoId())
+                .articuloId(dto.getArticuloId())
                 .nombreInsumo(dto.getNombreInsumo())
                 .consumo(dto.getConsumo())
                 .precioUnitario(dto.getPrecioUnitario())

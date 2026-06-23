@@ -27,6 +27,7 @@ import {
     Layers,
     MessageSquareQuote,
     ShoppingBag,
+    ShoppingCart,
     Lock,
     Tag,
     GitBranch
@@ -38,7 +39,7 @@ const STATUS_BADGE = {
     CERRADA:  'bg-slate-100 text-slate-500 border-slate-200',
 };
 
-export default function HCVisualizacion({ hc, onBack, onAprobar, onCerrar, formatCLP }) {
+export default function HCVisualizacion({ hc, onBack, onAprobar, onCerrar, onModificar, formatCLP }) {
     if (!hc) return (
         <div className="p-10 text-center bg-white/50 backdrop-blur-md rounded-3xl border border-dashed border-slate-200">
             <p className="text-slate-400 font-bold uppercase tracking-widest text-xs">Cargando datos de la hoja de compra...</p>
@@ -92,6 +93,15 @@ export default function HCVisualizacion({ hc, onBack, onAprobar, onCerrar, forma
                         >
                             <CheckCircle2 className="w-4 h-4" />
                             Aprobar HC
+                        </Button>
+                    )}
+                    {hc.status === 'APROBADA' && onModificar && (
+                        <Button
+                            onClick={() => onModificar(hc.id)}
+                            className="bg-indigo-600 hover:bg-indigo-700 text-white rounded-2xl px-8 h-12 font-black text-xs uppercase tracking-widest shadow-2xl shadow-indigo-100 transition-all active:scale-95 flex items-center gap-2"
+                        >
+                            <ShoppingCart className="w-4 h-4" />
+                            Gestionar Compra
                         </Button>
                     )}
                     {hc.status === 'APROBADA' && onCerrar && (

@@ -3,6 +3,7 @@ import { useHCState } from '../../../../hooks/useHCState';
 import ListaHC from './views/ListaHC';
 import FormularioHC from './views/FormularioHC';
 import DetalleHC from './views/DetalleHC';
+import ModificacionHC from './views/ModificacionHC';
 
 export default function HojaCompra() {
     const {
@@ -23,6 +24,8 @@ export default function HojaCompra() {
         handleSave,
         aprobar,
         cerrar,
+        handleOpenModificacion,
+        consolidarOC,
         formatCLP,
         totalItems,
         totalBudget,
@@ -41,6 +44,7 @@ export default function HojaCompra() {
                     handleOpenForm={handleOpenForm}
                     aprobar={aprobar}
                     cerrar={cerrar}
+                    onModificar={handleOpenModificacion}
                     loading={loading}
                     error={error}
                 />
@@ -71,6 +75,18 @@ export default function HojaCompra() {
                     formatCLP={formatCLP}
                     aprobar={aprobar}
                     cerrar={cerrar}
+                    onModificar={handleOpenModificacion}
+                />
+            )}
+
+            {view === 'modificacion' && (
+                <ModificacionHC
+                    selectedHC={selectedHC}
+                    setSelectedHC={setSelectedHC}
+                    registros={registros}
+                    setView={setView}
+                    formatCLP={formatCLP}
+                    consolidarOC={consolidarOC}
                 />
             )}
         </div>

@@ -2,8 +2,9 @@ package backend.com.produccion.infrastructure.api;
 
 import backend.com.produccion.application.dto.GenerarOCConsolidadaRequest;
 import backend.com.produccion.application.dto.OrdenCompraDTO;
+import backend.com.produccion.application.dto.OrdenCompraItemDTO;
 import backend.com.produccion.application.service.OrdenCompraService;
-import backend.com.produccion.domain.model.EstadoOC;
+import backend.com.produccion.domain.enums.EstadoOC;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -71,5 +72,31 @@ public class OrdenCompraController {
                                                            @PathVariable Long idOCItem,
                                                            @RequestParam BigDecimal precio) {
         return ResponseEntity.ok(ordenCompraService.actualizarPrecioItem(idOC, idOCItem, precio));
+    }
+
+    @DeleteMapping("/{idOC}")
+    public ResponseEntity<Void> eliminar(@PathVariable Long idOC) {
+        ordenCompraService.eliminar(idOC);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/{idOC}/items")
+    public ResponseEntity<OrdenCompraDTO> agregarItem(@PathVariable Long idOC,
+                                                      @Valid @RequestBody OrdenCompraItemDTO itemDTO) {
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(ordenCompraService.agregarItem(idOC, itemDTO));
+    }
+
+    @PutMapping("/{idOC}/items/{idOCItem}")
+    public ResponseEntity<OrdenCompraDTO> actualizarItem(@PathVariable Long idOC,
+                                                         @PathVariable Long idOCItem,
+                                                         @Valid @RequestBody OrdenCompraItemDTO itemDTO) {
+        return ResponseEntity.ok(ordenCompraService.actualizarItem(idOC, idOCItem, itemDTO));
+    }
+
+    @DeleteMapping("/{idOC}/items/{idOCItem}")
+    public ResponseEntity<OrdenCompraDTO> eliminarItem(@PathVariable Long idOC,
+                                                       @PathVariable Long idOCItem) {
+        return ResponseEntity.ok(ordenCompraService.eliminarItem(idOC, idOCItem));
     }
 }

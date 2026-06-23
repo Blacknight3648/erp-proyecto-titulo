@@ -54,10 +54,11 @@ export function useCosteosOPState() {
         );
     }, [solicitudesCostos]);
 
-    // Registros que ya tienen costeos realizados (Estado Costeado) o están listos para ser procesados
+    // Registros que ya tienen costeos realizados (Estado Costeado/Aprobado) o están listos para ser procesados
     const allRecords = useMemo(() => {
         return solicitudesFiltradas.filter(s =>
             s.estado === 'Costeado' ||
+            s.estado === 'APROBADA' ||
             s.estado === 'COSTEO REALIZADO' ||
             s.estado === 'PENDIENTE' ||
             s.estado === 'PENDIENTE PRODUCCIÓN'
@@ -65,7 +66,11 @@ export function useCosteosOPState() {
     }, [solicitudesFiltradas]);
 
     const dashboardStats = useMemo(() => {
-        const finishedItems = solicitudesFiltradas.filter(r => r.estado?.toUpperCase() === 'COSTEADO' || r.estado === 'COSTEO REALIZADO');
+        const finishedItems = solicitudesFiltradas.filter(r =>
+            r.estado?.toUpperCase() === 'COSTEADO' ||
+            r.estado === 'COSTEO REALIZADO' ||
+            r.estado === 'APROBADA'
+        );
         const inProgressItems = solicitudesFiltradas.filter(r => r.estado === 'En Proceso' || r.estado === 'Borrador');
         const pendingItems = solicitudesFiltradas.filter(s => s.estado === 'PENDIENTE PRODUCCIÓN' || s.estado === 'PENDIENTE');
 
@@ -165,12 +170,12 @@ export function useCosteosOPState() {
                     if (savedItem.consumo) initialInsumos[matchIndex].cantidad = savedItem.consumo;
                     // Preservar ID de la base de datos
                     initialInsumos[matchIndex].idCosteoItem = savedItem.idCosteoItem;
-                    initialInsumos[matchIndex].insumoId = savedItem.insumoId;
+                    initialInsumos[matchIndex].insumoId = savedItem.insumoId ?? savedItem.articuloId ?? null;
                 } else {
                     initialInsumos.push({
                         id: `EXTRA-${savedItem.idCosteoItem}`,
                         idCosteoItem: savedItem.idCosteoItem,
-                        insumoId: savedItem.insumoId,
+                        insumoId: savedItem.insumoId ?? savedItem.articuloId ?? null,
                         producto: savedItem.nombreInsumo,
                         costo: savedItem.precioUnitario || 0,
                         cantidad: savedItem.consumo || 0,
@@ -259,6 +264,7 @@ export function useCosteosOPState() {
                 idCosteoItem: i.idCosteoItem || null,
                 tipoInsumo: i.categoryId.toUpperCase(),
                 insumoId: i.insumoId || (typeof i.id === 'string' ? null : i.id),
+                articuloId: i.insumoId || (typeof i.id === 'string' ? null : i.id),
                 nombreInsumo: i.producto,
                 consumo: parseFloat(i.cantidad) || 0,
                 precioUnitario: parseFloat(i.costo) || 0,
@@ -269,11 +275,11 @@ export function useCosteosOPState() {
                 id: currentSolicitud.id,
                 clienteId: parseId(currentSolicitud.clienteId),
                 vendedorId: parseId(currentSolicitud.vendedorId),
-                articuloDescripcion: currentSolicitud.articuloDescripcion,
+                articuloDescripcion: currentSolicitud.articuloDescripcion || currentSolicitud.nombrePrenda || 'Sin descripción',
                 nombrePrenda: currentSolicitud.nombrePrenda,
-                cantidad: parseInt(currentSolicitud.cantidad),
-                genero: currentSolicitud.genero,
-                tallaje: currentSolicitud.tallaje,
+                cantidad: parseInt(currentSolicitud.cantidad) || 1,
+                genero: currentSolicitud.genero || 'Unisex',
+                tallaje: currentSolicitud.tallaje || '',
                 tipo: currentSolicitud.tipo || 'COSTEO',
                 esMuestra: currentSolicitud.esMuestra || false,
                 hasLogo: currentSolicitud.hasLogo || false,
@@ -281,11 +287,9 @@ export function useCosteosOPState() {
                 telas: updatedTelas,
                 accesorios: updatedAccesorios,
                 logotipos: updatedLogotipos,
-                cintas: updatedCintas,
-                plantillas: currentSolicitud.plantillas || [],
-                prendas: currentSolicitud.prendas || [],
-                estado: 'Costeado'
+                estado: 'APROBADA'
             };
+
 
             const productionPayload = {
                 solicitudCostosId: parseId(currentSolicitud.id),
@@ -302,10 +306,18 @@ export function useCosteosOPState() {
                 items: productionItems
             };
 
-            await Promise.all([
-                updateSolicitudCostos(currentSolicitud.id, commercialPayload),
-                saveCosteo(productionPayload)
-            ]);
+            // Paso 1: actualizar SCOS (si falla, no continuamos con el costeo)
+            await updateSolicitudCostos(currentSolicitud.id, commercialPayload);
+
+            // Paso 2: guardar/actualizar costeo de producción
+            // Si ya existe un costeo para esta SCOS, actualizamos; si no, creamos
+            const existingCosteo = await getCosteoBySCOS(parseId(currentSolicitud.id));
+            if (existingCosteo?.idCosteo) {
+                await saveCosteo({ ...productionPayload, idCosteo: existingCosteo.idCosteo });
+            } else {
+                await saveCosteo(productionPayload);
+            }
+
 
             const scosNumber = currentSolicitud.numero || currentSolicitud.id;
             const match = String(scosNumber).match(/(\d+)/);

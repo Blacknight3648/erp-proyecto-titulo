@@ -44,11 +44,6 @@ public class NotaVentaRepositoryImpl implements NotaVentaRepository {
     }
 
     @Override
-    public Optional<Long> findMaxNumero() {
-        return jpaRepository.findMaxNumero();
-    }
-
-    @Override
     public java.util.List<NotaVenta> findAll() {
         return jpaRepository.findAll().stream()
                 .map(mapper::toDomain)

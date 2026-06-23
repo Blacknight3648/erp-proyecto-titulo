@@ -1,9 +1,8 @@
 package backend.com.comercial.infrastructure.persistence.entity;
 
-import backend.com.comercial.domain.model.EstadoSCOS;
-import backend.com.gestionUsuarios.cliente.infrastructure.persistence.entity.ClienteJpaEntity;
-import backend.com.gestionUsuarios.vendedor.infrastructure.persistence.entity.VendedorJpaEntity;
-import backend.com.shared.infrastructure.persistence.entity.EspecificacionTecnica;
+import backend.com.comercial.domain.enums.EstadoSCOS;
+import backend.com.gestionUsuarios.infrastructure.persistence.entity.ClienteJpaEntity;
+import backend.com.gestionUsuarios.infrastructure.persistence.entity.VendedorJpaEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -40,10 +39,6 @@ public class SolicitudCostosJpaEntity {
     @JoinColumn(name = "vendedor_id")
     private VendedorJpaEntity vendedor;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "especificacion_tecnica_id")
-    private EspecificacionTecnica especificacionTecnica;
-
     @Column(name = "articulo_descripcion", nullable = false)
     private String articuloDescripcion;
 
@@ -73,12 +68,6 @@ public class SolicitudCostosJpaEntity {
     private List<SCOSAccesorioJpaEntity> accesorios = new ArrayList<>();
 
     @OneToMany(mappedBy = "solicitudCostos", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<SCOSPlantillaJpaEntity> plantillas = new ArrayList<>();
-
-    @OneToMany(mappedBy = "solicitudCostos", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<SCOTPrendaListaJpaEntity> prendas = new ArrayList<>();
-
-    @OneToMany(mappedBy = "solicitudCostos", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<SCOSLogotipoJpaEntity> logotipos = new ArrayList<>();
 
     public void addTela(SCOSTelaJpaEntity tela) {
@@ -91,16 +80,6 @@ public class SolicitudCostosJpaEntity {
         accesorio.setSolicitudCostos(this);
     }
 
-    public void addPlantilla(SCOSPlantillaJpaEntity plantilla) {
-        plantillas.add(plantilla);
-        plantilla.setSolicitudCostos(this);
-    }
-
-    public void addPrenda(SCOTPrendaListaJpaEntity prenda) {
-        prendas.add(prenda);
-        prenda.setSolicitudCostos(this);
-    }
-
     public void addLogotipo(SCOSLogotipoJpaEntity logotipo) {
         logotipos.add(logotipo);
         logotipo.setSolicitudCostos(this);
@@ -109,8 +88,6 @@ public class SolicitudCostosJpaEntity {
     public void clearCollections() {
         telas.clear();
         accesorios.clear();
-        plantillas.clear();
-        prendas.clear();
         logotipos.clear();
     }
 }

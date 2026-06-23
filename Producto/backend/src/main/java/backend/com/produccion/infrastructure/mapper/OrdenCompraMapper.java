@@ -1,6 +1,6 @@
 package backend.com.produccion.infrastructure.mapper;
 
-import backend.com.gestionUsuarios.proveedor.infrastructure.persistence.entity.ProveedorJpaEntity;
+import backend.com.gestionUsuarios.infrastructure.persistence.entity.ProveedorJpaEntity;
 import backend.com.produccion.domain.model.HCItemOCItemLink;
 import backend.com.produccion.domain.model.OrdenCompra;
 import backend.com.produccion.domain.model.OrdenCompraItem;
@@ -82,7 +82,7 @@ public class OrdenCompraMapper {
                 entity.getIdOCItem(),
                 entity.getOrdenCompra() != null ? entity.getOrdenCompra().getIdOC() : null,
                 entity.getTipoInsumo(),
-                entity.getInsumoId(),
+                entity.getArticuloId(),
                 entity.getNombreInsumo(),
                 entity.getCantidadRequerida(),
                 entity.getCantidadStock(),
@@ -96,7 +96,7 @@ public class OrdenCompraMapper {
         OrdenCompraItemJpaEntity entity = new OrdenCompraItemJpaEntity();
         entity.setIdOCItem(domain.getIdOCItem());
         entity.setTipoInsumo(domain.getTipoInsumo());
-        entity.setInsumoId(domain.getInsumoId());
+        entity.setArticuloId(domain.getArticuloId());
         entity.setNombreInsumo(domain.getNombreInsumo());
         entity.setCantidadRequerida(domain.getCantidadRequerida());
         entity.setCantidadStock(domain.getCantidadStock());

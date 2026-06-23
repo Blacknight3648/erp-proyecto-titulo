@@ -110,6 +110,12 @@ export const useComercial = () => {
             return updatedRequest;
         } catch (error) {
             console.error("Error updating solicitud-costos:", error);
+            // Log detallado para diagnóstico
+            if (error.response) {
+                console.error("Status:", error.response.status);
+                console.error("Backend error detail:", JSON.stringify(error.response.data, null, 2));
+                console.error("Payload enviado:", JSON.stringify(data, null, 2));
+            }
             throw error;
         } finally {
             setLoading(false);

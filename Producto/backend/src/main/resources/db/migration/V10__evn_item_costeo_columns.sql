@@ -1,0 +1,15 @@
+-- V10: Vínculo Costeo/SCOS en el ítem de la EVN.
+--
+-- Esta migración quedó como no-op tras la normalización a MySQL:
+--
+--   * `evaluacion_negocio_items.costeo_id` y `.solicitud_costos_id` ahora están
+--     mapeadas en EvaluacionNegocioItemJpaEntity (@Column), por lo que Hibernate
+--     (ddl-auto=update) las crea. El `ADD COLUMN IF NOT EXISTS` era redundante y
+--     MySQL no lo soporta → se retiró.
+--
+--   * Los `DROP COLUMN IF EXISTS` sobre `evaluaciones_negocio` (columnas ARRAY
+--     legacy) eran limpieza in-place; en un despliegue fresco esas columnas no
+--     existen y MySQL no soporta DROP COLUMN IF EXISTS → se retiró. Si se migra
+--     una instancia antigua con esas columnas, ejecutar el DROP manualmente.
+--
+-- Se conserva el archivo (sin sentencias) para no alterar el versionado Flyway.

@@ -1,5 +1,8 @@
 package backend.com.produccion.domain.model;
 
+import backend.com.produccion.domain.enums.EstadoOT;
+import backend.com.produccion.domain.enums.FaseProduccion;
+import backend.com.produccion.domain.enums.TipoOT;
 import backend.com.shared.valueobjects.DocumentNumber;
 import lombok.Getter;
 
@@ -11,6 +14,7 @@ public class OrdenTrabajo {
     private Long idOT;
     private DocumentNumber numeroOT;
     private Long notaVentaId;
+    private Long itemNVId;
     private Long ordenProduccionId;
     private Integer nroItem;
     private TipoOT tipoOT;
@@ -21,13 +25,14 @@ public class OrdenTrabajo {
     private Integer cantidadMerma;
     private String observaciones;
 
-    public OrdenTrabajo(Long id, DocumentNumber numeroOT, Long notaVentaId, Long ordenProduccionId,
+    public OrdenTrabajo(Long id, DocumentNumber numeroOT, Long notaVentaId, Long itemNVId, Long ordenProduccionId,
             Integer nroItem, TipoOT tipoOT, FaseProduccion fase, EstadoOT estadoOT,
             Integer cantidadTotal, Integer cantidadProducida, Integer cantidadMerma,
             String observaciones) {
         this.idOT = id;
         this.numeroOT = numeroOT;
         this.notaVentaId = notaVentaId;
+        this.itemNVId = itemNVId;
         this.ordenProduccionId = ordenProduccionId;
         this.nroItem = nroItem;
         this.tipoOT = tipoOT != null ? tipoOT : TipoOT.INTERNA;
@@ -39,14 +44,15 @@ public class OrdenTrabajo {
         this.observaciones = observaciones;
     }
 
-    public static OrdenTrabajo crearParaItem(DocumentNumber numero, Long notaVentaId, Integer nroItem, String obs) {
-        return new OrdenTrabajo(null, numero, notaVentaId, null, nroItem, TipoOT.INTERNA, null,
+    public static OrdenTrabajo crearParaItem(DocumentNumber numero, Long notaVentaId, Long itemNVId,
+            Integer nroItem, String obs) {
+        return new OrdenTrabajo(null, numero, notaVentaId, itemNVId, null, nroItem, TipoOT.INTERNA, null,
                 EstadoOT.PENDIENTE, 0, 0, 0, obs);
     }
 
-    public static OrdenTrabajo crearParaFase(DocumentNumber numero, Long notaVentaId, Long opId,
+    public static OrdenTrabajo crearParaFase(DocumentNumber numero, Long notaVentaId, Long itemNVId, Long opId,
             Integer nroItem, FaseProduccion fase, Integer cantidadTotal, String obs) {
-        return new OrdenTrabajo(null, numero, notaVentaId, opId, nroItem, TipoOT.INTERNA, fase,
+        return new OrdenTrabajo(null, numero, notaVentaId, itemNVId, opId, nroItem, TipoOT.INTERNA, fase,
                 EstadoOT.PENDIENTE, cantidadTotal, 0, 0, obs);
     }
 

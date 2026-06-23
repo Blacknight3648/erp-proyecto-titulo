@@ -28,14 +28,17 @@ public class NVResponse {
 
     @Data
     public static class ItemNVResponse {
+        private Long idItemNV;
         private Integer nroItem;
-        private Long productoId;
+        private Integer articuloId;
         private String modelo;
         private String color;
         private String talla;
         private Integer cantidad;
         private BigDecimal precioUnitario;
         private BigDecimal total;
+        private Boolean requiereOt;
+        private String detalleOt;
     }
 
     public static NVResponse fromDomain(NotaVenta domain) {
@@ -57,14 +60,17 @@ public class NVResponse {
 
         response.setItems(domain.getItems().stream().map(item -> {
             ItemNVResponse itemResponse = new ItemNVResponse();
+            itemResponse.setIdItemNV(item.getIdItemNV());
             itemResponse.setNroItem(item.getNroItem());
-            itemResponse.setProductoId(item.getProductoId());
+            itemResponse.setArticuloId(item.getArticuloId());
             itemResponse.setModelo(item.getModelo());
             itemResponse.setColor(item.getColor());
             itemResponse.setTalla(item.getTalla());
             itemResponse.setCantidad(item.getCantidad());
             itemResponse.setPrecioUnitario(item.getPrecioUnitario().getAmount());
             itemResponse.setTotal(item.getTotal().getAmount());
+            itemResponse.setRequiereOt(item.getRequiereOt());
+            itemResponse.setDetalleOt(item.getDetalleOt());
             return itemResponse;
         }).collect(Collectors.toList()));
 

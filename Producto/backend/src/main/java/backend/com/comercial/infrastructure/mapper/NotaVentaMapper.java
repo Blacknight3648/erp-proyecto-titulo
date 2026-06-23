@@ -1,16 +1,16 @@
 package backend.com.comercial.infrastructure.mapper;
 
-import backend.com.comercial.domain.model.EstadoNV;
+import backend.com.comercial.domain.enums.EstadoNV;
 import backend.com.comercial.domain.model.ItemNV;
 import backend.com.comercial.domain.model.ItemNVTalla;
 import backend.com.comercial.domain.model.NotaVenta;
 import backend.com.comercial.infrastructure.persistence.entity.NotaVentaItemJpaEntity;
 import backend.com.comercial.infrastructure.persistence.entity.NotaVentaItemTallaJpaEntity;
 import backend.com.comercial.infrastructure.persistence.entity.NotaVentaJpaEntity;
-import backend.com.gestionUsuarios.cliente.infrastructure.persistence.entity.ClienteJpaEntity;
-import backend.com.gestionUsuarios.vendedor.infrastructure.persistence.entity.VendedorJpaEntity;
-import backend.com.shared.infrastructure.persistence.entity.ProductoJpaEntity;
-import backend.com.gestionUsuarios.proveedor.infrastructure.persistence.entity.ProveedorJpaEntity;
+import backend.com.gestionUsuarios.infrastructure.persistence.entity.ClienteJpaEntity;
+import backend.com.gestionUsuarios.infrastructure.persistence.entity.VendedorJpaEntity;
+import backend.com.shared.infrastructure.persistence.entity.ArticuloJpaEntity;
+import backend.com.gestionUsuarios.infrastructure.persistence.entity.ProveedorJpaEntity;
 import backend.com.shared.valueobjects.DocumentNumber;
 import backend.com.shared.valueobjects.Money;
 import org.springframework.stereotype.Component;
@@ -45,8 +45,9 @@ public class NotaVentaMapper {
         if (entity == null)
             return null;
         return new ItemNV(
+                entity.getIdItemNV(),
                 entity.getNroItem(),
-                entity.getProducto() != null ? entity.getProducto().getProductoId() : null,
+                entity.getArticulo() != null ? entity.getArticulo().getIdArticulo() : null,
                 entity.getModelo(),
                 entity.getTela(),
                 entity.getComposicion(),
@@ -57,7 +58,7 @@ public class NotaVentaMapper {
                 entity.getProveedor() != null ? entity.getProveedor().getProveedorId() : null,
                 entity.getLlevaLogo(),
                 entity.getTipoItem(),
-                entity.getIsPersonalized(), // JpaEntity mantiene isPersonalized por ahora
+                entity.getRequiereOt(),
                 entity.getDetalleOt(),
                 entity.getLogoDetalle(),
                 entity.getCantidad(),
@@ -115,11 +116,14 @@ public class NotaVentaMapper {
 
         domain.getItems().forEach(itemDomain -> {
             NotaVentaItemJpaEntity itemEntity = new NotaVentaItemJpaEntity();
+            if (itemDomain.getIdItemNV() != null) {
+                itemEntity.setIdItemNV(itemDomain.getIdItemNV());
+            }
             itemEntity.setNroItem(itemDomain.getNroItem());
-            if (itemDomain.getProductoId() != null) {
-                ProductoJpaEntity p = new ProductoJpaEntity();
-                p.setProductoId(itemDomain.getProductoId());
-                itemEntity.setProducto(p);
+            if (itemDomain.getArticuloId() != null) {
+                ArticuloJpaEntity a = new ArticuloJpaEntity();
+                a.setIdArticulo(itemDomain.getArticuloId());
+                itemEntity.setArticulo(a);
             }
             itemEntity.setModelo(itemDomain.getModelo());
             itemEntity.setTela(itemDomain.getTela());
@@ -135,7 +139,7 @@ public class NotaVentaMapper {
             }
             itemEntity.setLlevaLogo(itemDomain.getLlevaLogo());
             itemEntity.setTipoItem(itemDomain.getTipoItem());
-            itemEntity.setIsPersonalized(itemDomain.getGeneraOt());
+            itemEntity.setRequiereOt(itemDomain.getRequiereOt());
             itemEntity.setDetalleOt(itemDomain.getDetalleOt());
             itemEntity.setLogoDetalle(itemDomain.getLogoDetalle());
             itemEntity.setCantidad(itemDomain.getCantidad());

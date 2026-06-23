@@ -2,7 +2,8 @@ package backend.com.produccion.application.service;
 
 import backend.com.produccion.application.dto.GenerarOCConsolidadaRequest;
 import backend.com.produccion.application.dto.OrdenCompraDTO;
-import backend.com.produccion.domain.model.EstadoOC;
+import backend.com.produccion.application.dto.OrdenCompraItemDTO;
+import backend.com.produccion.domain.enums.EstadoOC;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -17,6 +18,14 @@ public interface OrdenCompraService {
     OrdenCompraDTO marcarRecepcionada(Long idOC);
 
     OrdenCompraDTO cerrar(Long idOC);
+
+    void eliminar(Long idOC);
+
+    OrdenCompraDTO agregarItem(Long idOC, OrdenCompraItemDTO itemDTO);
+
+    OrdenCompraDTO actualizarItem(Long idOC, Long idOCItem, OrdenCompraItemDTO itemDTO);
+
+    OrdenCompraDTO eliminarItem(Long idOC, Long idOCItem);
 
     /**
      * Actualiza el precio unitario de un OCItem y recalcula subtotal + total de la OC.

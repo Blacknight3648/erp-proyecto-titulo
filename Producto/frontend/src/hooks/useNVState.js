@@ -123,7 +123,7 @@ export const useNVState = (initialView = 'list') => {
                     codigoInterno: item.codigoInterno || '',
                     logo: item.logo || 'N/A',
                     proveedorId: item.proveedorId || '',
-                    generaOt: item.generaOt || false,
+                    requiereOt: item.requiereOt || false,
                     detalleOt: item.detalleOt || ''
                 }))
             });
@@ -163,7 +163,7 @@ export const useNVState = (initialView = 'list') => {
             tipoItem: 'OP',
             logo: 'N/A',
             proveedorId: '',
-            generaOt: false,
+            requiereOt: false,
             detalleOt: ''
         };
         setFormData({ ...formData, items: [...formData.items, newItem] });
@@ -274,7 +274,7 @@ export const useNVState = (initialView = 'list') => {
                     proveedorId: item.proveedorId ? parseInt(item.proveedorId) : null,
                     llevaLogo: item.logo || 'N/A',
                     tipoItem: item.tipoItem,
-                    generaOt: item.generaOt,
+                    requiereOt: item.requiereOt,
                     detalleOt: item.detalleOt,
                     logoDetalle: item.logo || 'N/A'
                 }))

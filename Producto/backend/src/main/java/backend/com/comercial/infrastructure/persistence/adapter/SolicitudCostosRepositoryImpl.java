@@ -1,15 +1,21 @@
 package backend.com.comercial.infrastructure.persistence.adapter;
 
-import backend.com.comercial.domain.model.*;
+import backend.com.comercial.domain.model.SCOSAccesorio;
+import backend.com.comercial.domain.model.SCOSLogotipo;
+import backend.com.comercial.domain.model.SCOSTela;
+import backend.com.comercial.domain.model.SolicitudCostos;
 import backend.com.comercial.domain.repository.SolicitudCostosRepository;
-import backend.com.comercial.infrastructure.persistence.entity.*;
 import backend.com.comercial.infrastructure.mapper.SolicitudCostosMapper;
+import backend.com.comercial.infrastructure.persistence.entity.SCOSAccesorioJpaEntity;
+import backend.com.comercial.infrastructure.persistence.entity.SCOSLogotipoJpaEntity;
+import backend.com.comercial.infrastructure.persistence.entity.SCOSTelaJpaEntity;
+import backend.com.comercial.infrastructure.persistence.entity.SolicitudCostosJpaEntity;
 import backend.com.comercial.infrastructure.persistence.repository.SolicitudCostosJpaRepository;
+import backend.com.gestionUsuarios.infrastructure.persistence.entity.ClienteJpaEntity;
+import backend.com.gestionUsuarios.infrastructure.persistence.entity.ProveedorJpaEntity;
+import backend.com.gestionUsuarios.infrastructure.persistence.entity.VendedorJpaEntity;
+import backend.com.shared.infrastructure.persistence.entity.ArticuloJpaEntity;
 import backend.com.shared.valueobjects.DocumentNumber;
-import backend.com.shared.infrastructure.persistence.entity.EspecificacionTecnica;
-import backend.com.gestionUsuarios.cliente.infrastructure.persistence.entity.ClienteJpaEntity;
-import backend.com.gestionUsuarios.vendedor.infrastructure.persistence.entity.VendedorJpaEntity;
-import backend.com.gestionUsuarios.proveedor.infrastructure.persistence.entity.ProveedorJpaEntity;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -30,8 +36,7 @@ public class SolicitudCostosRepositoryImpl implements SolicitudCostosRepository 
     @Override
     @SuppressWarnings("null")
     public SolicitudCostos save(SolicitudCostos domain) {
-        if (domain == null)
-            return null;
+        if (domain == null) return null;
 
         SolicitudCostosJpaEntity entity;
         Long id = domain.getIdSCOS();
@@ -47,60 +52,10 @@ public class SolicitudCostosRepositoryImpl implements SolicitudCostosRepository 
 
         SolicitudCostosJpaEntity savedEntity = jpaRepository.save(entity);
 
-        // Resolve temp IDs in vinculos
-        boolean needsSecondSave = resolveVinculosCorrelation(savedEntity);
-        if (needsSecondSave) {
-            savedEntity = jpaRepository.save(savedEntity);
-        }
-
-        // Recargar para que las asociaciones @ManyToOne (cliente, vendedor,
-        // especificacionTecnica) devuelvan entidades managed con todos sus
-        // campos (razonSocial, nombre del vendedor, etc.), no los stubs
-        // detached que se construyen en syncEntityWithDomain.
         SolicitudCostosJpaEntity reloaded = jpaRepository.findById(savedEntity.getIdSCOS())
                 .orElse(savedEntity);
 
         return mapper.toDomain(reloaded);
-    }
-
-    private boolean resolveVinculosCorrelation(SolicitudCostosJpaEntity entity) {
-        if (entity.getPlantillas() == null)
-            return false;
-
-        // Build map of tempId -> databaseId
-        java.util.Map<String, Long> correlationMap = new java.util.HashMap<>();
-        if (entity.getTelas() != null) {
-            for (SCOSTelaJpaEntity t : entity.getTelas()) {
-                if (t.getTempId() != null)
-                    correlationMap.put(t.getTempId(), t.getIdSCOSTela());
-            }
-        }
-        if (entity.getAccesorios() != null) {
-            for (SCOSAccesorioJpaEntity a : entity.getAccesorios()) {
-                if (a.getTempId() != null)
-                    correlationMap.put(a.getTempId(), a.getIdSCOSAccesorio());
-            }
-        }
-
-        if (correlationMap.isEmpty())
-            return false;
-
-        boolean modified = false;
-        for (SCOSPlantillaJpaEntity p : entity.getPlantillas()) {
-            if (p.getVinculos() != null) {
-                for (SCOSPlantillaMaterialVinculoJpaEntity v : p.getVinculos()) {
-                    if (v.getTempMaterialId() != null) {
-                        Long resolvedId = correlationMap.get(v.getTempMaterialId());
-                        if (resolvedId != null) {
-                            v.setMaterialId(resolvedId);
-                            v.setTempMaterialId(null); // Clear temp ID once resolved
-                            modified = true;
-                        }
-                    }
-                }
-            }
-        }
-        return modified;
     }
 
     private void syncEntityWithDomain(SolicitudCostosJpaEntity entity, SolicitudCostos domain) {
@@ -129,18 +84,16 @@ public class SolicitudCostosRepositoryImpl implements SolicitudCostosRepository 
             v.setIdVendedor(domain.getVendedorId());
             entity.setVendedor(v);
         }
-        if (domain.getEspecificacionTecnicaId() != null) {
-            EspecificacionTecnica et = new EspecificacionTecnica();
-            et.setEspecificacionTecnicaId(domain.getEspecificacionTecnicaId());
-            entity.setEspecificacionTecnica(et);
-        }
-
         entity.clearCollections();
 
-        // Sync Telas
         if (domain.getTelas() != null) {
             for (SCOSTela t : domain.getTelas()) {
                 SCOSTelaJpaEntity te = new SCOSTelaJpaEntity();
+                if (t.getIdArticulo() != null) {
+                    ArticuloJpaEntity artRef = new ArticuloJpaEntity();
+                    artRef.setIdArticulo(t.getIdArticulo());
+                    te.setArticulo(artRef);
+                }
                 te.setDescripcion(t.getDescripcion());
                 te.setProveedorReferencia(t.getProveedorReferencia());
                 if (t.getProveedorId() != null) {
@@ -166,10 +119,14 @@ public class SolicitudCostosRepositoryImpl implements SolicitudCostosRepository 
             }
         }
 
-        // Sync Accesorios
         if (domain.getAccesorios() != null) {
             for (SCOSAccesorio a : domain.getAccesorios()) {
                 SCOSAccesorioJpaEntity ae = new SCOSAccesorioJpaEntity();
+                if (a.getIdArticulo() != null) {
+                    ArticuloJpaEntity artRef = new ArticuloJpaEntity();
+                    artRef.setIdArticulo(a.getIdArticulo());
+                    ae.setArticulo(artRef);
+                }
                 ae.setDescripcion(a.getDescripcion());
                 ae.setProveedorReferencia(a.getProveedorReferencia());
                 ae.setConsumo(a.getConsumo());
@@ -183,136 +140,6 @@ public class SolicitudCostosRepositoryImpl implements SolicitudCostosRepository 
             }
         }
 
-        // Sync Plantillas
-        if (domain.getPlantillas() != null) {
-            for (SCOSPlantilla p : domain.getPlantillas()) {
-                SCOSPlantillaJpaEntity pe = new SCOSPlantillaJpaEntity();
-                pe.setNombre(p.getNombre());
-                pe.setDescripcion(p.getDescripcion());
-                pe.setNombrePrenda(p.getNombrePrenda());
-                pe.setGenero(p.getGenero());
-                pe.setDetallesPrenda(p.getDetallesPrenda() != null
-                        ? new java.util.HashMap<String, Object>(p.getDetallesPrenda())
-                        : new java.util.HashMap<String, Object>());
-                pe.setCamposPersonalizados(p.getCamposPersonalizados() != null
-                        ? new java.util.HashMap<String, String>(p.getCamposPersonalizados())
-                        : new java.util.HashMap<String, String>());
-                pe.setCamposActivos(
-                        p.getCamposActivos() != null ? new ArrayList<>(p.getCamposActivos()) : new ArrayList<>());
-
-                // Sync nested lists in Plantilla
-                if (p.getPlantillaTelas() != null) {
-                    for (backend.com.comercial.domain.model.PlantillaTela pt : p.getPlantillaTelas()) {
-                        backend.com.comercial.infrastructure.persistence.entity.PlantillaTela pte = new backend.com.comercial.infrastructure.persistence.entity.PlantillaTela();
-                        pte.setAplicacion(pt.getAplicacion());
-                        pte.setNombre(pt.getNombre());
-                        pte.setComposicion(pt.getComposicion());
-                        pte.setColor(pt.getColor());
-                        pte.setPeso(pt.getPeso());
-                        pe.getPlantillaTelas().add(pte);
-                    }
-                }
-                if (p.getPlantillaAccesorios() != null) {
-                    for (backend.com.comercial.domain.model.PlantillaAccesorio pa : p.getPlantillaAccesorios()) {
-                        backend.com.comercial.infrastructure.persistence.entity.PlantillaAccesorio pae = new backend.com.comercial.infrastructure.persistence.entity.PlantillaAccesorio();
-                        pae.setTipo(pa.getTipo());
-                        pae.setNombreAccesorio(pa.getNombreAccesorio());
-                        pae.setCantidad(pa.getCantidad());
-                        pe.getPlantillaAccesorios().add(pae);
-                    }
-                }
-                if (p.getPlantillaLogotipos() != null) {
-                    for (SCOSLogotipo pl : p.getPlantillaLogotipos()) {
-                        pe.getPlantillaLogotipos().add(new PlantillaLogotipo(pl.getTipo(), pl.getNombre(),
-                                pl.getUbicacion(), pl.getColor(), pl.getTamano(), pl.getCantidad(), pl.getPrecio()));
-                    }
-                }
-
-                // Mano de Obra
-                pe.setMoPrenda(p.getMoPrenda());
-
-                pe.setMoCosturaSellada(p.getMoCosturaSellada());
-                pe.setMoAcolchado(p.getMoAcolchado());
-
-                entity.addPlantilla(pe);
-            }
-        }
-
-        // --- Correlation Logic for Vinculos ---
-        // 1. Build a map of TempId -> DatabaseId from the saved entities
-        // Note: Since jpaRepository.save(entity) hasn't happened yet, we might need
-        // to handle this differently IF we want to resolve them BEFORE the save.
-        // Actually, we can add them to the entity and JPA will save them in cascade.
-        // BUT we need the IDs.
-
-        // Strategy: First pass of saving SCOS will populate IDs.
-        // For now, let's just make sure they are mapped.
-        if (domain.getPlantillas() != null) {
-            for (int i = 0; i < domain.getPlantillas().size(); i++) {
-                SCOSPlantilla p = domain.getPlantillas().get(i);
-                SCOSPlantillaJpaEntity pe = entity.getPlantillas().get(i);
-
-                if (p.getVinculos() != null) {
-                    for (SCOSPlantillaMaterialVinculo v : p.getVinculos()) {
-                        SCOSPlantillaMaterialVinculoJpaEntity ve = new SCOSPlantillaMaterialVinculoJpaEntity();
-                        ve.setFieldName(v.getFieldName());
-                        ve.setMaterialType(v.getMaterialType());
-
-                        // If materialId is already present (Long), use it
-                        if (v.getMaterialId() != null) {
-                            ve.setMaterialId(v.getMaterialId());
-                        }
-                        // If it's a new material with tempId, we'll try to find it in the current SCOS
-                        else if (v.getTempMaterialId() != null) {
-                            // We store the tempId in the JpaEntity for now,
-                            // we'll resolve it in the Save method AFTER the first flush if needed,
-                            // but here we can't easily get the ID before the actual save.
-                            // HOWEVER, if we are in the same TRANSACTION, maybe we can?
-
-                            // Actually, let's just use the tempMaterialId to find the corresponding
-                            // SCOSTelaJpaEntity or SCOSAccesorioJpaEntity we just added.
-                            if ("TELA".equals(v.getMaterialType())) {
-                                entity.getTelas().stream()
-                                        .filter(t -> v.getTempMaterialId().equals(t.getTempId()))
-                                        .findFirst()
-                                        .ifPresent(t -> {
-                                            // We can't set the ID yet, but we can set the relation if we had one.
-                                            // The DB currently use a Long material_id, not a real FK to SCOSTela.
-                                            // This is a design limitation.
-                                        });
-                            }
-                        }
-
-                        ve.setCantidad(v.getCantidad());
-                        ve.setTempMaterialId(v.getTempMaterialId());
-                        pe.addVinculo(ve);
-                    }
-                }
-            }
-        }
-
-        // Sync Prendas
-        if (domain.getProductos() != null) {
-            for (SCOTPrendaLista p : domain.getProductos()) {
-                SCOTPrendaListaJpaEntity pre = new SCOTPrendaListaJpaEntity();
-                pre.setNombre(p.getNombre());
-                pre.setCantidad(p.getCantidad());
-                pre.setTalla(p.getTalla());
-                pre.setColor(p.getColor());
-                pre.setProveedorReferencia(p.getProveedorReferencia());
-                pre.setLinkReferencia(p.getLinkReferencia());
-                pre.setComposicion(p.getComposicion());
-                pre.setPeso(p.getPeso());
-                pre.setObservaciones(p.getObservaciones());
-                if (p.getPrecioUnitario() != null) {
-                    pre.setPrecioUnitario(p.getPrecioUnitario().getAmount());
-                    pre.setMonedaPrecioUnitario(p.getPrecioUnitario().getCurrency());
-                }
-                entity.addPrenda(pre);
-            }
-        }
-
-        // Sync Logotipos
         if (domain.getLogotipos() != null) {
             for (SCOSLogotipo l : domain.getLogotipos()) {
                 SCOSLogotipoJpaEntity le = new SCOSLogotipoJpaEntity();
@@ -326,7 +153,6 @@ public class SolicitudCostosRepositoryImpl implements SolicitudCostosRepository 
                 entity.addLogotipo(le);
             }
         }
-
     }
 
     @Override
@@ -337,22 +163,14 @@ public class SolicitudCostosRepositoryImpl implements SolicitudCostosRepository 
     @Override
     @SuppressWarnings("null")
     public Optional<SolicitudCostos> findById(Long id) {
-        if (id == null) {
-            return Optional.empty();
-        }
-        Optional<SolicitudCostosJpaEntity> entity = jpaRepository.findById(id);
-        if (entity.isPresent()) {
-            return Optional.of(mapper.toDomain(entity.get()));
-        }
-        return Optional.empty();
+        if (id == null) return Optional.empty();
+        return jpaRepository.findById(id).map(mapper::toDomain);
     }
 
     @Override
     @SuppressWarnings("null")
     public Optional<SolicitudCostos> findByNumero(DocumentNumber numero) {
-        if (numero == null || numero.getValue() == null) {
-            return Optional.empty();
-        }
+        if (numero == null || numero.getValue() == null) return Optional.empty();
         List<SolicitudCostosJpaEntity> all = jpaRepository.findAll();
         for (SolicitudCostosJpaEntity e : all) {
             if (e.getNumero() != null && e.getNumero().equals(numero.getValue())) {
@@ -376,14 +194,11 @@ public class SolicitudCostosRepositoryImpl implements SolicitudCostosRepository 
     @Override
     @SuppressWarnings("null")
     public void deleteById(Long id) {
-        if (id != null) {
-            jpaRepository.deleteById(id);
-        }
+        if (id != null) jpaRepository.deleteById(id);
     }
 
     @Override
     public long countByTipo(String tipo) {
         return jpaRepository.countByTipo(tipo);
     }
-
 }

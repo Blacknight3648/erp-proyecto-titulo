@@ -1,4 +1,4 @@
-package backend.com.shared.application.service.Impl;
+package backend.com.shared.application.service.impl;
 
 import backend.com.shared.application.service.ContactoService;
 import backend.com.shared.infrastructure.persistence.repository.ContactoRepository;
@@ -54,7 +54,13 @@ public class ContactoServiceImpl implements ContactoService {
             contacto.setNombreContacto(domainToUpdate.getNombreContacto());
             contacto.setTelefonoContacto(domainToUpdate.getTelefonoContacto());
             contacto.setEmailContacto(domainToUpdate.getEmailContacto());
-            contacto.setTipoContacto(tipoContactoMapper.toEntity(domainToUpdate.getTipoContacto()));
+            
+            if (domainToUpdate.getTipoContacto() != null && domainToUpdate.getTipoContacto().getTipoContactoId() != null) {
+                var tipoContacto = tipoContactoRepository.findById(domainToUpdate.getTipoContacto().getTipoContactoId())
+                    .orElseThrow(() -> new RuntimeException("Tipo de contacto no encontrado"));
+                contacto.setTipoContacto(tipoContacto);
+            }
+            
             var saved = contactoRepository.save(contacto);
             return contactoMapper.toDTO(contactoMapper.toDomain(saved));
         });

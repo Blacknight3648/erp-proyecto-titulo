@@ -226,7 +226,7 @@ export default function FormularioNV({
                                     </div>
                                 </div>
                                 <div className="flex items-center justify-end gap-3 pt-4 border-t border-gray-100">
-                                    <button onClick={() => updateItem(item.id, 'generaOt', !item.generaOt)} className={`flex items-center space-x-2 px-4 py-2 rounded-xl transition-all ${item.generaOt ? 'bg-orange-600 text-white' : 'bg-gray-50 text-gray-400'}`}>
+                                    <button onClick={() => updateItem(item.id, 'requiereOt', !item.requiereOt)} className={`flex items-center space-x-2 px-4 py-2 rounded-xl transition-all ${item.requiereOt ? 'bg-orange-600 text-white' : 'bg-gray-50 text-gray-400'}`}>
                                         <Wrench className="w-4 h-4" /><span className="text-[10px] font-black uppercase">Requerimientos OT</span>
                                     </button>
                                     {!isReadOnly && (
@@ -235,7 +235,7 @@ export default function FormularioNV({
                                         </button>
                                     )}
                                 </div>
-                                {item.generaOt && (
+                                {item.requiereOt && (
                                     <div className="mt-4 p-6 bg-orange-50/30 border-2 border-dashed border-orange-100 rounded-3xl animate-in slide-in-from-top-4">
                                         <textarea rows="2" placeholder="Describa requerimientos especiales..." className="w-full bg-transparent border-none text-xs font-bold text-gray-700 outline-none resize-none" value={item.detalleOt || ''} onChange={(e) => updateItem(item.id, 'detalleOt', e.target.value)} readOnly={isReadOnly} />
                                     </div>

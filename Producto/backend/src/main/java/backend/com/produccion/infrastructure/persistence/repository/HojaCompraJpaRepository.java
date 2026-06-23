@@ -1,6 +1,6 @@
 package backend.com.produccion.infrastructure.persistence.repository;
 
-import backend.com.produccion.domain.model.EstadoHC;
+import backend.com.produccion.domain.enums.EstadoHC;
 import backend.com.produccion.infrastructure.persistence.entity.HojaCompraJpaEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;

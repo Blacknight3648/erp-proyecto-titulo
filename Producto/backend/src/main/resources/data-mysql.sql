@@ -318,12 +318,19 @@ ON DUPLICATE KEY UPDATE
 --   Cinta Reflectante:    0.50 m/prenda × $980/m    =   $490
 --   ─────────────────────────────────────────────────────────────
 --   Total materia prima por prenda: $11,725
-INSERT IGNORE INTO produccion_costeo_items (id_costeo_item, costeo_id, tipo_insumo, articulo_id, nombre_insumo, consumo, precio_unitario, costo_total) VALUES
+INSERT INTO produccion_costeo_items (id_costeo_item, costeo_id, tipo_insumo, articulo_id, nombre_insumo, consumo, precio_unitario, costo_total) VALUES
     (1, 1, 'TELAS',      2, 'RIPSTOP IMPERMEABLE 150 GSM', 1.8000, 4800.00,  8640.00),
     (2, 1, 'ACCESORIOS', 4, 'CIERRE YKK 60CM METÁLICO',   1.0000, 1350.00,  1350.00),
     (3, 1, 'ACCESORIOS', 5, 'BOTÓN SNAP 15MM NÁCAR',       4.0000,  180.00,   720.00),
     (4, 1, 'ACCESORIOS', 6, 'HILO INDUSTRIAL 40/2',        0.1500, 3500.00,   525.00),
-    (5, 1, 'ACCESORIOS', 7, 'CINTA REFLECTANTE 50MM',      0.5000,  980.00,   490.00);
+    (5, 1, 'ACCESORIOS', 7, 'CINTA REFLECTANTE 50MM',      0.5000,  980.00,   490.00)
+ON DUPLICATE KEY UPDATE
+    tipo_insumo     = VALUES(tipo_insumo),
+    articulo_id     = VALUES(articulo_id),
+    nombre_insumo   = VALUES(nombre_insumo),
+    consumo         = VALUES(consumo),
+    precio_unitario = VALUES(precio_unitario),
+    costo_total     = VALUES(costo_total);
 
 -- Versión 1 del costeo con totales consolidados (base: 50 prendas)
 --   Materia prima total: $11,725 × 50               = $586,250
@@ -346,12 +353,20 @@ INSERT IGNORE INTO produccion_costeo_versiones (id_costeo_version, costeo_id, nu
     10.00, 586250.00, 25.00, 1220340.00);
 
 -- Items de la versión 1 del costeo (snapshot por versión)
-INSERT IGNORE INTO produccion_costeo_item_versiones (id_costeo_item_version, costeo_version_id, costeo_item_id, tipo_insumo, articulo_id, nombre_insumo, consumo, precio_unitario, costo_total, activo) VALUES
+INSERT INTO produccion_costeo_item_versiones (id_costeo_item_version, costeo_version_id, costeo_item_id, tipo_insumo, articulo_id, nombre_insumo, consumo, precio_unitario, costo_total, activo) VALUES
     (1, 1, 1, 'TELAS',      2, 'RIPSTOP IMPERMEABLE 150 GSM', 1.8000, 4800.00,  8640.00, true),
     (2, 1, 2, 'ACCESORIOS', 4, 'CIERRE YKK 60CM METÁLICO',   1.0000, 1350.00,  1350.00, true),
     (3, 1, 3, 'ACCESORIOS', 5, 'BOTÓN SNAP 15MM NÁCAR',       4.0000,  180.00,   720.00, true),
     (4, 1, 4, 'ACCESORIOS', 6, 'HILO INDUSTRIAL 40/2',        0.1500, 3500.00,   525.00, true),
-    (5, 1, 5, 'ACCESORIOS', 7, 'CINTA REFLECTANTE 50MM',      0.5000,  980.00,   490.00, true);
+    (5, 1, 5, 'ACCESORIOS', 7, 'CINTA REFLECTANTE 50MM',      0.5000,  980.00,   490.00, true)
+ON DUPLICATE KEY UPDATE
+    tipo_insumo     = VALUES(tipo_insumo),
+    articulo_id     = VALUES(articulo_id),
+    nombre_insumo   = VALUES(nombre_insumo),
+    consumo         = VALUES(consumo),
+    precio_unitario = VALUES(precio_unitario),
+    costo_total     = VALUES(costo_total),
+    activo          = VALUES(activo);
 
 -- ============================================================
 -- 7.8. ORDEN DE PRODUCCIÓN (OP)

@@ -183,8 +183,14 @@ export function useCosteosOPState() {
                 // Enriquecer con el Costeo real (estado/versión/id) para el badge y los botones.
                 const costeo = costeosByScos[r.id?.toString()];
                 return costeo
-                    ? { ...r, costeoId: costeo.idCosteo, costeoEstado: costeo.estado, costeoVersion: costeo.version }
-                    : r;
+                    ? {
+                        ...r,
+                        costeoId: costeo.idCosteo,
+                        costeoEstado: costeo.estado,
+                        costeoVersion: costeo.version,
+                        costoTotal: costeo.costoTotalMateriaPrima ?? 0
+                      }
+                    : { ...r, costoTotal: 0 };
             })
             .filter(r => {
                 const cliente = clientes.find(c => (c.clienteId || c.id)?.toString() === r.clienteId?.toString());

@@ -9,7 +9,7 @@ services:
       MYSQL_ROOT_PASSWORD: root_password
       MYSQL_DATABASE: erp_db
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-proot_password"]
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-proot_password" ]
       interval: 5s
       timeout: 5s
       retries: 10
@@ -20,6 +20,7 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile
+    image: ${DOCKER_USER}/erp-backend:latest
     container_name: erp-backend
     depends_on:
       mysql:
@@ -33,7 +34,7 @@ services:
       DB_PASSWORD: root_password
       SPRING_JACKSON_TIME_ZONE: America/Santiago
     healthcheck:
-      test: ["CMD-SHELL", "wget -qO- http://localhost:8050/actuator/health || exit 1"]
+      test: [ "CMD-SHELL", "wget -qO- http://localhost:8050/actuator/health || exit 1" ]
       interval: 30s
       timeout: 10s
       retries: 5
@@ -48,6 +49,7 @@ services:
       dockerfile: Dockerfile
       args:
         VITE_API_URL: http://localhost:8050
+    image: ${DOCKER_USER}/erp-frontend:latest
     container_name: erp-frontend
     ports:
       - "5173:80"

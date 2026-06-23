@@ -3,6 +3,7 @@ package backend.com.shared.infrastructure.config;
 import javax.sql.DataSource;
 
 import org.flywaydb.core.Flyway;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -20,6 +21,7 @@ import org.springframework.context.annotation.Configuration;
  * (incluyendo Hibernate) ha terminado de cargar.
  */
 @Configuration
+@ConditionalOnProperty(name = "flyway.manual.enabled", havingValue = "true", matchIfMissing = true)
 public class FlywayConfig {
 
     @Bean

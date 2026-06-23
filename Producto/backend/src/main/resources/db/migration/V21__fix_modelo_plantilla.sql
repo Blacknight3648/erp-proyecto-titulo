@@ -1,30 +1,54 @@
 -- ─────────────────────────────────────────────────────────────────────────
 -- V21: Alinear la tabla modelo_plantilla con la entidad JPA
--- Eliminar id_plantilla y agregar la columna campos (CSV) con restricción UNIQUE por artículo.
--- Safe para instalación fresca: Hibernate ya crea el schema actualizado,
--- por lo que FK y columnas pueden no existir. El CONTINUE HANDLER ignora esos errores.
+-- Safe para instalación fresca (Hibernate ya creó el schema actualizado)
+-- y para bases de datos existentes con el schema anterior.
 -- ─────────────────────────────────────────────────────────────────────────
 
-DROP PROCEDURE IF EXISTS v21_fix_modelo_plantilla;
+-- 1) Drop FK si existe (MySQL no soporta DROP FOREIGN KEY IF EXISTS, usar prepared statement)
+SET @fk_exists = (
+    SELECT COUNT(*) FROM information_schema.TABLE_CONSTRAINTS
+    WHERE CONSTRAINT_SCHEMA = DATABASE()
+      AND TABLE_NAME = 'modelo_plantilla'
+      AND CONSTRAINT_NAME = 'fk_modelo_plantilla'
+      AND CONSTRAINT_TYPE = 'FOREIGN KEY'
+);
+SET @sql = IF(@fk_exists > 0,
+    'ALTER TABLE modelo_plantilla DROP FOREIGN KEY fk_modelo_plantilla',
+    'SELECT 1');
+PREPARE stmt FROM @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
 
-CREATE PROCEDURE v21_fix_modelo_plantilla()
-BEGIN
-    DECLARE CONTINUE HANDLER FOR SQLEXCEPTION BEGIN END;
+-- 2) Drop unique constraint obsoleta si existe
+SET @uc_exists = (
+    SELECT COUNT(*) FROM information_schema.TABLE_CONSTRAINTS
+    WHERE CONSTRAINT_SCHEMA = DATABASE()
+      AND TABLE_NAME = 'modelo_plantilla'
+      AND CONSTRAINT_NAME = 'uk_modelo_articulo_plantilla'
+);
+SET @sql = IF(@uc_exists > 0,
+    'ALTER TABLE modelo_plantilla DROP INDEX uk_modelo_articulo_plantilla',
+    'SELECT 1');
+PREPARE stmt FROM @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
 
-    -- 1) Eliminar FK y restricción única obsoletas (no-op si no existen)
-    ALTER TABLE modelo_plantilla DROP FOREIGN KEY fk_modelo_plantilla;
-    ALTER TABLE modelo_plantilla DROP CONSTRAINT uk_modelo_articulo_plantilla;
+-- 3) Drop columna obsoleta si existe (MySQL 8.0.27+)
+ALTER TABLE modelo_plantilla DROP COLUMN IF EXISTS id_plantilla;
 
-    -- 2) Eliminar columna obsoleta (no-op si no existe)
-    ALTER TABLE modelo_plantilla DROP COLUMN id_plantilla;
+-- 4) Agregar columna campos si no existe (TEXT no admite DEFAULT, tabla vacía en fresh install)
+ALTER TABLE modelo_plantilla ADD COLUMN IF NOT EXISTS campos TEXT NOT NULL;
 
-    -- 3) Agregar nueva columna campos (no-op si ya existe)
-    ALTER TABLE modelo_plantilla ADD COLUMN campos TEXT NOT NULL DEFAULT '';
-
-    -- 4) Agregar nueva restricción UNIQUE (no-op si ya existe)
-    ALTER TABLE modelo_plantilla ADD CONSTRAINT uk_modelo_articulo UNIQUE (id_articulo);
-END;
-
-CALL v21_fix_modelo_plantilla();
-
-DROP PROCEDURE IF EXISTS v21_fix_modelo_plantilla;
+-- 5) Agregar restricción UNIQUE si no existe
+SET @uk_exists = (
+    SELECT COUNT(*) FROM information_schema.TABLE_CONSTRAINTS
+    WHERE CONSTRAINT_SCHEMA = DATABASE()
+      AND TABLE_NAME = 'modelo_plantilla'
+      AND CONSTRAINT_NAME = 'uk_modelo_articulo'
+);
+SET @sql = IF(@uk_exists = 0,
+    'ALTER TABLE modelo_plantilla ADD CONSTRAINT uk_modelo_articulo UNIQUE (id_articulo)',
+    'SELECT 1');
+PREPARE stmt FROM @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;

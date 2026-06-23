@@ -1,7 +1,7 @@
 import axios from "axios";
 
 export const api = axios.create({
-  baseURL: "http://127.0.0.1:8050/api/v1",
+  baseURL: import.meta.env.VITE_API_URL ? `${import.meta.env.VITE_API_URL}/api/v1` : "http://127.0.0.1:8050/api/v1",
 });
 
 const IDEMPOTENT_METHODS = new Set(["post", "patch", "put"]);

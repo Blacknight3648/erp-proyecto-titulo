@@ -7,6 +7,8 @@ services:
     container_name: erp-backend
     ports:
       - "8050:8050"
+    env_file:
+      - .env
     environment:
       SPRING_PROFILES_ACTIVE: dev
       SPRING_JACKSON_TIME_ZONE: America/Santiago

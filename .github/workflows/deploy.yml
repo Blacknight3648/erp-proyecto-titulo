@@ -69,10 +69,10 @@ jobs:
         with:
           host: ${{ steps.get-ips.outputs.private_ip }}
           username: ${{ vars.EC2_PRIVATE_USERNAME }}
-          key: ${{ secrets.EC2_SSH_KEY }}
+          key: ${{ secrets.EC2_PRIVATE_SSH_KEY }}
           proxy_host: ${{ steps.get-ips.outputs.public_ip }}
           proxy_username: ${{ vars.EC2_PUBLIC_USERNAME }}
-          proxy_key: ${{ secrets.EC2_SSH_KEY }}
+          proxy_key: ${{ secrets.EC2_PUBLIC_SSH_KEY }}
           script: mkdir -p ~/app
 
       - name: Copy docker-compose.backend.yml to Private EC2
@@ -80,10 +80,10 @@ jobs:
         with:
           host: ${{ steps.get-ips.outputs.private_ip }}
           username: ${{ vars.EC2_PRIVATE_USERNAME }}
-          key: ${{ secrets.EC2_SSH_KEY }}
+          key: ${{ secrets.EC2_PRIVATE_SSH_KEY }}
           proxy_host: ${{ steps.get-ips.outputs.public_ip }}
           proxy_username: ${{ vars.EC2_PUBLIC_USERNAME }}
-          proxy_key: ${{ secrets.EC2_SSH_KEY }}
+          proxy_key: ${{ secrets.EC2_PUBLIC_SSH_KEY }}
           source: "./Producto/docker-compose.backend.yml"
           target: "~/app"
           strip_components: 1
@@ -93,10 +93,10 @@ jobs:
         with:
           host: ${{ steps.get-ips.outputs.private_ip }}
           username: ${{ vars.EC2_PRIVATE_USERNAME }}
-          key: ${{ secrets.EC2_SSH_KEY }}
+          key: ${{ secrets.EC2_PRIVATE_SSH_KEY }}
           proxy_host: ${{ steps.get-ips.outputs.public_ip }}
           proxy_username: ${{ vars.EC2_PUBLIC_USERNAME }}
-          proxy_key: ${{ secrets.EC2_SSH_KEY }}
+          proxy_key: ${{ secrets.EC2_PUBLIC_SSH_KEY }}
           script: |
             cd ~/app
             
@@ -145,7 +145,7 @@ jobs:
         with:
           host: ${{ steps.get-ips.outputs.public_ip }}
           username: ${{ vars.EC2_PUBLIC_USERNAME }}
-          key: ${{ secrets.EC2_SSH_KEY }}
+          key: ${{ secrets.EC2_PUBLIC_SSH_KEY }}
           script: mkdir -p ~/app
 
       - name: Copy docker-compose.frontend.yml to Public EC2
@@ -153,7 +153,7 @@ jobs:
         with:
           host: ${{ steps.get-ips.outputs.public_ip }}
           username: ${{ vars.EC2_PUBLIC_USERNAME }}
-          key: ${{ secrets.EC2_SSH_KEY }}
+          key: ${{ secrets.EC2_PUBLIC_SSH_KEY }}
           source: "./Producto/docker-compose.frontend.yml"
           target: "~/app"
           strip_components: 1
@@ -163,7 +163,7 @@ jobs:
         with:
           host: ${{ steps.get-ips.outputs.public_ip }}
           username: ${{ vars.EC2_PUBLIC_USERNAME }}
-          key: ${{ secrets.EC2_SSH_KEY }}
+          key: ${{ secrets.EC2_PUBLIC_SSH_KEY }}
           script: |
             cd ~/app
             

@@ -85,7 +85,7 @@ jobs:
           proxy_username: ${{ vars.EC2_PUBLIC_USERNAME }}
           proxy_key: ${{ secrets.EC2_PUBLIC_SSH_KEY }}
           source: "./Producto/docker-compose.backend.yml"
-          target: "~/app"
+          target: "/home/ec2-user/app"
           strip_components: 1
 
       - name: Deploy Backend on Private EC2 via SSH Proxy
@@ -99,7 +99,7 @@ jobs:
           proxy_key: ${{ secrets.EC2_PUBLIC_SSH_KEY }}
           script_stop: true
           script: |
-            cd ~/app
+            cd /home/ec2-user/app
             
             # Crear archivo .env local para la orquestación en producción
             echo "DOCKER_USER=${{ env.DOCKER_USER }}" > .env
@@ -150,7 +150,7 @@ jobs:
           host: ${{ steps.get-ips.outputs.public_ip }}
           username: ${{ vars.EC2_PUBLIC_USERNAME }}
           key: ${{ secrets.EC2_PUBLIC_SSH_KEY }}
-          script: mkdir -p ~/app
+          script: mkdir -p /home/ec2-user/app
 
       - name: Copy docker-compose.frontend.yml to Public EC2
         uses: appleboy/scp-action@v0.1.7
@@ -159,7 +159,7 @@ jobs:
           username: ${{ vars.EC2_PUBLIC_USERNAME }}
           key: ${{ secrets.EC2_PUBLIC_SSH_KEY }}
           source: "./Producto/docker-compose.frontend.yml"
-          target: "~/app"
+          target: "/home/ec2-user/app"
           strip_components: 1
 
       - name: Deploy Frontend on Public EC2
@@ -170,7 +170,7 @@ jobs:
           key: ${{ secrets.EC2_PUBLIC_SSH_KEY }}
           script_stop: true
           script: |
-            cd ~/app
+            cd /home/ec2-user/app
             
             # Crear archivo .env local para la orquestación en producción
             echo "DOCKER_USER=${{ env.DOCKER_USER }}" > .env

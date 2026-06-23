@@ -9,14 +9,9 @@ import { parseId } from '../utils/formUtils';
 import EstadoCosteo from '../remote/DTO/EstadoCosteo';
 
 /**
- * Reconstruye la "ficha técnica" (plantillas) que el formulario y el panel de
- * Especificación Técnica del costeo esperan, a partir de las `descripciones`
- * que hoy entrega el backend de SCOS (antes venía como `plantillas`).
- *
- * Es solo para visualización: agrupa los campos de la receta como propiedades
- * directas (forro, cuello, obsModelo, …), adjunta telas/accesorios con sus
- * datos completos y los vínculos material↔campo. Espeja el mapeo de
- * SolicitudCostosContainer.handleOpenForm.
+ * Reconstruye la estructura de "plantillas" a partir de las descripciones,
+ * telas y accesorios enviados por el SCOS, para que el componente visual
+ * PanelDerecho / FormularioCosteo pueda mostrarlos.
  */
 export const construirFichaPlantillas = (record) => {
     if (!record) return [];
@@ -187,24 +182,13 @@ export function useCosteosOPState() {
             .map(r => {
                 // Enriquecer con el Costeo real (estado/versión/id) para el badge y los botones.
                 const costeo = costeosByScos[r.id?.toString()];
-                
-                let isCorrupted = false;
-                if (costeo && (costeo.estado === 'APROBADO' || costeo.estado === 'COSTEADO')) {
-                    const noCosto = (!costeo.costoManoObra || costeo.costoManoObra <= 0) && 
-                                    (!costeo.costoHilos || costeo.costoHilos <= 0) &&
-                                    (!costeo.costoFlete || costeo.costoFlete <= 0);
-                    if (noCosto) {
-                        isCorrupted = true;
-                    }
-                }
-
                 return costeo
-                    ? { ...r, costeoId: costeo.idCosteo, costeoEstado: costeo.estado, costeoVersion: costeo.version, isCorrupted }
+                    ? { ...r, costeoId: costeo.idCosteo, costeoEstado: costeo.estado, costeoVersion: costeo.version }
                     : r;
             })
             .filter(r => {
                 const cliente = clientes.find(c => (c.clienteId || c.id)?.toString() === r.clienteId?.toString());
-                const clienteNombre = r.clienteNombre || cliente?.razonSocial || cliente?.nombreCliente || cliente?.nombre || 'Cliente Desconocido';
+                const clienteNombre = r.clienteNombre || cliente?.nombreCliente || cliente?.nombre || 'Cliente Desconocido';
 
                 const matchesSearch = clienteNombre.toUpperCase().includes(searchTerm.toUpperCase()) ||
                     (r.id?.toString() || '').toUpperCase().includes(searchTerm.toUpperCase()) ||
@@ -225,10 +209,6 @@ export function useCosteosOPState() {
             toast.error("Esta solicitud aún no tiene un costeo para aprobar");
             return;
         }
-        if (record?.isCorrupted) {
-            toast.error("Excepción: El costeo no puede ser aprobado porque sus datos base están vacíos.");
-            return;
-        }
         try {
             await aprobarCosteo(costeoId, getActor());
             toast.success("Costeo aprobado");
@@ -236,7 +216,7 @@ export function useCosteosOPState() {
         } catch (error) {
             toast.error("No se pudo aprobar: " + (error.response?.data?.mensaje || error.message));
         }
-    }, [aprobarCosteo, loadCosteos]);
+    }, [aprobarCosteo, loadCosteos, loadSolicitudesCostos]);
 
     const handleRechazarCosteo = useCallback(async (record, motivo) => {
         const costeoId = record?.costeoId;
@@ -255,7 +235,7 @@ export function useCosteosOPState() {
         } catch (error) {
             toast.error("No se pudo rechazar: " + (error.response?.data?.mensaje || error.message));
         }
-    }, [rechazarCosteo, loadCosteos]);
+    }, [rechazarCosteo, loadCosteos, loadSolicitudesCostos]);
 
     const handleReabrirCosteo = useCallback(async (record) => {
         const costeoId = record?.costeoId;
@@ -270,7 +250,7 @@ export function useCosteosOPState() {
         } catch (error) {
             toast.error("No se pudo reabrir: " + (error.response?.data?.mensaje || error.message));
         }
-    }, [reabrirCosteo, loadCosteos]);
+    }, [reabrirCosteo, loadCosteos, loadSolicitudesCostos]);
 
     const totalMateriales = useMemo(() => {
         return insumos.reduce((acc, current) => acc + (current.costo * current.cantidad), 0);
@@ -300,25 +280,9 @@ export function useCosteosOPState() {
         let savedCosteo = null;
         try {
             savedCosteo = await getCosteoBySCOS(record.id);
-            
-            // Si el backend devuelve un arreglo (por tener historial o múltiples), tomamos el más reciente o el primero
-            if (Array.isArray(savedCosteo)) {
-                savedCosteo = savedCosteo.length > 0 ? savedCosteo[savedCosteo.length - 1] : null;
-            }
-
-            // Fallback: Si falló la consulta o retornó null, intentamos sacarlo de la lista global que ya teníamos cargada
-            if (!savedCosteo && costeosByScos[record.id?.toString()]) {
-                savedCosteo = costeosByScos[record.id?.toString()];
-            }
-
             if (savedCosteo) {
-                setMoPrenda(savedCosteo.costoManoObra || 0);
-                setMoCinta(0);
-                setMoCosturaSellada(0);
-                setMoAcolchado(0);
-
                 setCostoHilo(savedCosteo.costoHilos || 0);
-                setCostoMoPropia(0); // MO se carga en moPrenda para visualización
+                setCostoMoPropia(savedCosteo.costoManoObra || 0);
                 setCostoGratificacion(0);
                 setCostoEtiqueta(savedCosteo.costoEtiquetas || 0);
                 setCostoEmbalaje(savedCosteo.costoEmbalaje || 0);
@@ -389,7 +353,7 @@ export function useCosteosOPState() {
             savedCosteo.items.forEach(savedItem => {
                 const matchIndex = initialInsumos.findIndex(i =>
                     i.producto === savedItem.nombreInsumo &&
-                    i.categoryId.toLowerCase() === (savedItem.tipoInsumo || '').toLowerCase()
+                    i.categoryId.toLowerCase() === (savedItem.tipoInsumo?.toLowerCase() || '')
                 );
 
                 if (matchIndex !== -1) {
@@ -559,7 +523,6 @@ export function useCosteosOPState() {
                 const newOpId = `OP-${numericId}`;
                 const existingOpIndex = mockOperaciones.findIndex(op => op.idOP === newOpId);
                 const cliente = currentSolicitud.clienteNombre ||
-                    clientes.find(c => (c.clienteId || c.id)?.toString() === currentSolicitud.clienteId?.toString())?.razonSocial ||
                     clientes.find(c => (c.clienteId || c.id)?.toString() === currentSolicitud.clienteId?.toString())?.nombreCliente ||
                     'Cliente SCOS';
 
@@ -594,12 +557,12 @@ export function useCosteosOPState() {
                 console.warn("No se pudo transicionar a COSTEADO (puede que ya lo esté):", costearErr);
             }
 
-            loadSolicitudesCostos();
-            loadCosteos();
+            await Promise.all([loadSolicitudesCostos(), loadCosteos()]);
             setView('list');
         } catch (error) {
             console.error("Error al validar costos:", error);
-            toast.error("Error al persistir los cambios en el backend");
+            const msg = error.response?.data?.mensaje || error.response?.data?.message || error.message || "Error al persistir los cambios en el backend";
+            toast.error(msg);
         }
     };
 

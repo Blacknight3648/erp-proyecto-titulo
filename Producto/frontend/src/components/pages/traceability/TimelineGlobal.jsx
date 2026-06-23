@@ -24,7 +24,7 @@ export default function TimelineGlobal() {
     const [loading, setLoading] = useState(false);
     const [traceData, setTraceData] = useState([]);
 
-    const BACKEND_URL = import.meta.env.VITE_API_URL || "http://localhost:8050";
+    const BACKEND_URL = import.meta.env.VITE_API_URL || "";
 
     const handleSearch = async () => {
         if (!searchQuery) return;

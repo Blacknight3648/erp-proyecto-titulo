@@ -3,8 +3,10 @@ FROM node:20-alpine AS builder
 
 WORKDIR /app
 
-# Variable de entorno de compilación para la API del backend
-ENV VITE_API_URL=http://localhost:8050
+# Base de la API para el build. Por defecto VACÍA: el bundle usa rutas relativas
+# ("/api/v1") y el Nginx hace proxy hacia el backend. En dev se usa frontend/.env.
+ARG VITE_API_URL=
+ENV VITE_API_URL=$VITE_API_URL
 
 COPY package*.json ./
 RUN npm ci --silent
@@ -16,7 +18,7 @@ RUN npm run build
 FROM nginx:stable-alpine
 
 COPY --from=builder /app/dist /usr/share/nginx/html
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+COPY nginx.conf /etc/nginx/templates/default.conf.template
 
 EXPOSE 80
 

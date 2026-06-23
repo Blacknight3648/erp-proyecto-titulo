@@ -1,6 +1,10 @@
 import axios from "axios";
 
-export const BACKEND_URL = import.meta.env.VITE_API_URL || "http://127.0.0.1:8050";
+// En desarrollo, frontend/.env define la URL completa del backend
+// (p.ej. http://127.0.0.1:8050). En producción (Docker) NO se define
+// VITE_API_URL, por lo que la base queda relativa ("/api/v1") y el Nginx
+// del frontend hace de proxy inverso hacia el backend (BACKEND_API_URL).
+export const BACKEND_URL = import.meta.env.VITE_API_URL || "";
 
 export const api = axios.create({
   baseURL: `${BACKEND_URL}/api/v1`,

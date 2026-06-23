@@ -1,0 +1,10 @@
+services:
+
+  frontend:
+    image: ${DOCKER_USER}/erp-frontend:latest
+    container_name: erp-frontend
+    ports:
+      - "80:80"
+    environment:
+      - BACKEND_API_URL=${BACKEND_API_URL}
+    restart: unless-stopped

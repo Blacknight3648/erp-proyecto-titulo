@@ -3,8 +3,6 @@ services:
   mysql:
     image: mysql:8.0
     container_name: mysql
-    ports:
-      - "3307:3306"
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root_password}
       MYSQL_DATABASE: erp_db
@@ -13,13 +11,11 @@ services:
       interval: 5s
       timeout: 5s
       retries: 10
+    restart: unless-stopped
     networks:
       - network
 
   backend:
-    build:
-      context: ./backend
-      dockerfile: Dockerfile
     image: ${DOCKER_USER}/erp-backend:latest
     container_name: erp-backend
     depends_on:
@@ -27,8 +23,6 @@ services:
         condition: service_healthy
     ports:
       - "8050:8050"
-    env_file:
-      - .env
     environment:
       SPRING_PROFILES_ACTIVE: prod
       DB_URL: jdbc:mysql://mysql:3306/erp_db?useSSL=false&serverTimezone=America/Santiago&allowPublicKeyRetrieval=true
@@ -41,23 +35,6 @@ services:
       timeout: 10s
       retries: 5
       start_period: 60s
-    restart: unless-stopped
-    networks:
-      - network
-
-  frontend:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile
-    image: ${DOCKER_USER}/erp-frontend:latest
-    container_name: erp-frontend
-    ports:
-      - "5173:80"
-    depends_on:
-      backend:
-        condition: service_healthy
-    environment:
-      BACKEND_API_URL: ${BACKEND_API_URL:-http://backend:8050}
     restart: unless-stopped
     networks:
       - network

@@ -4,10 +4,15 @@ services:
     image: mysql:8.0
     container_name: mysql
     ports:
-      - "3306:3306"
+      - "3307:3306"
     environment:
       MYSQL_ROOT_PASSWORD: root_password
       MYSQL_DATABASE: erp_db
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-proot_password"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
     networks:
       - network
 
@@ -16,6 +21,9 @@ services:
       context: ./backend
       dockerfile: Dockerfile
     container_name: erp-backend
+    depends_on:
+      mysql:
+        condition: service_healthy
     ports:
       - "8050:8050"
     environment:

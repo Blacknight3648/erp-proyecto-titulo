@@ -19,10 +19,12 @@
 --      por NV (idempotencia ACID en CrearOrdenProduccionUseCase).
 -- -----------------------------------------------------------------------------
 ALTER TABLE produccion_costeos
-    ALTER COLUMN solicitud_costos_id BIGINT NULL;
+    MODIFY COLUMN solicitud_costos_id BIGINT NULL;
 
 -- nota_venta_id ya existe en produccion_costeos (creada por Hibernate DDL anterior).
-CREATE UNIQUE INDEX IF NOT EXISTS uq_costeo_nota_venta ON produccion_costeos(nota_venta_id);
+-- Flyway garantiza que esta migración se ejecuta una sola vez (idempotencia por historial),
+-- por lo que no se requiere IF NOT EXISTS (no soportado por MySQL en CREATE INDEX).
+CREATE UNIQUE INDEX uq_costeo_nota_venta ON produccion_costeos(nota_venta_id);
 
 -- -----------------------------------------------------------------------------
 -- 3. Integridad de OP: toda OP debe tener un costeo_version_id válido.
@@ -31,4 +33,4 @@ CREATE UNIQUE INDEX IF NOT EXISTS uq_costeo_nota_venta ON produccion_costeos(not
 --    primero el script de limpieza correspondiente.
 -- -----------------------------------------------------------------------------
 ALTER TABLE orden_produccion
-    ALTER COLUMN costeo_version_id BIGINT NOT NULL;
+    MODIFY COLUMN costeo_version_id BIGINT NOT NULL;

@@ -123,6 +123,14 @@ public class EvaluacionNegocio {
         this.estado = EstadoEVN.ADJUDICADA;
     }
 
+    public void cerrar() {
+        if (this.estado != EstadoEVN.ADJUDICADA) {
+            throw new EVNBusinessException(
+                    "La EVN solo puede cerrarse si está ADJUDICADA");
+        }
+        this.estado = EstadoEVN.CERRADA;
+    }
+
     protected void addDomainEvent(DomainEvent event) {
         this.domainEvents.add(event);
     }

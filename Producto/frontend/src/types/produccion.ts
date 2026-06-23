@@ -66,6 +66,6 @@ export interface CosteoOP {
     solicitudCostosId: string;
     insumos: InsumoProduccion[];
     totalMP: number;
-    estado: 'Borrador' | 'En Proceso' | 'Costeado';
+    estado: 'BORRADOR' | 'COSTEADO' | 'APROBADO' | 'RECHAZADO';
     fecha: string;
 }

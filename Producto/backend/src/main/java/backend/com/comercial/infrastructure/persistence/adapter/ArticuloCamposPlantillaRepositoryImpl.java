@@ -30,14 +30,9 @@ public class ArticuloCamposPlantillaRepositoryImpl implements ArticuloCamposPlan
     }
 
     @Override
-    public List<ArticuloCamposPlantilla> findByArticuloId(Integer idArticulo) {
-        return jpaRepository.findByArticulo_IdArticulo(idArticulo)
-                .stream().map(mapper::toDomain).toList();
-    }
-
-    @Override
-    public boolean existsByArticuloIdAndPlantillaId(Integer idArticulo, Long idPlantilla) {
-        return jpaRepository.existsByArticulo_IdArticuloAndPlantilla_IdPlantilla(idArticulo, idPlantilla);
+    public Optional<ArticuloCamposPlantilla> findByArticuloId(Integer idArticulo) {
+        if (idArticulo == null) return Optional.empty();
+        return jpaRepository.findByArticulo_IdArticulo(idArticulo).map(mapper::toDomain);
     }
 
     @Override

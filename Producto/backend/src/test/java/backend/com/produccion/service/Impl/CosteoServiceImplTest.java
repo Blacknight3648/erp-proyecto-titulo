@@ -31,7 +31,9 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -55,8 +57,24 @@ class CosteoServiceImplTest {
     @Mock
     private EvaluacionNegocioRepository evnRepository;
 
+    @Mock
+    private backend.com.shared.application.service.NumeroDocumentoService numeroDocumentoService;
+
+    @Mock
+    private backend.com.produccion.application.UseCase.CrearVersionCosteoUseCase crearVersionCosteoUseCase;
+
+    @Mock
+    private backend.com.shared.application.service.HistorialEstadoService historialEstadoService;
+
     @InjectMocks
     private CosteoServiceImpl costeoService;
+
+    @org.junit.jupiter.api.BeforeEach
+    void setUp() {
+        // save asigna el correlativo propio del Costeo (C-0000001) cuando no lo trae.
+        org.mockito.Mockito.lenient().when(numeroDocumentoService.siguienteFormateado("C"))
+                .thenReturn(new DocumentNumber("C-0000001"));
+    }
 
     // --- Métodos Helper ---
 
@@ -169,6 +187,34 @@ class CosteoServiceImplTest {
         verify(articuloRepository, never()).findById(any());
     }
 
+    @Test
+    @DisplayName("save actualizando costeo preserva estado y version si no vienen en el DTO")
+    void save_actualizandoCosteo_preservaEstadoYVersionDeLaBD() {
+        CosteoDTO dto = CosteoDTO.builder().idCosteo(1L).items(List.of()).build(); // Sin estado ni versión
+        Costeo domain = costeo(1L, null, new ArrayList<>());
+        domain.setEstado(backend.com.produccion.domain.enums.EstadoCosteo.BORRADOR); // valor mapeado por defecto
+        domain.setVersion(1); // valor mapeado por defecto
+
+        Costeo existingInDb = costeo(1L, null, new ArrayList<>());
+        existingInDb.setEstado(backend.com.produccion.domain.enums.EstadoCosteo.RECHAZADO);
+        existingInDb.setVersion(3);
+        existingInDb.setMotivoRechazo("Faltan insumos");
+
+        when(mapper.toDomainFromDto(dto)).thenReturn(domain);
+        when(repository.findById(1L)).thenReturn(Optional.of(existingInDb));
+        when(repository.save(domain)).thenReturn(domain);
+        when(mapper.toDto(any(Costeo.class))).thenReturn(CosteoDTO.builder().idCosteo(1L).build());
+
+        costeoService.save(dto);
+
+        ArgumentCaptor<Costeo> captor = ArgumentCaptor.forClass(Costeo.class);
+        verify(repository).save(captor.capture());
+        Costeo saved = captor.getValue();
+        assertThat(saved.getEstado()).isEqualTo(backend.com.produccion.domain.enums.EstadoCosteo.RECHAZADO);
+        assertThat(saved.getVersion()).isEqualTo(3);
+        assertThat(saved.getMotivoRechazo()).isEqualTo("Faltan insumos");
+    }
+
     // --- findAll / findBySolicitudCostosId / findAllBySolicitudCostosId ---
 
     @Test
@@ -229,10 +275,12 @@ class CosteoServiceImplTest {
     // --- obtenerDisponiblesParaEVN ---
 
     @Test
-    @DisplayName("obtenerDisponiblesParaEVN filtra los costeos ya vinculados a una EVN")
+    @DisplayName("obtenerDisponiblesParaEVN filtra los no vinculados y solo expone costeos APROBADOS")
     void obtenerDisponiblesParaEVN_filtraCosteosVinculados() {
         Costeo costeo1 = costeo(1L, null, new ArrayList<>());
+        costeo1.setEstado(backend.com.produccion.domain.enums.EstadoCosteo.APROBADO); // disponible
         Costeo costeo2 = costeo(2L, null, new ArrayList<>());
+        costeo2.setEstado(backend.com.produccion.domain.enums.EstadoCosteo.APROBADO); // pero vinculado
         CosteoDTO dto1 = CosteoDTO.builder().idCosteo(1L).build();
 
         when(evnRepository.findLinkedCosteoIds()).thenReturn(List.of(2L));
@@ -319,5 +367,99 @@ class CosteoServiceImplTest {
         Optional<CosteoResumenEVNDTO> resultado = costeoService.obtenerResumenEVN(99L);
 
         assertThat(resultado).isEmpty();
+    }
+
+    // --- Transiciones de estado ---
+
+    @Test
+    @DisplayName("rechazar versiona el costeo, fija RECHAZADO y conserva el motivo")
+    void rechazar_versionaYRechaza() {
+        Costeo domain = costeo(1L, null, new ArrayList<>());
+        domain.marcarCosteado(); // BORRADOR → COSTEADO
+
+        when(repository.findById(1L)).thenReturn(Optional.of(domain));
+        when(repository.save(any(Costeo.class))).thenAnswer(inv -> inv.getArgument(0));
+        when(mapper.toDto(any(Costeo.class))).thenReturn(CosteoDTO.builder().idCosteo(1L).build());
+
+        costeoService.rechazar(1L, "Diferencias detectadas", "Ana", "JEFE_PRODUCCION");
+
+        verify(crearVersionCosteoUseCase).ejecutar(1L, "Rechazo v1: Diferencias detectadas", "Ana");
+        ArgumentCaptor<Costeo> captor = ArgumentCaptor.forClass(Costeo.class);
+        verify(repository).save(captor.capture());
+        assertThat(captor.getValue().getEstado())
+                .isEqualTo(backend.com.produccion.domain.enums.EstadoCosteo.RECHAZADO);
+        assertThat(captor.getValue().getMotivoRechazo()).isEqualTo("Diferencias detectadas");
+        // Se registra el historial de estado con la versión y el actor real.
+        verify(historialEstadoService).registrar(eq("COSTEO"), eq(1L), eq("COSTEADO"), eq("RECHAZADO"),
+                eq("Ana"), org.mockito.ArgumentMatchers.contains("v1"));
+    }
+
+    @Test
+    @DisplayName("aprobar/rechazar con rol no autorizado lanza ForbiddenException (403)")
+    void decision_rolNoAutorizado() {
+        assertThatThrownBy(() -> costeoService.aprobar(1L, "Pedro", "VENDEDOR"))
+                .isInstanceOf(backend.com.shared.exception.ForbiddenException.class);
+        assertThatThrownBy(() -> costeoService.rechazar(1L, "x", "Pedro", "OPERARIO_PRODUCCION"))
+                .isInstanceOf(backend.com.shared.exception.ForbiddenException.class);
+        verify(repository, never()).save(any());
+    }
+
+    @Test
+    @DisplayName("aprobar sin firma del actor lanza ValidationException")
+    void aprobar_sinActor() {
+        assertThatThrownBy(() -> costeoService.aprobar(1L, "  ", "JEFE_PRODUCCION"))
+                .isInstanceOf(backend.com.shared.exception.ValidationException.class);
+    }
+
+    @Test
+    @DisplayName("reabrir (retomar) desde RECHAZADO incrementa la versión y registra historial")
+    void reabrir_retomarIncrementaVersion() {
+        Costeo domain = costeo(1L, null, new ArrayList<>());
+        domain.marcarCosteado();
+        domain.rechazar("Diferencias"); // RECHAZADO, version 1
+
+        when(repository.findById(1L)).thenReturn(Optional.of(domain));
+        when(repository.save(any(Costeo.class))).thenAnswer(inv -> inv.getArgument(0));
+        when(mapper.toDto(any(Costeo.class))).thenReturn(CosteoDTO.builder().idCosteo(1L).build());
+
+        costeoService.reabrir(1L);
+
+        ArgumentCaptor<Costeo> captor = ArgumentCaptor.forClass(Costeo.class);
+        verify(repository).save(captor.capture());
+        assertThat(captor.getValue().getEstado())
+                .isEqualTo(backend.com.produccion.domain.enums.EstadoCosteo.BORRADOR);
+        assertThat(captor.getValue().getVersion()).isEqualTo(2);
+        verify(historialEstadoService).registrar(eq("COSTEO"), eq(1L), eq("RECHAZADO"), eq("BORRADOR"),
+                eq("SYSTEM"), org.mockito.ArgumentMatchers.contains("v2"));
+    }
+
+    @Test
+    @DisplayName("aprobar lleva COSTEADO → APROBADO")
+    void aprobar_ok() {
+        Costeo domain = costeo(1L, null, new ArrayList<>());
+        domain.marcarCosteado();
+
+        when(repository.findById(1L)).thenReturn(Optional.of(domain));
+        when(repository.save(any(Costeo.class))).thenAnswer(inv -> inv.getArgument(0));
+        when(mapper.toDto(any(Costeo.class))).thenReturn(CosteoDTO.builder().idCosteo(1L).build());
+
+        costeoService.aprobar(1L, "Ana", "JEFE_PRODUCCION");
+
+        ArgumentCaptor<Costeo> captor = ArgumentCaptor.forClass(Costeo.class);
+        verify(repository).save(captor.capture());
+        assertThat(captor.getValue().getEstado())
+                .isEqualTo(backend.com.produccion.domain.enums.EstadoCosteo.APROBADO);
+        verify(crearVersionCosteoUseCase, never()).ejecutar(any(), any(), any());
+        verify(historialEstadoService).registrar(eq("COSTEO"), eq(1L), eq("COSTEADO"), eq("APROBADO"),
+                eq("Ana"), org.mockito.ArgumentMatchers.contains("aprobado"));
+    }
+
+    @Test
+    @DisplayName("transición sobre costeo inexistente lanza EntityNotFoundException")
+    void transicion_costeoInexistente() {
+        when(repository.findById(99L)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> costeoService.aprobar(99L, "Ana", "JEFE_PRODUCCION"))
+                .isInstanceOf(backend.com.shared.exception.EntityNotFoundException.class);
     }
 }

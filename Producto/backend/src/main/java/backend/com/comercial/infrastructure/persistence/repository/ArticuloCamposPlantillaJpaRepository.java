@@ -4,14 +4,12 @@ import backend.com.comercial.infrastructure.persistence.entity.ArticuloCamposPla
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface ArticuloCamposPlantillaJpaRepository extends JpaRepository<ArticuloCamposPlantillaJpaEntity, Long> {
 
-    List<ArticuloCamposPlantillaJpaEntity> findByArticulo_IdArticulo(Integer idArticulo);
-
-    boolean existsByArticulo_IdArticuloAndPlantilla_IdPlantilla(Integer idArticulo, Long idPlantilla);
+    Optional<ArticuloCamposPlantillaJpaEntity> findByArticulo_IdArticulo(Integer idArticulo);
 
     void deleteByArticulo_IdArticulo(Integer idArticulo);
 }

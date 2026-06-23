@@ -4,6 +4,7 @@ import backend.com.comercial.domain.model.*;
 import backend.com.comercial.domain.repository.SolicitudCotizacionRepository;
 import backend.com.comercial.application.dto.*;
 import backend.com.comercial.application.service.SolicitudCotizacionesService;
+import backend.com.shared.application.service.NumeroDocumentoService;
 import backend.com.shared.exception.EntityNotFoundException;
 import backend.com.shared.valueobjects.DocumentNumber;
 import backend.com.shared.valueobjects.Money;
@@ -21,15 +22,17 @@ import java.util.stream.Collectors;
 public class SolicitudCotizacionServiceImpl implements SolicitudCotizacionesService {
 
         private final SolicitudCotizacionRepository repository;
+        private final NumeroDocumentoService numeroDocumentoService;
 
         @Override
         @Transactional
         public SolicitudCotizacionesDTO create(SolicitudCotizacionesCreateDTO dto) {
-                long siguiente = repository.countByTipo("SCOT") + 1;
-                String randomNum = "SCOT-" + String.format("%04d", siguiente);
+                // Correlativo propio y atómico (SCOT-0000001). Reemplaza el patrón
+                // countByTipo()+1, que no era atómico y podía colisionar en concurrencia.
+                DocumentNumber numero = numeroDocumentoService.siguienteFormateado("SCOT");
 
                 SolicitudCotizacion domain = SolicitudCotizacion.crear(
-                                new DocumentNumber(randomNum),
+                                numero,
                                 dto.getTipo(),
                                 dto.getClienteId(),
                                 dto.getVendedorId(),

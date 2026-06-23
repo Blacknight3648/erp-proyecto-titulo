@@ -16,6 +16,8 @@ public class DescripcionPlantillaController {
 
     private final DescripcionPlantillaService descripcionService;
 
+    
+
     @GetMapping("/api/v3/comercial/scos/{idSCOS}/descripciones")
     public ResponseEntity<List<DescripcionPlantillaDTO>> listarPorSCOS(@PathVariable Long idSCOS) {
         return ResponseEntity.ok(descripcionService.listarPorSCOS(idSCOS));
@@ -26,6 +28,13 @@ public class DescripcionPlantillaController {
                                                          @Valid @RequestBody DescripcionPlantillaDTO request) {
         request.setIdSCOS(idSCOS);
         return ResponseEntity.status(HttpStatus.CREATED).body(descripcionService.crear(request));
+    }
+
+    /** Guarda en lote (atómico) todas las descripciones de una SCOS en una sola petición. */
+    @PostMapping("/api/v3/comercial/descripciones-plantilla/bulk")
+    public ResponseEntity<List<DescripcionPlantillaDTO>> guardarMultiples(
+            @Valid @RequestBody List<DescripcionPlantillaDTO> request) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(descripcionService.guardarMultiples(request));
     }
 
     @PutMapping("/api/v3/comercial/descripciones-plantilla/{id}")
@@ -44,4 +53,6 @@ public class DescripcionPlantillaController {
     public void eliminar(@PathVariable Long id) {
         descripcionService.eliminar(id);
     }
+
+
 }

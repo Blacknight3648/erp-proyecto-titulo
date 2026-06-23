@@ -44,6 +44,11 @@ public class NotaVentaRepositoryImpl implements NotaVentaRepository {
     }
 
     @Override
+    public void vincularOpAItems(Long notaVentaId, Long opId) {
+        jpaRepository.vincularOpAItems(notaVentaId, opId, backend.com.comercial.domain.enums.TipoItem.OP);
+    }
+
+    @Override
     public java.util.List<NotaVenta> findAll() {
         return jpaRepository.findAll().stream()
                 .map(mapper::toDomain)

@@ -25,7 +25,7 @@ public class NotaVentaJpaEntity extends AuditableJpaEntity {
     @Column(unique = true, length = 20, nullable = false)
     private String numeroNV;
 
-    @Column(name = "evaluacion_negocio_id")
+    @Column(name = "evaluacion_negocio_id", nullable = false)
     private Long evaluacionNegocioId;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -69,11 +69,18 @@ public class NotaVentaJpaEntity extends AuditableJpaEntity {
     @Column(length = 3)
     private String monedaTotal;
 
+    // Se declara la lista 'items' con la relación correcta ---
     @OneToMany(mappedBy = "notaVenta", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<NotaVentaItemJpaEntity> items = new ArrayList<>();
 
+    // --- Métodos Helper para mantener la consistencia de la relación ---
     public void addItem(NotaVentaItemJpaEntity item) {
         items.add(item);
         item.setNotaVenta(this);
+    }
+
+    public void removeItem(NotaVentaItemJpaEntity item) {
+        items.remove(item);
+        item.setNotaVenta(null);
     }
 }

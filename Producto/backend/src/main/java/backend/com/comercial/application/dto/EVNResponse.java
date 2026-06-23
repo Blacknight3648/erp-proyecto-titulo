@@ -1,5 +1,6 @@
 package backend.com.comercial.application.dto;
 
+import backend.com.comercial.domain.enums.TipoItem;
 import backend.com.comercial.domain.model.EvaluacionNegocio;
 import backend.com.comercial.domain.model.GastoAdicional;
 import backend.com.comercial.domain.model.TomaTallajeDetalle;
@@ -50,7 +51,7 @@ public class EVNResponse {
         private BigDecimal costoLogo;
         private BigDecimal costoOrdenTrabajo;
         private BigDecimal costoTotalUnitario;
-        private String tipoItem;
+        private TipoItem tipoItem;
         private BigDecimal totalItem;
         private BigDecimal margenItem;
         private List<backend.com.comercial.domain.model.ItemEspecificacion> technicalSpecs;

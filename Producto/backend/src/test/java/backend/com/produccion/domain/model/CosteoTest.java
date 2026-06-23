@@ -1,5 +1,7 @@
 package backend.com.produccion.domain.model;
 
+import backend.com.produccion.domain.enums.EstadoCosteo;
+import backend.com.shared.exception.BusinessRuleException;
 import backend.com.shared.valueobjects.DocumentNumber;
 import backend.com.shared.valueobjects.Money;
 import org.junit.jupiter.api.DisplayName;
@@ -11,6 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 /**
  * Tests unitarios PUROS del modelo de dominio Costeo.
@@ -114,6 +117,103 @@ class CosteoTest {
             assertThat(costeo.getClienteNombre()).isEqualTo("Nuevo Cliente");
             assertThat(costeo.getCostoFlete()).isEqualTo(mockMoney("120.50"));
             assertThat(costeo.getMargenBrutoSugerido()).isEqualByComparingTo(new BigDecimal("40.0"));
+        }
+    }
+
+    @Nested
+    @DisplayName("Ciclo de vida (estados)")
+    class CicloDeVida {
+
+        @Test
+        @DisplayName("un costeo nuevo arranca en BORRADOR")
+        void nuevoEsBorrador() {
+            assertThat(new Costeo().getEstado()).isEqualTo(EstadoCosteo.BORRADOR);
+        }
+
+        @Test
+        @DisplayName("flujo feliz BORRADOR → COSTEADO → APROBADO")
+        void flujoFeliz() {
+            Costeo c = new Costeo();
+            c.marcarCosteado();
+            assertThat(c.getEstado()).isEqualTo(EstadoCosteo.COSTEADO);
+            c.aprobar();
+            assertThat(c.getEstado()).isEqualTo(EstadoCosteo.APROBADO);
+        }
+
+        @Test
+        @DisplayName("aprobar un BORRADOR es una transición inválida")
+        void aprobarBorradorFalla() {
+            assertThatThrownBy(() -> new Costeo().aprobar())
+                    .isInstanceOf(BusinessRuleException.class);
+        }
+
+        @Test
+        @DisplayName("APROBADO es terminal: no se puede reabrir ni rechazar")
+        void aprobadoEsTerminal() {
+            Costeo c = new Costeo();
+            c.marcarCosteado();
+            c.aprobar();
+            assertThatThrownBy(c::reabrir).isInstanceOf(BusinessRuleException.class);
+            assertThatThrownBy(() -> c.rechazar("x")).isInstanceOf(BusinessRuleException.class);
+        }
+
+        @Test
+        @DisplayName("rechazar exige motivo y lo conserva; luego se puede reabrir a BORRADOR")
+        void rechazoConMotivoYReproceso() {
+            Costeo c = new Costeo();
+            c.marcarCosteado();
+
+            assertThatThrownBy(() -> c.rechazar("  ")).isInstanceOf(BusinessRuleException.class);
+
+            c.rechazar("Diferencias en costo de tela");
+            assertThat(c.getEstado()).isEqualTo(EstadoCosteo.RECHAZADO);
+            assertThat(c.getMotivoRechazo()).isEqualTo("Diferencias en costo de tela");
+
+            c.reabrir();
+            assertThat(c.getEstado()).isEqualTo(EstadoCosteo.BORRADOR);
+            assertThat(c.getMotivoRechazo()).isNull();
+        }
+    }
+
+    @Nested
+    @DisplayName("Versionado (contador de reproceso)")
+    class Versionado {
+
+        @Test
+        @DisplayName("un costeo nuevo arranca en versión 1")
+        void nuevoEsVersion1() {
+            assertThat(new Costeo().getVersion()).isEqualTo(1);
+        }
+
+        @Test
+        @DisplayName("secuencia borrador → costeado → rechazado → retomar incrementa la versión")
+        void secuenciaReprocesoIncrementaVersion() {
+            Costeo c = new Costeo();
+            assertThat(c.getVersion()).isEqualTo(1);
+
+            c.marcarCosteado();
+            c.rechazar("Diferencias detectadas");
+            assertThat(c.getVersion()).isEqualTo(1); // rechazar NO incrementa: v1 queda como la rechazada
+
+            c.reabrir(); // retomar desde RECHAZADO
+            assertThat(c.getEstado()).isEqualTo(EstadoCosteo.BORRADOR);
+            assertThat(c.getVersion()).isEqualTo(2);
+
+            // segundo ciclo de reproceso
+            c.marcarCosteado();
+            c.rechazar("Sigue habiendo diferencias");
+            c.reabrir();
+            assertThat(c.getVersion()).isEqualTo(3);
+        }
+
+        @Test
+        @DisplayName("reabrir desde COSTEADO (corrección) NO incrementa la versión")
+        void reabrirDesdeCosteadoNoIncrementa() {
+            Costeo c = new Costeo();
+            c.marcarCosteado();
+            c.reabrir(); // COSTEADO → BORRADOR
+            assertThat(c.getEstado()).isEqualTo(EstadoCosteo.BORRADOR);
+            assertThat(c.getVersion()).isEqualTo(1);
         }
     }
 }

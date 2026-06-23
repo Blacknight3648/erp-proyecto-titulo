@@ -21,12 +21,19 @@ export default function CosteosOP() {
         totalCostosFijos,
         totalGeneral,
         currentSolicitud,
+        selectedRecord,
+        costeoVersion,
+        costeoEstado,
+        motivoRechazo,
         insumos,
         handleOpenForm,
         handleUpdateItem,
         handleRemoveItem,
         handleAddItem,
         handleValidateCostos,
+        handleAprobarCosteo,
+        handleRechazarCosteo,
+        handleReabrirCosteo,
         clientes,
         moPrenda, setMoPrenda,
         moCinta, setMoCinta,
@@ -37,7 +44,8 @@ export default function CosteosOP() {
         costoGratificacion, setCostoGratificacion,
         costoEtiqueta, setCostoEtiqueta,
         costoEmbalaje, setCostoEmbalaje,
-        costoFlete, setCostoFlete
+        costoFlete, setCostoFlete,
+        getHistorialVersionesCosteo
     } = useCosteosOPState();
 
     if (isLoading) {
@@ -64,12 +72,20 @@ export default function CosteosOP() {
                     recordsToDisplay={filteredRecords}
                     clientes={clientes}
                     handleOpenForm={handleOpenForm}
+                    onAprobar={handleAprobarCosteo}
+                    onRechazar={handleRechazarCosteo}
+                    onReabrir={handleReabrirCosteo}
                 />
             ) : (
                 <FormularioCosteo
                     onBack={() => setView('list')}
                     currentSolicitud={currentSolicitud}
+                    selectedRecord={selectedRecord}
+                    costeoVersion={costeoVersion}
+                    costeoEstado={costeoEstado}
+                    motivoRechazo={motivoRechazo}
                     handleValidateCostos={handleValidateCostos}
+                    onReabrir={handleReabrirCosteo}
                     totalMateriales={totalMateriales}
                     totalMO={totalMO}
                     totalCostosFijos={totalCostosFijos}
@@ -91,6 +107,7 @@ export default function CosteosOP() {
                     costoEtiqueta={costoEtiqueta} setCostoEtiqueta={setCostoEtiqueta}
                     costoEmbalaje={costoEmbalaje} setCostoEmbalaje={setCostoEmbalaje}
                     costoFlete={costoFlete} setCostoFlete={setCostoFlete}
+                    getHistorialVersionesCosteo={getHistorialVersionesCosteo}
                 />
             )}
 

@@ -1,5 +1,6 @@
 package backend.com.produccion.infrastructure.persistence.entity;
 
+import backend.com.produccion.domain.enums.EstadoCosteo;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -16,8 +17,23 @@ public class CosteoJpaEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idCosteo;
 
-    @Column(name = "solicitud_costos_id", nullable = false)
+    @Enumerated(EnumType.STRING)
+    @Column(length = 20, nullable = false)
+    private EstadoCosteo estado = EstadoCosteo.BORRADOR;
+
+    @Column(name = "motivo_rechazo", length = 300)
+    private String motivoRechazo;
+
+    /** Iteración de reproceso (incrementa al retomar un costeo rechazado). */
+    @Column(nullable = false)
+    private Integer version = 1;
+
+    @Column(name = "solicitud_costos_id")
     private Long solicitudCostosId;
+
+    /** Referencia suave a la NV (solo para costeos auto-creados sin solicitud de costos). */
+    @Column(name = "nota_venta_id", unique = true)
+    private Long notaVentaId;
 
     @OneToMany(mappedBy = "costeo", cascade = CascadeType.ALL, orphanRemoval = true)
     private java.util.List<CosteoItemJpaEntity> items = new java.util.ArrayList<>();

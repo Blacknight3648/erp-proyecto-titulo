@@ -5,11 +5,18 @@ import backend.com.comercial.domain.repository.SolicitudCostosRepository;
 import backend.com.produccion.application.dto.CosteoDTO;
 import backend.com.produccion.application.dto.CosteoResumenEVNDTO;
 import backend.com.produccion.application.service.CosteoService;
+import backend.com.produccion.application.UseCase.CrearVersionCosteoUseCase;
+import backend.com.produccion.domain.enums.AccionCosteo;
+import backend.com.produccion.domain.enums.EstadoCosteo;
 import backend.com.produccion.domain.model.Costeo;
 import backend.com.produccion.domain.model.CosteoItem;
 import backend.com.produccion.domain.repository.CosteoRepository;
 import backend.com.produccion.infrastructure.mapper.CosteoMapper;
+import backend.com.shared.application.service.HistorialEstadoService;
+import backend.com.shared.application.service.NumeroDocumentoService;
 import backend.com.shared.domain.model.Articulo;
+import backend.com.shared.exception.EntityNotFoundException;
+import backend.com.shared.exception.ValidationException;
 import backend.com.shared.infrastructure.persistence.repository.ArticuloRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -26,6 +33,12 @@ public class CosteoServiceImpl implements CosteoService {
     private final SolicitudCostosRepository scosRepository;
     private final ArticuloRepository articuloRepository;
     private final EvaluacionNegocioRepository evnRepository;
+    private final NumeroDocumentoService numeroDocumentoService;
+    private final CrearVersionCosteoUseCase crearVersionCosteoUseCase;
+    private final HistorialEstadoService historialEstadoService;
+
+    /** Tipo de entidad para el registro de historial de estado del Costeo. */
+    private static final String TIPO_ENTIDAD = "COSTEO";
 
     private void enrichWithScosInfo(Costeo domain) {
         if (domain != null && domain.getSolicitudCostosId() != null) {
@@ -68,8 +81,49 @@ public class CosteoServiceImpl implements CosteoService {
     @Transactional
     public CosteoDTO save(CosteoDTO costeoDTO) {
         Costeo domain = mapper.toDomainFromDto(costeoDTO);
+        
+        // Si es una actualización, conservar el estado, versión y motivo de rechazo ya persistidos en BD
+        // si no fueron suministrados explícitamente en el DTO.
+        if (domain.getIdCosteo() != null) {
+            repository.findById(domain.getIdCosteo()).ifPresent(existing -> {
+                if (costeoDTO.getEstado() == null || costeoDTO.getEstado().isBlank()) {
+                    domain.setEstado(existing.getEstado());
+                }
+                if (costeoDTO.getVersion() == null) {
+                    domain.setVersion(existing.getVersion());
+                }
+                if (costeoDTO.getMotivoRechazo() == null) {
+                    domain.setMotivoRechazo(existing.getMotivoRechazo());
+                }
+            });
+        }
+        
+        asignarNumeroSiCorresponde(domain);
         Costeo savedDomain = repository.save(domain);
         return toEnrichedDto(savedDomain);
+    }
+
+    /**
+     * Garantiza que el Costeo tenga su propio número correlativo ({@code C-0000001}).
+     * En creación genera uno nuevo de forma atómica dentro de esta transacción
+     * (sin huecos si el save falla). En actualización conserva el número ya
+     * asignado, recuperándolo de BD si el DTO no lo trajo, para no regenerarlo
+     * ni provocar duplicados.
+     */
+    private void asignarNumeroSiCorresponde(Costeo domain) {
+        if (domain == null || domain.getNumeroCosteo() != null) {
+            return;
+        }
+        // Actualización: conservar el número ya persistido.
+        if (domain.getIdCosteo() != null) {
+            repository.findById(domain.getIdCosteo())
+                    .map(Costeo::getNumeroCosteo)
+                    .ifPresent(domain::setNumeroCosteo);
+        }
+        // Creación (o registro legacy sin número): asignar correlativo propio.
+        if (domain.getNumeroCosteo() == null) {
+            domain.setNumeroCosteo(numeroDocumentoService.siguienteFormateado("C"));
+        }
     }
 
     @Override
@@ -77,6 +131,12 @@ public class CosteoServiceImpl implements CosteoService {
         return repository.findAll().stream()
                 .map(this::toEnrichedDto)
                 .collect(java.util.stream.Collectors.toList());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Optional<CosteoDTO> findById(Long id) {
+        return repository.findById(id).map(this::toEnrichedDto);
     }
 
     @Override
@@ -96,8 +156,10 @@ public class CosteoServiceImpl implements CosteoService {
     @Transactional(readOnly = true)
     public java.util.List<CosteoDTO> obtenerDisponiblesParaEVN() {
         java.util.Set<Long> vinculados = new java.util.HashSet<>(evnRepository.findLinkedCosteoIds());
+        // Solo costeos APROBADOS pueden vincularse a un ítem de EVN/NV.
         return repository.findAll().stream()
                 .filter(c -> c.getIdCosteo() != null && !vinculados.contains(c.getIdCosteo()))
+                .filter(c -> c.getEstado() == backend.com.produccion.domain.enums.EstadoCosteo.APROBADO)
                 .map(this::toEnrichedDto)
                 .collect(java.util.stream.Collectors.toList());
     }
@@ -144,5 +206,90 @@ public class CosteoServiceImpl implements CosteoService {
 
             return builder.build();
         });
+    }
+
+    // ----------------------------------------------------------------------
+    // Transiciones del ciclo de vida. La regla de transición vive en el dominio
+    // (Costeo + EstadoCosteo.puedeTransicionarA); aquí solo se orquesta carga,
+    // persistencia y, para el rechazo, el versionado del snapshot.
+    // ----------------------------------------------------------------------
+
+    @Override
+    @Transactional
+    public CosteoDTO costear(Long id) {
+        Costeo costeo = cargar(id);
+        EstadoCosteo estadoAnterior = costeo.getEstado();
+        costeo.marcarCosteado();
+        Costeo guardado = repository.save(costeo);
+        registrarHistorial(guardado, estadoAnterior, "SYSTEM", "Costeo v" + guardado.getVersion() + " costeado");
+        return toEnrichedDto(guardado);
+    }
+
+    @Override
+    @Transactional
+    public CosteoDTO aprobar(Long id, String usuario, String rol) {
+        String actor = exigirActor(usuario);
+        AccionCosteo.APROBAR.validarRol(rol);
+        Costeo costeo = cargar(id);
+        EstadoCosteo estadoAnterior = costeo.getEstado();
+        costeo.aprobar();
+        Costeo guardado = repository.save(costeo);
+        registrarHistorial(guardado, estadoAnterior, actor, "Costeo v" + guardado.getVersion() + " aprobado");
+        return toEnrichedDto(guardado);
+    }
+
+    @Override
+    @Transactional
+    public CosteoDTO rechazar(Long id, String motivo, String usuario, String rol) {
+        String actor = exigirActor(usuario);
+        AccionCosteo.RECHAZAR.validarRol(rol);
+        Costeo costeo = cargar(id);
+        EstadoCosteo estadoAnterior = costeo.getEstado();
+        // Snapshot técnico del costeo tal como está antes de marcarlo rechazado.
+        crearVersionCosteoUseCase.ejecutar(id, "Rechazo v" + costeo.getVersion() + ": " + motivo, actor);
+        costeo.rechazar(motivo);
+        Costeo guardado = repository.save(costeo);
+        registrarHistorial(guardado, estadoAnterior, actor, "Costeo v" + guardado.getVersion() + " rechazado: " + motivo);
+        return toEnrichedDto(guardado);
+    }
+
+    @Override
+    @Transactional
+    public CosteoDTO reabrir(Long id) {
+        Costeo costeo = cargar(id);
+        EstadoCosteo estadoAnterior = costeo.getEstado();
+        costeo.reabrir(); // si venía de RECHAZADO, incrementa la versión
+        Costeo guardado = repository.save(costeo);
+        String obs = estadoAnterior == EstadoCosteo.RECHAZADO
+                ? "Retomado como v" + guardado.getVersion()
+                : "Reabierto a BORRADOR (v" + guardado.getVersion() + ")";
+        registrarHistorial(guardado, estadoAnterior, "SYSTEM", obs);
+        return toEnrichedDto(guardado);
+    }
+
+    /** Exige la firma del actor; devuelve el usuario validado. */
+    private String exigirActor(String usuario) {
+        if (usuario == null || usuario.isBlank()) {
+            throw new ValidationException("Se requiere identificar al usuario que firma la acción");
+        }
+        return usuario.trim();
+    }
+
+    private void registrarHistorial(Costeo costeo, EstadoCosteo estadoAnterior, String usuario, String observacion) {
+        historialEstadoService.registrar(
+                TIPO_ENTIDAD,
+                costeo.getIdCosteo(),
+                estadoAnterior != null ? estadoAnterior.name() : null,
+                costeo.getEstado() != null ? costeo.getEstado().name() : null,
+                usuario,
+                observacion);
+    }
+
+    private Costeo cargar(Long id) {
+        if (id == null) {
+            throw new IllegalArgumentException("El id del costeo es obligatorio");
+        }
+        return repository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Costeo no encontrado: " + id));
     }
 }

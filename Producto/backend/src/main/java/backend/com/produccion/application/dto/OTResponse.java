@@ -8,7 +8,6 @@ import java.math.BigDecimal;
 @Data
 public class OTResponse {
     private Long idOT;
-    private String numeroOT;
     private Long notaVentaId;
     private Long itemNVId;
     private Long ordenProduccionId;
@@ -26,7 +25,6 @@ public class OTResponse {
         if (ot == null) return null;
         OTResponse r = new OTResponse();
         r.idOT = ot.getIdOT();
-        r.numeroOT = ot.getNumeroOT() != null ? ot.getNumeroOT().getValue() : null;
         r.notaVentaId = ot.getNotaVentaId();
         r.itemNVId = ot.getItemNVId();
         r.ordenProduccionId = ot.getOrdenProduccionId();

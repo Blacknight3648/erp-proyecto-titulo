@@ -15,16 +15,14 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -46,177 +44,86 @@ class ArticuloCamposPlantillaControllerTest {
     @MockitoBean
     private backend.com.shared.infrastructure.persistence.repository.Jpa.IdempotencyTokenJpaRepository idempotencyTokenJpaRepository;
 
-    // ============================================================
-    // HELPERS
-    // ============================================================
-
-    private ArticuloCamposPlantillaDTO crearDTO(Long id,
-                                                Integer idArticulo,
-                                                Long idPlantilla) {
-
-        ArticuloCamposPlantillaDTO dto = new ArticuloCamposPlantillaDTO();
-        dto.setIdModeloPlantilla(id);
-        dto.setIdArticulo(idArticulo);
-        dto.setIdPlantilla(idPlantilla);
-
-        return dto;
+    private ArticuloCamposPlantillaDTO dto(Long id, Integer idArticulo, List<String> campos) {
+        return ArticuloCamposPlantillaDTO.builder()
+                .idModeloPlantilla(id)
+                .idArticulo(idArticulo)
+                .nombreArticulo("Chaqueta")
+                .camposPlantilla(campos)
+                .build();
     }
-
-    // ============================================================
-    // CONSULTAS GET
-    // ============================================================
 
     @Nested
     @DisplayName("Consultas")
     class Consultas {
 
         @Test
-        @DisplayName("GET /articulo/{idArticulo} retorna las relaciones del artículo")
-        void listarPorArticulo() throws Exception {
+        @DisplayName("GET /articulo/{id} retorna la config del artículo con su lista de campos")
+        void obtenerPorArticulo() throws Exception {
+            when(articuloCamposPlantillaService.obtenerPorArticulo(10))
+                    .thenReturn(Optional.of(dto(1L, 10, List.of("forro", "cuello"))));
 
-            List<ArticuloCamposPlantillaDTO> lista = List.of(
-                    crearDTO(1L, 10, 100L),
-                    crearDTO(2L, 10, 200L)
-            );
-
-            when(articuloCamposPlantillaService.listarPorArticulo(10))
-                    .thenReturn(lista);
-
-            mockMvc.perform(
-                            get("/api/v3/comercial/modelos-plantilla/articulo/10")
-                    )
+            mockMvc.perform(get("/api/v3/comercial/modelos-plantilla/articulo/10"))
                     .andExpect(status().isOk())
                     .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                    .andExpect(jsonPath("$.size()").value(2))
-                    .andExpect(jsonPath("$[0].idModeloPlantilla").value(1))
-                    .andExpect(jsonPath("$[0].idArticulo").value(10))
-                    .andExpect(jsonPath("$[0].idPlantilla").value(100));
-
-            verify(articuloCamposPlantillaService)
-                    .listarPorArticulo(10);
+                    .andExpect(jsonPath("$.idArticulo").value(10))
+                    .andExpect(jsonPath("$.camposPlantilla.size()").value(2))
+                    .andExpect(jsonPath("$.camposPlantilla[0]").value("forro"));
         }
 
         @Test
-        @DisplayName("GET /articulo/{idArticulo} retorna lista vacía")
-        void listarPorArticuloVacio() throws Exception {
+        @DisplayName("GET /articulo/{id} retorna 404 si el artículo no tiene configuración")
+        void obtenerPorArticuloNotFound() throws Exception {
+            when(articuloCamposPlantillaService.obtenerPorArticulo(99)).thenReturn(Optional.empty());
 
-            when(articuloCamposPlantillaService.listarPorArticulo(99))
-                    .thenReturn(List.of());
-
-            mockMvc.perform(
-                            get("/api/v3/comercial/modelos-plantilla/articulo/99")
-                    )
-                    .andExpect(status().isOk())
-                    .andExpect(jsonPath("$.size()").value(0));
-
-            verify(articuloCamposPlantillaService)
-                    .listarPorArticulo(99);
+            mockMvc.perform(get("/api/v3/comercial/modelos-plantilla/articulo/99"))
+                    .andExpect(status().isNotFound());
         }
     }
-
-    // ============================================================
-    // ESCRITURA
-    // ============================================================
 
     @Nested
-    @DisplayName("Creación")
-    class Creacion {
+    @DisplayName("Guardado (upsert)")
+    class Guardado {
 
         @Test
-        @DisplayName("POST / crea una nueva relación artículo-plantilla")
-        void crear() throws Exception {
+        @DisplayName("POST / crea o actualiza la config del artículo")
+        void guardar() throws Exception {
+            ArticuloCamposPlantillaDTO input = dto(null, 10, List.of("forro", "cuello"));
+            when(articuloCamposPlantillaService.guardar(any())).thenReturn(dto(1L, 10, List.of("forro", "cuello")));
 
-            ArticuloCamposPlantillaDTO input =
-                    crearDTO(null, 10, 100L);
-
-            ArticuloCamposPlantillaDTO output =
-                    crearDTO(1L, 10, 100L);
-
-            when(articuloCamposPlantillaService.crear(any()))
-                    .thenReturn(output);
-
-            mockMvc.perform(
-                            post("/api/v3/comercial/modelos-plantilla")
-                                    .contentType(MediaType.APPLICATION_JSON)
-                                    .content(objectMapper.writeValueAsString(input))
-                    )
-                    .andExpect(status().isCreated())
-                    .andExpect(jsonPath("$.idModeloPlantilla").value(1))
+            mockMvc.perform(post("/api/v3/comercial/modelos-plantilla")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(input)))
+                    .andExpect(status().isOk())
                     .andExpect(jsonPath("$.idArticulo").value(10))
-                    .andExpect(jsonPath("$.idPlantilla").value(100));
+                    .andExpect(jsonPath("$.camposPlantilla[1]").value("cuello"));
 
-            verify(articuloCamposPlantillaService)
-                    .crear(any(ArticuloCamposPlantillaDTO.class));
+            verify(articuloCamposPlantillaService).guardar(any(ArticuloCamposPlantillaDTO.class));
+        }
+
+        @Test
+        @DisplayName("POST sin idArticulo retorna 400 (validación)")
+        void guardarSinArticulo() throws Exception {
+            ArticuloCamposPlantillaDTO input = dto(null, null, List.of("forro"));
+
+            mockMvc.perform(post("/api/v3/comercial/modelos-plantilla")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(input)))
+                    .andExpect(status().isBadRequest());
         }
     }
-
-    // ============================================================
-    // ELIMINACIÓN
-    // ============================================================
 
     @Nested
     @DisplayName("Eliminación")
     class Eliminacion {
 
         @Test
-        @DisplayName("DELETE /{id} elimina correctamente")
+        @DisplayName("DELETE /articulo/{id} elimina la config del artículo")
         void eliminar() throws Exception {
-
-            mockMvc.perform(
-                            delete("/api/v3/comercial/modelos-plantilla/1")
-                    )
+            mockMvc.perform(delete("/api/v3/comercial/modelos-plantilla/articulo/10"))
                     .andExpect(status().isNoContent());
 
-            verify(articuloCamposPlantillaService)
-                    .eliminar(1L);
-        }
-    }
-
-    // ============================================================
-    // EXCEPCIONES
-    // ============================================================
-
-    @Nested
-    @DisplayName("Control de excepciones")
-    class Excepciones {
-
-        @Test
-        @DisplayName("POST retorna 400 cuando el servicio lanza IllegalArgumentException")
-        void crearConError() throws Exception {
-
-            ArticuloCamposPlantillaDTO dto =
-                    crearDTO(null, 10, 100L);
-
-            when(articuloCamposPlantillaService.crear(any()))
-                    .thenThrow(
-                            new IllegalArgumentException(
-                                    "Relación inválida"
-                            )
-                    );
-
-            mockMvc.perform(
-                            post("/api/v3/comercial/modelos-plantilla")
-                                    .contentType(MediaType.APPLICATION_JSON)
-                                    .content(objectMapper.writeValueAsString(dto))
-                    )
-                    .andExpect(status().isBadRequest());
-        }
-
-        @Test
-        @DisplayName("DELETE retorna error cuando el elemento no existe")
-        void eliminarNoExistente() throws Exception {
-
-            doThrow(
-                    new IllegalArgumentException(
-                            "No existe"
-                    )
-            ).when(articuloCamposPlantillaService)
-                    .eliminar(99L);
-
-            mockMvc.perform(
-                            delete("/api/v3/comercial/modelos-plantilla/99")
-                    )
-                    .andExpect(status().isBadRequest());
+            verify(articuloCamposPlantillaService).eliminarPorArticulo(10);
         }
     }
 }

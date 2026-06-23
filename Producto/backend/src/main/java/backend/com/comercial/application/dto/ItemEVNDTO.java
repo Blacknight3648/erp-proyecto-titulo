@@ -1,5 +1,6 @@
 package backend.com.comercial.application.dto;
 
+import backend.com.comercial.domain.enums.TipoItem;
 import backend.com.comercial.domain.model.ItemEspecificacion;
 import lombok.Data;
 
@@ -34,7 +35,7 @@ public class ItemEVNDTO {
     private BigDecimal costoOrdenTrabajo;
 
     // Clasificación
-    private String tipoItem;
+    private TipoItem tipoItem;
 
     // Especificaciones verdaderamente dinámicas (no conocidas de antemano)
     private List<ItemEspecificacion> technicalSpecs;

@@ -4,9 +4,12 @@
  */
 export class ProveedorDTO {
     constructor(data = {}) {
-        this.proveedorId = data.proveedorId || null;
-        this.nombreProveedor = data.nombreProveedor || '';
-        this.rutProveedor = data.rutProveedor || '';
+        this.proveedorId = data.proveedorId || data.id || null;
+        this.id = this.proveedorId;
+        this.nombreProveedor = data.razonSocialProveedor || data.nombreProveedor || data.nombre || '';
+        this.nombre = this.nombreProveedor;
+        this.razonSocialProveedor = this.nombreProveedor;
+        this.rutProveedor = data.rutProveedor || data.runProveedor || '';
         this.direccionProveedor = data.direccionProveedor || '';
         this.telefonoProveedor = data.telefonoProveedor || '';
         this.emailProveedor = data.emailProveedor || '';

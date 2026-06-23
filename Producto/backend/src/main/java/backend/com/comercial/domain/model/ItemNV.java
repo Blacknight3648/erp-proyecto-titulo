@@ -1,5 +1,6 @@
 package backend.com.comercial.domain.model;
 
+import backend.com.comercial.domain.enums.TipoItem;
 import backend.com.shared.valueobjects.Money;
 import lombok.Getter;
 
@@ -22,7 +23,7 @@ public class ItemNV {
     private String codigo;
     private Long proveedorId;
     private String llevaLogo;
-    private String tipoItem;
+    private TipoItem tipoItem;
     private Boolean requiereOt;
     private String detalleOt;
     private String logoDetalle;
@@ -30,11 +31,21 @@ public class ItemNV {
     private Money precioUnitario;
     private Money total;
 
+    private Long opId;
+
     private List<ItemNVTalla> tallas = new ArrayList<>();
+
+    /** Vincula el id de la OP generada a partir de este ítem. Solo se puede asignar una vez. */
+    public void vincularOp(Long opId) {
+        if (this.opId != null && !this.opId.equals(opId)) {
+            throw new IllegalStateException("El ítem NV ya está vinculado a la OP " + this.opId);
+        }
+        this.opId = opId;
+    }
 
     public ItemNV(Long idItemNV, Integer nroItem, Integer articuloId, String modelo, String tela, String composicion,
             String color, String talla, String genero, String codigo, Long proveedorId,
-            String llevaLogo, String tipoItem, Boolean requiereOt, String detalleOt,
+            String llevaLogo, TipoItem tipoItem, Boolean requiereOt, String detalleOt,
             String logoDetalle, Integer cantidad, Money precioUnitario, List<ItemNVTalla> tallas) {
         this.idItemNV = idItemNV;
         this.nroItem = nroItem;

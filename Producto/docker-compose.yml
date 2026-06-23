@@ -1,16 +1,38 @@
 services:
 
+  mysql:
+    image: mysql:8.0
+    container_name: mysql
+    ports:
+      - "3307:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: root_password
+      MYSQL_DATABASE: erp_db
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-proot_password"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks:
+      - network
+
   backend:
     build:
       context: ./backend
       dockerfile: Dockerfile
     container_name: erp-backend
+    depends_on:
+      mysql:
+        condition: service_healthy
     ports:
       - "8050:8050"
     env_file:
       - .env
     environment:
-      SPRING_PROFILES_ACTIVE: dev
+      SPRING_PROFILES_ACTIVE: prod
+      DB_URL: jdbc:mysql://mysql:3306/erp_db?useSSL=false&serverTimezone=America/Santiago&allowPublicKeyRetrieval=true
+      DB_USER: root
+      DB_PASSWORD: root_password
       SPRING_JACKSON_TIME_ZONE: America/Santiago
     healthcheck:
       test: ["CMD-SHELL", "wget -qO- http://localhost:8050/actuator/health || exit 1"]
@@ -19,11 +41,15 @@ services:
       retries: 5
       start_period: 60s
     restart: unless-stopped
+    networks:
+      - network
 
   frontend:
     build:
       context: ./frontend
       dockerfile: Dockerfile
+      args:
+        VITE_API_URL: http://localhost:8050
     container_name: erp-frontend
     ports:
       - "5173:80"
@@ -31,3 +57,9 @@ services:
       backend:
         condition: service_healthy
     restart: unless-stopped
+    networks:
+      - network
+
+networks:
+  network:
+    driver: bridge

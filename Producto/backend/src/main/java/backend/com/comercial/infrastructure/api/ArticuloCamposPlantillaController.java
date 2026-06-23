@@ -8,8 +8,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
 @RequestMapping("/api/v3/comercial/modelos-plantilla")
 @RequiredArgsConstructor
@@ -17,19 +15,24 @@ public class ArticuloCamposPlantillaController {
 
     private final ArticuloCamposPlantillaService modeloPlantillaService;
 
+    /** Crea o actualiza (upsert) los campos de plantilla de un artículo. */
     @PostMapping
-    public ResponseEntity<ArticuloCamposPlantillaDTO> crear(@Valid @RequestBody ArticuloCamposPlantillaDTO request) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(modeloPlantillaService.crear(request));
+    public ResponseEntity<ArticuloCamposPlantillaDTO> guardar(
+            @Valid @RequestBody ArticuloCamposPlantillaDTO request) {
+        return ResponseEntity.ok(modeloPlantillaService.guardar(request));
     }
 
+    /** Devuelve la configuración del artículo: { idArticulo, nombreArticulo, camposPlantilla:[...] }. */
     @GetMapping("/articulo/{idArticulo}")
-    public ResponseEntity<List<ArticuloCamposPlantillaDTO>> listarPorArticulo(@PathVariable Integer idArticulo) {
-        return ResponseEntity.ok(modeloPlantillaService.listarPorArticulo(idArticulo));
+    public ResponseEntity<ArticuloCamposPlantillaDTO> obtenerPorArticulo(@PathVariable Integer idArticulo) {
+        return modeloPlantillaService.obtenerPorArticulo(idArticulo)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/articulo/{idArticulo}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void eliminar(@PathVariable Long id) {
-        modeloPlantillaService.eliminar(id);
+    public void eliminarPorArticulo(@PathVariable Integer idArticulo) {
+        modeloPlantillaService.eliminarPorArticulo(idArticulo);
     }
 }

@@ -8,6 +8,9 @@ public interface DescripcionPlantillaService {
 
     DescripcionPlantillaDTO crear(DescripcionPlantillaDTO dto);
 
+    /** Guarda en lote, de forma atómica, todas las descripciones de una SCOS. */
+    List<DescripcionPlantillaDTO> guardarMultiples(List<DescripcionPlantillaDTO> dtos);
+
     DescripcionPlantillaDTO actualizar(Long id, DescripcionPlantillaDTO dto);
 
     DescripcionPlantillaDTO obtenerPorId(Long id);

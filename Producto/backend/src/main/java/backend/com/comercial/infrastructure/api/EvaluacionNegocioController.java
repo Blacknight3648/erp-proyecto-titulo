@@ -3,6 +3,7 @@ package backend.com.comercial.infrastructure.api;
 import backend.com.comercial.application.UseCase.ActualizarEVNUseCase;
 import backend.com.comercial.application.UseCase.AdjudicarEVNUseCase;
 import backend.com.comercial.application.UseCase.AprobarEVNUseCase;
+import backend.com.comercial.application.UseCase.CerrarEVNUseCase;
 import backend.com.comercial.application.UseCase.CrearEVNUseCase;
 import backend.com.comercial.application.dto.CrearEVNCommand;
 import backend.com.comercial.application.dto.EVNResponse;
@@ -24,13 +25,14 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/api/v1/comercial/evaluaciones-negocio")
 @RequiredArgsConstructor
-@Tag(name = "Comercial - Evaluaciones de Negocio", description = "Gestión de EVN: creación, aprobación, rechazo, adjudicación e historial")
+@Tag(name = "Comercial - Evaluaciones de Negocio", description = "Gestión de EVN: creación, aprobación, rechazo, adjudicación, cierre e historial")
 public class EvaluacionNegocioController {
 
     private final CrearEVNUseCase crearEVNUseCase;
     private final ActualizarEVNUseCase actualizarEVNUseCase;
     private final AdjudicarEVNUseCase adjudicarEVNUseCase;
     private final AprobarEVNUseCase aprobarEVNUseCase;
+    private final CerrarEVNUseCase cerrarEVNUseCase;
     private final EvaluacionNegocioRepository repository;
     private final HistorialEstadoService historialService;
     private final NumeroDocumentoService numeroDocumentoService;
@@ -43,9 +45,13 @@ public class EvaluacionNegocioController {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Devuelve el próximo número tentativo (NO lo reserva ni incrementa el
+     * contador). El definitivo lo asigna el backend de forma atómica al hacer POST.
+     */
     @GetMapping("/next-number")
-    public Long previsualizarProximo() {
-        return numeroDocumentoService.siguiente("EVN");
+    public String previsualizarProximo() {
+        return numeroDocumentoService.previsualizar("EVN").getValue();
     }
 
     @PostMapping
@@ -87,6 +93,14 @@ public class EvaluacionNegocioController {
     @Operation(summary = "Rechazar EVN", description = "Requiere motivo. Registra la firma en historial.")
     public EVNResponse rechazar(@PathVariable Long id, @Valid @RequestBody FirmaAprobacionRequest body) {
         return aprobarEVNUseCase.rechazar(id, body.getAprobador(), body.getMotivo());
+    }
+
+    @PatchMapping("/{id}/cerrar")
+    @Operation(summary = "Cerrar EVN", description = "Cierra una EVN ADJUDICADA (estado CERRADA). "
+            + "Regla de negocio: solo se puede cerrar desde ADJUDICADA; una vez cerrada, la EVN "
+            + "no puede usarse como plantilla ni generar nuevas Notas de Venta. Registra la firma en historial.")
+    public EVNResponse cerrar(@PathVariable Long id, @Valid @RequestBody FirmaAprobacionRequest body) {
+        return cerrarEVNUseCase.ejecutar(id, body.getAprobador(), body.getObservacion());
     }
 
     @GetMapping("/{id}/historial")

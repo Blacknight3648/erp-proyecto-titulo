@@ -6,5 +6,6 @@ public enum EstadoEVN {
     APROBADA,
     ADJUDICADA,
     RECHAZADA,
-    CANCELADA
+    CANCELADA,
+    CERRADA
 }

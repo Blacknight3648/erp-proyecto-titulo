@@ -66,6 +66,14 @@ export const EvaluacionNegocioService = {
         return response.data;
     },
 
+    cerrar: async (id, aprobador, observacion) => {
+        const response = await api.patch(
+            `/comercial/evaluaciones-negocio/${id}/cerrar`,
+            { aprobador, observacion }
+        );
+        return response.data;
+    },
+
     getHistorial: async (id) => {
         const response = await api.get(`/comercial/evaluaciones-negocio/${id}/historial`);
         return response.data;

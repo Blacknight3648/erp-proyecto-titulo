@@ -3,9 +3,7 @@ package backend.com.comercial.application.service.impl;
 import backend.com.comercial.application.dto.ArticuloCamposPlantillaDTO;
 import backend.com.comercial.application.service.ArticuloCamposPlantillaService;
 import backend.com.comercial.domain.model.ArticuloCamposPlantilla;
-import backend.com.comercial.domain.model.CamposPlantilla;
 import backend.com.comercial.domain.repository.ArticuloCamposPlantillaRepository;
-import backend.com.comercial.domain.repository.CamposPlantillaRepository;
 import backend.com.comercial.infrastructure.mapper.ArticuloCamposPlantillaMapper;
 import backend.com.shared.domain.model.Articulo;
 import backend.com.shared.exception.BusinessRuleException;
@@ -16,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -24,42 +23,56 @@ public class ArticulosCamposPlantillaServiceImpl implements ArticuloCamposPlanti
 
     private final ArticuloCamposPlantillaRepository modeloPlantillaRepository;
     private final ArticuloRepository articuloRepository;
-    private final CamposPlantillaRepository plantillaRepository;
     private final ArticuloCamposPlantillaMapper mapper;
 
     @Override
-    public ArticuloCamposPlantillaDTO crear(ArticuloCamposPlantillaDTO dto) {
-        if (modeloPlantillaRepository.existsByArticuloIdAndPlantillaId(dto.getIdArticulo(), dto.getIdPlantilla())) {
-            throw new BusinessRuleException(
-                    "Ya existe un ModeloPlantilla para el articulo " + dto.getIdArticulo()
-                            + " y la plantilla " + dto.getIdPlantilla());
-        }
+    public ArticuloCamposPlantillaDTO guardar(ArticuloCamposPlantillaDTO dto) {
         Articulo articulo = articuloRepository.findById(dto.getIdArticulo())
                 .orElseThrow(() -> new EntityNotFoundException(
                         "Articulo con id " + dto.getIdArticulo() + " no encontrado"));
-        CamposPlantilla plantilla = plantillaRepository.findById(dto.getIdPlantilla())
-                .orElseThrow(() -> new EntityNotFoundException(
-                        "Plantilla con id " + dto.getIdPlantilla() + " no encontrada"));
 
-        ArticuloCamposPlantilla nuevo = ArticuloCamposPlantilla.builder()
-                .articulo(articulo)
-                .plantilla(plantilla)
-                .build();
-        return mapper.toDTO(modeloPlantillaRepository.save(nuevo));
+        List<String> campos = normalizar(dto.getCamposPlantilla());
+        if (campos.isEmpty()) {
+            throw new BusinessRuleException("Debe indicar al menos un campo de plantilla");
+        }
+
+        // Upsert: una sola fila por artículo.
+        ArticuloCamposPlantilla modelo = modeloPlantillaRepository.findByArticuloId(dto.getIdArticulo())
+                .map(existente -> {
+                    existente.setArticulo(articulo);
+                    existente.setCampos(campos);
+                    return existente;
+                })
+                .orElseGet(() -> ArticuloCamposPlantilla.builder()
+                        .articulo(articulo)
+                        .campos(campos)
+                        .build());
+
+        return mapper.toDTO(modeloPlantillaRepository.save(modelo));
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<ArticuloCamposPlantillaDTO> listarPorArticulo(Integer idArticulo) {
-        return modeloPlantillaRepository.findByArticuloId(idArticulo)
-                .stream().map(mapper::toDTO).toList();
+    public Optional<ArticuloCamposPlantillaDTO> obtenerPorArticulo(Integer idArticulo) {
+        return modeloPlantillaRepository.findByArticuloId(idArticulo).map(mapper::toDTO);
     }
 
     @Override
-    public void eliminar(Long id) {
-        if (!modeloPlantillaRepository.existsById(id)) {
-            throw new EntityNotFoundException("ModeloPlantilla con id " + id + " no encontrado");
+    public void eliminarPorArticulo(Integer idArticulo) {
+        if (modeloPlantillaRepository.findByArticuloId(idArticulo).isEmpty()) {
+            throw new EntityNotFoundException(
+                    "No existe configuración de plantilla para el articulo " + idArticulo);
         }
-        modeloPlantillaRepository.deleteById(id);
+        modeloPlantillaRepository.deleteByArticuloId(idArticulo);
+    }
+
+    /** Limpia nombres: trim, descarta vacíos y duplicados (preservando orden). */
+    private List<String> normalizar(List<String> campos) {
+        if (campos == null) return List.of();
+        return campos.stream()
+                .filter(c -> c != null && !c.trim().isEmpty())
+                .map(String::trim)
+                .distinct()
+                .toList();
     }
 }

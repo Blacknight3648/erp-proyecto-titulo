@@ -116,11 +116,12 @@ public class NotaVentaControllerTest {
         @Test
         @DisplayName("GET /next-number")
         void nextNumber() throws Exception {
-            when(numeroDocumentoService.siguiente("NV")).thenReturn(20L);
+            when(numeroDocumentoService.previsualizar("NV"))
+                    .thenReturn(new backend.com.shared.valueobjects.DocumentNumber("NV-0000020"));
 
             mockMvc.perform(get("/api/v1/comercial/notas-venta/next-number"))
                     .andExpect(status().isOk())
-                    .andExpect(content().string("20"));
+                    .andExpect(content().string("NV-0000020"));
         }
 
         @Test
@@ -147,6 +148,7 @@ public class NotaVentaControllerTest {
         @DisplayName("POST / crear NV")
         void crear() throws Exception {
             CrearNVCommand cmd = new CrearNVCommand();
+            cmd.setEvaluacionNegocioId(1L);
             cmd.setClienteId(1L);
             cmd.setVendedorId(1L);
             cmd.setFechaEntregaEstimada(LocalDate.now());

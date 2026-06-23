@@ -27,6 +27,15 @@ URLS DISPONIBLES UNA VEZ LEVANTADO
         Password : sa
 
 
+URLS DB MySQL:
+--------------
+- http://localhost:8050/phpmyadmin/ or http://localhost:8050/phpmyadmin
+- Host: localhost
+- Puerto: 3306
+- Usuario: root
+- Contraseña: password
+- Database: erp
+
 COMANDOS UTILES
 ---------------
     Levantar en background (sin ver logs):

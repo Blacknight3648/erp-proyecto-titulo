@@ -11,15 +11,25 @@ import {
 
 
 
+import { useState } from 'react';
+import { toast } from 'sonner';
+
 import EVNActionBar from "./components/EVNActionBar";
 import EVNVinculacionesPanel from "./components/EVNVinculacionesPanel";
 import EVNResumenSidebar from "./components/EVNResumenSidebar";
 import QuotationSelectionModal from "./components/QuotationSelectionModal";
 import CosteoSelectionModal from "./components/CosteoSelectionModal";
+import FirmaAprobacionModal from "./Modals/FirmaAprobacionModal";
+import EvaluacionForm from "./EvaluacionForm";
 import { useEVNState, parseId, DEFAULT_ITEM } from '../../../../../hooks/useEVNState';
+import { EvaluacionNegocioService } from '../../../../../remote/service/EvaluacionNegocioService';
+import { useAuth } from '../../../../../contexts/AuthContext';
 
 export default function DetalleEVN({ initialEval, onBack, mode = 'create' }) {
     const isReadOnly = mode === 'view';
+    const { user } = useAuth();
+    const [cerrarModal, setCerrarModal] = useState({ open: false });
+    const [cerrando, setCerrando] = useState(false);
     const {
         items, setItems,
         otrosCostos, setOtrosCostos,
@@ -59,6 +69,22 @@ export default function DetalleEVN({ initialEval, onBack, mode = 'create' }) {
         if (success) onBack();
     };
 
+    const handleConfirmCerrar = async ({ aprobador, observacion }) => {
+        const id = initialEval?.evaluacionNegocioId || initialEval?.id;
+        if (!id) return;
+        setCerrando(true);
+        try {
+            await EvaluacionNegocioService.cerrar(id, aprobador, observacion);
+            toast.success('EVN cerrada correctamente');
+            setCerrarModal({ open: false });
+            onBack();
+        } catch (error) {
+            toast.error('Error al cerrar: ' + (error.response?.data?.message || error.message));
+        } finally {
+            setCerrando(false);
+        }
+    };
+
     return (
         <div className="min-h-screen bg-[#F8FAFC] pb-20 animate-in fade-in duration-500">
             <EVNActionBar
@@ -72,6 +98,7 @@ export default function DetalleEVN({ initialEval, onBack, mode = 'create' }) {
                 isSaving={isSaving}
                 onBack={onBack}
                 onGenerarPropuesta={onGenerarPropuestaInterno}
+                onCerrarEVN={() => setCerrarModal({ open: true })}
             />
 
             <div className="max-w-[1700px] mx-auto px-4 md:px-8 space-y-6">
@@ -119,13 +146,13 @@ export default function DetalleEVN({ initialEval, onBack, mode = 'create' }) {
                                         setSolicitud(prev => ({
                                             ...prev,
                                             clienteId: id,
-                                            clienteNombre: c ? `${c.nombreCliente} ${c.apellidoCliente || ''}`.trim() : ''
+                                            clienteNombre: c ? (c.razonSocial || `${c.nombreCliente} ${c.apellidoCliente || ''}`.trim()) : ''
                                         }));
                                     }}
                                 >
                                     <option value="">Seleccionar Cliente...</option>
                                     {clientes.map(c => (
-                                        <option key={c.clienteId || c.id} value={c.clienteId || c.id}>{c.nombreCliente} {c.apellidoCliente || ''}</option>
+                                        <option key={c.clienteId || c.id} value={c.clienteId || c.id}>{c.razonSocial || `${c.nombreCliente} ${c.apellidoCliente || ''}`.trim()}</option>
                                     ))}
                                 </select>
                             </div>
@@ -693,6 +720,18 @@ export default function DetalleEVN({ initialEval, onBack, mode = 'create' }) {
                     currentCosteoId={items.find(i => i.id === costeoModalItemId)?.costeoId || null}
                     onSelect={handleSelectCosteo}
                     onClose={closeCosteoSelector}
+                />
+
+                <FirmaAprobacionModal
+                    open={cerrarModal.open}
+                    title="Cerrar Evaluación de Negocio"
+                    description="Al cerrar la EVN ya no podrá usarse como plantilla ni generar nuevas Notas de Venta. Esta acción es definitiva."
+                    accion="Cerrar y firmar"
+                    accentColor="slate"
+                    defaultAprobador={user?.name || ''}
+                    onClose={() => setCerrarModal({ open: false })}
+                    onConfirm={handleConfirmCerrar}
+                    isSubmitting={cerrando}
                 />
             </div>
         </div>

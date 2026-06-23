@@ -11,9 +11,8 @@ public interface ArticuloCamposPlantillaRepository {
 
     Optional<ArticuloCamposPlantilla> findById(Long id);
 
-    List<ArticuloCamposPlantilla> findByArticuloId(Integer idArticulo);
-
-    boolean existsByArticuloIdAndPlantillaId(Integer idArticulo, Long idPlantilla);
+    /** Configuración única del artículo (una fila por artículo). */
+    Optional<ArticuloCamposPlantilla> findByArticuloId(Integer idArticulo);
 
     boolean existsById(Long id);
 

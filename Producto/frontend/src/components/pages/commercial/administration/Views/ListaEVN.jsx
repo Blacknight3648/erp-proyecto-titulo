@@ -24,9 +24,9 @@ import {
 } from '../../../../ui/card';
 
 // El backend emite estos estados (EstadoEVN.java):
-// BORRADOR | EVALUACION | APROBADA | ADJUDICADA | RECHAZADA | CANCELADA
+// BORRADOR | EVALUACION | APROBADA | ADJUDICADA | RECHAZADA | CANCELADA | CERRADA
 const ESTADOS_ACTIVOS = new Set(['BORRADOR', 'EVALUACION', 'APROBADA']);
-const ESTADOS_CERRADOS = new Set(['ADJUDICADA', 'RECHAZADA', 'CANCELADA']);
+const ESTADOS_CERRADOS = new Set(['ADJUDICADA', 'RECHAZADA', 'CANCELADA', 'CERRADA']);
 
 const ESTADO_STYLE = {
     BORRADOR:   { badge: 'bg-amber-100 text-amber-700 border border-amber-200',   dot: 'bg-amber-500' },
@@ -34,7 +34,8 @@ const ESTADO_STYLE = {
     APROBADA:   { badge: 'bg-indigo-100 text-indigo-700 border border-indigo-200', dot: 'bg-indigo-500' },
     ADJUDICADA: { badge: 'bg-emerald-100 text-emerald-700 border border-emerald-200', dot: 'bg-emerald-500' },
     RECHAZADA:  { badge: 'bg-red-100 text-red-700 border border-red-200',           dot: 'bg-red-500' },
-    CANCELADA:  { badge: 'bg-gray-100 text-gray-500 border border-gray-200',        dot: 'bg-gray-400' }
+    CANCELADA:  { badge: 'bg-gray-100 text-gray-500 border border-gray-200',        dot: 'bg-gray-400' },
+    CERRADA:    { badge: 'bg-slate-800 text-slate-100 border border-slate-700',     dot: 'bg-slate-400' }
 };
 
 /** Normaliza el número de EVN eliminando prefijos duplicados y devuelve solo el número entero */

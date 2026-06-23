@@ -2,13 +2,15 @@ package backend.com.comercial.application.service;
 
 import backend.com.comercial.application.dto.ArticuloCamposPlantillaDTO;
 
-import java.util.List;
+import java.util.Optional;
 
 public interface ArticuloCamposPlantillaService {
 
-    ArticuloCamposPlantillaDTO crear(ArticuloCamposPlantillaDTO dto);
+    /** Crea o actualiza (upsert) la única fila de campos del artículo. */
+    ArticuloCamposPlantillaDTO guardar(ArticuloCamposPlantillaDTO dto);
 
-    List<ArticuloCamposPlantillaDTO> listarPorArticulo(Integer idArticulo);
+    /** Configuración de campos del artículo (vacío si no tiene). */
+    Optional<ArticuloCamposPlantillaDTO> obtenerPorArticulo(Integer idArticulo);
 
-    void eliminar(Long id);
+    void eliminarPorArticulo(Integer idArticulo);
 }

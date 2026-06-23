@@ -1,0 +1,22 @@
+-- =============================================================================
+-- V13: Eliminar el número de documento de la Orden de Trabajo (OT)
+-- =============================================================================
+-- La OT pasó a ser un REGISTRO de seguimiento de producción, no un documento, por
+-- lo que ya no lleva número correlativo propio (`numeroOT`). El dominio, la entidad
+-- JPA, los DTOs y la API dejaron de exponer ese campo; la OT se identifica por su
+-- id y se referencia por su OP, ítem y fase.
+--
+-- En dev/test (H2 en memoria, ddl-auto=update sobre BD recreada) la columna ya no
+-- se crea, porque la entidad dejó de mapearla. En PROD (MySQL, ddl-auto=update)
+-- Hibernate NO elimina columnas existentes: la antigua `numero_ot` quedaría como
+-- huérfana y, al ser NOT NULL sin default, ROMPERÍA los INSERT de nuevas OT.
+--
+-- =============================================================================
+-- BLOQUE MANUAL — SOLO PROD (MySQL)
+-- =============================================================================
+-- Ejecutar UNA vez contra la BD MySQL para limpiar la columna huérfana
+-- (MySQL no soporta DROP COLUMN IF EXISTS; verificar que la columna exista):
+--
+--   ALTER TABLE produccion_orden_trabajo DROP COLUMN numero_ot;
+--
+-- =============================================================================

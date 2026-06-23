@@ -20,6 +20,13 @@ public class FirmaAprobacionRequest {
     @Size(max = 100)
     private String aprobador;
 
+    /**
+     * Rol del actor que firma. Opcional para acciones sin chequeo de rol (EVN);
+     * obligatorio donde se valide el rol (p. ej. aprobar/rechazar costeo).
+     */
+    @Size(max = 100)
+    private String rol;
+
     @Size(max = 1000)
     private String observacion;
 

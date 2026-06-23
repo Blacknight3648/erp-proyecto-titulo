@@ -11,7 +11,6 @@ import backend.com.produccion.domain.repository.RegistroAvanceRepository;
 import backend.com.shared.application.service.HistorialEstadoService;
 import backend.com.shared.exception.EntityNotFoundException;
 import backend.com.shared.exception.ValidationException;
-import backend.com.shared.valueobjects.DocumentNumber;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -53,7 +52,7 @@ class RegistrarAvanceUseCaseTest {
     @BeforeEach
     void setUp() {
         otBase = OrdenTrabajo.crearParaFase(
-                new DocumentNumber(1L), 1L, 1L, 1L, 1, FaseProduccion.CORTE, 100, null);
+                1L, 1L, 1L, 1, FaseProduccion.CORTE, 100, null);
     }
 
     private RegistrarAvanceCommand cmd(Integer prod, Integer merma, String motivo, String usuario) {

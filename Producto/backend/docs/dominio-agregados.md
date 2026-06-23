@@ -31,11 +31,12 @@ Este documento es la **fuente única de verdad** sobre qué entidades son agrega
 - **Referencias por ID:** `clienteId`, `vendedorId`, `costeoId`, `solicitudCotizacionId`
 - **Entidades hijas internas:** `ItemEVN` (lista), `GastoAdicional` (lista), `TomaTallaje` (1:1 opcional)
 - **Value Objects:** `DocumentNumber numeroEvn`, `Money` (en items y gastos)
-- **Estados:** `EstadoEVN` → `BORRADOR`, `EVALUACION`, `APROBADA`, `RECHAZADA`, `ADJUDICADA`
-- **Métodos de comportamiento:** `aprobar()`, `rechazar()`, `adjudicar()`, `addItem()`, `addGastoAdicional()`, `setTomaTallaje()`
+- **Estados:** `EstadoEVN` → `BORRADOR`, `EVALUACION`, `APROBADA`, `RECHAZADA`, `ADJUDICADA`, `CANCELADA`, `CERRADA`
+- **Métodos de comportamiento:** `aprobar()`, `rechazar()`, `adjudicar()`, `cerrar()`, `addItem()`, `addGastoAdicional()`, `setTomaTallaje()`
 - **Cálculos derivados:** `getMontoTotal()`, `getCostoTotal()`, `getMontoComision()`, `getMargenGanancia()`, `getRentabilidadEsperada()`
 - **Datos desnormalizados (snapshots):** `clienteNombre`, `vendedorNombre`, `referencia` — congelados al momento de creación.
-- **Flujo:** evalúa rentabilidad del negocio antes de emitir Nota de Venta. Una EVN adjudicada habilita la NV.
+- **Flujo:** evalúa rentabilidad del negocio antes de emitir Nota de Venta. Una EVN **ADJUDICADA** habilita la generación de NV (se usa como plantilla).
+- **Regla de negocio — cierre:** `cerrar()` solo es válido desde `ADJUDICADA` → `CERRADA`. Una EVN `CERRADA` es terminal: deja de poder usarse como plantilla y **bloquea la creación de nuevas Notas de Venta**. El cierre se expone vía `PATCH /api/v1/comercial/evaluaciones-negocio/{id}/cerrar` (firma + historial) y lo aplica `CerrarEVNUseCase`.
 
 ### Agregado: `NotaVenta` (NV)
 - **Raíz:** `NotaVenta` — id: `idNV`
@@ -45,7 +46,7 @@ Este documento es la **fuente única de verdad** sobre qué entidades son agrega
 - **Estados:** `EstadoNV` → `BORRADOR`, `APROBADA`, `COMPLETADA`, `ENTREGADA`, `CANCELADA`
 - **Métodos de comportamiento:** `crear()` (factory), `addItem()`, `calcularTotales()`, `aprobar()`, `cancelar()`
 - **Eventos de dominio:** sí (campo `domainEvents`, infraestructura lista)
-- **Flujo:** se emite desde una EVN adjudicada; dispara la creación de OP en producción.
+- **Flujo:** se emite desde una EVN **ADJUDICADA**; dispara la creación de OP en producción. La NV **siempre requiere** un `evaluacionNegocioId` (el dominio lo exige). `CrearNVUseCase` valida el gate: la EVN referenciada debe estar `ADJUDICADA`; una EVN `CERRADA` u otro estado se rechaza con `EVNBusinessException` → HTTP 422.
 
 ---
 

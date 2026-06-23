@@ -50,6 +50,7 @@ class EvaluacionNegocioControllerTest {
     @MockitoBean private ActualizarEVNUseCase actualizarEVNUseCase;
     @MockitoBean private AdjudicarEVNUseCase adjudicarEVNUseCase;
     @MockitoBean private AprobarEVNUseCase aprobarEVNUseCase;
+    @MockitoBean private CerrarEVNUseCase cerrarEVNUseCase;
 
     @MockitoBean private EvaluacionNegocioRepository repository;
     @MockitoBean private HistorialEstadoService historialService;
@@ -124,11 +125,12 @@ class EvaluacionNegocioControllerTest {
         @DisplayName("GET /next-number")
         void nextNumber() throws Exception {
 
-            when(numeroDocumentoService.siguiente("EVN")).thenReturn(10L);
+            when(numeroDocumentoService.previsualizar("EVN"))
+                    .thenReturn(new backend.com.shared.valueobjects.DocumentNumber("EVN-0000010"));
 
             mockMvc.perform(get("/api/v1/comercial/evaluaciones-negocio/next-number"))
                     .andExpect(status().isOk())
-                    .andExpect(content().string("10"));
+                    .andExpect(content().string("EVN-0000010"));
         }
     }
 
@@ -221,6 +223,22 @@ class EvaluacionNegocioControllerTest {
                     .thenReturn(evn(1L, "EVN-001"));
 
             mockMvc.perform(patch("/api/v1/comercial/evaluaciones-negocio/1/rechazar")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(req)))
+                    .andExpect(status().isOk());
+        }
+
+        @Test
+        @DisplayName("PATCH /cerrar")
+        void cerrar() throws Exception {
+
+            FirmaAprobacionRequest req = new FirmaAprobacionRequest();
+            req.setAprobador("Juan");
+
+            when(cerrarEVNUseCase.ejecutar(eq(1L), any(), any()))
+                    .thenReturn(evn(1L, "EVN-001"));
+
+            mockMvc.perform(patch("/api/v1/comercial/evaluaciones-negocio/1/cerrar")
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(objectMapper.writeValueAsString(req)))
                     .andExpect(status().isOk());

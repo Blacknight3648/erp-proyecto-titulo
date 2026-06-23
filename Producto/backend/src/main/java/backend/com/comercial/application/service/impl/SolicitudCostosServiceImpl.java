@@ -16,6 +16,7 @@ import backend.com.comercial.domain.repository.DescripcionPlantillaRepository;
 import backend.com.comercial.domain.repository.SolicitudCostosRepository;
 import backend.com.produccion.application.dto.CosteoDTO;
 import backend.com.produccion.application.service.CosteoService;
+import backend.com.shared.application.service.NumeroDocumentoService;
 import backend.com.shared.exception.EntityNotFoundException;
 import backend.com.shared.valueobjects.DocumentNumber;
 import backend.com.shared.valueobjects.Money;
@@ -37,15 +38,17 @@ public class SolicitudCostosServiceImpl implements SolicitudCostosService {
     private final CosteoService costeoService;
     private final DescripcionPlantillaService descripcionPlantillaService;
     private final DescripcionPlantillaRepository descripcionPlantillaRepository;
+    private final NumeroDocumentoService numeroDocumentoService;
 
     @Override
     @Transactional
     public SolicitudCostosDTO create(SolicitudCostosCreateDTO dto) {
-        long prefijo = repository.countByTipo("SCOS") + 1;
-        String numero = "SCOS-" + String.format("%04d", prefijo);
+        // Correlativo propio y atómico (SCOS-0000001). Reemplaza el patrón
+        // countByTipo()+1, que no era atómico y podía colisionar en concurrencia.
+        DocumentNumber numero = numeroDocumentoService.siguienteFormateado("SCOS");
 
         SolicitudCostos domain = SolicitudCostos.crear(
-                new DocumentNumber(numero),
+                numero,
                 dto.getTipo(),
                 dto.getClienteId(),
                 dto.getVendedorId(),

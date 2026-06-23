@@ -2,6 +2,7 @@ package backend.com.integration;
 
 import backend.com.comercial.application.dto.CrearNVCommand;
 import backend.com.comercial.application.dto.ItemNVDTO;
+import backend.com.comercial.domain.enums.TipoItem;
 import backend.com.shared.application.dto.FirmaAprobacionRequest;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.junit.jupiter.api.DisplayName;
@@ -38,8 +39,19 @@ class NotaVentaFlujoTest extends AbstractIntegrationTest {
     @Test
     @DisplayName("aprobar una NV con ítem requiereOt genera la OT de modificación vinculada")
     void aprobarNV_generaOrdenTrabajo() throws Exception {
+        // 0) La NV solo puede generarse desde una EVN ADJUDICADA. La EVN 2 sembrada
+        //    está APROBADA, así que la adjudicamos primero.
+        FirmaAprobacionRequest firmaEvn = new FirmaAprobacionRequest();
+        firmaEvn.setAprobador("tester");
+        mockMvc.perform(patch("/api/v1/comercial/evaluaciones-negocio/{id}/adjudicar", 2L)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(firmaEvn)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.estado").value("ADJUDICADA"));
+
         // 1) Crear NV con un ítem que requiere OT (prenda lista, tipoItem != OP)
         CrearNVCommand cmd = new CrearNVCommand();
+        cmd.setEvaluacionNegocioId(2L);
         cmd.setClienteId(1L);
         cmd.setVendedorId(1L);
         cmd.setFechaEntregaEstimada(LocalDate.now().plusDays(20));
@@ -47,7 +59,7 @@ class NotaVentaFlujoTest extends AbstractIntegrationTest {
 
         ItemNVDTO item = new ItemNVDTO();
         item.setModelo("Polera Pique");
-        item.setItemType("VD"); // prenda lista (no genera fases de producción)
+        item.setItemType(TipoItem.SC); // prenda lista (no genera fases de producción)
         item.setCantidad(10);
         item.setPrecioUnitario(new java.math.BigDecimal("5990"));
         item.setLlevaLogo("N/A");

@@ -16,6 +16,7 @@ import backend.com.gestionUsuarios.infrastructure.persistence.repository.Proveed
 import backend.com.shared.exception.BusinessRuleException;
 import backend.com.shared.exception.EntityNotFoundException;
 import backend.com.shared.exception.ValidationException;
+import backend.com.shared.application.service.NumeroDocumentoService;
 import backend.com.shared.valueobjects.DocumentNumber;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -33,6 +34,7 @@ public class GenerarHCDesdeOPUseCase {
     private final SolicitudCostosRepository solicitudCostosRepository;
     private final ArticuloRepository articuloRepository;
     private final ProveedorRepository proveedorRepository;
+    private final NumeroDocumentoService numeroDocumentoService;
 
     @Transactional
     public HojaCompra ejecutar(Long opId) {
@@ -59,7 +61,8 @@ public class GenerarHCDesdeOPUseCase {
 
         Integer cantidadTotalOP = calcularCantidadTotal(op);
 
-        DocumentNumber numeroHC = construirNumeroHC(op);
+        // La HC genera su propio correlativo independiente, sin heredar el número de la OP.
+        DocumentNumber numeroHC = numeroDocumentoService.siguienteFormateado("HC");
 
         HojaCompra hc = HojaCompra.crearBorrador(numeroHC, opId, op.getCosteoVersionId());
 
@@ -145,10 +148,5 @@ public class GenerarHCDesdeOPUseCase {
                 .filter(c -> c != null)
                 .mapToInt(Integer::intValue)
                 .sum();
-    }
-
-    private DocumentNumber construirNumeroHC(OrdenProduccion op) {
-        String base = op.getNumeroOP() != null ? op.getNumeroOP().getValue() : ("OP-" + op.getIdOP());
-        return new DocumentNumber("HC-" + base);
     }
 }

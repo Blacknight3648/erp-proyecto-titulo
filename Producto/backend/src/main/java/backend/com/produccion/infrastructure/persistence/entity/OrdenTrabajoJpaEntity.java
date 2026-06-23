@@ -18,9 +18,6 @@ public class OrdenTrabajoJpaEntity extends AuditableJpaEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idOT;
 
-    @Column(length = 30, nullable = false)
-    private String numeroOT;
-
     @Column(name = "nota_venta_id", nullable = false)
     private Long notaVentaId;
 

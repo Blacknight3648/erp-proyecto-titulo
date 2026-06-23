@@ -10,4 +10,5 @@ import java.util.Optional;
 public interface CosteoJpaRepository extends JpaRepository<CosteoJpaEntity, Long> {
     Optional<CosteoJpaEntity> findBySolicitudCostosId(Long solicitudCostosId);
     java.util.List<CosteoJpaEntity> findAllBySolicitudCostosId(Long solicitudCostosId);
+    Optional<CosteoJpaEntity> findByNotaVentaId(Long notaVentaId);
 }

@@ -8,8 +8,8 @@ import lombok.*;
 @Table(
     name = "modelo_plantilla",
     uniqueConstraints = @UniqueConstraint(
-        name = "uk_modelo_articulo_plantilla",
-        columnNames = {"id_articulo", "id_plantilla"}
+        name = "uk_modelo_articulo",
+        columnNames = {"id_articulo"}
     )
 )
 @Getter
@@ -28,7 +28,7 @@ public class ArticuloCamposPlantillaJpaEntity {
     @JoinColumn(name = "id_articulo", nullable = false)
     private ArticuloJpaEntity articulo;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_plantilla", nullable = false)
-    private CamposPlantillaJpaEntity plantilla;
+    /** Nombres de campo de la plantilla del artículo, en CSV. Ej: "forro,cuello,mangas". */
+    @Column(name = "campos", nullable = false, columnDefinition = "TEXT")
+    private String campos;
 }

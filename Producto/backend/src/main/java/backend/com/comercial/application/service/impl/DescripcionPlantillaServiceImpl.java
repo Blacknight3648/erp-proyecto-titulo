@@ -30,18 +30,53 @@ public class DescripcionPlantillaServiceImpl implements DescripcionPlantillaServ
 
     @Override
     public DescripcionPlantillaDTO crear(DescripcionPlantillaDTO dto) {
-        CamposPlantilla plantilla = plantillaRepository.findById(dto.getIdPlantilla())
-                .orElseThrow(() -> new EntityNotFoundException(
-                        "Plantilla con id " + dto.getIdPlantilla() + " no encontrada"));
+        CamposPlantilla plantilla = resolverPlantilla(dto);
+        DescripcionPlantilla nueva = construir(dto, plantilla);
+        return mapper.toDTO(descripcionRepository.save(nueva));
+    }
 
-        DescripcionPlantilla nueva = DescripcionPlantilla.builder()
+    /**
+     * Resuelve la CamposPlantilla desde el DTO.
+     * Prioridad: idPlantilla > nombreCampo.
+     * Si ninguno existe, lanza excepción.
+     */
+    private CamposPlantilla resolverPlantilla(DescripcionPlantillaDTO dto) {
+        if (dto.getIdPlantilla() != null) {
+            return plantillaRepository.findById(dto.getIdPlantilla())
+                    .orElseThrow(() -> new EntityNotFoundException(
+                            "Plantilla con id " + dto.getIdPlantilla() + " no encontrada"));
+        }
+        if (dto.getNombreCampo() != null && !dto.getNombreCampo().isBlank()) {
+            return plantillaRepository.findByNombreCampo(dto.getNombreCampo())
+                    .orElseThrow(() -> new EntityNotFoundException(
+                            "Campo de plantilla con nombre '" + dto.getNombreCampo() + "' no encontrado"));
+        }
+        throw new EntityNotFoundException("Se requiere idPlantilla o nombreCampo para guardar una descripción");
+    }
+
+    @Override
+    public List<DescripcionPlantillaDTO> guardarMultiples(List<DescripcionPlantillaDTO> dtos) {
+        if (dtos == null || dtos.isEmpty()) {
+            return List.of();
+        }
+        // Todo dentro de la transacción del método (@Transactional a nivel de clase):
+        // si algún idPlantilla no existe, se revierte el lote completo.
+        return dtos.stream().map(dto -> {
+            CamposPlantilla plantilla = plantillaRepository.findById(dto.getIdPlantilla())
+                    .orElseThrow(() -> new EntityNotFoundException(
+                            "Plantilla con id " + dto.getIdPlantilla() + " no encontrada"));
+            return mapper.toDTO(descripcionRepository.save(construir(dto, plantilla)));
+        }).toList();
+    }
+
+    private DescripcionPlantilla construir(DescripcionPlantillaDTO dto, CamposPlantilla plantilla) {
+        return DescripcionPlantilla.builder()
                 .idSCOS(dto.getIdSCOS())
                 .plantilla(plantilla)
                 .valorDescripcion(dto.getValorDescripcion())
                 .activo(dto.getActivo() != null ? dto.getActivo() : true)
                 .vinculos(toDomainVinculos(dto.getVinculos()))
                 .build();
-        return mapper.toDTO(descripcionRepository.save(nueva));
     }
 
     @Override

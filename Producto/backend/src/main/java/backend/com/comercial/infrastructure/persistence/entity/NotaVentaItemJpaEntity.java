@@ -1,5 +1,6 @@
 package backend.com.comercial.infrastructure.persistence.entity;
 
+import backend.com.comercial.domain.enums.TipoItem;
 import backend.com.shared.infrastructure.persistence.entity.ArticuloJpaEntity;
 import backend.com.gestionUsuarios.infrastructure.persistence.entity.ProveedorJpaEntity;
 import jakarta.persistence.*;
@@ -60,8 +61,9 @@ public class NotaVentaItemJpaEntity {
     @Column(name = "lleva_logo", length = 50)
     private String llevaLogo;
 
-    @Column(name = "tipo_item", length = 30)
-    private String tipoItem;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "tipo_item", length = 10)
+    private TipoItem tipoItem;
 
     @Column(name = "requiere_ot")
     private Boolean requiereOt;
@@ -86,6 +88,10 @@ public class NotaVentaItemJpaEntity {
 
     @Column(length = 3)
     private String monedaTotal;
+
+    /** ID de la OP creada para este ítem. Referencia suave (sin FK cross-módulo). */
+    @Column(name = "op_id")
+    private Long opId;
 
     @OneToMany(mappedBy = "item", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<NotaVentaItemTallaJpaEntity> tallas = new ArrayList<>();

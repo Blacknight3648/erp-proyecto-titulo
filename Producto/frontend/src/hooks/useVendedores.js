@@ -10,7 +10,19 @@ export const useVendedores = () => {
         setLoading(true);
         try {
             const res = await api.get("/vendedores");
-            setVendedores(res.data);
+            const mapped = (res.data || []).map(v => {
+                const id = v.vendedorId || v.id || v.idVendedor;
+                const nombre = v.nombreVendedor || [v.nombreUsuario, v.apellidosUsuario].filter(Boolean).join(" ") || v.codigoVendedor || '';
+                return {
+                    ...v,
+                    id: id,
+                    idVendedor: id,
+                    vendedorId: id,
+                    nombreVendedor: nombre,
+                    nombreUsuario: v.nombreUsuario || nombre,
+                };
+            });
+            setVendedores(mapped);
         } catch (error) {
             console.error(error);
             toast.error("No se pudieron cargar los vendedores");

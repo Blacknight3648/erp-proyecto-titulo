@@ -1,6 +1,7 @@
 package backend.com.comercial.infrastructure.mapper;
 
 import backend.com.comercial.domain.enums.EstadoNV;
+import backend.com.comercial.domain.enums.TipoItem;
 import backend.com.comercial.domain.model.ItemNV;
 import backend.com.comercial.domain.model.ItemNVTalla;
 import backend.com.comercial.domain.model.NotaVenta;
@@ -44,7 +45,7 @@ public class NotaVentaMapper {
     private ItemNV toItemDomain(NotaVentaItemJpaEntity entity) {
         if (entity == null)
             return null;
-        return new ItemNV(
+        ItemNV item = new ItemNV(
                 entity.getIdItemNV(),
                 entity.getNroItem(),
                 entity.getArticulo() != null ? entity.getArticulo().getIdArticulo() : null,
@@ -64,6 +65,10 @@ public class NotaVentaMapper {
                 entity.getCantidad(),
                 new Money(entity.getPrecioUnitario(), entity.getMonedaPrecioUnitario()),
                 entity.getTallas().stream().map(this::toTallaDomain).collect(Collectors.toList()));
+        if (entity.getOpId() != null) {
+            item.vincularOp(entity.getOpId());
+        }
+        return item;
     }
 
     private ItemNVTalla toTallaDomain(NotaVentaItemTallaJpaEntity entity) {
@@ -137,6 +142,7 @@ public class NotaVentaMapper {
                 prov.setProveedorId(itemDomain.getProveedorId());
                 itemEntity.setProveedor(prov);
             }
+            itemEntity.setOpId(itemDomain.getOpId());
             itemEntity.setLlevaLogo(itemDomain.getLlevaLogo());
             itemEntity.setTipoItem(itemDomain.getTipoItem());
             itemEntity.setRequiereOt(itemDomain.getRequiereOt());

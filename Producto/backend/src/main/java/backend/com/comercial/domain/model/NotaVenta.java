@@ -34,6 +34,9 @@ public class NotaVenta {
 
     private NotaVenta(DocumentNumber numeroNV, Long evaluacionNegocioId, Long clienteId, Long vendedorId,
             Boolean esKit, String detalleKit, LocalDate fechaEntregaEstimada) {
+        if (evaluacionNegocioId == null) {
+            throw new IllegalArgumentException("La evaluación de negocio es obligatoria para una Nota de Venta");
+        }
         this.numeroNV = numeroNV;
         this.evaluacionNegocioId = evaluacionNegocioId;
         this.clienteId = clienteId;
@@ -52,6 +55,9 @@ public class NotaVenta {
     public NotaVenta(Long idNV, DocumentNumber numeroNV, Long evaluacionNegocioId, Long clienteId, Long vendedorId,
             EstadoNV estado, Boolean esKit, String detalleKit, LocalDate fechaEmision, LocalDate fechaEntregaEstimada,
             Money montoSubtotal, Money montoIva, Money montoTotal, List<ItemNV> items) {
+        if (evaluacionNegocioId == null) {
+            throw new IllegalArgumentException("La evaluación de negocio es obligatoria para una Nota de Venta");
+        }
         this.idNV = idNV;
         this.numeroNV = numeroNV;
         this.evaluacionNegocioId = evaluacionNegocioId;
@@ -91,7 +97,7 @@ public class NotaVenta {
         this.montoSubtotal = subtotal;
 
         // Asumiendo un IVA del 19% (Chile). Esto podrÃ­a venir por parÃ¡metro o
-        // configuraciÃ³n.
+        // configuracion.
         BigDecimal ivaAmount = subtotal.getAmount().multiply(new BigDecimal("0.19"))
                 .setScale(0, java.math.RoundingMode.HALF_UP);
         this.montoIva = new Money(ivaAmount, "CLP");
@@ -104,8 +110,6 @@ public class NotaVenta {
             throw new IllegalStateException("Solo las Notas de Venta en Borrador pueden ser aprobadas");
         }
         this.estado = EstadoNV.APROBADA;
-        // AquÃ­ eventualmente agregaremos: this.addDomainEvent(new
-        // NotaVentaAprobadaEvent(...))
     }
 
     public void cancelar() {

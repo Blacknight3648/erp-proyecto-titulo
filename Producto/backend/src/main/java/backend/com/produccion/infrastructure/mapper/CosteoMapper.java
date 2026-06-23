@@ -25,7 +25,7 @@ public class CosteoMapper {
         if (entity == null)
             return null;
 
-        return new Costeo(
+        Costeo c = new Costeo(
                 entity.getIdCosteo(),
                 entity.getNumeroCosteo() != null ? new DocumentNumber(entity.getNumeroCosteo()) : null,
                 entity.getSolicitudCostosId(),
@@ -49,6 +49,11 @@ public class CosteoMapper {
                 entity.getMargenBrutoSugerido() != null ? entity.getMargenBrutoSugerido() : BigDecimal.ZERO,
                 new Money(entity.getPrecioVentaSugerido() != null ? entity.getPrecioVentaSugerido() : BigDecimal.ZERO, "CLP"),
                 entity.getItems() != null ? entity.getItems().stream().map(this::mapItemToDomain).collect(Collectors.toList()) : new ArrayList<>());
+        c.setNotaVentaId(entity.getNotaVentaId());
+        c.setEstado(entity.getEstado() != null ? entity.getEstado() : backend.com.produccion.domain.enums.EstadoCosteo.BORRADOR);
+        c.setMotivoRechazo(entity.getMotivoRechazo());
+        c.setVersion(entity.getVersion() != null ? entity.getVersion() : 1);
+        return c;
     }
 
     public CosteoJpaEntity toJpaEntity(Costeo domain) {
@@ -58,7 +63,11 @@ public class CosteoMapper {
         CosteoJpaEntity entity = new CosteoJpaEntity();
         entity.setIdCosteo(domain.getIdCosteo());
         entity.setNumeroCosteo(domain.getNumeroCosteo() != null ? domain.getNumeroCosteo().getValue() : null);
+        entity.setEstado(domain.getEstado() != null ? domain.getEstado() : backend.com.produccion.domain.enums.EstadoCosteo.BORRADOR);
+        entity.setMotivoRechazo(domain.getMotivoRechazo());
+        entity.setVersion(domain.getVersion() != null ? domain.getVersion() : 1);
         entity.setSolicitudCostosId(domain.getSolicitudCostosId());
+        entity.setNotaVentaId(domain.getNotaVentaId());
         entity.setCostoHilos(domain.getCostoHilos().getAmount());
         entity.setCostoManoObra(domain.getCostoManoObra().getAmount());
         entity.setCostoEtiquetas(domain.getCostoEtiquetas().getAmount());
@@ -91,6 +100,9 @@ public class CosteoMapper {
         return CosteoDTO.builder()
                 .idCosteo(domain.getIdCosteo())
                 .numeroCosteo(domain.getNumeroCosteo() != null ? domain.getNumeroCosteo().getValue() : null)
+                .estado(domain.getEstado() != null ? domain.getEstado().name() : null)
+                .motivoRechazo(domain.getMotivoRechazo())
+                .version(domain.getVersion())
                 .solicitudCostosId(domain.getSolicitudCostosId())
                 .clienteId(domain.getClienteId())
                 .clienteNombre(domain.getClienteNombre())
@@ -117,7 +129,7 @@ public class CosteoMapper {
 
     public Costeo toDomainFromDto(CosteoDTO dto) {
         if (dto == null) return null;
-        return new Costeo(
+        Costeo costeo = new Costeo(
                 dto.getIdCosteo(),
                 dto.getNumeroCosteo() != null ? new DocumentNumber(dto.getNumeroCosteo()) : null,
                 dto.getSolicitudCostosId(),
@@ -142,6 +154,15 @@ public class CosteoMapper {
                 new Money(dto.getPrecioVentaSugerido() != null ? dto.getPrecioVentaSugerido() : BigDecimal.ZERO, "CLP"),
                 dto.getItems() != null ? dto.getItems().stream().map(this::mapItemToDomainFromDto).collect(Collectors.toList()) : new ArrayList<>()
         );
+        // Estado: respeta el del DTO si viene; si no, queda el default BORRADOR del dominio.
+        if (dto.getEstado() != null && !dto.getEstado().isBlank()) {
+            costeo.setEstado(backend.com.produccion.domain.enums.EstadoCosteo.valueOf(dto.getEstado()));
+        }
+        costeo.setMotivoRechazo(dto.getMotivoRechazo());
+        if (dto.getVersion() != null) {
+            costeo.setVersion(dto.getVersion());
+        }
+        return costeo;
     }
 
     private CosteoItem mapItemToDomain(CosteoItemJpaEntity entity) {

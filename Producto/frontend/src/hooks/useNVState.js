@@ -1,7 +1,8 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { api } from '../remote/service/api';
 import { useVendedores } from './useVendedores';
 import { useProveedores } from './useProveedores';
+import { useClientes } from './useClientes';
 import { useComercial } from './useComercial';
 import { toast } from 'sonner';
 import { validateNumericInput } from '../utils/validations';
@@ -13,16 +14,43 @@ export const useNVState = (initialView = 'list') => {
     const [searchTerm, setSearchTerm] = useState('');
 
     // Data States
-    const [loadingClientes, setLoadingClientes] = useState(false);
-    const [clientes, setClientes] = useState([]);
+    const { clientes, loading: loadingClientes } = useClientes();
     const { vendedores } = useVendedores();
     const { proveedores } = useProveedores();
     const { 
-        notasVenta: registros, 
-        evaluacionesNegocio: evaluaciones, 
+        notasVenta, 
+        evaluacionesNegocio, 
         load: loadComercial, 
         loading: loadingComercial 
     } = useComercial();
+
+    const registros = useMemo(() => {
+        return (notasVenta || []).map(r => {
+            const foundClient = clientes?.find(c => (c.clienteId || c.id) === r.clienteId);
+            const resolvedClienteNombre = (r.clienteNombre && !r.clienteNombre.startsWith("Cliente #"))
+                ? r.clienteNombre
+                : (foundClient?.razonSocial || foundClient?.nombreCliente || r.clienteNombre || ("Cliente #" + r.clienteId));
+            return {
+                ...r,
+                clienteNombre: resolvedClienteNombre,
+                cliente: resolvedClienteNombre
+            };
+        });
+    }, [notasVenta, clientes]);
+
+    const evaluaciones = useMemo(() => {
+        return (evaluacionesNegocio || []).map(e => {
+            const foundClient = clientes?.find(c => (c.clienteId || c.id) === e.clienteId);
+            const resolvedClienteNombre = (e.clienteNombre && !e.clienteNombre.startsWith("Cliente #"))
+                ? e.clienteNombre
+                : (foundClient?.razonSocial || foundClient?.nombreCliente || e.clienteNombre || ("Cliente #" + e.clienteId));
+            return {
+                ...e,
+                clienteNombre: resolvedClienteNombre,
+                cliente: resolvedClienteNombre
+            };
+        });
+    }, [evaluacionesNegocio, clientes]);
 
     const [formData, setFormData] = useState({
         clienteId: '',
@@ -47,22 +75,9 @@ export const useNVState = (initialView = 'list') => {
 
     useEffect(() => {
         if (view === 'form') {
-            loadClientes();
             fetchNextNumbers();
         }
     }, [view]);
-
-    const loadClientes = async () => {
-        setLoadingClientes(true);
-        try {
-            const res = await api.get('/clientes');
-            setClientes(res.data || []);
-        } catch (error) {
-            console.error("Error loading clients:", error);
-        } finally {
-            setLoadingClientes(false);
-        }
-    };
 
     const fetchNextNumbers = async () => {
         try {

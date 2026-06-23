@@ -3,11 +3,14 @@ package backend.com.comercial.application.UseCase;
 import backend.com.comercial.application.dto.CrearEVNCommand;
 import backend.com.comercial.application.dto.EVNResponse;
 import backend.com.comercial.application.dto.ItemEVNDTO;
+import backend.com.comercial.domain.enums.TipoItem;
 import backend.com.comercial.domain.model.EvaluacionNegocio;
 import backend.com.comercial.domain.model.GastoAdicional;
 import backend.com.comercial.domain.model.ItemEVN;
 import backend.com.comercial.domain.model.TomaTallaje;
 import backend.com.comercial.domain.repository.EvaluacionNegocioRepository;
+import backend.com.produccion.application.service.CosteoService;
+import backend.com.shared.exception.BusinessRuleException;
 import backend.com.shared.exception.EntityNotFoundException;
 import backend.com.shared.valueobjects.Money;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +32,7 @@ import java.util.List;
 public class ActualizarEVNUseCase {
 
     private final EvaluacionNegocioRepository evnRepository;
+    private final CosteoService costeoService;
 
     @Transactional
     public EVNResponse ejecutar(Long id, CrearEVNCommand command) {
@@ -66,6 +70,7 @@ public class ActualizarEVNUseCase {
     }
 
     private ItemEVN toItemEVN(ItemEVNDTO dto) {
+        validarCosteoAprobado(dto.getCosteoId());
         int cantidad = (dto.getCantidad() != null && dto.getCantidad() > 0) ? dto.getCantidad() : 1;
         Money precio = new Money(dto.getPrecioUnitario() != null ? dto.getPrecioUnitario() : BigDecimal.ZERO, "CLP");
         BigDecimal costoBase = dto.getCostoProducto() != null ? dto.getCostoProducto() : BigDecimal.ZERO;
@@ -89,7 +94,7 @@ public class ActualizarEVNUseCase {
                 dto.getCostoProducto() != null ? dto.getCostoProducto() : BigDecimal.ZERO,
                 dto.getCostoLogo() != null ? dto.getCostoLogo() : BigDecimal.ZERO,
                 dto.getCostoOrdenTrabajo() != null ? dto.getCostoOrdenTrabajo() : BigDecimal.ZERO,
-                dto.getTipoItem() != null ? dto.getTipoItem() : "SC",
+                dto.getTipoItem() != null ? dto.getTipoItem() : TipoItem.SC,
                 dto.getTechnicalSpecs() != null ? dto.getTechnicalSpecs() : Collections.emptyList(),
                 dto.getCosteoId(),
                 dto.getSolicitudCostosId());
@@ -134,6 +139,21 @@ public class ActualizarEVNUseCase {
     private void addGastoIfPositive(List<GastoAdicional> gastos, GastoAdicional.TipoGastoAdicional tipo, BigDecimal monto) {
         if (monto != null && monto.compareTo(BigDecimal.ZERO) > 0) {
             gastos.add(new GastoAdicional(tipo, new Money(monto, "CLP")));
+        }
+    }
+
+    /** Solo un Costeo APROBADO puede vincularse a un ítem de la EVN. */
+    private void validarCosteoAprobado(Long costeoId) {
+        if (costeoId == null) {
+            return;
+        }
+        String estado = costeoService.findById(costeoId)
+                .orElseThrow(() -> new BusinessRuleException("El costeo vinculado no existe: " + costeoId))
+                .getEstado();
+        if (!"APROBADO".equals(estado)) {
+            throw new BusinessRuleException(
+                    "Solo se puede vincular un costeo APROBADO al ítem de la EVN (costeo " + costeoId
+                            + " está en estado " + estado + ")");
         }
     }
 }

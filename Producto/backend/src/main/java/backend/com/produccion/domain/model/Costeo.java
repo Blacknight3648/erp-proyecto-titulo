@@ -1,5 +1,7 @@
 package backend.com.produccion.domain.model;
 
+import backend.com.produccion.domain.enums.EstadoCosteo;
+import backend.com.shared.exception.BusinessRuleException;
 import backend.com.shared.valueobjects.DocumentNumber;
 import backend.com.shared.valueobjects.Money;
 import lombok.Getter;
@@ -15,7 +17,20 @@ import lombok.NoArgsConstructor;
 public class Costeo {
     private Long idCosteo;
     private DocumentNumber numeroCosteo;
+    /** Estado del ciclo de vida. Por defecto BORRADOR al construir un costeo nuevo. */
+    private EstadoCosteo estado = EstadoCosteo.BORRADOR;
+    /** Motivo del último rechazo (solo poblado cuando estado == RECHAZADO). */
+    private String motivoRechazo;
+    /**
+     * Iteración de reproceso del costeo. Arranca en 1 y se incrementa cada vez que
+     * se retoma (reabrir) un costeo previamente RECHAZADO. Permite saber cuántas
+     * veces se rechazó/retomó. Es independiente del log técnico de snapshots
+     * (produccion_costeo_versiones).
+     */
+    private Integer version = 1;
     private Long solicitudCostosId;
+    /** Referencia suave a la NV que originó este Costeo (solo para costeos auto-creados). */
+    private Long notaVentaId;
     private Long clienteId;
     private String clienteNombre;
     private Long vendedorId;
@@ -42,6 +57,34 @@ public class Costeo {
     private BigDecimal margenBrutoSugerido;
     private Money precioVentaSugerido;
     private java.util.List<CosteoItem> items = new java.util.ArrayList<>();
+
+    /**
+     * Crea un Costeo con todos los valores en cero, listo para ser completado por el equipo
+     * de producción. Se usa cuando una NV contiene ítems OP sin Costeo pre-vinculado en la EVN.
+     */
+    public static Costeo crearVacio(DocumentNumber numero, Long notaVentaId) {
+        Costeo c = new Costeo();
+        c.numeroCosteo = numero;
+        c.notaVentaId = notaVentaId;
+        c.solicitudCostosId = null;
+        c.costoHilos = new Money(java.math.BigDecimal.ZERO, "CLP");
+        c.costoManoObra = new Money(java.math.BigDecimal.ZERO, "CLP");
+        c.costoEtiquetas = new Money(java.math.BigDecimal.ZERO, "CLP");
+        c.costoEmbalaje = new Money(java.math.BigDecimal.ZERO, "CLP");
+        c.costoFlete = new Money(java.math.BigDecimal.ZERO, "CLP");
+        c.porcentajeCostoFijo = java.math.BigDecimal.ZERO;
+        c.precioCinta1 = new Money(java.math.BigDecimal.ZERO, "CLP");
+        c.cantidadCinta1 = java.math.BigDecimal.ZERO;
+        c.precioCinta2 = new Money(java.math.BigDecimal.ZERO, "CLP");
+        c.cantidadCinta2 = java.math.BigDecimal.ZERO;
+        c.vivoReflectivo = new Money(java.math.BigDecimal.ZERO, "CLP");
+        c.cantidadVivo = java.math.BigDecimal.ZERO;
+        c.costoTotalMateriaPrima = new Money(java.math.BigDecimal.ZERO, "CLP");
+        c.margenBrutoSugerido = java.math.BigDecimal.ZERO;
+        c.precioVentaSugerido = new Money(java.math.BigDecimal.ZERO, "CLP");
+        c.items = new java.util.ArrayList<>();
+        return c;
+    }
 
     public Costeo(Long id, DocumentNumber numero, Long solicitudCostosId, 
             Long clienteId, String clienteNombre, Long vendedorId, String vendedorNombre,
@@ -75,5 +118,54 @@ public class Costeo {
         this.margenBrutoSugerido = margenBrutoSugerido;
         this.precioVentaSugerido = precioVentaSugerido;
         this.items = items != null ? items : new java.util.ArrayList<>();
+    }
+
+    // ----------------------------------------------------------------------
+    // Transiciones de estado (ciclo de vida del Costeo)
+    // ----------------------------------------------------------------------
+
+    private void transicionarA(EstadoCosteo destino) {
+        EstadoCosteo actual = this.estado != null ? this.estado : EstadoCosteo.BORRADOR;
+        if (!actual.puedeTransicionarA(destino)) {
+            throw new BusinessRuleException(
+                    "Transición de estado inválida para el Costeo: " + actual + " → " + destino);
+        }
+        this.estado = destino;
+    }
+
+    /** Producción confirma los costos: BORRADOR → COSTEADO. */
+    public void marcarCosteado() {
+        transicionarA(EstadoCosteo.COSTEADO);
+    }
+
+    /** Aprobación que habilita el vínculo con EVN/NV: COSTEADO → APROBADO. */
+    public void aprobar() {
+        transicionarA(EstadoCosteo.APROBADO);
+    }
+
+    /**
+     * Rechaza el costeo por diferencias. Exige un motivo y lo conserva.
+     * El versionado (snapshot) del costeo rechazado lo orquesta el caso de uso.
+     */
+    public void rechazar(String motivo) {
+        if (motivo == null || motivo.isBlank()) {
+            throw new BusinessRuleException("Debe indicarse el motivo del rechazo del Costeo");
+        }
+        transicionarA(EstadoCosteo.RECHAZADO);
+        this.motivoRechazo = motivo;
+    }
+
+    /**
+     * Reabre el costeo a BORRADOR. Cumple el rol de "retomar": si venía de RECHAZADO
+     * incrementa la versión (nueva iteración de reproceso) y limpia el motivo. Desde
+     * COSTEADO es una corrección menor y NO cambia la versión.
+     */
+    public void reabrir() {
+        boolean reproceso = this.estado == EstadoCosteo.RECHAZADO;
+        transicionarA(EstadoCosteo.BORRADOR);
+        this.motivoRechazo = null;
+        if (reproceso) {
+            this.version = (this.version == null ? 1 : this.version) + 1;
+        }
     }
 }

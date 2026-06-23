@@ -41,16 +41,13 @@
      PALETA DE MARCA — LIGHT MODE (iOS System Colors)
   ========================================= */
 
-  --brand-royal:        #007aff; /* iOS System Blue */
-  --brand-royal-hover:  #0062cc;
-  --brand-royal-light:  #e5f1ff;
+  --brand-royal:        #5c8ef2; /* Soft Periwinkle Blue */
+  --brand-royal-hover:  #4b7ddb;
+  --brand-royal-light:  #eef2ff;
 
-  --brand-steel:        #5856d6; /* iOS System Indigo */
-  --brand-steel-light:  #f0efff;
-
-  --brand-indigo:       #5856d6; /* iOS System Indigo */
-  --brand-indigo-hover: #4846c4;
-  --brand-indigo-light: #f0efff;
+  --brand-indigo:       #8B5CF6; /* Violet-500 — purple accent principal */
+  --brand-indigo-hover: #7C3AED;
+  --brand-indigo-light: #F5F3FF;
 
   --brand-emerald:       #34c759; /* iOS System Green */
   --brand-emerald-hover: #2da84b;
@@ -85,24 +82,24 @@
      TOKENS DE COMPONENTES — LIGHT
   ========================================= */
 
-  --card:               rgba(255, 255, 255, 0.85);
-  --card-foreground:    #cccccc;
+  --card:               rgba(255, 255, 255, 0.90);
+  --card-foreground:    #1d1d1f;
 
   --popover:            #ffffff;
   --popover-foreground: #1d1d1f;
 
-  --primary:            #007aff;
-  --primary-hover:      #0062cc;
+  --primary:            #5c8ef2;
+  --primary-hover:      #4b7ddb;
   --primary-foreground: #ffffff;
 
-  --secondary:          #e5f1ff;
-  --secondary-foreground: #007aff;
+  --secondary:          #f5f3ff;
+  --secondary-foreground: #7c3aed;
 
   --muted:              #f5f5f7;
   --muted-foreground:   #86868b; /* Apple Muted Gray */
 
-  --accent:             #e5f1ff;
-  --accent-foreground:  #007aff;
+  --accent:             #eef2ff;
+  --accent-foreground:  #5c8ef2;
 
   --destructive:        #ff3b30;
   --destructive-foreground: #ffffff;
@@ -125,11 +122,11 @@
   --input:              #ffffff;
   --input-background:   rgba(255, 255, 255, 0.95);
   --input-border:       rgba(0, 0, 0, 0.12);
-  --input-border-focus: #007aff;
+  --input-border-focus: #5c8ef2;
 
   --switch-background:  #e3e3e8;
 
-  --ring:               rgba(0, 122, 255, 0.25);
+  --ring:               rgba(92, 142, 242, 0.25);
 
   /* =========================================
      CHART COLORS
@@ -142,21 +139,33 @@
   --chart-5: #30b0c7;
 
   /* =========================================
-     SIDEBAR — Enterprise SaaS Style
+     SIDEBAR — Corporate Deep Navy (ERP Industrial Premium)
+     Psicología: azul profundo = confianza, control, tecnología
   ========================================= */
 
-  --sidebar:                    #0c1e3d;
-  --sidebar-foreground:         #c8d8f0;
-  --sidebar-primary:            #3b82f6;
+  --sidebar:                    #0B1A2E; /* Deep Navy corporate */
+  --sidebar-foreground:         #C4D6E8; /* Texto principal — alto contraste */
+  --sidebar-primary:            #5BABFF; /* Blue accent vivo */
   --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent:             rgba(59, 130, 246, 0.12);
-  --sidebar-accent-foreground:  #e0ebff;
-  --sidebar-border:             rgba(255, 255, 255, 0.06);
-  --sidebar-ring:               rgba(59, 130, 246, 0.3);
-  --sidebar-muted:              #7a93b8;
-  --sidebar-active-bg:          rgba(59, 130, 246, 0.18);
-  --sidebar-active-border:      #3b82f6;
+  --sidebar-accent:             rgba(91, 171, 255, 0.14);
+  --sidebar-accent-foreground:  #EAF2FC;
+  --sidebar-border:             rgba(255, 255, 255, 0.08);
+  --sidebar-ring:               rgba(91, 171, 255, 0.35);
+  --sidebar-muted:              #4A6A88;  /* Labels y secciones */
+  --sidebar-active-bg:          rgba(91, 171, 255, 0.18);
+  --sidebar-active-border:      #5BABFF;
   --sidebar-hover-bg:           rgba(255, 255, 255, 0.06);
+  /* Texto en niveles explícitos (evita /opacity inestable sobre CSS vars) */
+  --sidebar-text-default:       #9DB8CF; /* Items inactivos */
+  --sidebar-text-sub:           #6A8EA8; /* Sub-items */
+  /* Tokens para logo, popups y submenús */
+  --sidebar-logo-bg:            rgba(91, 171, 255, 0.15);
+  --sidebar-logo-border:        rgba(91, 171, 255, 0.30);
+  --sidebar-sub-border:         rgba(91, 171, 255, 0.22);
+  --sidebar-sub-active:         rgba(91, 171, 255, 0.18);
+  --sidebar-popup-bg:           #0E1F36;
+  --sidebar-popup-border:       rgba(91, 171, 255, 0.22);
+  --sidebar-disabled:           rgba(120, 160, 195, 0.28);
 
   /* =========================================
      SHADOW SYSTEM — Premium Depth
@@ -210,33 +219,33 @@
 
 .dark {
 
-  --background:         #000000; /* Apple Premium True Black */
-  --surface-1:          #1c1c1e; /* iOS Dark Secondary */
-  --surface-2:          #09090b;
-  --surface-3:          #2c2c2e; /* iOS Dark Tertiary */
-  --surface-glass:      rgba(28, 28, 30, 0.70);
-  --surface-glass-md:   rgba(28, 28, 30, 0.85);
+  --background:         #0e131f; /* Deep Charcoal Slate */
+  --surface-1:          #161f30; /* Lighter Deep Slate */
+  --surface-2:          #0b0f17; /* Very Dark Slate */
+  --surface-3:          #1e293b;
+  --surface-glass:      rgba(22, 31, 48, 0.70);
+  --surface-glass-md:   rgba(22, 31, 48, 0.85);
 
   --foreground:         #f5f5f7; /* Apple Off-White */
 
-  --card:               rgba(28, 28, 30, 0.85);
+  --card:               rgba(22, 31, 48, 0.85);
   --card-foreground:    #f5f5f7;
 
-  --popover:            #1c1c1e;
+  --popover:            #161f30;
   --popover-foreground: #f5f5f7;
 
-  --primary:            #0a84ff; /* iOS Dark System Blue */
-  --primary-hover:      #3399ff;
+  --primary:            #5c8ef2; /* Soft Periwinkle Blue */
+  --primary-hover:      #4b7ddb;
   --primary-foreground: #ffffff;
 
-  --secondary:          #152e4d;
-  --secondary-foreground: #0a84ff;
+  --secondary:          #241b3d;
+  --secondary-foreground: #a78bfa;
 
-  --muted:              #1c1c1e;
+  --muted:              #161f30;
   --muted-foreground:   #86868b;
 
-  --accent:             #152e4d;
-  --accent-foreground:  #0a84ff;
+  --accent:             rgba(92, 142, 242, 0.12);
+  --accent-foreground:  #5c8ef2;
 
   --destructive:        #ff453a; /* iOS Dark System Red */
   --destructive-foreground: #ffffff;
@@ -256,14 +265,14 @@
   --border:             rgba(255, 255, 255, 0.08);
   --border-strong:      rgba(255, 255, 255, 0.16);
 
-  --input:              #1c1c1e;
-  --input-background:   rgba(28, 28, 30, 0.90);
+  --input:              #161f30;
+  --input-background:   rgba(22, 31, 48, 0.90);
   --input-border:       rgba(255, 255, 255, 0.12);
-  --input-border-focus: #0a84ff;
+  --input-border-focus: #5c8ef2;
 
   --switch-background:  #3a3a3c;
 
-  --ring:               rgba(10, 132, 255, 0.30);
+  --ring:               rgba(92, 142, 242, 0.35);
 
   --chart-1: #0a84ff;
   --chart-2: #30d158;
@@ -271,18 +280,26 @@
   --chart-4: #ff9f0a;
   --chart-5: #64d2ff;
 
-  --sidebar:                    #09090b;
-  --sidebar-foreground:         #98989d;
-  --sidebar-primary:            #0a84ff;
+  /* Dark mode sidebar — mantiene identidad Navy */
+  --sidebar:                    #070F1C;
+  --sidebar-foreground:         #A8BECE;
+  --sidebar-primary:            #60AEFF;
   --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent:             rgba(10, 132, 255, 0.12);
-  --sidebar-accent-foreground:  #ffffff;
-  --sidebar-border:             rgba(255, 255, 255, 0.06);
-  --sidebar-ring:               rgba(10, 132, 255, 0.25);
-  --sidebar-muted:              #636366;
-  --sidebar-active-bg:          rgba(10, 132, 255, 0.18);
-  --sidebar-active-border:      #0a84ff;
+  --sidebar-accent:             rgba(96, 174, 255, 0.14);
+  --sidebar-accent-foreground:  #E8F0FB;
+  --sidebar-border:             rgba(255, 255, 255, 0.07);
+  --sidebar-ring:               rgba(96, 174, 255, 0.35);
+  --sidebar-muted:              #4E6880;
+  --sidebar-active-bg:          rgba(96, 174, 255, 0.18);
+  --sidebar-active-border:      #60AEFF;
   --sidebar-hover-bg:           rgba(255, 255, 255, 0.05);
+  --sidebar-logo-bg:            rgba(96, 174, 255, 0.15);
+  --sidebar-logo-border:        rgba(96, 174, 255, 0.28);
+  --sidebar-sub-border:         rgba(96, 174, 255, 0.18);
+  --sidebar-sub-active:         rgba(96, 174, 255, 0.16);
+  --sidebar-popup-bg:           #0A1A2E;
+  --sidebar-popup-border:       rgba(96, 174, 255, 0.20);
+  --sidebar-disabled:           rgba(120, 150, 180, 0.28);
 
   --shadow-xs:
     0 1px 2px rgba(0, 0, 0, 0.20);
@@ -365,8 +382,31 @@
   --color-input-background:   var(--input-background);
 
   --color-switch-background:  var(--switch-background);
-
   --color-ring:               var(--ring);
+
+  /* Escala blue — valores reales de azul corporativo */
+  --color-blue-50:            #EFF6FF;
+  --color-blue-100:           #DBEAFE;
+  --color-blue-200:           #BFDBFE;
+  --color-blue-300:           #93C5FD;
+  --color-blue-400:           #60A5FA;
+  --color-blue-500:           var(--brand-royal);
+  --color-blue-600:           var(--brand-royal-hover);
+  --color-blue-700:           #1D4ED8;
+  --color-blue-800:           #1E40AF;
+  --color-blue-900:           #1E3A8A;
+
+  /* Escala indigo — violeta/lila corporativo */
+  --color-indigo-50:          #EEF2FF;
+  --color-indigo-100:         #E0E7FF;
+  --color-indigo-200:         #C7D2FE;
+  --color-indigo-300:         #A5B4FC;
+  --color-indigo-400:         #818CF8;
+  --color-indigo-500:         #6366F1;
+  --color-indigo-600:         var(--brand-indigo);
+  --color-indigo-700:         var(--brand-indigo-hover);
+  --color-indigo-800:         #3730A3;
+  --color-indigo-900:         #312E81;
 
   --color-chart-1:            var(--chart-1);
   --color-chart-2:            var(--chart-2);
@@ -382,6 +422,18 @@
   --color-sidebar-accent-foreground:  var(--sidebar-accent-foreground);
   --color-sidebar-border:             var(--sidebar-border);
   --color-sidebar-ring:               var(--sidebar-ring);
+  /* Tokens extendidos del sidebar — disponibles como clases Tailwind */
+  --color-sidebar-muted:              var(--sidebar-muted);
+  --color-sidebar-hover:              var(--sidebar-hover-bg);
+  --color-sidebar-sub-border:         var(--sidebar-sub-border);
+  --color-sidebar-sub-active:         var(--sidebar-sub-active);
+  --color-sidebar-logo-bg:            var(--sidebar-logo-bg);
+  --color-sidebar-logo-border:        var(--sidebar-logo-border);
+  --color-sidebar-popup:              var(--sidebar-popup-bg);
+  --color-sidebar-popup-border:       var(--sidebar-popup-border);
+  --color-sidebar-disabled:           var(--sidebar-disabled);
+  --color-sidebar-text-default:       var(--sidebar-text-default);
+  --color-sidebar-text-sub:           var(--sidebar-text-sub);
 
   --color-brand-royal:         var(--brand-royal);
   --color-brand-steel:         var(--brand-steel);
@@ -600,68 +652,5 @@
     transform: translateY(-1px); /* Movimiento casi imperceptible, muy elegante */
   }
 
-  /* =========================================================
-     SIDEBAR TEXT READABILITY FIXES
-     Fuerza a que las letras se lean correctamente con contraste
-  ========================================================= */
-  .text-sidebar-foreground {
-    color: var(--sidebar-foreground) !important;
-  }
-  .text-sidebar-foreground\/80 {
-    color: color-mix(in srgb, var(--sidebar-foreground) 80%, transparent) !important;
-  }
-  .text-sidebar-foreground\/60 {
-    color: color-mix(in srgb, var(--sidebar-foreground) 60%, transparent) !important;
-  }
-  .text-sidebar-foreground\/50 {
-    color: color-mix(in srgb, var(--sidebar-foreground) 50%, transparent) !important;
-  }
-  .text-sidebar-foreground\/40 {
-    color: color-mix(in srgb, var(--sidebar-foreground) 40%, transparent) !important;
-  }
-  .text-sidebar-foreground\/30 {
-    color: color-mix(in srgb, var(--sidebar-foreground) 30%, transparent) !important;
-  }
-
-  /* =========================================================
-     SIDEBAR ACTIVE ITEMS (Pearl White with Glow & Premium Highlight)
-     Asegura que el elemento activo se ilumine de forma tridimensional
-  ========================================================= */
-  aside .active,
-  aside a.active {
-    color: #ffffff !important;
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.12) 0%, rgba(59, 130, 246, 0.25) 100%) !important;
-    border: 1px solid rgba(255, 255, 255, 0.15) !important;
-    box-shadow: 
-      0 4px 15px -1px rgba(59, 130, 246, 0.3),
-      0 0 12px 1px rgba(255, 255, 255, 0.08),
-      inset 0 1px 0 rgba(255, 255, 255, 0.2) !important;
-    backdrop-filter: blur(10px);
-    border-radius: 12px !important;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
-  }
-
-  .dark aside .active,
-  .dark aside a.active {
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(10, 132, 255, 0.22) 100%) !important;
-    border: 1px solid rgba(255, 255, 255, 0.12) !important;
-    box-shadow: 
-      0 4px 15px -1px rgba(10, 132, 255, 0.4),
-      0 0 12px 1px rgba(255, 255, 255, 0.05),
-      inset 0 1px 0 rgba(255, 255, 255, 0.15) !important;
-  }
-
-  aside .active span,
-  aside a.active span {
-    color: #ffffff !important;
-    font-weight: 700 !important;
-    text-shadow: 0 0 8px rgba(255, 255, 255, 0.4) !important;
-  }
-
-  aside .active svg,
-  aside a.active svg {
-    color: #ffffff !important;
-    filter: drop-shadow(0 0 6px rgba(255, 255, 255, 0.6)) !important;
-  }
 }
 

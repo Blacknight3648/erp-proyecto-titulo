@@ -1,0 +1,25 @@
+-- =============================================================================
+-- V17: Ciclo de vida (estado) del Costeo
+-- =============================================================================
+-- Incorpora el estado del costeo (BORRADOR / COSTEADO / APROBADO / RECHAZADO) y
+-- el motivo de rechazo. El dominio, la entidad JPA, los DTOs y la API ya manejan
+-- estos campos; en dev/test (H2 en memoria) Hibernate (ddl-auto=update) crea las
+-- columnas `estado` y `motivo_rechazo` desde la entidad, por lo que este script
+-- no agrega columnas (evita choque "column already exists").
+--
+-- En PROD (MySQL) Hibernate agrega columnas nuevas, pero `estado` es NOT NULL:
+-- se añade con DEFAULT 'BORRADOR' para no romper las filas existentes, y los
+-- costeos ya en uso (vinculados a una versión) se marcan APROBADO.
+--
+-- =============================================================================
+-- BLOQUE MANUAL — SOLO PROD (MySQL) — ejecutar UNA vez
+-- =============================================================================
+--   ALTER TABLE produccion_costeos
+--       ADD COLUMN estado VARCHAR(20) NOT NULL DEFAULT 'BORRADOR';
+--   ALTER TABLE produccion_costeos
+--       ADD COLUMN motivo_rechazo VARCHAR(300) NULL;
+--
+--   UPDATE produccion_costeos c
+--   SET    c.estado = 'APROBADO'
+--   WHERE  EXISTS (SELECT 1 FROM produccion_costeo_versiones v WHERE v.costeo_id = c.id_costeo);
+-- =============================================================================

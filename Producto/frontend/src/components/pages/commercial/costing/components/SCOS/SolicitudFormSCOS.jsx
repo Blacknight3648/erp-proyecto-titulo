@@ -50,74 +50,31 @@ export default function SolicitudFormSCOS({
     // 2. Lógica de Autocompletado de Plantilla Integral
     const handlePrendaChange = (val) => {
         if (readOnly) return;
-
         const newDesc = val === "OTRO" ? "OTRO - " : val;
 
-        // Si no es "OTRO", buscamos la configuración integral
         if (val !== "OTRO" && val !== "") {
-            const configMaster = (plantillas || []).find(p => p.nombrePrenda?.toUpperCase() === val);
+            // Ahora plantillas contiene "Articulos" devueltos por la API
+            const configMaster = (plantillas || []).find(p => p.nombreArticulo?.toUpperCase() === val);
 
-            if (configMaster) {                // Preparamos las telas base para la PLANTILLA
-                const baseTelas = (configMaster.plantillaTelas || []).map(t => ({
-                    id: generateId(),
-                    aplicacion: t.aplicacion,
-                    nombre: t.nombre,
-                    composicion: t.composicion,
-                    color: t.color,
-                    peso: t.peso,
-                    consumo: 0,
-                    unidadMedida: t.unidadMedida || "MTRS",
-                    costo: 0
-                }));
-
-                // Preparamos los accesorios base para la PLANTILLA
-                const baseAccesorios = (configMaster.plantillaAccesorios || []).map(a => ({
-                    id: generateId(),
-                    tipo: a.tipo,
-                    nombreAccesorio: a.nombreAccesorio,
-                    cantidad: a.cantidad,
-                    consumo: 0,
-                    unidadMedida: "",
-                    costo: 0
-                }));
-
-                // Preparamos la PLANTILLA INTEGRAL (snapshot técnico + costeo)
+            if (configMaster) {
                 const newPlantilla = {
                     id: generateId(),
-                    nombre: configMaster.nombrePrenda || val,
-                    descripcion: configMaster.nombrePrenda || val,
-                    nombrePrenda: configMaster.nombrePrenda || val,
-                    genero: configMaster.genero || "",
-                    camposActivos: configMaster.camposActivos || [],
-                    telas: baseTelas,
-                    accesorios: baseAccesorios,
+                    nombre: configMaster.nombreArticulo || val,
+                    descripcion: configMaster.nombreArticulo || val,
+                    nombrePrenda: configMaster.nombreArticulo || val,
+                    genero: prev => prev.genero || "",
+                    camposActivos: [], // Se resolverán asincrónicamente mediante getCamposForArticulo
+                    telas: [],         // El backend ya no tiene telas predefinidas
+                    accesorios: [],    // El backend ya no tiene accesorios predefinidos
                     logotipos: [],
                     cintas: [],
-                    // Clonamos campos técnicos
-                    forro: configMaster.forro || "",
-                    relleno: configMaster.relleno || "",
-                    gorro: configMaster.gorro || "",
-                    cuello: configMaster.cuello || "",
-                    abotonaduraCierre: configMaster.abotonaduraCierre || "",
-                    cortesAplicaciones: configMaster.cortesAplicaciones || "",
-                    fuelles: configMaster.fuelles || "",
-                    mangas: configMaster.mangas || "",
-                    pretinasRuedo: configMaster.pretinasRuedo || "",
-                    bolsillos: configMaster.bolsillos || "",
-                    cintaDetalle: configMaster.cintaDetalle || "",
-                    logoDetalle: configMaster.logoDetalle || "",
-                    accesoriosDetalle: configMaster.accesoriosDetalle || "",
-                    obsModelo: configMaster.obsModelo || "",
-                    colorForro: configMaster.colorForro || "",
-                    customFields: configMaster.customFields || "", 
-                    vinculos: configMaster.vinculos || []
+                    vinculos: []
                 };
 
                 setFormData(prev => ({
                     ...prev,
                     articuloDescripcion: newDesc,
                     nombrePrenda: val,
-                    genero: configMaster.genero || prev.genero || "",
                     plantillas: [newPlantilla]
                 }));
             } else {
@@ -170,14 +127,14 @@ export default function SolicitudFormSCOS({
 
     const handleUpdateItem = (section, id, field, value) => {
         if (readOnly) return;
-        
+
         if (["telas", "accesorios", "logotipo"].includes(section)) {
             setFormData((prev) => {
                 const updatedPlantillas = [...(prev.plantillas || [])];
                 if (updatedPlantillas.length > 0) {
                     const primary = { ...updatedPlantillas[0] };
                     const subSection = section === "logotipo" ? "logotipos" : section;
-                    primary[subSection] = (primary[subSection] || []).map(item => 
+                    primary[subSection] = (primary[subSection] || []).map(item =>
                         item.id === id ? { ...item, [field]: value } : item
                     );
                     updatedPlantillas[0] = primary;
@@ -247,7 +204,7 @@ export default function SolicitudFormSCOS({
                             <option value="">Seleccione Cliente</option>
                             {(clientes || []).map((c) => (
                                 <option key={c.clienteId} value={c.clienteId}>
-                                    {c.nombreCliente} {c.apellidoCliente}
+                                    {c.razonSocial}
                                 </option>
                             ))}
                         </select>
@@ -279,7 +236,7 @@ export default function SolicitudFormSCOS({
                             <select
                                 value={(() => {
                                     const desc = (formData.articuloDescripcion || "").split(" - ")[0];
-                                    const dbTypes = (plantillas || []).map(p => p.nombrePrenda?.toUpperCase());
+                                    const dbTypes = (plantillas || []).map(p => p.nombreArticulo?.toUpperCase());
                                     return dbTypes.includes(desc) ? desc : formData.articuloDescripcion ? "OTRO" : "";
                                 })()}
                                 disabled={readOnly}
@@ -288,8 +245,8 @@ export default function SolicitudFormSCOS({
                             >
                                 <option value="">Seleccione Tipo</option>
                                 {(plantillas || []).map(p => (
-                                    <option key={p.id} value={p.nombrePrenda?.toUpperCase()}>
-                                        {p.nombrePrenda}
+                                    <option key={p.idArticulo || p.id} value={p.nombreArticulo?.toUpperCase()}>
+                                        {p.nombreArticulo}
                                     </option>
                                 ))}
                                 <option value="OTRO">Otro (Personalizar)</option>

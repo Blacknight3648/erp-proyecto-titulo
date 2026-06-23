@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { ClipboardList, Plus, Search, Calendar, ChevronRight, ArrowRight, FileText, X } from 'lucide-react';
+import NuevaNVModal from './NuevaNVModal';
 
 export default function ListaNV({
     registros,
@@ -13,6 +14,11 @@ export default function ListaNV({
     evnModal,
     setEvnModal
 }) {
+    const [nuevaModalOpen, setNuevaModalOpen] = useState(false);
+
+    // Solo las EVN ADJUDICADA pueden usarse como plantilla para una NV.
+    const evnPlantillas = (evaluaciones || []).filter(e => e.estado === 'ADJUDICADA');
+
     return (
         <div className="max-w-7xl mx-auto p-6 space-y-8 animate-in fade-in duration-700">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
@@ -22,11 +28,11 @@ export default function ListaNV({
                         Gestión Notas de Venta
                     </h1>
                 </div>
-                <button 
-                    onClick={() => handleOpenForm(null, 'new')} 
+                <button
+                    onClick={() => setNuevaModalOpen(true)}
                     className="flex items-center px-6 py-3 bg-blue-600 text-white rounded-2xl font-black text-[10px] uppercase tracking-widest shadow-xl hover:bg-blue-700 transition-all"
                 >
-                    <Plus className="w-4 h-4 mr-2" /> Nueva NV Manual
+                    <Plus className="w-4 h-4 mr-2" /> Nueva Nota de Venta
                 </button>
             </div>
 
@@ -70,7 +76,7 @@ export default function ListaNV({
                         >
                             <div className="flex justify-between items-start mb-4">
                                 <div>
-                                    <span className="text-[10px] font-black text-gray-300 uppercase tracking-widest">NV-{record.numeroNV}</span>
+                                    <span className="text-[10px] font-black text-gray-300 uppercase tracking-widest">{record.numeroNV || `NV-${record.idNV || record.id}`}</span>
                                     <h3 className="text-md font-black text-gray-800 group-hover:text-blue-600 uppercase mt-1">{record.clienteNombre}</h3>
                                 </div>
                                 <span className="px-3 py-1 bg-green-100 text-green-600 rounded-full text-[9px] font-black uppercase">Emitida</span>
@@ -94,6 +100,9 @@ export default function ListaNV({
             ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {evaluaciones
+                        // Solo una EVN ADJUDICADA puede usarse como plantilla para una NV
+                        // (una EVN CERRADA u otro estado es rechazada por el backend).
+                        .filter(e => e.estado === 'ADJUDICADA')
                         .filter(e => String(e.evaluacionNegocioId || e.id).includes(searchTerm) || (e.clienteNombre || e.cliente)?.toLowerCase().includes(searchTerm.toLowerCase()))
                         .map((evn) => (
                         <div key={evn.evaluacionNegocioId || evn.id} className="bg-white p-6 rounded-[2.5rem] border border-gray-100 hover:shadow-xl transition-all flex flex-col">
@@ -220,6 +229,21 @@ export default function ListaNV({
                     </div>
                 </div>
             )}
+
+            {/* Modal inicial: elegir crear desde cero o desde plantilla EVN */}
+            <NuevaNVModal
+                open={nuevaModalOpen}
+                onClose={() => setNuevaModalOpen(false)}
+                evaluaciones={evnPlantillas}
+                onDesdeCero={() => {
+                    setNuevaModalOpen(false);
+                    handleOpenForm(null, 'new');
+                }}
+                onSelectEVN={(evn) => {
+                    setNuevaModalOpen(false);
+                    setEvnModal({ open: true, evn, selectedIds: new Set() });
+                }}
+            />
         </div>
     );
 }

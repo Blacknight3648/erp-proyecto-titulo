@@ -1,5 +1,6 @@
 package backend.com.comercial.domain.model;
 
+import backend.com.comercial.domain.enums.TipoItem;
 import backend.com.shared.exception.EVNBusinessException;
 import backend.com.shared.valueobjects.Money;
 import lombok.Value;
@@ -32,7 +33,7 @@ public class ItemEVN {
     BigDecimal costoLogo;
     BigDecimal costoOrdenTrabajo;
 
-    String tipoItem;
+    TipoItem tipoItem;
 
     // Especificaciones verdaderamente dinámicas (no conocidas de antemano)
     List<ItemEspecificacion> technicalSpecs;
@@ -46,7 +47,7 @@ public class ItemEVN {
             String genero, String codigoInterno, String codigoProveedor, String proveedorNombre,
             Integer cantidad, Money precioUnitario, Money costoUnitario,
             BigDecimal costoProducto, BigDecimal costoLogo, BigDecimal costoOrdenTrabajo,
-            String tipoItem, List<ItemEspecificacion> technicalSpecs,
+            TipoItem tipoItem, List<ItemEspecificacion> technicalSpecs,
             Long costeoId, Long solicitudCostosId) {
         if (cantidad == null || cantidad <= 0) {
             throw new EVNBusinessException("La cantidad debe ser mayor a cero");

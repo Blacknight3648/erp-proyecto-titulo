@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { usePlantillas } from './usePlantillas';
 
 export const usePlantillasState = () => {
-    const { configuraciones, loading, save, remove } = usePlantillas();
+    const { configuraciones, loading, save, remove, getCamposForArticulo } = usePlantillas();
     
     // UI Local States
     const [expanded, setExpanded] = useState(null);
@@ -24,12 +24,14 @@ export const usePlantillasState = () => {
     // Modal State
     const [fieldModal, setFieldModal] = useState({ open: false, isNew: true, configId: null, fieldName: "" });
 
-    const toggleExpand = (config) => {
+    const toggleExpand = async (config) => {
         if (expanded === config.id) {
             setExpanded(null);
         } else {
             setExpanded(config.id);
-            setEditCampos(prev => ({ ...prev, [config.id]: new Set(config.camposActivos) }));
+            
+            const camposSet = await getCamposForArticulo(config.nombrePrenda);
+            setEditCampos(prev => ({ ...prev, [config.id]: camposSet }));
             setEditTelas(prev => ({ ...prev, [config.id]: config.plantillaTelas || [] }));
             setEditAccesorios(prev => ({ ...prev, [config.id]: config.plantillaAccesorios || [] }));
             

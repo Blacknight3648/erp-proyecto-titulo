@@ -54,6 +54,37 @@ export default function SolicitudCostosContainer() {
     }
 
     try {
+      // Convertir detallesPrenda del panel de especificaciones técnicas
+      // al formato que espera el backend: [{nombreCampo, valorDescripcion}]
+      const primeraPlantilla = (formData.plantillas || [])[0] || {};
+      const detallesPrenda = primeraPlantilla.detallesPrenda || {};
+      const vinculosPl = primeraPlantilla.vinculos || [];
+
+      const descripciones = Object.entries(detallesPrenda)
+        .filter(([, val]) => val !== null && val !== undefined && String(val).trim() !== '')
+        .map(([nombreCampo, valorDescripcion]) => {
+          const vinculosFiltrados = vinculosPl
+            .filter(v => v.fieldName === nombreCampo)
+            .map(v => {
+              const isNumericId = v.id && !isNaN(v.id);
+              const isNumericMatId = v.materialId && !isNaN(v.materialId);
+              return {
+                id: isNumericId ? parseInt(v.id) : null,
+                tempId: isNumericId ? null : v.id,
+                materialType: v.materialType,
+                materialId: isNumericMatId ? parseInt(v.materialId) : null,
+                tempMaterialId: isNumericMatId ? null : v.materialId,
+                cantidad: parseInt(v.cantidad) || 1
+              };
+            });
+
+          return {
+            nombreCampo,
+            valorDescripcion: String(valorDescripcion),
+            vinculos: vinculosFiltrados
+          };
+        });
+
       const payload = {
         clienteId: parseInt(formData.clienteId) ,
         vendedorId: formData.vendedorId ? parseInt(formData.vendedorId): null ,
@@ -65,9 +96,9 @@ export default function SolicitudCostosContainer() {
         hasLogo: formData.hasLogo,
         tallaje: formData.tallaje,
         tipo: "SCOS",
-        telas:(formData.telas || []).map(t => ({
+        telas: (primeraPlantilla.telas || []).map(t => ({
           id: t.id && !isNaN(t.id) ? parseInt(t.id) : null,
-          tempId: t.id, // Enviar UUID original como tempId
+          tempId: t.id,
           aplicacion: t.aplicacion,
           nombre: t.nombre,
           proveedorReferencia: t.proveedorReferencia || t.nombre,
@@ -76,65 +107,15 @@ export default function SolicitudCostosContainer() {
           peso: t.peso,
           unidadMedida: t.unidadMedida || "MTRS"
         })),
-        accesorios: (formData.accesorios || []).map(a => ({
+        accesorios: (primeraPlantilla.accesorios || []).map(a => ({
           id: a.id && !isNaN(a.id) ? parseInt(a.id) : null,
-          tempId: a.id, // Enviar UUID original como tempId
+          tempId: a.id,
           tipo: a.tipo,
           nombreAccesorio: a.nombreAccesorio,
           cantidad: a.cantidad,
         })),
-        plantillas: (formData.plantillas || []).map(p => ({
-          id: p.id && !isNaN(p.id) ? parseInt(p.id) : null,
-          nombre: p.nombre,
-          descripcion: p.descripcion,
-          nombrePrenda: p.nombrePrenda,
-          genero:                p.genero || formData.genero,
-          detallesPrenda:        p.detallesPrenda || {},
-          camposPersonalizados:  p.camposPersonalizados || {},
-          camposActivos:         p.camposActivos || [],
-          telas: (p.telas || []).map(t => ({
-            aplicacion: t.aplicacion,
-            nombre: t.nombre,
-            composicion: t.composicion,
-            color: t.color,
-            peso: t.peso,
-            unidadMedida: t.unidadMedida || "MTRS"
-          })),
-          accesorios: (p.accesorios || []).map(a => ({
-            tipo: a.tipo,
-            nombreAccesorio: a.nombreAccesorio,
-            cantidad: a.cantidad
-          })),
-          logotipos: (p.logotipos || []).map(l => ({
-            tipo: l.tipo,
-            nombre: l.nombre,
-            ubicacion: l.ubicacion,
-            color: l.color,
-            tamanio: l.tamanio || l.tamano,
-            cantidad: l.cantidad,
-            precio: l.precio
-          })),
-          cintas: (p.cintas || []).map(c => ({
-            tipo: c.tipo,
-            marca: c.marca,
-            medida: c.medida,
-            cantidad: c.cantidad
-          })),
-          moPrenda: p.moPrenda || 0,
-          moCinta: p.moCinta || 0,
-          moCosturaSellada: p.moCosturaSellada || 0,
-          moAcolchado: p.moAcolchado || 0,
-          vinculos: (p.vinculos || []).map(v => ({
-            id: v.id && !isNaN(v.id) ? parseInt(v.id) : null,
-            tempId: v.id,
-            fieldName: v.fieldName,
-            materialType: v.materialType,
-            materialId: v.materialId && !isNaN(v.materialId) ? parseInt(v.materialId) : null,
-            tempMaterialId: v.materialId,
-            cantidad: v.cantidad
-          }))
-        })),
-        logotipos: (formData.logotipo || []).map(l => ({
+        descripciones,
+        logotipos: (primeraPlantilla.logotipos || []).map(l => ({
           tipo: l.tipo,
           nombre: l.nombre,
           ubicacion: l.ubicacion,
@@ -143,8 +124,7 @@ export default function SolicitudCostosContainer() {
           cantidad: l.cantidad,
           precio: l.precio,
         }))
-
-      }; // simplificado para el ejemplo
+      };
       if (formData.idSolicitud && !isNaN(formData.idSolicitud)) {
         await updateSolicitudCostos(formData.idSolicitud, payload);
       } else {
@@ -204,7 +184,74 @@ export default function SolicitudCostosContainer() {
 
   const handleOpenForm = (record, type = "SCOS") => {
     if (record) {
-      setFormData({ ...initialSCOSForm, ...record, idSolicitud: record.id, tipo: type });
+      // Reconstruir detallesPrenda y vínculos a partir de descripciones del backend
+      const detallesPrenda = {};
+      const vinculos = [];
+
+      (record.descripciones || []).forEach(d => {
+        detallesPrenda[d.nombreCampo] = d.valorDescripcion;
+        
+        if (d.vinculos && d.vinculos.length > 0) {
+          d.vinculos.forEach(v => {
+            vinculos.push({
+              id: v.id || v.tempId || Math.random().toString(36).substring(2, 9),
+              fieldName: d.nombreCampo,
+              materialType: v.materialType,
+              materialId: v.materialId || v.tempMaterialId,
+              cantidad: v.cantidad || 1
+            });
+          });
+        }
+      });
+
+      // Mapear telas, accesorios y logotipos para la primera plantilla
+      const telas = (record.telas || []).map(t => ({
+        id: t.id || t.tempId || Math.random().toString(36).substring(2, 9),
+        aplicacion: t.aplicacion,
+        nombre: t.nombre,
+        proveedorReferencia: t.proveedorReferencia,
+        composicion: t.composicion,
+        color: t.color,
+        peso: t.peso,
+        unidadMedida: t.unidadMedida || "MTRS"
+      }));
+
+      const accesorios = (record.accesorios || []).map(a => ({
+        id: a.id || a.tempId || Math.random().toString(36).substring(2, 9),
+        tipo: a.tipo,
+        nombreAccesorio: a.nombreAccesorio,
+        cantidad: a.cantidad
+      }));
+
+      const logotipos = (record.logotipos || []).map(l => ({
+        id: Math.random().toString(36).substring(2, 9),
+        tipo: l.tipo,
+        nombre: l.nombre,
+        ubicacion: l.ubicacion,
+        color: l.color,
+        tamanio: l.tamanio || l.tamano,
+        cantidad: l.cantidad,
+        precio: l.precio
+      }));
+
+      const plantillas = [{
+        id: record.id,
+        nombre: record.nombrePrenda,
+        detallesPrenda,
+        camposActivos: Object.keys(detallesPrenda),
+        telas,
+        accesorios,
+        logotipos,
+        vinculos
+      }];
+
+      setFormData({
+        ...initialSCOSForm,
+        ...record,
+        plantillas,
+        idSolicitud: record.id,
+        tipo: type
+      });
       setIsEditing(false); // Ver existente -> Solo lectura inicial
     } else {
       setFormData({ ...initialSCOSForm, tipo: type });

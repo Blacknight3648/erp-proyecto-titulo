@@ -18,7 +18,7 @@ import EstadoCosteo from '../remote/DTO/EstadoCosteo';
  * datos completos y los vínculos material↔campo. Espeja el mapeo de
  * SolicitudCostosContainer.handleOpenForm.
  */
-const construirFichaPlantillas = (record) => {
+export const construirFichaPlantillas = (record) => {
     if (!record) return [];
     if (record.plantillas?.length) return record.plantillas; // compatibilidad
 

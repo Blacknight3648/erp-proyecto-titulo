@@ -109,8 +109,8 @@ jobs:
             docker login -u ${{ secrets.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKERHUB_TOKEN }}
             
             # Descargar las imágenes nuevas y levantar
-            docker compose -f docker-compose.backend.yml pull
-            docker compose -f docker-compose.backend.yml up -d --remove-orphans
+            docker-compose -f docker-compose.backend.yml pull
+            docker-compose -f docker-compose.backend.yml up -d --remove-orphans
             
             # Limpiar imágenes huérfanas para ahorrar espacio
             docker image prune -f
@@ -175,8 +175,8 @@ jobs:
             docker login -u ${{ secrets.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKERHUB_TOKEN }}
             
             # Descargar las imágenes nuevas y levantar
-            docker compose -f docker-compose.frontend.yml pull
-            docker compose -f docker-compose.frontend.yml up -d --remove-orphans
+            docker-compose -f docker-compose.frontend.yml pull
+            docker-compose -f docker-compose.frontend.yml up -d --remove-orphans
             
             # Limpiar imágenes huérfanas para ahorrar espacio
             docker image prune -f

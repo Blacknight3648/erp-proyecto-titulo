@@ -56,13 +56,21 @@ jobs:
           aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
           aws-region: us-east-1
 
+      - name: Fetch EC2 IPs from AWS API
+        id: get-ips
+        run: |
+          PUBLIC_IP=$(aws ec2 describe-instances --instance-ids ${{ vars.EC2_PUBLIC_INSTANCE_ID }} --query "Reservations[0].Instances[0].PublicIpAddress" --output text)
+          PRIVATE_IP=$(aws ec2 describe-instances --instance-ids ${{ vars.EC2_PRIVATE_INSTANCE_ID }} --query "Reservations[0].Instances[0].PrivateIpAddress" --output text)
+          echo "public_ip=$PUBLIC_IP" >> $GITHUB_OUTPUT
+          echo "private_ip=$PRIVATE_IP" >> $GITHUB_OUTPUT
+
       - name: Create app directory on Private EC2
         uses: appleboy/ssh-action@v1.0.3
         with:
-          host: ${{ vars.EC2_PRIVATE_HOST }}
+          host: ${{ steps.get-ips.outputs.private_ip }}
           username: ${{ vars.EC2_PRIVATE_USERNAME }}
           key: ${{ secrets.EC2_SSH_KEY }}
-          proxy_host: ${{ vars.EC2_PUBLIC_HOST }}
+          proxy_host: ${{ steps.get-ips.outputs.public_ip }}
           proxy_username: ${{ vars.EC2_PUBLIC_USERNAME }}
           proxy_key: ${{ secrets.EC2_SSH_KEY }}
           script: mkdir -p ~/app
@@ -70,10 +78,10 @@ jobs:
       - name: Copy docker-compose.backend.yml to Private EC2
         uses: appleboy/scp-action@v0.1.7
         with:
-          host: ${{ vars.EC2_PRIVATE_HOST }}
+          host: ${{ steps.get-ips.outputs.private_ip }}
           username: ${{ vars.EC2_PRIVATE_USERNAME }}
           key: ${{ secrets.EC2_SSH_KEY }}
-          proxy_host: ${{ vars.EC2_PUBLIC_HOST }}
+          proxy_host: ${{ steps.get-ips.outputs.public_ip }}
           proxy_username: ${{ vars.EC2_PUBLIC_USERNAME }}
           proxy_key: ${{ secrets.EC2_SSH_KEY }}
           source: "./Producto/docker-compose.backend.yml"
@@ -83,10 +91,10 @@ jobs:
       - name: Deploy Backend on Private EC2 via SSH Proxy
         uses: appleboy/ssh-action@v1.0.3
         with:
-          host: ${{ vars.EC2_PRIVATE_HOST }}
+          host: ${{ steps.get-ips.outputs.private_ip }}
           username: ${{ vars.EC2_PRIVATE_USERNAME }}
           key: ${{ secrets.EC2_SSH_KEY }}
-          proxy_host: ${{ vars.EC2_PUBLIC_HOST }}
+          proxy_host: ${{ steps.get-ips.outputs.public_ip }}
           proxy_username: ${{ vars.EC2_PUBLIC_USERNAME }}
           proxy_key: ${{ secrets.EC2_SSH_KEY }}
           script: |
@@ -97,7 +105,7 @@ jobs:
             echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> .env
             echo "MYSQL_ROOT_PASSWORD=${{ secrets.MYSQL_ROOT_PASSWORD }}" >> .env
             
-            # Login a Docker Hub en el servidor privado -
+            # Login a Docker Hub en el servidor privado
             docker login -u ${{ secrets.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKERHUB_TOKEN }}
             
             # Descargar las imágenes nuevas y levantar
@@ -124,10 +132,18 @@ jobs:
           aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
           aws-region: us-east-1
 
+      - name: Fetch EC2 IPs from AWS API
+        id: get-ips
+        run: |
+          PUBLIC_IP=$(aws ec2 describe-instances --instance-ids ${{ vars.EC2_PUBLIC_INSTANCE_ID }} --query "Reservations[0].Instances[0].PublicIpAddress" --output text)
+          PRIVATE_IP=$(aws ec2 describe-instances --instance-ids ${{ vars.EC2_PRIVATE_INSTANCE_ID }} --query "Reservations[0].Instances[0].PrivateIpAddress" --output text)
+          echo "public_ip=$PUBLIC_IP" >> $GITHUB_OUTPUT
+          echo "private_ip=$PRIVATE_IP" >> $GITHUB_OUTPUT
+
       - name: Create app directory on Public EC2
         uses: appleboy/ssh-action@v1.0.3
         with:
-          host: ${{ vars.EC2_PUBLIC_HOST }}
+          host: ${{ steps.get-ips.outputs.public_ip }}
           username: ${{ vars.EC2_PUBLIC_USERNAME }}
           key: ${{ secrets.EC2_SSH_KEY }}
           script: mkdir -p ~/app
@@ -135,7 +151,7 @@ jobs:
       - name: Copy docker-compose.frontend.yml to Public EC2
         uses: appleboy/scp-action@v0.1.7
         with:
-          host: ${{ vars.EC2_PUBLIC_HOST }}
+          host: ${{ steps.get-ips.outputs.public_ip }}
           username: ${{ vars.EC2_PUBLIC_USERNAME }}
           key: ${{ secrets.EC2_SSH_KEY }}
           source: "./Producto/docker-compose.frontend.yml"
@@ -145,7 +161,7 @@ jobs:
       - name: Deploy Frontend on Public EC2
         uses: appleboy/ssh-action@v1.0.3
         with:
-          host: ${{ vars.EC2_PUBLIC_HOST }}
+          host: ${{ steps.get-ips.outputs.public_ip }}
           username: ${{ vars.EC2_PUBLIC_USERNAME }}
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
@@ -153,7 +169,7 @@ jobs:
             
             # Crear archivo .env local para la orquestación en producción
             echo "DOCKER_USER=${{ env.DOCKER_USER }}" > .env
-            echo "BACKEND_API_URL=http://${{ vars.EC2_PRIVATE_HOST }}:8050" >> .env
+            echo "BACKEND_API_URL=http://${{ steps.get-ips.outputs.private_ip }}:8050" >> .env
             
             # Login a Docker Hub en el servidor público
             docker login -u ${{ secrets.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKERHUB_TOKEN }}

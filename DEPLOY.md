@@ -11,7 +11,7 @@ Esta guía detalla la configuración y los comandos necesarios para desplegar el
 * **Grupo de Seguridad (SG):**
   * **Entrada (Inbound):**
     * Puerto `80` (HTTP): Permitido desde cualquier origen (`0.0.0.0/0`).
-    * Puerto `22` (SSH): Permitido desde tu IP local (o desde el laboratorio).
+    * Puerto `22` (SSH): Permitido desde tu IP local (o desde el corredor de GitHub Actions).
   * **Salida (Outbound):** Permitido todo (`0.0.0.0/0`).
 
 ### B. EC2 Privada (Backend + MySQL)
@@ -25,46 +25,61 @@ Esta guía detalla la configuración y los comandos necesarios para desplegar el
 
 ---
 
-## 2. Despliegue en la EC2 Pública (Frontend)
+## 2. Automatización del Despliegue con GitHub Actions
 
-1. Crea la carpeta de la aplicación en el servidor:
-   ```bash
-   mkdir -p ~/app
-   cd ~/app
-   ```
-2. Asegúrate de tener los archivos `docker-compose.frontend.yml` y un archivo local `.env`.
-3. El archivo `.env` en la **EC2 Pública** debe contener:
-   ```env
-   DOCKER_USER=blacknight3648
-   BACKEND_API_URL=http://<IP_PRIVADA_DE_TU_EC2_DE_BACKEND>:8050
-   ```
-4. Levanta el contenedor del frontend:
-   ```bash
-   docker compose -f docker-compose.frontend.yml pull
-   docker compose -f docker-compose.frontend.yml up -d
-   ```
+Gracias a la integración con el **AWS CLI** en el pipeline de GitHub Actions, **no necesitas actualizar las direcciones IP en GitHub cada vez que inicies el laboratorio**. El pipeline consultará la IP pública y privada actual en tiempo real utilizando los **Instance IDs** de tus servidores EC2.
+
+### Configuración requerida en GitHub
+
+En la sección **Settings > Secrets and variables > Actions** de tu repositorio de GitHub, debes configurar las siguientes variables:
+
+#### Variables (Pestaña "Variables")
+* **`EC2_PUBLIC_INSTANCE_ID`:** El ID de tu instancia de Frontend (ej. `i-0abcdef123456789a`).
+* **`EC2_PRIVATE_INSTANCE_ID`:** El ID de tu instancia de Backend (ej. `i-0fedcba9876543210b`).
+* **`EC2_PUBLIC_USERNAME`:** El usuario SSH del Frontend (ej. `ubuntu`).
+* **`EC2_PRIVATE_USERNAME`:** El usuario SSH del Backend (ej. `ubuntu`).
+
+#### Secretos (Pestaña "Secrets")
+* **`EC2_SSH_KEY`:** Tu clave privada SSH completa (el contenido del archivo `.pem`).
+* **`DOCKERHUB_USERNAME`:** Tu usuario de Docker Hub.
+* **`DOCKERHUB_TOKEN`:** Tu Personal Access Token (PAT) de Docker Hub con permisos de escritura.
+* **`DB_PASSWORD`:** Contraseña de base de datos para producción.
+* **`MYSQL_ROOT_PASSWORD`:** Contraseña root de la base de datos (debe ser idéntica a `DB_PASSWORD`).
+* **`AWS_ACCESS_KEY_ID`:** Clave de acceso temporal del laboratorio.
+* **`AWS_SECRET_ACCESS_KEY`:** Clave secreta temporal del laboratorio.
+* **`AWS_SESSION_TOKEN`:** Token de sesión temporal del laboratorio.
 
 ---
 
-## 3. Despliegue en la EC2 Privada (Backend + MySQL)
+## 3. Comandos de Despliegue Manual (En caso de emergencia)
 
-1. Crea la carpeta de la aplicación en el servidor:
-   ```bash
-   mkdir -p ~/app
-   cd ~/app
+Si alguna vez necesitas levantar los servicios manualmente dentro de cada máquina:
+
+### En la EC2 Pública (Frontend)
+1. Conéctate por SSH y ve a la carpeta `~/app`.
+2. El archivo `.env` en este host debe contener:
+   ```env
+   DOCKER_USER=blacknight3648
+   BACKEND_API_URL=http://<IP_PRIVADA_BACKEND>:8050
    ```
-2. Asegúrate de tener los archivos `docker-compose.backend.yml` y un archivo local `.env`.
-3. El archivo `.env` en la **EC2 Privada** debe contener:
+3. Ejecuta:
+   ```bash
+   docker compose -f docker-compose.frontend.yml pull
+   docker compose -f docker-compose.frontend.yml up -d --remove-orphans
+   ```
+
+### En la EC2 Privada (Backend + MySQL)
+1. Conéctate por SSH y ve a la carpeta `~/app`.
+2. El archivo `.env` en este host debe contener:
    ```env
    DOCKER_USER=blacknight3648
    DB_PASSWORD=tu_contraseña_segura
    MYSQL_ROOT_PASSWORD=tu_contraseña_segura
    ```
-   *(Nota: `DB_PASSWORD` y `MYSQL_ROOT_PASSWORD` deben ser idénticos).*
-4. Levanta el backend y la base de datos:
+3. Ejecuta:
    ```bash
    docker compose -f docker-compose.backend.yml pull
-   docker compose -f docker-compose.backend.yml up -d
+   docker compose -f docker-compose.backend.yml up -d --remove-orphans
    ```
 
 ---

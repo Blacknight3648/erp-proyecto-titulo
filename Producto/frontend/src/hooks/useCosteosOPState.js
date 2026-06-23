@@ -8,6 +8,63 @@ import { mockOperaciones } from '../data/mockData';
 import { parseId } from '../utils/formUtils';
 import EstadoCosteo from '../remote/DTO/EstadoCosteo';
 
+/**
+ * Reconstruye la estructura de "plantillas" a partir de las descripciones,
+ * telas y accesorios enviados por el SCOS, para que el componente visual
+ * PanelDerecho / FormularioCosteo pueda mostrarlos.
+ */
+const construirFichaPlantillas = (record) => {
+    if (!record) return [];
+    if (record.plantillas?.length) return record.plantillas; // compatibilidad
+
+    const descripciones = record.descripciones || [];
+    if (descripciones.length === 0) return [];
+
+    const detalles = {};
+    const vinculos = [];
+    descripciones.forEach(d => {
+        detalles[d.nombreCampo] = d.valorDescripcion;
+        (d.vinculos || []).forEach(v => {
+            vinculos.push({
+                id: v.id || v.tempId,
+                fieldName: d.nombreCampo,
+                materialType: v.materialType,
+                materialId: v.materialId || v.tempMaterialId,
+                cantidad: v.cantidad || 1
+            });
+        });
+    });
+
+    const telas = (record.telas || []).map(t => ({
+        id: t.id ?? t.tempId,
+        aplicacion: t.aplicacion,
+        nombre: t.nombre,
+        proveedorReferencia: t.proveedorReferencia,
+        composicion: t.composicion,
+        color: t.color,
+        peso: t.peso,
+        unidadMedida: t.unidadMedida || 'MTRS'
+    }));
+
+    const accesorios = (record.accesorios || []).map(a => ({
+        id: a.id ?? a.tempId,
+        tipo: a.tipo,
+        nombreAccesorio: a.nombreAccesorio,
+        cantidad: a.cantidad
+    }));
+
+    return [{
+        id: record.id,
+        nombre: record.nombrePrenda,
+        nombrePrenda: record.nombrePrenda,
+        ...detalles,
+        telas,
+        accesorios,
+        logotipos: record.logotipos || [],
+        vinculos
+    }];
+};
+
 export function useCosteosOPState() {
     const [view, setView] = useState('list'); // 'list', 'form'
     const [activeTab, setActiveTab] = useState('materiales');
@@ -159,7 +216,7 @@ export function useCosteosOPState() {
         } catch (error) {
             toast.error("No se pudo aprobar: " + (error.response?.data?.mensaje || error.message));
         }
-    }, [aprobarCosteo, loadCosteos]);
+    }, [aprobarCosteo, loadCosteos, loadSolicitudesCostos]);
 
     const handleRechazarCosteo = useCallback(async (record, motivo) => {
         const costeoId = record?.costeoId;
@@ -178,7 +235,7 @@ export function useCosteosOPState() {
         } catch (error) {
             toast.error("No se pudo rechazar: " + (error.response?.data?.mensaje || error.message));
         }
-    }, [rechazarCosteo, loadCosteos]);
+    }, [rechazarCosteo, loadCosteos, loadSolicitudesCostos]);
 
     const handleReabrirCosteo = useCallback(async (record) => {
         const costeoId = record?.costeoId;
@@ -193,7 +250,7 @@ export function useCosteosOPState() {
         } catch (error) {
             toast.error("No se pudo reabrir: " + (error.response?.data?.mensaje || error.message));
         }
-    }, [reabrirCosteo, loadCosteos]);
+    }, [reabrirCosteo, loadCosteos, loadSolicitudesCostos]);
 
     const totalMateriales = useMemo(() => {
         return insumos.reduce((acc, current) => acc + (current.costo * current.cantidad), 0);
@@ -213,8 +270,12 @@ export function useCosteosOPState() {
     const handleOpenForm = async (record) => {
         if (!record) return;
 
-        setSelectedRecord(record);
-        setCurrentSolicitud(record);
+        // El backend de SCOS ya no envía `plantillas`; se reconstruye la ficha
+        // técnica desde `descripciones` para alimentar el panel de visualización.
+        const enriched = { ...record, plantillas: construirFichaPlantillas(record) };
+
+        setSelectedRecord(enriched);
+        setCurrentSolicitud(enriched);
 
         let savedCosteo = null;
         try {
@@ -260,11 +321,39 @@ export function useCosteosOPState() {
             });
         });
 
+        // Cargar Telas de la ficha si existen
+        const sourceTelas = record.telas?.length > 0 ? record.telas : (record.plantillas?.[0]?.telas || []);
+        sourceTelas.forEach((t, idx) => {
+            initialInsumos.push({
+                id: t.id || `TELA-${idx}`,
+                producto: t.nombre || t.aplicacion || 'Tela',
+                costo: 0,
+                cantidad: t.consumo || 0,
+                unidad: t.unidadMedida || 'm',
+                categoryId: 'telas',
+                composicion: t.composicion,
+                color: t.color
+            });
+        });
+
+        // Cargar Accesorios de la ficha si existen
+        const sourceAccesorios = record.accesorios?.length > 0 ? record.accesorios : (record.plantillas?.[0]?.accesorios || []);
+        sourceAccesorios.forEach((a, idx) => {
+            initialInsumos.push({
+                id: a.id || `ACC-${idx}`,
+                producto: a.nombreAccesorio || a.tipo || 'Accesorio',
+                costo: 0,
+                cantidad: a.consumo || a.cantidad || 0,
+                unidad: a.unidadMedida || 'un',
+                categoryId: 'accesorios'
+            });
+        });
+
         if (savedCosteo && savedCosteo.items && savedCosteo.items.length > 0) {
             savedCosteo.items.forEach(savedItem => {
                 const matchIndex = initialInsumos.findIndex(i =>
                     i.producto === savedItem.nombreInsumo &&
-                    i.categoryId === savedItem.tipoInsumo?.toUpperCase()
+                    i.categoryId.toLowerCase() === (savedItem.tipoInsumo?.toLowerCase() || '')
                 );
 
                 if (matchIndex !== -1) {
@@ -468,12 +557,12 @@ export function useCosteosOPState() {
                 console.warn("No se pudo transicionar a COSTEADO (puede que ya lo esté):", costearErr);
             }
 
-            loadSolicitudesCostos();
-            loadCosteos();
+            await Promise.all([loadSolicitudesCostos(), loadCosteos()]);
             setView('list');
         } catch (error) {
             console.error("Error al validar costos:", error);
-            toast.error("Error al persistir los cambios en el backend");
+            const msg = error.response?.data?.mensaje || error.response?.data?.message || error.message || "Error al persistir los cambios en el backend";
+            toast.error(msg);
         }
     };
 

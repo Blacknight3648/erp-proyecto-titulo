@@ -3,6 +3,8 @@ services:
   mysql:
     image: mysql:8.0
     container_name: mysql
+    volumes:
+      - mysql_data:/var/lib/mysql
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root_password}
       MYSQL_DATABASE: erp_db
@@ -42,3 +44,6 @@ services:
 networks:
   network:
     driver: bridge
+
+volumes:
+  mysql_data:

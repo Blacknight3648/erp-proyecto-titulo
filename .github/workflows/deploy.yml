@@ -86,7 +86,7 @@ jobs:
           proxy_key: ${{ secrets.EC2_PUBLIC_SSH_KEY }}
           source: "./Producto/docker-compose.backend.yml"
           target: "/home/ec2-user/app"
-          strip_components: 1
+          strip_components: 2
 
       - name: Deploy Backend on Private EC2 via SSH Proxy
         uses: appleboy/ssh-action@v1.0.3
@@ -160,7 +160,7 @@ jobs:
           key: ${{ secrets.EC2_PUBLIC_SSH_KEY }}
           source: "./Producto/docker-compose.frontend.yml"
           target: "/home/ec2-user/app"
-          strip_components: 1
+          strip_components: 2
 
       - name: Deploy Frontend on Public EC2
         uses: appleboy/ssh-action@v1.0.3

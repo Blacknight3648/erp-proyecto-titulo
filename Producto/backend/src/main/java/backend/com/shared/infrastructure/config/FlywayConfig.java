@@ -33,6 +33,7 @@ public class FlywayConfig {
                     .validateOnMigrate(false)
                     .load();
 
+            flyway.repair();
             flyway.migrate();
         };
     }

@@ -464,84 +464,178 @@ export default function FormularioCosteo({
                 </div>
 
                 {/* Floating Technical Specification Sheet */}
-                <div className="fixed right-8 top-36 w-[400px] z-40 animate-in slide-in-from-right-8 duration-1000">
-                    <div className="bg-slate-900 p-8 rounded-[2.5rem] shadow-2xl border border-slate-700 text-white ring-1 ring-white/10 ring-inset flex flex-col h-[calc(100vh-180px)]">
-                        <div className="flex items-center gap-4 mb-6 shrink-0">
-                            <div className="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center">
-                                <FileText className="w-5 h-5 text-orange-400" />
+                <div className="fixed right-8 top-36 w-[380px] z-40 animate-in slide-in-from-right-8 duration-1000">
+                    <div className="bg-slate-900 rounded-[2rem] shadow-2xl border border-slate-700/60 text-white ring-1 ring-white/5 ring-inset flex flex-col h-[calc(100vh-180px)] overflow-hidden">
+
+                        {/* Header */}
+                        <div className="px-6 pt-6 pb-4 shrink-0 border-b border-slate-800">
+                            <div className="flex items-center gap-3">
+                                <div className="w-9 h-9 bg-orange-500/15 rounded-xl flex items-center justify-center">
+                                    <FileText className="w-4 h-4 text-orange-400" />
+                                </div>
+                                <div>
+                                    <h4 className="text-xs font-black uppercase tracking-widest leading-none text-white">Especificación Técnica</h4>
+                                    <p className="text-[9px] font-semibold uppercase mt-0.5 text-slate-500 tracking-wider">{currentSolicitud?.numero || 'SCOS'} · {currentSolicitud?.nombrePrenda || currentSolicitud?.articuloDescripcion || '—'}</p>
+                                </div>
                             </div>
-                            <div>
-                                <h4 className="text-sm font-black uppercase tracking-widest leading-none">Especificación Técnica</h4>
-                                <p className="text-[9px] font-bold uppercase mt-1 text-slate-400 italic">Consulta Proceso SCOS</p>
+
+                            {/* Info chips row */}
+                            <div className="flex flex-wrap gap-2 mt-4">
+                                {currentSolicitud?.genero && (
+                                    <span className="px-2.5 py-1 bg-slate-800 rounded-lg text-[9px] font-black text-slate-300 uppercase tracking-widest">{currentSolicitud.genero}</span>
+                                )}
+                                {currentSolicitud?.tallaje && (
+                                    <span className="px-2.5 py-1 bg-orange-500/20 border border-orange-500/30 rounded-lg text-[9px] font-black text-orange-400 uppercase tracking-widest">T: {currentSolicitud.tallaje}</span>
+                                )}
+                                {currentSolicitud?.cantidad && (
+                                    <span className="px-2.5 py-1 bg-slate-800 rounded-lg text-[9px] font-black text-slate-300 uppercase tracking-widest">{currentSolicitud.cantidad} und</span>
+                                )}
+                                {currentSolicitud?.hasLogo && (
+                                    <span className="px-2.5 py-1 bg-blue-500/20 border border-blue-500/30 rounded-lg text-[9px] font-black text-blue-400 uppercase tracking-widest">Con logo</span>
+                                )}
                             </div>
                         </div>
 
-                        <div className="space-y-4 overflow-y-auto pr-2 custom-scrollbar flex-1">
-                            {/* Tallaje General */}
-                            {currentSolicitud?.tallaje && (
-                                <div className="p-5 bg-gradient-to-br from-orange-500/10 to-transparent rounded-3xl border border-orange-500/20 mb-6 shrink-0">
-                                    <span className="text-[9px] font-black text-orange-500 uppercase tracking-[0.2em] block mb-2">TALLAJE DEFINIDO</span>
-                                    <div className="flex items-center gap-3">
-                                        <div className="w-8 h-8 bg-orange-500 rounded-lg flex items-center justify-center text-white font-black text-xs">T</div>
-                                        <span className="text-sm font-black text-slate-100 uppercase italic tracking-tight">{currentSolicitud.tallaje}</span>
-                                    </div>
-                                </div>
-                            )}
+                        {/* Scrollable body */}
+                        <div className="flex-1 overflow-y-auto custom-scrollbar px-6 py-5 space-y-5">
 
-                            {(currentSolicitud?.plantillas || []).map((p, idx) => (
-                                <div key={idx} className="space-y-4 pt-4 border-t border-slate-800 shrink-0">
-                                    <h5 className="text-[10px] font-black text-orange-400 uppercase tracking-[0.2em] mb-3">RECETA: {p.nombrePrenda || p.nombre}</h5>
-                                    <div className="grid grid-cols-1 gap-3">
-                                        {Object.entries(FIELD_LABELS).map(([key, label]) => {
-                                            if (['nombre', 'nombrePrenda', 'obsModelo'].includes(key)) return null;
-                                            const val = p[key];
-                                            if (!val) return null;
-
-                                            return (
-                                                <div key={key} className="flex flex-col p-4 bg-slate-800/50 rounded-2xl border border-slate-700/50 group/item">
-                                                    <span className="text-[8px] font-black text-slate-500 uppercase tracking-widest block mb-1">{label}</span>
-                                                    <span className="text-[11px] font-bold text-slate-100 uppercase leading-relaxed">{val}</span>
-
-                                                    {/* Materiales Vinculados */}
-                                                    {p.vinculos?.filter(v => v.fieldName === key).length > 0 && (
-                                                        <div className="mt-3 flex flex-wrap gap-2 pt-3 border-t border-slate-700/30">
-                                                            {p.vinculos.filter(v => v.fieldName === key).map((v, vIdx) => (
-                                                                <div key={vIdx} className={`flex items-center gap-2 px-2.5 py-1.5 rounded-lg border text-[9px] font-bold uppercase tracking-tight ${v.materialType === 'TELA'
-                                                                    ? 'bg-orange-500/10 border-orange-500/30 text-orange-400'
-                                                                    : 'bg-blue-500/10 border-blue-500/30 text-blue-400'
-                                                                    }`}>
-                                                                    <div className={`w-1.5 h-1.5 rounded-full ${v.materialType === 'TELA' ? 'bg-orange-400' : 'bg-blue-400'}`} />
-                                                                    {v.cantidad} {v.materialType === 'TELA' ? 'Mts' : 'Und'} • {
-                                                                        v.materialType === 'TELA'
-                                                                            ? (p.telas?.find(t => t.id === v.materialId)?.nombre || 'Tela')
-                                                                            : (p.accesorios?.find(a => a.id === v.materialId)?.nombreAccesorio || 'Accesorio')
-                                                                    }
-                                                                </div>
-                                                            ))}
+                            {/* Telas */}
+                            {(() => {
+                                const telas = currentSolicitud?.telas?.length > 0
+                                    ? currentSolicitud.telas
+                                    : (currentSolicitud?.plantillas?.[0]?.telas || []);
+                                return telas.length > 0 ? (
+                                    <div>
+                                        <div className="flex items-center gap-2 mb-3">
+                                            <div className="w-1 h-4 bg-orange-500 rounded-full" />
+                                            <span className="text-[9px] font-black text-orange-400 uppercase tracking-[0.2em]">Telas · {telas.length}</span>
+                                        </div>
+                                        <div className="space-y-2">
+                                            {telas.map((t, i) => (
+                                                <div key={i} className="p-3.5 bg-slate-800/60 rounded-xl border border-slate-700/40 hover:border-orange-500/20 transition-colors">
+                                                    <div className="flex items-start justify-between gap-2">
+                                                        <div className="flex-1 min-w-0">
+                                                            <p className="text-[10px] font-black text-slate-100 uppercase leading-tight truncate">
+                                                                {t.nombre || t.descripcion || t.aplicacion || 'Tela'}
+                                                            </p>
+                                                            {t.aplicacion && t.nombre && (
+                                                                <p className="text-[8px] text-slate-500 uppercase tracking-widest mt-0.5">{t.aplicacion}</p>
+                                                            )}
                                                         </div>
+                                                        {t.peso && (
+                                                            <span className="shrink-0 text-[8px] font-black text-slate-400 bg-slate-700/50 px-2 py-0.5 rounded-md">{t.peso} g/m²</span>
+                                                        )}
+                                                    </div>
+                                                    <div className="flex flex-wrap gap-x-3 gap-y-1 mt-2">
+                                                        {t.composicion && (
+                                                            <span className="text-[8px] text-slate-400 uppercase">{t.composicion}</span>
+                                                        )}
+                                                        {t.color && (
+                                                            <span className="text-[8px] font-bold text-orange-300/80 uppercase">· {t.color}</span>
+                                                        )}
+                                                        {t.proveedorReferencia && (
+                                                            <span className="text-[8px] text-slate-500 uppercase">· Prov: {t.proveedorReferencia}</span>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                ) : null;
+                            })()}
+
+                            {/* Accesorios */}
+                            {(() => {
+                                const accesorios = currentSolicitud?.accesorios?.length > 0
+                                    ? currentSolicitud.accesorios
+                                    : (currentSolicitud?.plantillas?.[0]?.accesorios || []);
+                                return accesorios.length > 0 ? (
+                                    <div>
+                                        <div className="flex items-center gap-2 mb-3">
+                                            <div className="w-1 h-4 bg-blue-500 rounded-full" />
+                                            <span className="text-[9px] font-black text-blue-400 uppercase tracking-[0.2em]">Accesorios · {accesorios.length}</span>
+                                        </div>
+                                        <div className="flex flex-wrap gap-2">
+                                            {accesorios.map((a, i) => (
+                                                <div key={i} className="flex items-center gap-1.5 px-3 py-2 bg-slate-800/60 rounded-xl border border-slate-700/40 hover:border-blue-500/20 transition-colors">
+                                                    <div className="w-1.5 h-1.5 rounded-full bg-blue-400 shrink-0" />
+                                                    <span className="text-[9px] font-bold text-slate-200 uppercase">
+                                                        {a.nombreAccesorio || a.tipo || 'Accesorio'}
+                                                    </span>
+                                                    {(a.cantidad || a.consumo) && (
+                                                        <span className="text-[8px] text-slate-500 ml-1">× {a.cantidad || a.consumo}</span>
                                                     )}
                                                 </div>
-                                            );
-                                        })}
+                                            ))}
+                                        </div>
+                                    </div>
+                                ) : null;
+                            })()}
+
+                            {/* Plantilla descriptiva (campos de diseño) */}
+                            {(currentSolicitud?.plantillas || []).map((p, idx) => {
+                                const camposActivos = Object.entries(FIELD_LABELS).filter(([key]) => {
+                                    if (['nombre', 'nombrePrenda', 'obsModelo'].includes(key)) return false;
+                                    return !!p[key];
+                                });
+                                if (camposActivos.length === 0 && !p.obsModelo) return null;
+                                return (
+                                    <div key={idx}>
+                                        <div className="flex items-center gap-2 mb-3">
+                                            <div className="w-1 h-4 bg-indigo-500 rounded-full" />
+                                            <span className="text-[9px] font-black text-indigo-400 uppercase tracking-[0.2em]">Ficha de diseño</span>
+                                        </div>
+                                        <div className="grid grid-cols-2 gap-2">
+                                            {camposActivos.map(([key, label]) => (
+                                                <div key={key} className="p-3 bg-slate-800/50 rounded-xl border border-slate-700/30">
+                                                    <span className="text-[7px] font-black text-slate-500 uppercase tracking-widest block mb-1">{label}</span>
+                                                    <span className="text-[10px] font-bold text-slate-100 uppercase leading-tight">{p[key]}</span>
+                                                    {p.vinculos?.filter(v => v.fieldName === key).map((v, vIdx) => (
+                                                        <div key={vIdx} className={`mt-1.5 flex items-center gap-1.5 text-[8px] font-bold ${v.materialType === 'TELA' ? 'text-orange-400' : 'text-blue-400'}`}>
+                                                            <div className={`w-1 h-1 rounded-full ${v.materialType === 'TELA' ? 'bg-orange-400' : 'bg-blue-400'}`} />
+                                                            {v.cantidad} {v.materialType === 'TELA' ? 'mts' : 'un'} · {
+                                                                v.materialType === 'TELA'
+                                                                    ? (p.telas?.find(t => t.id === v.materialId)?.nombre || 'Tela')
+                                                                    : (p.accesorios?.find(a => a.id === v.materialId)?.nombreAccesorio || 'Acc.')
+                                                            }
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            ))}
+                                        </div>
                                         {p.obsModelo && (
-                                            <div className="flex flex-col p-5 bg-indigo-600 rounded-2xl shadow-lg border border-indigo-500 shrink-0">
-                                                <span className="text-[9px] font-black text-indigo-200 uppercase tracking-widest block mb-2">OBSERVACIONES</span>
-                                                <span className="text-[11px] font-medium leading-relaxed italic text-indigo-50">"{p.obsModelo}"</span>
+                                            <div className="mt-2 p-4 bg-indigo-600/20 rounded-xl border border-indigo-500/30">
+                                                <span className="text-[8px] font-black text-indigo-400 uppercase tracking-widest block mb-1">Observaciones</span>
+                                                <span className="text-[10px] font-medium leading-relaxed italic text-slate-300">"{p.obsModelo}"</span>
                                             </div>
                                         )}
                                     </div>
-                                </div>
-                            ))}
-                            {(!currentSolicitud?.plantillas || currentSolicitud.plantillas.length === 0) && (
-                                <div className="text-center py-10 opacity-30 italic text-[10px] font-bold uppercase tracking-widest">No hay ficha adjunta</div>
-                            )}
+                                );
+                            })}
+
+                            {/* Sin ficha — solo si no hay absolutamente nada */}
+                            {(() => {
+                                const telas = currentSolicitud?.telas?.length > 0 || currentSolicitud?.plantillas?.[0]?.telas?.length > 0;
+                                const accs  = currentSolicitud?.accesorios?.length > 0 || currentSolicitud?.plantillas?.[0]?.accesorios?.length > 0;
+                                const campos = (currentSolicitud?.plantillas || []).some(p =>
+                                    Object.keys(FIELD_LABELS).some(k => !['nombre','nombrePrenda','obsModelo'].includes(k) && p[k])
+                                );
+                                if (telas || accs || campos) return null;
+                                return (
+                                    <div className="flex flex-col items-center justify-center py-12 gap-3 opacity-40">
+                                        <FileText className="w-8 h-8 text-slate-500" />
+                                        <p className="text-[9px] font-bold uppercase tracking-widest text-slate-500 text-center">Sin ficha técnica adjunta</p>
+                                        <p className="text-[8px] text-slate-600 text-center max-w-[180px]">La solicitud no registra materiales ni descripción de diseño</p>
+                                    </div>
+                                );
+                            })()}
                         </div>
 
-                        {/* Validation Small Card at bottom of sheet */}
-                        <div className="mt-6 pt-6 border-t border-slate-800 shrink-0">
-                            <div className="flex items-center gap-3">
-                                <ShieldCheck className="w-5 h-5 text-blue-400 opacity-50" />
-                                <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Costos para Evaluación Comercial</p>
+                        {/* Footer */}
+                        <div className="px-6 py-4 border-t border-slate-800 shrink-0">
+                            <div className="flex items-center gap-2.5">
+                                <ShieldCheck className="w-4 h-4 text-blue-400 opacity-40" />
+                                <p className="text-[8px] font-black text-slate-500 uppercase tracking-widest">Costos para Evaluación Comercial</p>
                             </div>
                         </div>
                     </div>

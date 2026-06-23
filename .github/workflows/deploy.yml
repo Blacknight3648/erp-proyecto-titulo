@@ -97,6 +97,7 @@ jobs:
           proxy_host: ${{ steps.get-ips.outputs.public_ip }}
           proxy_username: ${{ vars.EC2_PUBLIC_USERNAME }}
           proxy_key: ${{ secrets.EC2_PUBLIC_SSH_KEY }}
+          script_stop: true
           script: |
             cd ~/app
             
@@ -164,6 +165,7 @@ jobs:
           host: ${{ steps.get-ips.outputs.public_ip }}
           username: ${{ vars.EC2_PUBLIC_USERNAME }}
           key: ${{ secrets.EC2_PUBLIC_SSH_KEY }}
+          script_stop: true
           script: |
             cd ~/app
             

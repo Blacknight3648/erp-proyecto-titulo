@@ -231,6 +231,10 @@ INSERT IGNORE INTO solicitudes_costos (idscos, numero, estado, tipo, cliente_id,
 INSERT IGNORE INTO scos_telas (idscostela, solicitud_costos_id, aplicacion, descripcion, composicion, color, peso, unidad_medida) VALUES
     (1, 1, 'CUERPO', 'JERSEY PIQUÉ ALGODÓN 180 GSM', '100% ALGODÓN PEINADO', 'AZUL NAVY', 180, 'MTRS');
 
+-- Telas de la SCOS-000002 (Pantalón Cargo)
+INSERT IGNORE INTO scos_telas (idscostela, solicitud_costos_id, aplicacion, descripcion, composicion, color, peso, unidad_medida) VALUES
+    (2, 2, 'CUERPO', 'RIPSTOP IMPERMEABLE 150 GSM', '100% POLIÉSTER DWR', 'VERDE OLIVA', 150, 'MTRS');
+
 -- ============================================================
 -- 7.5. EVALUACIONES DE NEGOCIO (EVN)
 -- ============================================================
@@ -287,8 +291,24 @@ INSERT IGNORE INTO notas_venta_item_tallas (id_item_talla, item_id, talla, canti
 -- 7.7. COSTEO: PANTALÓN CARGO OPERARIO (50 unidades — MEDCELL)
 -- ============================================================
 -- Costeo asociado a SCOS-000002 (Pantalón Cargo), estado APROBADO
-INSERT IGNORE INTO produccion_costeos (id_costeo, solicitud_costos_id, numero_costeo, estado, version) VALUES
-    (1, 2, 'COST-000001', 'APROBADO', 1);
+INSERT INTO produccion_costeos (id_costeo, solicitud_costos_id, numero_costeo, estado, version,
+    costo_hilos, costo_mano_obra, costo_etiquetas, costo_embalaje, costo_flete,
+    porcentaje_costo_fijo, costo_total_materia_prima, margen_bruto_sugerido, precio_venta_sugerido) VALUES
+    (1, 2, 'COST-000001', 'APROBADO', 1,
+    12500.00, 190000.00, 7500.00, 10800.00, 25000.00,
+    10.00, 586250.00, 25.00, 1220340.00)
+ON DUPLICATE KEY UPDATE
+    estado                    = VALUES(estado),
+    version                   = VALUES(version),
+    costo_hilos               = VALUES(costo_hilos),
+    costo_mano_obra           = VALUES(costo_mano_obra),
+    costo_etiquetas           = VALUES(costo_etiquetas),
+    costo_embalaje            = VALUES(costo_embalaje),
+    costo_flete               = VALUES(costo_flete),
+    porcentaje_costo_fijo     = VALUES(porcentaje_costo_fijo),
+    costo_total_materia_prima = VALUES(costo_total_materia_prima),
+    margen_bruto_sugerido     = VALUES(margen_bruto_sugerido),
+    precio_venta_sugerido     = VALUES(precio_venta_sugerido);
 
 -- Items del costeo (consumos y costos POR UNIDAD de prenda)
 --   Ripstop Impermeable:  1.80 m/prenda × $4,800/m  = $8,640
@@ -299,11 +319,11 @@ INSERT IGNORE INTO produccion_costeos (id_costeo, solicitud_costos_id, numero_co
 --   ─────────────────────────────────────────────────────────────
 --   Total materia prima por prenda: $11,725
 INSERT IGNORE INTO produccion_costeo_items (id_costeo_item, costeo_id, tipo_insumo, articulo_id, nombre_insumo, consumo, precio_unitario, costo_total) VALUES
-    (1, 1, 'TELA',      2, 'RIPSTOP IMPERMEABLE 150 GSM', 1.8000, 4800.00,  8640.00),
-    (2, 1, 'ACCESORIO', 4, 'CIERRE YKK 60CM METÁLICO',   1.0000, 1350.00,  1350.00),
-    (3, 1, 'ACCESORIO', 5, 'BOTÓN SNAP 15MM NÁCAR',       4.0000,  180.00,   720.00),
-    (4, 1, 'ACCESORIO', 6, 'HILO INDUSTRIAL 40/2',        0.1500, 3500.00,   525.00),
-    (5, 1, 'ACCESORIO', 7, 'CINTA REFLECTANTE 50MM',      0.5000,  980.00,   490.00);
+    (1, 1, 'TELAS',      2, 'RIPSTOP IMPERMEABLE 150 GSM', 1.8000, 4800.00,  8640.00),
+    (2, 1, 'ACCESORIOS', 4, 'CIERRE YKK 60CM METÁLICO',   1.0000, 1350.00,  1350.00),
+    (3, 1, 'ACCESORIOS', 5, 'BOTÓN SNAP 15MM NÁCAR',       4.0000,  180.00,   720.00),
+    (4, 1, 'ACCESORIOS', 6, 'HILO INDUSTRIAL 40/2',        0.1500, 3500.00,   525.00),
+    (5, 1, 'ACCESORIOS', 7, 'CINTA REFLECTANTE 50MM',      0.5000,  980.00,   490.00);
 
 -- Versión 1 del costeo con totales consolidados (base: 50 prendas)
 --   Materia prima total: $11,725 × 50               = $586,250
@@ -327,11 +347,11 @@ INSERT IGNORE INTO produccion_costeo_versiones (id_costeo_version, costeo_id, nu
 
 -- Items de la versión 1 del costeo (snapshot por versión)
 INSERT IGNORE INTO produccion_costeo_item_versiones (id_costeo_item_version, costeo_version_id, costeo_item_id, tipo_insumo, articulo_id, nombre_insumo, consumo, precio_unitario, costo_total, activo) VALUES
-    (1, 1, 1, 'TELA',      2, 'RIPSTOP IMPERMEABLE 150 GSM', 1.8000, 4800.00,  8640.00, true),
-    (2, 1, 2, 'ACCESORIO', 4, 'CIERRE YKK 60CM METÁLICO',   1.0000, 1350.00,  1350.00, true),
-    (3, 1, 3, 'ACCESORIO', 5, 'BOTÓN SNAP 15MM NÁCAR',       4.0000,  180.00,   720.00, true),
-    (4, 1, 4, 'ACCESORIO', 6, 'HILO INDUSTRIAL 40/2',        0.1500, 3500.00,   525.00, true),
-    (5, 1, 5, 'ACCESORIO', 7, 'CINTA REFLECTANTE 50MM',      0.5000,  980.00,   490.00, true);
+    (1, 1, 1, 'TELAS',      2, 'RIPSTOP IMPERMEABLE 150 GSM', 1.8000, 4800.00,  8640.00, true),
+    (2, 1, 2, 'ACCESORIOS', 4, 'CIERRE YKK 60CM METÁLICO',   1.0000, 1350.00,  1350.00, true),
+    (3, 1, 3, 'ACCESORIOS', 5, 'BOTÓN SNAP 15MM NÁCAR',       4.0000,  180.00,   720.00, true),
+    (4, 1, 4, 'ACCESORIOS', 6, 'HILO INDUSTRIAL 40/2',        0.1500, 3500.00,   525.00, true),
+    (5, 1, 5, 'ACCESORIOS', 7, 'CINTA REFLECTANTE 50MM',      0.5000,  980.00,   490.00, true);
 
 -- ============================================================
 -- 7.8. ORDEN DE PRODUCCIÓN (OP)

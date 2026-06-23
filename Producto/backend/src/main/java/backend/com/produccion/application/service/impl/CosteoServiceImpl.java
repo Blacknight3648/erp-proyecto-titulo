@@ -127,6 +127,7 @@ public class CosteoServiceImpl implements CosteoService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public java.util.List<CosteoDTO> findAll() {
         return repository.findAll().stream()
                 .map(this::toEnrichedDto)
@@ -140,12 +141,14 @@ public class CosteoServiceImpl implements CosteoService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Optional<CosteoDTO> findBySolicitudCostosId(Long scosId) {
         return repository.findBySolicitudCostosId(scosId)
                 .map(this::toEnrichedDto);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public java.util.List<CosteoDTO> findAllBySolicitudCostosId(Long scosId) {
         return repository.findAllBySolicitudCostosId(scosId).stream()
                 .map(this::toEnrichedDto)

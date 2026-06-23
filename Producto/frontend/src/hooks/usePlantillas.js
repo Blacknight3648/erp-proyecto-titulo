@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect } from 'react';
-import { api } from '../remote/service/api';
+import { api, BACKEND_URL } from '../remote/service/api';
 import { toast } from 'sonner';
 
 export const FIELD_LABELS = {
@@ -35,7 +35,7 @@ export function usePlantillas() {
     const fetchAll = useCallback(async () => {
         try {
             setLoading(true);
-            const { data } = await api.get('http://127.0.0.1:8050/api/v3/maestros/articulos/activos');
+            const { data } = await api.get(`${BACKEND_URL}/api/v3/maestros/articulos/activos`);
             const mapped = (Array.isArray(data) ? data : []).map(a => ({
                 id: a.idArticulo,
                 idArticulo: a.idArticulo,
@@ -69,7 +69,7 @@ export function usePlantillas() {
 
         try {
             setLoading(true);
-            const { data } = await api.get(`http://127.0.0.1:8050/api/v3/comercial/modelos-plantilla/articulo/${articulo.idArticulo}`);
+            const { data } = await api.get(`${BACKEND_URL}/api/v3/comercial/modelos-plantilla/articulo/${articulo.idArticulo}`);
 
             // El endpoint ahora devuelve UN objeto { idArticulo, nombreArticulo, camposPlantilla:[...] }.
             const lista = data?.camposPlantilla ?? [];
@@ -112,7 +112,7 @@ export function usePlantillas() {
                 camposPlantilla: dto.camposActivos || []
             };
 
-            const { data } = await api.post('http://127.0.0.1:8050/api/v3/comercial/modelos-plantilla', backendDto);
+            const { data } = await api.post(`${BACKEND_URL}/api/v3/comercial/modelos-plantilla`, backendDto);
 
             const frontendData = {
                 id: data.idArticulo,
@@ -160,7 +160,7 @@ export function usePlantillas() {
     const remove = useCallback(async (id) => {
         try {
             setLoading(true);
-            await api.delete(`http://127.0.0.1:8050/api/v3/comercial/modelos-plantilla/articulo/${id}`);
+            await api.delete(`${BACKEND_URL}/api/v3/comercial/modelos-plantilla/articulo/${id}`);
             setPlantillas(prev => prev.map(p => p.id === id ? { ...p, camposActivos: [] } : p));
             setCache({}); // Limpiar cache general
             toast.success("Plantilla eliminada correctamente");

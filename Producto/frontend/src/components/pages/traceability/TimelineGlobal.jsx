@@ -24,17 +24,19 @@ export default function TimelineGlobal() {
     const [loading, setLoading] = useState(false);
     const [traceData, setTraceData] = useState([]);
 
+    const BACKEND_URL = import.meta.env.VITE_API_URL || "http://localhost:8050";
+
     const handleSearch = async () => {
         if (!searchQuery) return;
         setLoading(true);
         try {
-            const response = await fetch(`http://localhost:8050/api/v1/comercial/notas-venta/${searchQuery}/trazabilidad`);
+            const response = await fetch(`${BACKEND_URL}/api/v1/comercial/notas-venta/${searchQuery}/trazabilidad`);
             if (response.ok) {
                 const data = await response.json();
                 setTraceData(data);
 
                 // Also fetch NV details for header info
-                const nvResponse = await fetch(`http://localhost:8050/api/v1/comercial/notas-venta/${searchQuery}`);
+                const nvResponse = await fetch(`${BACKEND_URL}/api/v1/comercial/notas-venta/${searchQuery}`);
                 if (nvResponse.ok) {
                     const nvData = await nvResponse.json();
                     setSelectedNV(nvData);

@@ -3,6 +3,9 @@ FROM node:20-alpine AS builder
 
 WORKDIR /app
 
+# Variable de entorno de compilación para la API del backend
+ENV VITE_API_URL=http://localhost:8050
+
 COPY package*.json ./
 RUN npm ci --silent
 

@@ -261,9 +261,9 @@ export default function SolicitudFormSCOS({
                                     value={formData.articuloDescripcion.replace("OTRO - ", "")}
                                     readOnly={readOnly}
                                     onChange={(e) =>
-                                        setFormData({ ...formData, articuloDescripcion: `OTRO - ${e.target.value}` })
+                                        setFormData({ ...formData, articuloDescripcion: `OTRO - ${e.target.value.toUpperCase()}` })
                                     }
-                                    className={`w-full p-3 rounded-xl bg-blue-50/50 border border-blue-100 text-sm font-bold text-blue-600 outline-none focus:ring-2 focus:ring-blue-500 placeholder-blue-300 ${readOnly ? "cursor-default" : ""}`}
+                                    className={`w-full p-3 rounded-xl bg-blue-50/50 border border-blue-100 text-sm font-bold text-blue-600 uppercase outline-none focus:ring-2 focus:ring-blue-500 placeholder-blue-300 ${readOnly ? "cursor-default" : ""}`}
                                     placeholder="Ej: Calza, Gorro, Bolso..."
                                 />
                             </div>
@@ -292,8 +292,8 @@ export default function SolicitudFormSCOS({
                             type="text"
                             value={formData.nombrePrenda || ""}
                             readOnly={readOnly}
-                            onChange={(e) => setFormData({ ...formData, nombrePrenda: e.target.value })}
-                            className={`w-full p-4 rounded-2xl bg-gray-50 border border-gray-100 text-sm font-bold outline-none focus:ring-2 focus:ring-blue-500 transition-all ${readOnly ? "cursor-not-allowed" : ""}`}
+                            onChange={(e) => setFormData({ ...formData, nombrePrenda: e.target.value.toUpperCase() })}
+                            className={`w-full p-4 rounded-2xl bg-gray-50 border border-gray-100 text-sm font-bold uppercase outline-none focus:ring-2 focus:ring-blue-500 transition-all ${readOnly ? "cursor-not-allowed" : ""}`}
                             placeholder="Ej: Chaqueta impermeable 2024"
                         />
                     </div>

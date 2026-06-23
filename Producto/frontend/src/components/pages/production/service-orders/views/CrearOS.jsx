@@ -106,16 +106,16 @@ export default function CrearOS({ back, crear, submitting, error, formatCLP }) {
                             </Field>
                             <div className="md:col-span-2">
                                 <Field label="Descripción del Trabajo">
-                                    <textarea rows={4} value={form.descripcionTrabajo} onChange={(e) => set('descripcionTrabajo', e.target.value)}
+                                    <textarea rows={4} value={form.descripcionTrabajo} onChange={(e) => set('descripcionTrabajo', e.target.value.toUpperCase())}
                                         placeholder="Detalle técnico del servicio a realizar..."
-                                        className="w-full p-4 bg-slate-50 border border-slate-100 rounded-2xl text-[11px] font-medium text-slate-600 italic resize-none focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+                                        className="w-full p-4 bg-slate-50 border border-slate-100 rounded-2xl text-[11px] font-medium text-slate-600 uppercase italic resize-none focus:outline-none focus:ring-2 focus:ring-indigo-500" />
                                 </Field>
                             </div>
                             <div className="md:col-span-2">
                                 <Field label="Observaciones">
-                                    <textarea rows={3} value={form.observaciones} onChange={(e) => set('observaciones', e.target.value)}
+                                    <textarea rows={3} value={form.observaciones} onChange={(e) => set('observaciones', e.target.value.toUpperCase())}
                                         placeholder="Notas internas..."
-                                        className="w-full p-4 bg-slate-50 border border-slate-100 rounded-2xl text-[11px] font-medium text-slate-600 italic resize-none focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+                                        className="w-full p-4 bg-slate-50 border border-slate-100 rounded-2xl text-[11px] font-medium text-slate-600 uppercase italic resize-none focus:outline-none focus:ring-2 focus:ring-indigo-500" />
                                 </Field>
                             </div>
                         </div>

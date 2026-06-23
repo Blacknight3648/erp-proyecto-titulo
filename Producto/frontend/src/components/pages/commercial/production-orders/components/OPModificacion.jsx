@@ -111,7 +111,7 @@ export default function OPModificacion({ formData, setFormData, onCancel, onSave
                                     rows={5}
                                     className="w-full bg-white border-slate-100 rounded-[1.5rem] p-6 text-xs text-slate-600 italic font-medium focus-visible:ring-indigo-500 transition-all resize-none shadow-inner"
                                     value={formData.observaciones || ''}
-                                    onChange={(e) => setFormData({...formData, observaciones: e.target.value})}
+                                    onChange={(e) => setFormData({...formData, observaciones: e.target.value.toUpperCase()})}
                                 />
                             </ModField>
                         </CardContent>

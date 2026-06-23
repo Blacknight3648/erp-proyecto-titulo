@@ -59,9 +59,9 @@ export default function TelasSCOSPanel({ data, onAdd, onUpdate, onRemove, readOn
                                             type="text"
                                             value={item.aplicacion || ""}
                                             readOnly={readOnly}
-                                            onChange={(e) => !readOnly && onUpdate(item.id, 'aplicacion', e.target.value)}
+                                            onChange={(e) => !readOnly && onUpdate(item.id, 'aplicacion', e.target.value.toUpperCase())}
                                             placeholder="Cuerpo..."
-                                            className={`w-full bg-gray-50/50 border border-gray-100/50 rounded-lg p-2 text-xs font-bold text-gray-700 outline-none focus:bg-white focus:border-blue-200 transition-all ${readOnly ? 'cursor-default' : ''}`}
+                                            className={`w-full bg-gray-50/50 border border-gray-100/50 rounded-lg p-2 text-xs font-bold text-gray-700 uppercase outline-none focus:bg-white focus:border-blue-200 transition-all ${readOnly ? 'cursor-default' : ''}`}
                                         />
                                     </div>
                                 </td>
@@ -72,9 +72,9 @@ export default function TelasSCOSPanel({ data, onAdd, onUpdate, onRemove, readOn
                                             type="text"
                                             value={item.nombre || ""}
                                             readOnly={readOnly}
-                                            onChange={(e) => !readOnly && onUpdate(item.id, 'nombre', e.target.value)}
+                                            onChange={(e) => !readOnly && onUpdate(item.id, 'nombre', e.target.value.toUpperCase())}
                                             placeholder="Nombre..."
-                                            className={`w-full bg-gray-50/50 border border-gray-100/50 rounded-lg p-2 text-xs font-black text-blue-600 outline-none focus:bg-white focus:border-blue-200 transition-all ${readOnly ? 'cursor-default' : ''}`}
+                                            className={`w-full bg-gray-50/50 border border-gray-100/50 rounded-lg p-2 text-xs font-black text-blue-600 uppercase outline-none focus:bg-white focus:border-blue-200 transition-all ${readOnly ? 'cursor-default' : ''}`}
                                         />
                                     </div>
                                 </td>
@@ -85,9 +85,9 @@ export default function TelasSCOSPanel({ data, onAdd, onUpdate, onRemove, readOn
                                             type="text"
                                             value={item.composicion || ""}
                                             readOnly={readOnly}
-                                            onChange={(e) => !readOnly && onUpdate(item.id, 'composicion', e.target.value)}
+                                            onChange={(e) => !readOnly && onUpdate(item.id, 'composicion', e.target.value.toUpperCase())}
                                             placeholder="100%..."
-                                            className={`w-full bg-gray-50/50 border border-gray-100/50 rounded-lg p-2 text-xs font-bold text-gray-600 outline-none focus:bg-white focus:border-blue-200 transition-all ${readOnly ? 'cursor-default' : ''}`}
+                                            className={`w-full bg-gray-50/50 border border-gray-100/50 rounded-lg p-2 text-xs font-bold text-gray-600 uppercase outline-none focus:bg-white focus:border-blue-200 transition-all ${readOnly ? 'cursor-default' : ''}`}
                                         />
                                     </div>
                                 </td>
@@ -98,9 +98,9 @@ export default function TelasSCOSPanel({ data, onAdd, onUpdate, onRemove, readOn
                                             type="text"
                                             value={item.color || ""}
                                             readOnly={readOnly}
-                                            onChange={(e) => !readOnly && onUpdate(item.id, 'color', e.target.value)}
+                                            onChange={(e) => !readOnly && onUpdate(item.id, 'color', e.target.value.toUpperCase())}
                                             placeholder="Color..."
-                                            className={`w-full bg-gray-50/50 border border-gray-100/50 rounded-lg p-2 text-xs font-bold text-gray-600 outline-none focus:bg-white focus:border-blue-200 transition-all ${readOnly ? 'cursor-default' : ''}`}
+                                            className={`w-full bg-gray-50/50 border border-gray-100/50 rounded-lg p-2 text-xs font-bold text-gray-600 uppercase outline-none focus:bg-white focus:border-blue-200 transition-all ${readOnly ? 'cursor-default' : ''}`}
                                         />
                                     </div>
                                 </td>

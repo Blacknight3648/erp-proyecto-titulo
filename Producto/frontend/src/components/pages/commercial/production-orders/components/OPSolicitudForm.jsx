@@ -134,7 +134,7 @@ export default function OPSolicitudForm({
                                     placeholder="ID O NUMERO DE NV"
                                     className="h-12 bg-white border-slate-100 rounded-2xl px-4 font-black text-xs uppercase placeholder:text-slate-300"
                                     value={formData.notaVentaId || ''}
-                                    onChange={(e) => setFormData({...formData, notaVentaId: e.target.value})}
+                                    onChange={(e) => setFormData({...formData, notaVentaId: e.target.value.toUpperCase()})}
                                 />
                             </FormField>
 
@@ -195,7 +195,7 @@ export default function OPSolicitudForm({
                                                 <Input 
                                                     className="h-11 bg-slate-50/50 border-none rounded-xl px-4 text-xs font-black text-slate-800 uppercase focus-visible:ring-indigo-100"
                                                     value={item.nombreProducto}
-                                                    onChange={(e) => updateItem(index, 'nombreProducto', e.target.value)}
+                                                    onChange={(e) => updateItem(index, 'nombreProducto', e.target.value.toUpperCase())}
                                                     placeholder="EJ: POLERA TACTO ALGODON"
                                                 />
                                             </div>
@@ -204,7 +204,7 @@ export default function OPSolicitudForm({
                                                 <Input 
                                                     className="h-11 bg-slate-50/50 border-none rounded-xl px-2 text-xs font-black text-center text-slate-700 uppercase focus-visible:ring-indigo-100"
                                                     value={item.talla}
-                                                    onChange={(e) => updateItem(index, 'talla', e.target.value)}
+                                                    onChange={(e) => updateItem(index, 'talla', e.target.value.toUpperCase())}
                                                 />
                                             </div>
                                             <div className="col-span-2 space-y-1.5">
@@ -212,7 +212,7 @@ export default function OPSolicitudForm({
                                                 <Input 
                                                     className="h-11 bg-slate-50/50 border-none rounded-xl px-2 text-xs font-black text-center text-slate-500 uppercase focus-visible:ring-indigo-100"
                                                     value={item.color}
-                                                    onChange={(e) => updateItem(index, 'color', e.target.value)}
+                                                    onChange={(e) => updateItem(index, 'color', e.target.value.toUpperCase())}
                                                 />
                                             </div>
                                             <div className="col-span-2 space-y-1.5">
@@ -265,7 +265,7 @@ export default function OPSolicitudForm({
                                 placeholder="Especifique detalles técnicos, requerimientos de tela o urgencias..."
                                 className="w-full bg-indigo-800/20 border-indigo-700/30 rounded-[1.5rem] p-5 text-xs text-indigo-50 font-medium italic placeholder:text-indigo-400 focus-visible:ring-indigo-500 focus-visible:ring-offset-0 border-none transition-all resize-none shadow-inner"
                                 value={formData.observaciones || ''}
-                                onChange={(e) => setFormData({...formData, observaciones: e.target.value})}
+                                onChange={(e) => setFormData({...formData, observaciones: e.target.value.toUpperCase()})}
                              />
                              <div className="p-5 bg-indigo-400/10 rounded-2xl border border-indigo-400/20 flex gap-3">
                                 <AlertCircle className="w-4 h-4 text-indigo-300 shrink-0 mt-0.5" />

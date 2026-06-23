@@ -169,7 +169,7 @@ export default function DetalleEVN({ initialEval, onBack, mode = 'create' }) {
                                     placeholder="Ingrese referencia..."
                                     className="bg-transparent border-none text-xs font-black text-gray-600 uppercase p-0 focus:ring-0 w-full placeholder:text-gray-200 disabled:opacity-70 disabled:cursor-default"
                                     value={evalData.referencia}
-                                    onChange={(e) => setEvalData({ ...evalData, referencia: e.target.value })}
+                                    onChange={(e) => setEvalData({ ...evalData, referencia: e.target.value.toUpperCase() })}
                                     disabled={isReadOnly}
                                 />
                             </div>

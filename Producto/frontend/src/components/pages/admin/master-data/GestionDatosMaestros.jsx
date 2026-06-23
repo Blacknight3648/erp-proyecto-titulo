@@ -328,8 +328,9 @@ export default function GestionDatosMaestros() {
                     <input
                       type={f.type || 'text'}
                       value={formData[f.field] ?? ''}
-                      onChange={(e) => setFormData({ ...formData, [f.field]: f.type === 'number' ? (e.target.value === '' ? '' : Number(e.target.value)) : e.target.value })}
+                      onChange={(e) => setFormData({ ...formData, [f.field]: f.type === 'number' ? (e.target.value === '' ? '' : Number(e.target.value)) : e.target.value.toUpperCase() })}
                       placeholder={f.label}
+                      style={f.type !== 'number' ? { textTransform: 'uppercase' } : undefined}
                       className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
                       autoFocus={i === 0}
                     />

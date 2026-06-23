@@ -55,8 +55,9 @@ const RolModal = ({ isOpen, onClose, onSave, rol }) => {
               type="text"
               required
               value={nombre}
-              onChange={(e) => setNombre(e.target.value)}
+              onChange={(e) => setNombre(e.target.value.toUpperCase())}
               placeholder="Ej: Administrador, Vendedor, Operador..."
+              style={{ textTransform: 'uppercase' }}
               className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all"
             />
           </div>
@@ -68,8 +69,9 @@ const RolModal = ({ isOpen, onClose, onSave, rol }) => {
             </label>
             <textarea
               value={descripcion}
-              onChange={(e) => setDescripcion(e.target.value)}
+              onChange={(e) => setDescripcion(e.target.value.toUpperCase())}
               placeholder="Descripción del rol y sus responsabilidades..."
+              style={{ textTransform: 'uppercase' }}
               rows={3}
               className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all resize-none"
             />

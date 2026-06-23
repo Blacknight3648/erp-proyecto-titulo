@@ -190,7 +190,7 @@ export default function EvaluacionForm({ data, onChange, porcentajeComision, onC
                                 className={`${inputCls} pl-10`}
                                 placeholder="Ej: 30 días de corrido..."
                                 value={c.garantia ?? ''}
-                                onChange={(e) => set('garantia', e.target.value)}
+                                onChange={(e) => set('garantia', e.target.value.toUpperCase())}
                                 disabled={disabled}
                             />
                         </div>

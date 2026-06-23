@@ -113,10 +113,10 @@ export default function FormularioNV({
                         {formData.esKit && (
                             <div className="mt-4">
                                 <textarea
-                                    className="w-full bg-blue-50/50 border-none rounded-xl p-3 text-[10px] font-bold text-blue-600 outline-none placeholder:text-blue-300 resize-none"
+                                    className="w-full bg-blue-50/50 border-none rounded-xl p-3 text-[10px] font-bold text-blue-600 uppercase outline-none placeholder:text-blue-300 resize-none"
                                     placeholder="Especificar armado del personalizado..."
                                     value={formData.detalleKit || ''}
-                                    onChange={(e) => setFormData({ ...formData, detalleKit: e.target.value })}
+                                    onChange={(e) => setFormData({ ...formData, detalleKit: e.target.value.toUpperCase() })}
                                     readOnly={isReadOnly}
                                     rows="2"
                                 />
@@ -156,15 +156,15 @@ export default function FormularioNV({
                                                 </span>
                                             )}
                                         </div>
-                                        <input className="w-full p-3 bg-gray-50 border-none rounded-xl text-[11px] font-bold uppercase outline-none" value={item.nombreProducto} onChange={(e) => updateItem(item.id, 'nombreProducto', e.target.value)} readOnly={isReadOnly} />
+                                        <input className="w-full p-3 bg-gray-50 border-none rounded-xl text-[11px] font-bold uppercase outline-none" value={item.nombreProducto} onChange={(e) => updateItem(item.id, 'nombreProducto', e.target.value.toUpperCase())} readOnly={isReadOnly} />
                                     </div>
                                     <div className="col-span-2">
                                         <label className="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-2 block">Modelo</label>
-                                        <input className="w-full p-3 bg-gray-50 border-none rounded-xl text-[11px] font-bold uppercase outline-none" value={item.modelo} onChange={(e) => updateItem(item.id, 'modelo', e.target.value)} readOnly={isReadOnly} />
+                                        <input className="w-full p-3 bg-gray-50 border-none rounded-xl text-[11px] font-bold uppercase outline-none" value={item.modelo} onChange={(e) => updateItem(item.id, 'modelo', e.target.value.toUpperCase())} readOnly={isReadOnly} />
                                     </div>
                                     <div className="col-span-2">
                                         <label className="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-2 block">Tela</label>
-                                        <input className="w-full p-3 bg-gray-50 border-none rounded-xl text-[11px] font-bold uppercase outline-none" value={item.tela} onChange={(e) => updateItem(item.id, 'tela', e.target.value)} readOnly={isReadOnly} />
+                                        <input className="w-full p-3 bg-gray-50 border-none rounded-xl text-[11px] font-bold uppercase outline-none" value={item.tela} onChange={(e) => updateItem(item.id, 'tela', e.target.value.toUpperCase())} readOnly={isReadOnly} />
                                     </div>
                                     <div className="col-span-2">
                                         <label className="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-2 block">Género <span className="text-red-500">*</span></label>
@@ -199,11 +199,11 @@ export default function FormularioNV({
                                 <div className="grid grid-cols-12 gap-6 pt-4 border-t border-gray-100">
                                     <div className="col-span-3">
                                         <label className="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-2 block">Color</label>
-                                        <input className="w-full p-3 bg-gray-50 border-none rounded-xl text-[11px] font-bold outline-none" value={item.color || ''} onChange={(e) => updateItem(item.id, 'color', e.target.value)} readOnly={isReadOnly} />
+                                        <input className="w-full p-3 bg-gray-50 border-none rounded-xl text-[11px] font-bold uppercase outline-none" value={item.color || ''} onChange={(e) => updateItem(item.id, 'color', e.target.value.toUpperCase())} readOnly={isReadOnly} />
                                     </div>
                                     <div className="col-span-3">
                                         <label className="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-2 block">Composición</label>
-                                        <input className="w-full p-3 bg-gray-50 border-none rounded-xl text-[11px] font-bold outline-none" value={item.composicion || ''} onChange={(e) => updateItem(item.id, 'composicion', e.target.value)} readOnly={isReadOnly} />
+                                        <input className="w-full p-3 bg-gray-50 border-none rounded-xl text-[11px] font-bold uppercase outline-none" value={item.composicion || ''} onChange={(e) => updateItem(item.id, 'composicion', e.target.value.toUpperCase())} readOnly={isReadOnly} />
                                     </div>
                                     <div className="col-span-3">
                                         <label className="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-2 block">Logo</label>
@@ -237,7 +237,7 @@ export default function FormularioNV({
                                 </div>
                                 {item.requiereOt && (
                                     <div className="mt-4 p-6 bg-orange-50/30 border-2 border-dashed border-orange-100 rounded-3xl animate-in slide-in-from-top-4">
-                                        <textarea rows="2" placeholder="Describa requerimientos especiales..." className="w-full bg-transparent border-none text-xs font-bold text-gray-700 outline-none resize-none" value={item.detalleOt || ''} onChange={(e) => updateItem(item.id, 'detalleOt', e.target.value)} readOnly={isReadOnly} />
+                                        <textarea rows="2" placeholder="Describa requerimientos especiales..." className="w-full bg-transparent border-none text-xs font-bold text-gray-700 uppercase outline-none resize-none" value={item.detalleOt || ''} onChange={(e) => updateItem(item.id, 'detalleOt', e.target.value.toUpperCase())} readOnly={isReadOnly} />
                                     </div>
                                 )}
                             </div>

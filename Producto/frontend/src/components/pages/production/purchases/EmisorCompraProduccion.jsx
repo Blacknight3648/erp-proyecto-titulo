@@ -192,9 +192,9 @@ export default function EmisorCompraProduccion({
                             <textarea
                                 rows={3}
                                 value={observaciones}
-                                onChange={(e) => setObservaciones(e.target.value)}
+                                onChange={(e) => setObservaciones(e.target.value.toUpperCase())}
                                 placeholder="Notas para el proveedor..."
-                                className="w-full p-4 bg-slate-50 border border-slate-100 rounded-2xl text-[11px] font-medium text-slate-600 italic resize-none focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                                className="w-full p-4 bg-slate-50 border border-slate-100 rounded-2xl text-[11px] font-medium text-slate-600 uppercase italic resize-none focus:outline-none focus:ring-2 focus:ring-indigo-500"
                             />
                         </div>
                     </div>

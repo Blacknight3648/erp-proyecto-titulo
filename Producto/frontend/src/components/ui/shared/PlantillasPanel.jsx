@@ -183,18 +183,18 @@ export default function PlantillasPanel({ title = "Especificaciones Técnicas", 
                         <textarea
                             rows={2}
                             readOnly={readOnly}
-                            className={`w-full bg-white border border-gray-100 rounded-xl p-3 text-xs font-bold text-gray-700 outline-none focus:border-blue-200 focus:ring-4 focus:ring-blue-50/50 transition-all resize-none ${readOnly ? 'cursor-default' : ''}`}
+                            className={`w-full bg-white border border-gray-100 rounded-xl p-3 text-xs font-bold text-gray-700 uppercase outline-none focus:border-blue-200 focus:ring-4 focus:ring-blue-50/50 transition-all resize-none ${readOnly ? 'cursor-default' : ''}`}
                             value={value}
-                            onChange={(e) => handleChange(fieldKey, e.target.value)}
+                            onChange={(e) => handleChange(fieldKey, e.target.value.toUpperCase())}
                             placeholder={readOnly ? "" : `Ingrese detalles de ${label.toLowerCase()}...`}
                         />
                     ) : (
                         <input
                             type="text"
                             readOnly={readOnly}
-                            className={`w-full bg-white border border-gray-100 rounded-xl p-3 text-xs font-bold text-gray-700 outline-none focus:border-blue-200 focus:ring-4 focus:ring-blue-50/50 transition-all ${readOnly ? 'cursor-default' : ''}`}
+                            className={`w-full bg-white border border-gray-100 rounded-xl p-3 text-xs font-bold text-gray-700 uppercase outline-none focus:border-blue-200 focus:ring-4 focus:ring-blue-50/50 transition-all ${readOnly ? 'cursor-default' : ''}`}
                             value={value}
-                            onChange={(e) => handleChange(fieldKey, e.target.value)}
+                            onChange={(e) => handleChange(fieldKey, e.target.value.toUpperCase())}
                             placeholder={readOnly ? "" : `Definir ${label.toLowerCase()}...`}
                         />
                     )}

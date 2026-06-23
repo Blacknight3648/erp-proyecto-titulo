@@ -396,15 +396,15 @@ function RecepcionForm({ oc, faltantesPorItem, submitting, onCancel, onSave }) {
             <div className="grid grid-cols-2 gap-3">
                 <input type="date" value={header.fechaRecepcion} onChange={(e) => setHeader({...header, fechaRecepcion: e.target.value})}
                     className="h-10 px-3 bg-white border border-slate-100 rounded-xl text-xs font-bold" />
-                <input value={header.numeroGuia} onChange={(e) => setHeader({...header, numeroGuia: e.target.value})}
+                <input value={header.numeroGuia} onChange={(e) => setHeader({...header, numeroGuia: e.target.value.toUpperCase()})}
                     placeholder="N° Guía"
-                    className="h-10 px-3 bg-white border border-slate-100 rounded-xl text-xs font-bold" />
-                <input value={header.responsable} onChange={(e) => setHeader({...header, responsable: e.target.value})}
+                    className="h-10 px-3 bg-white border border-slate-100 rounded-xl text-xs font-bold uppercase" />
+                <input value={header.responsable} onChange={(e) => setHeader({...header, responsable: e.target.value.toUpperCase()})}
                     placeholder="Responsable"
-                    className="h-10 px-3 bg-white border border-slate-100 rounded-xl text-xs font-bold col-span-2" />
-                <textarea rows={2} value={header.observaciones} onChange={(e) => setHeader({...header, observaciones: e.target.value})}
+                    className="h-10 px-3 bg-white border border-slate-100 rounded-xl text-xs font-bold uppercase col-span-2" />
+                <textarea rows={2} value={header.observaciones} onChange={(e) => setHeader({...header, observaciones: e.target.value.toUpperCase()})}
                     placeholder="Observaciones"
-                    className="px-3 py-2 bg-white border border-slate-100 rounded-xl text-xs font-medium italic col-span-2 resize-none" />
+                    className="px-3 py-2 bg-white border border-slate-100 rounded-xl text-xs font-medium uppercase italic col-span-2 resize-none" />
             </div>
 
             <div className="bg-white rounded-xl border border-slate-100 overflow-hidden">

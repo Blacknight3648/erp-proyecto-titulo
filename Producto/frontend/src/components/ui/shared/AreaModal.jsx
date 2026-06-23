@@ -45,8 +45,9 @@ const AreaModal = ({ isOpen, onClose, onSave, area }) => {
               type="text"
               required
               value={nombre}
-              onChange={(e) => setNombre(e.target.value)}
+              onChange={(e) => setNombre(e.target.value.toUpperCase())}
               placeholder="Ej: Marketing, Finanzas, Sistemas..."
+              style={{ textTransform: 'uppercase' }}
               className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
             />
           </div>
@@ -58,8 +59,9 @@ const AreaModal = ({ isOpen, onClose, onSave, area }) => {
             </label>
             <textarea
               value={descripcion}
-              onChange={(e) => setDescripcion(e.target.value)}
+              onChange={(e) => setDescripcion(e.target.value.toUpperCase())}
               placeholder="Descripción del área"
+              style={{ textTransform: 'uppercase' }}
               className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
               rows={3}
             />

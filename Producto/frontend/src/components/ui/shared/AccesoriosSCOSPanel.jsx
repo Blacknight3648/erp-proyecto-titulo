@@ -56,9 +56,9 @@ export default function AccesoriosSCOSPanel({ data, onAdd, onUpdate, onRemove, r
                                             type="text"
                                             value={item.nombreAccesorio || ""}
                                             readOnly={readOnly}
-                                            onChange={(e) => !readOnly && onUpdate(item.id, 'nombreAccesorio', e.target.value)}
+                                            onChange={(e) => !readOnly && onUpdate(item.id, 'nombreAccesorio', e.target.value.toUpperCase())}
                                             placeholder="Accesorio..."
-                                            className={`w-full bg-gray-50/50 border border-gray-100/50 rounded-lg p-2 text-xs font-black text-emerald-600 outline-none focus:bg-white focus:border-emerald-200 transition-all ${readOnly ? 'cursor-default' : ''}`}
+                                            className={`w-full bg-gray-50/50 border border-gray-100/50 rounded-lg p-2 text-xs font-black text-emerald-600 uppercase outline-none focus:bg-white focus:border-emerald-200 transition-all ${readOnly ? 'cursor-default' : ''}`}
                                         />
                                     </div>
                                 </td>
@@ -69,9 +69,9 @@ export default function AccesoriosSCOSPanel({ data, onAdd, onUpdate, onRemove, r
                                             type="text"
                                             value={item.tipo || ""}
                                             readOnly={readOnly}
-                                            onChange={(e) => !readOnly && onUpdate(item.id, 'tipo', e.target.value)}
+                                            onChange={(e) => !readOnly && onUpdate(item.id, 'tipo', e.target.value.toUpperCase())}
                                             placeholder="Tipo..."
-                                            className={`w-full bg-gray-50/50 border border-gray-100/50 rounded-lg p-2 text-xs font-bold text-gray-600 outline-none focus:bg-white focus:border-emerald-200 transition-all ${readOnly ? 'cursor-default' : ''}`}
+                                            className={`w-full bg-gray-50/50 border border-gray-100/50 rounded-lg p-2 text-xs font-bold text-gray-600 uppercase outline-none focus:bg-white focus:border-emerald-200 transition-all ${readOnly ? 'cursor-default' : ''}`}
                                         />
                                     </div>
                                 </td>

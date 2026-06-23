@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import {
   ShoppingCart, Factory, Package, Users, Activity,
@@ -117,7 +117,21 @@ export default function Sidebar({ isOpen, setIsOpen }) {
   const [hoveredChev, setHoveredChev]   = useState(false);
   const [hoveredExp,  setHoveredExp]    = useState(false);
 
-  const toggleSubmenu = (id) => setOpenSubmenu(openSubmenu === id ? null : id);
+  const toggleSubmenu = (id) => setOpenSubmenu(prev => prev === id ? null : id);
+
+  // Auto-abrir el submenú del módulo activo al cargar o cambiar de ruta
+  useEffect(() => {
+    const active = menuItems.find(item =>
+      item.submenu?.some(s => location.pathname === s.path) ||
+      (item.homeRoute && location.pathname === item.homeRoute)
+    );
+    if (active) setOpenSubmenu(active.id);
+  }, [location.pathname]);
+
+  // Cerrar submenú al colapsar el sidebar
+  useEffect(() => {
+    if (!isOpen) setOpenSubmenu(null);
+  }, [isOpen]);
 
   const renderSubItems = (submenu) =>
     submenu.map((sub) => {
@@ -293,14 +307,20 @@ export default function Sidebar({ isOpen, setIsOpen }) {
                   {/* Item Con Submenú */}
                   {hasSubmenu ? (
                     <button
+                      title={!isOpen ? item.label : undefined}
                       style={{ ...itemStyle, textAlign: 'left' }}
                       onClick={() => {
                         if (item.disabled) return;
-                        // Navegar al landing del módulo
-                        if (item.homeRoute) navigate(item.homeRoute);
-                        // Asegurar que el sidebar esté abierto y el submenú visible
-                        if (!isOpen) setIsOpen(true);
-                        setOpenSubmenu(item.id);
+                        if (!isOpen) {
+                          // Sidebar colapsado: expandir y abrir submenú
+                          setIsOpen(true);
+                          setOpenSubmenu(item.id);
+                        } else {
+                          // Sidebar abierto: toggle del submenú
+                          toggleSubmenu(item.id);
+                          // Navegar al landing solo si el submenú se está abriendo
+                          if (openSubmenu !== item.id && item.homeRoute) navigate(item.homeRoute);
+                        }
                       }}
                     >
                       <Icon style={{ width: '18px', height: '18px', flexShrink: 0, color: iconColor }} />
@@ -333,7 +353,7 @@ export default function Sidebar({ isOpen, setIsOpen }) {
 
                   ) : (
                     /* NavLink Directo */
-                    <NavLink to={item.path} style={itemStyle}>
+                    <NavLink to={item.path} title={!isOpen ? item.label : undefined} style={itemStyle}>
                       <Icon style={{ width: '18px', height: '18px', flexShrink: 0, color: iconColor }} />
                       {isOpen && (
                         <span style={{ fontSize: '13.5px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>

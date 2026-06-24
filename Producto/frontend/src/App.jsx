@@ -50,6 +50,9 @@ import HojaCompra from "./components/pages/production/purchase-sheet/HojaCompra"
 import TrazabilidadNV from "./components/pages/traceability/TrazabilidadNV";
 import TimelineGlobal from "./components/pages/traceability/TimelineGlobal";
 
+/* COMPONENTES COMPARTIDOS */
+import UnderMaintenance from "./components/pages/shared/UnderMaintenance";
+
 
 
 /* =========================
@@ -235,6 +238,27 @@ function App() {
             <Route
               path="/trazabilidad/global"
               element={<PrivateRoute><MainLayout><TimelineGlobal /></MainLayout></PrivateRoute>}
+            />
+
+            {/* MANTENCION / DESARROLLO */}
+            <Route
+              path="/comercial/registros-sc"
+              element={<PrivateRoute><MainLayout><UnderMaintenance /></MainLayout></PrivateRoute>}
+            />
+
+            <Route
+              path="/adquisiciones/estado-sc"
+              element={<PrivateRoute><MainLayout><UnderMaintenance /></MainLayout></PrivateRoute>}
+            />
+
+            <Route
+              path="/trazabilidad/alertas"
+              element={<PrivateRoute><MainLayout><UnderMaintenance /></MainLayout></PrivateRoute>}
+            />
+
+            <Route
+              path="/trazabilidad/historial"
+              element={<PrivateRoute><MainLayout><UnderMaintenance /></MainLayout></PrivateRoute>}
             />
 
 

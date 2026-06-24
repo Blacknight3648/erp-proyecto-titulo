@@ -1,5 +1,6 @@
 import { Plus, Trash2, ChevronDown, ChevronUp } from 'lucide-react';
 import { useState } from 'react';
+import ComboSearchField from './ComboSearchField';
 
 export default function TelasSCOSPanel({ data, onAdd, onUpdate, onRemove, readOnly = false }) {
     const [isExpanded, setIsExpanded] = useState(true);
@@ -7,13 +8,18 @@ export default function TelasSCOSPanel({ data, onAdd, onUpdate, onRemove, readOn
     return (
         <div className={`space-y-4 ${readOnly ? 'opacity-95' : ''}`}>
             <div className="flex justify-between items-center mb-6">
-                <h4 className="text-sm font-black text-gray-800 uppercase tracking-widest flex items-center gap-2">
-                    <div className="w-1.5 h-6 bg-blue-600 rounded-full"></div>
-                    Telas
-                    <span className="ml-2 px-2 py-0.5 bg-blue-50 text-blue-600 text-[9px] rounded-full border border-blue-100">
-                        {(data || []).length} ITEMS
-                    </span>
-                </h4>
+                <div>
+                    <h4 className="text-sm font-black text-gray-800 uppercase tracking-widest flex items-center gap-2">
+                        <div className="w-1 h-5 bg-blue-600 rounded-sm"></div>
+                        Telas
+                        <span className="ml-1 px-2 py-0.5 bg-blue-50 text-blue-600 text-[9px] rounded border border-blue-100 font-black">
+                            {(data || []).length} ITEMS
+                        </span>
+                    </h4>
+                    <p className="text-[10px] text-gray-400 mt-1 ml-3">
+                        Especifique cada tejido que compone la prenda. Cada fila corresponde a un corte o pieza de confección: cuerpo, forro, panel transpirable, mangas, etc. La composición y el gramaje son necesarios para el cálculo de consumo y costo de material.
+                    </p>
+                </div>
                 <div className="flex items-center gap-2">
                     {!readOnly && (
                         <button
@@ -68,13 +74,13 @@ export default function TelasSCOSPanel({ data, onAdd, onUpdate, onRemove, readOn
                                 <td className="px-4 py-3 border-y border-transparent group-hover:border-blue-100/50">
                                     <div className="flex flex-col gap-1">
                                         <label className="lg:hidden text-[7px] font-black text-gray-400 uppercase">Nombre Tela</label>
-                                        <input
-                                            type="text"
-                                            value={item.nombre || ""}
+                                        <ComboSearchField
+                                            tipo="TELA"
+                                            value={item.nombre || ''}
+                                            onChange={(val) => !readOnly && onUpdate(item.id, 'nombre', val)}
+                                            placeholder="Buscar tela..."
                                             readOnly={readOnly}
-                                            onChange={(e) => !readOnly && onUpdate(item.id, 'nombre', e.target.value.toUpperCase())}
-                                            placeholder="Nombre..."
-                                            className={`w-full bg-gray-50/50 border border-gray-100/50 rounded-lg p-2 text-xs font-black text-blue-600 uppercase outline-none focus:bg-white focus:border-blue-200 transition-all ${readOnly ? 'cursor-default' : ''}`}
+                                            className="min-w-[160px]"
                                         />
                                     </div>
                                 </td>

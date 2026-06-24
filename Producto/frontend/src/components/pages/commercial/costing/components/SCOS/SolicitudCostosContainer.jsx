@@ -141,8 +141,6 @@ export default function SolicitudCostosContainer() {
   };
 
 
-
-  // 🚀 Función PDF
   const handleDownloadPDF = (costos) => {
     const doc = new jsPDF();
     doc.setFontSize(18);
@@ -168,7 +166,6 @@ export default function SolicitudCostosContainer() {
     doc.save(`SCOS_${costos.numero || costos.id}.pdf`);
   };
 
-  // 🚀 Función eliminar
   const handleDelete = async (costos) => {
 
     try {

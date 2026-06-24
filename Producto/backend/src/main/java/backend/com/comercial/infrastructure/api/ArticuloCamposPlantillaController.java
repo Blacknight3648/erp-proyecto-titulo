@@ -27,7 +27,7 @@ public class ArticuloCamposPlantillaController {
     public ResponseEntity<ArticuloCamposPlantillaDTO> obtenerPorArticulo(@PathVariable Integer idArticulo) {
         return modeloPlantillaService.obtenerPorArticulo(idArticulo)
                 .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+                .orElse(ResponseEntity.noContent().build());
     }
 
     @DeleteMapping("/articulo/{idArticulo}")

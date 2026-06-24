@@ -1,5 +1,6 @@
 import { Plus, Trash2, ChevronDown, ChevronUp } from 'lucide-react';
 import { useState } from 'react';
+import ComboSearchField from './ComboSearchField';
 
 export default function AccesoriosSCOSPanel({ data, onAdd, onUpdate, onRemove, readOnly = false }) {
     const [isExpanded, setIsExpanded] = useState(true);
@@ -7,13 +8,18 @@ export default function AccesoriosSCOSPanel({ data, onAdd, onUpdate, onRemove, r
     return (
         <div className={`space-y-4 ${readOnly ? 'opacity-95' : ''}`}>
             <div className="flex justify-between items-center mb-6">
-                <h4 className="text-sm font-black text-gray-800 uppercase tracking-widest flex items-center gap-2">
-                    <div className="w-1.5 h-6 bg-emerald-500 rounded-full"></div>
-                    Accesorios
-                    <span className="ml-2 px-2 py-0.5 bg-emerald-50 text-emerald-600 text-[9px] rounded-full border border-emerald-100">
-                        {(data || []).length} ITEMS
-                    </span>
-                </h4>
+                <div>
+                    <h4 className="text-sm font-black text-gray-800 uppercase tracking-widest flex items-center gap-2">
+                        <div className="w-1 h-5 bg-emerald-500 rounded-sm"></div>
+                        Accesorios y Avíos
+                        <span className="ml-1 px-2 py-0.5 bg-emerald-50 text-emerald-600 text-[9px] rounded border border-emerald-100 font-black">
+                            {(data || []).length} ITEMS
+                        </span>
+                    </h4>
+                    <p className="text-[10px] text-gray-400 mt-1 ml-3">
+                        Registre todos los avíos requeridos: cierres, botones, hebillas, hilos de contraste, parches, etiquetas, etc. La cantidad ingresada se validará contra el inventario disponible al momento de aprobar la solicitud.
+                    </p>
+                </div>
                 <div className="flex items-center gap-2">
                     {!readOnly && (
                         <button
@@ -52,13 +58,13 @@ export default function AccesoriosSCOSPanel({ data, onAdd, onUpdate, onRemove, r
                                 <td className="px-4 py-3 first:rounded-l-2xl border-y border-l border-transparent group-hover:border-emerald-100/50">
                                     <div className="flex flex-col gap-1">
                                         <label className="lg:hidden text-[7px] font-black text-gray-400 uppercase">Nombre</label>
-                                        <input
-                                            type="text"
-                                            value={item.nombreAccesorio || ""}
+                                        <ComboSearchField
+                                            tipo="ACCESORIO"
+                                            value={item.nombreAccesorio || ''}
+                                            onChange={(val) => !readOnly && onUpdate(item.id, 'nombreAccesorio', val)}
+                                            placeholder="Buscar avío..."
                                             readOnly={readOnly}
-                                            onChange={(e) => !readOnly && onUpdate(item.id, 'nombreAccesorio', e.target.value.toUpperCase())}
-                                            placeholder="Accesorio..."
-                                            className={`w-full bg-gray-50/50 border border-gray-100/50 rounded-lg p-2 text-xs font-black text-emerald-600 uppercase outline-none focus:bg-white focus:border-emerald-200 transition-all ${readOnly ? 'cursor-default' : ''}`}
+                                            className="min-w-[180px]"
                                         />
                                     </div>
                                 </td>

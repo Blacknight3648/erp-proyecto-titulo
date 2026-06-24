@@ -99,18 +99,28 @@ export default function LogotipoPanel({ data, onAdd, onUpdate, onRemove, readOnl
                     <input
                       type="number"
                       step="0.1"
-                      value={item.tamanio || 0}
+                      min="1"
+                      value={item.tamanio || ""}
                       readOnly={readOnly}
-                      onChange={(e) => !readOnly && onUpdate(item.id, 'tamanio', parseFloat(e.target.value) || 0)}
+                      onChange={(e) => {
+                          if (readOnly) return;
+                          const val = parseFloat(e.target.value);
+                          onUpdate(item.id, 'tamanio', isNaN(val) || val < 1 ? "" : val);
+                      }}
                       className="w-16 bg-gray-50 p-2 rounded-lg text-center font-black text-xs text-gray-700 outline-none border border-transparent focus:border-blue-100"
                     />
                   </td>
                   <td className="px-4 py-3 border-y border-transparent group-hover:border-gray-100 text-center">
                     <input
                       type="number"
-                      value={item.cantidad || 0}
+                      min="1"
+                      value={item.cantidad || ""}
                       readOnly={readOnly}
-                      onChange={(e) => !readOnly && onUpdate(item.id, 'cantidad', parseInt(e.target.value) || 0)}
+                      onChange={(e) => {
+                          if (readOnly) return;
+                          const val = parseInt(e.target.value);
+                          onUpdate(item.id, 'cantidad', isNaN(val) || val < 1 ? "" : val);
+                      }}
                       className="w-12 bg-blue-50/50 p-2 rounded-lg text-center font-black text-xs text-blue-600 outline-none border border-blue-100"
                     />
                   </td>
@@ -119,9 +129,14 @@ export default function LogotipoPanel({ data, onAdd, onUpdate, onRemove, readOnl
                       <span className="text-[10px] font-black text-gray-300 mr-1">$</span>
                       <input
                         type="number"
-                        value={item.precio || 0}
+                        min="1"
+                        value={item.precio || ""}
                         readOnly={readOnly}
-                        onChange={(e) => !readOnly && onUpdate(item.id, 'precio', parseFloat(e.target.value) || 0)}
+                        onChange={(e) => {
+                            if (readOnly) return;
+                            const val = parseFloat(e.target.value);
+                            onUpdate(item.id, 'precio', isNaN(val) || val < 1 ? "" : val);
+                        }}
                         className="w-20 bg-transparent text-right font-black text-xs text-gray-700 outline-none"
                       />
                     </div>

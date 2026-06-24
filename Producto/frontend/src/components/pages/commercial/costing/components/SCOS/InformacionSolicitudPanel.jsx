@@ -1,8 +1,8 @@
-import { useState, useEffect } from "react";
 import { ClipboardList } from "lucide-react";
 import { useClientes } from "../../../../../../hooks/useClientes.js";
 import { useVendedores } from "../../../../../../hooks/useVendedores.js";
 import { usePlantillas } from "../../../../../../hooks/usePlantillas.js";
+import ComboField from "../../../../../../components/ui/shared/ComboField.jsx";
 
 const generateId = () => {
     try { return crypto.randomUUID(); }
@@ -17,23 +17,27 @@ export default function InformacionSolicitudPanel({ formData, setFormData, readO
     const { vendedores } = useVendedores();
     const { plantillas } = usePlantillas();
 
-    const [clienteInput, setClienteInput] = useState("");
-    const [vendedorInput, setVendedorInput] = useState("");
+    const clienteOptions = (clientes || []).map(c => ({
+        value: String(c.clienteId),
+        label: c.razonSocial,
+    }));
 
-    useEffect(() => {
-        if (formData.clienteId && clientes?.length) {
-            const match = clientes.find(c => String(c.clienteId) === String(formData.clienteId));
-            if (match) setClienteInput(match.razonSocial);
-        }
-        if (formData.vendedorId && vendedores?.length) {
-            const match = vendedores.find(v => String(v.id) === String(formData.vendedorId));
-            if (match) setVendedorInput(`${match.nombreUsuario} ${match.apellidosUsuario}`);
-        }
-    }, [formData.clienteId, formData.vendedorId, clientes, vendedores]);
+    const vendedorOptions = (vendedores || []).map(v => ({
+        value: String(v.id),
+        label: `${v.nombreUsuario} ${v.apellidosUsuario}`,
+    }));
+
+    const plantillaOptions = [
+        ...(plantillas || []).map(p => ({
+            value: p.nombreArticulo?.toUpperCase() ?? '',
+            label: p.nombreArticulo?.toUpperCase() ?? '',
+        })),
+        { value: 'OTRO', label: 'OTRO' },
+    ];
 
     const handlePrendaChange = (textValue) => {
         if (readOnly) return;
-        const cleanValue = textValue.toUpperCase();
+        const cleanValue = (textValue || '').toUpperCase();
         const configMaster = (plantillas || []).find(p => p.nombreArticulo?.toUpperCase() === cleanValue);
 
         if (configMaster) {
@@ -66,7 +70,7 @@ export default function InformacionSolicitudPanel({ formData, setFormData, readO
     };
 
     return (
-        <div className={`bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden ${readOnly ? "bg-slate-50/40" : ""}`}>
+        <div className={`bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden ${readOnly ? "opacity-90" : ""}`}>
             <div className="bg-slate-950 px-6 py-4 flex items-center gap-2.5">
                 <ClipboardList className="w-4 h-4 text-blue-400" />
                 <h3 className="text-sm font-semibold tracking-wide text-white">
@@ -78,80 +82,49 @@ export default function InformacionSolicitudPanel({ formData, setFormData, readO
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                     <div>
                         <label className={labelStyles}>Cliente</label>
-                        <input
-                            type="text"
-                            list="lista-clientes"
-                            value={clienteInput}
-                            disabled={readOnly}
-                            placeholder="Escriba para buscar cliente..."
-                            className={inputStyles}
-                            onChange={(e) => {
-                                const val = e.target.value;
-                                setClienteInput(val);
-                                const match = (clientes || []).find(c => c.razonSocial?.toUpperCase() === val.toUpperCase());
-                                setFormData(prev => ({ ...prev, clienteId: match ? match.clienteId : "" }));
-                            }}
+                        <ComboField
+                            value={formData.clienteId ? String(formData.clienteId) : ''}
+                            onChange={(value) => setFormData(prev => ({ ...prev, clienteId: value }))}
+                            options={clienteOptions}
+                            placeholder="Buscar cliente..."
+                            readOnly={readOnly}
                         />
-                        <datalist id="lista-clientes">
-                            {(clientes || []).map((c) => (
-                                <option key={c.clienteId} value={c.razonSocial} />
-                            ))}
-                        </datalist>
                     </div>
 
                     <div>
                         <label className={labelStyles}>Vendedor</label>
-                        <input
-                            type="text"
-                            list="lista-vendedores"
-                            value={vendedorInput}
-                            disabled={readOnly}
-                            placeholder="Escriba para buscar vendedor..."
-                            className={inputStyles}
-                            onChange={(e) => {
-                                const val = e.target.value;
-                                setVendedorInput(val);
-                                const match = (vendedores || []).find(v =>
-                                    `${v.nombreUsuario} ${v.apellidosUsuario}`.toUpperCase() === val.toUpperCase()
-                                );
-                                setFormData(prev => ({ ...prev, vendedorId: match ? match.id : "" }));
-                            }}
+                        <ComboField
+                            value={formData.vendedorId ? String(formData.vendedorId) : ''}
+                            onChange={(value) => setFormData(prev => ({ ...prev, vendedorId: value }))}
+                            options={vendedorOptions}
+                            placeholder="Buscar vendedor..."
+                            readOnly={readOnly}
                         />
-                        <datalist id="lista-vendedores">
-                            {(vendedores || []).map((v) => (
-                                <option key={v.id} value={`${v.nombreUsuario} ${v.apellidosUsuario}`} />
-                            ))}
-                        </datalist>
                     </div>
 
                     <div>
                         <label className={labelStyles}>Tipo de prenda (Plantilla)</label>
-                        <input
-                            type="text"
-                            list="lista-plantillas"
-                            value={formData.articuloDescripcion || ""}
-                            disabled={readOnly}
-                            placeholder="Ej: Polerón, Parka, Pantalón..."
-                            className={`${inputStyles} border-blue-100 bg-blue-50/20 font-medium text-blue-900`}
-                            onChange={(e) => handlePrendaChange(e.target.value)}
+                        <ComboField
+                            value={formData.articuloDescripcion || ''}
+                            onChange={(value) => handlePrendaChange(value)}
+                            options={plantillaOptions}
+                            placeholder="Ej: Polerón, Parka..."
+                            readOnly={readOnly}
                         />
-                        <datalist id="lista-plantillas">
-                            {(plantillas || []).map(p => (
-                                <option key={p.idArticulo || p.id} value={p.nombreArticulo?.toUpperCase()} />
-                            ))}
-                            <option value="OTRO" />
-                        </datalist>
                     </div>
 
                     <div>
                         <label className={labelStyles}>Cantidad total solicitada</label>
                         <input
                             type="number"
-                            value={formData.cantidad || 0}
+                            min="1"
+                            value={formData.cantidad || ""}
                             disabled={readOnly}
-                            onChange={(e) =>
-                                !readOnly && setFormData(prev => ({ ...prev, cantidad: parseInt(e.target.value) || 0 }))
-                            }
+                            onChange={(e) => {
+                                if (readOnly) return;
+                                const val = parseInt(e.target.value);
+                                setFormData(prev => ({ ...prev, cantidad: isNaN(val) || val < 1 ? "" : val }));
+                            }}
                             className={`${inputStyles} font-semibold`}
                         />
                     </div>

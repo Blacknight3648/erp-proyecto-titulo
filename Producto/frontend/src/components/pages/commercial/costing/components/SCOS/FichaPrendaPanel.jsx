@@ -8,7 +8,7 @@ export default function FichaPrendaPanel({ formData, readOnly, onAddItem, onUpda
     return (
         <div className="space-y-8">
             {formData.hasLogo && (
-                <div className="animate-in slide-in-from-top-4 duration-300 bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
+                <div className="animate-in slide-in-from-top-4 duration-300 bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden p-6 md:p-8 bg-slate-50/50">
                     <LogotipoPanel
                         data={formData.plantillas?.[0]?.logotipos || []}
                         onAdd={() => !readOnly && onAddItem("logotipo")}

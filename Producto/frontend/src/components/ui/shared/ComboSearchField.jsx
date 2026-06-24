@@ -1,16 +1,14 @@
 import { useState, useRef, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { Check, ChevronDown, Search, Plus, Loader2 } from 'lucide-react';
 import { useArticulosSearch } from '../../../hooks/useArticulosSearch';
 
-/**
- * Combobox con búsqueda contra maestros.
- * - Muestra opciones desde la BD filtrando mientras el usuario escribe.
- * - Si el valor no existe, ofrece crearlo en maestros y en la solicitud.
- */
 export default function ComboSearchField({ value = '', onChange, tipo, placeholder = 'Buscar...', readOnly = false, className = '' }) {
     const [isOpen, setIsOpen] = useState(false);
     const [query, setQuery] = useState('');
+    const [dropdownPos, setDropdownPos] = useState(null);
     const inputRef = useRef(null);
+    const triggerRef = useRef(null);
     const containerRef = useRef(null);
 
     const { loading, search, createArticulo } = useArticulosSearch(tipo);
@@ -18,7 +16,6 @@ export default function ComboSearchField({ value = '', onChange, tipo, placehold
     const exactMatch = filtered.some(a => a.nombreArticulo.toUpperCase() === query.trim().toUpperCase());
     const showCreate = query.trim().length > 0 && !exactMatch;
 
-    // Cierra al hacer clic fuera
     useEffect(() => {
         if (!isOpen) return;
         const handler = (e) => {
@@ -33,6 +30,10 @@ export default function ComboSearchField({ value = '', onChange, tipo, placehold
 
     const open = () => {
         if (readOnly) return;
+        if (triggerRef.current) {
+            const r = triggerRef.current.getBoundingClientRect();
+            setDropdownPos({ top: r.bottom + 4, left: r.left, width: Math.max(r.width, 220) });
+        }
         setQuery('');
         setIsOpen(true);
         setTimeout(() => inputRef.current?.focus(), 50);
@@ -55,18 +56,18 @@ export default function ComboSearchField({ value = '', onChange, tipo, placehold
 
     return (
         <div ref={containerRef} className={`relative ${className}`}>
-            {/* Trigger */}
             <button
+                ref={triggerRef}
                 type="button"
                 onClick={open}
                 disabled={readOnly}
-                className={`w-full flex items-center justify-between gap-2 px-3 py-2 rounded-lg border text-left text-[11px] font-semibold transition-all outline-none
-                    ${readOnly
+                className={[
+                    'w-full flex items-center justify-between gap-2 px-3 py-2 rounded-lg border text-left text-[11px] font-semibold transition-all outline-none',
+                    readOnly
                         ? 'bg-gray-50 border-gray-100 text-gray-500 cursor-default'
-                        : 'bg-white border-gray-200 text-gray-800 hover:border-blue-300 cursor-pointer focus:border-blue-400 focus:ring-2 focus:ring-blue-50'
-                    }
-                    ${isOpen ? 'border-blue-400 ring-2 ring-blue-50' : ''}
-                `}
+                        : 'bg-white border-gray-200 text-gray-800 hover:border-blue-300 cursor-pointer focus:border-blue-400 focus:ring-2 focus:ring-blue-50',
+                    isOpen ? 'border-blue-400 ring-2 ring-blue-50' : '',
+                ].join(' ')}
             >
                 <span className={`truncate uppercase ${!value ? 'text-gray-400 font-normal' : ''}`}>
                     {value || placeholder}
@@ -77,10 +78,17 @@ export default function ComboSearchField({ value = '', onChange, tipo, placehold
                 }
             </button>
 
-            {/* Dropdown */}
-            {isOpen && (
-                <div className="absolute top-full left-0 right-0 mt-1.5 z-[100] bg-white border border-gray-200 rounded-xl shadow-xl overflow-hidden animate-in fade-in zoom-in-95 duration-150">
-                    {/* Search input */}
+            {isOpen && dropdownPos && createPortal(
+                <div
+                    style={{
+                        position: 'fixed',
+                        top: dropdownPos.top,
+                        left: dropdownPos.left,
+                        width: dropdownPos.width,
+                        zIndex: 9999,
+                    }}
+                    className="bg-white border border-gray-200 rounded-xl shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-150"
+                >
                     <div className="px-3 py-2.5 border-b border-gray-100 bg-gray-50/80">
                         <div className="flex items-center gap-2">
                             <Search className="w-3.5 h-3.5 text-gray-400 flex-shrink-0" />
@@ -102,7 +110,6 @@ export default function ComboSearchField({ value = '', onChange, tipo, placehold
                         </div>
                     </div>
 
-                    {/* Options list */}
                     <div className="max-h-52 overflow-y-auto">
                         {loading && (
                             <div className="flex items-center justify-center gap-2 py-5">
@@ -125,10 +132,7 @@ export default function ComboSearchField({ value = '', onChange, tipo, placehold
                                     type="button"
                                     onClick={() => select(a.nombreArticulo)}
                                     className={`w-full flex items-center gap-3 px-4 py-2.5 text-left transition-colors
-                                        ${isSelected
-                                            ? 'bg-blue-50 text-blue-700'
-                                            : 'text-gray-700 hover:bg-gray-50'
-                                        }`}
+                                        ${isSelected ? 'bg-blue-50 text-blue-700' : 'text-gray-700 hover:bg-gray-50'}`}
                                 >
                                     <div className={`w-4 h-4 rounded-full flex-shrink-0 flex items-center justify-center border ${isSelected ? 'bg-blue-600 border-blue-600' : 'border-gray-300'}`}>
                                         {isSelected && <Check className="w-2.5 h-2.5 text-white stroke-[3]" />}
@@ -141,13 +145,12 @@ export default function ComboSearchField({ value = '', onChange, tipo, placehold
                         })}
                     </div>
 
-                    {/* Create option — solo aparece si el usuario ya buscó y no hay coincidencia exacta */}
                     {showCreate && !loading && (
                         <div className="border-t border-gray-100 p-2">
                             <button
                                 type="button"
                                 onClick={handleCreate}
-                                className="w-full flex items-center gap-2.5 px-3 py-2.5 bg-gray-900 hover:bg-blue-700 text-white rounded-lg transition-colors text-left group"
+                                className="w-full flex items-center gap-2.5 px-3 py-2.5 bg-gray-900 hover:bg-blue-700 text-white rounded-lg transition-colors text-left"
                             >
                                 <div className="w-5 h-5 rounded bg-white/10 flex items-center justify-center flex-shrink-0">
                                     <Plus className="w-3 h-3" />
@@ -164,7 +167,6 @@ export default function ComboSearchField({ value = '', onChange, tipo, placehold
                         </div>
                     )}
 
-                    {/* Current value clear */}
                     {value && !query && (
                         <div className="border-t border-gray-100 px-3 py-1.5">
                             <button
@@ -176,7 +178,8 @@ export default function ComboSearchField({ value = '', onChange, tipo, placehold
                             </button>
                         </div>
                     )}
-                </div>
+                </div>,
+                document.body
             )}
         </div>
     );

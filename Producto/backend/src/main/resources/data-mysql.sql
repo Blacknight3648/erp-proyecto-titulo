@@ -223,9 +223,12 @@ INSERT IGNORE INTO modelo_plantilla (id_modelo_plantilla, id_articulo, campos) V
 -- ============================================================
 -- SCOS-000001: 100 Poleras Piqué para HITES — aprobado, con costo real
 -- SCOS-000002: 50 Pantalones Cargo para MEDCELL — aprobado, con costo real
-INSERT IGNORE INTO solicitudes_costos (idscos, numero, estado, tipo, cliente_id, vendedor_id, articulo_descripcion, nombre_prenda, genero, tallaje, es_muestra, has_logo, cantidad, fecha, costo_total) VALUES
-    (1, 'SCOS-000001', 'APROBADA', 'SCOS', 1, 1, 'POLERA',   'POLERA PIQUÉ CORPORATIVA',  'UNISEX',    'ANTUAN SA', false, true,  100, CURRENT_DATE, 1060000.00),
-    (2, 'SCOS-000002', 'APROBADA', 'SCOS', 2, 2, 'PANTALON', 'PANTALÓN CARGO OPERARIO',   'MASCULINO', 'CLIENTE',   false, false,  50, CURRENT_DATE,  858550.00);
+INSERT INTO solicitudes_costos (idscos, numero, estado, tipo, cliente_id, vendedor_id, articulo_descripcion, nombre_prenda, genero, tallaje, es_muestra, has_logo, cantidad, fecha, costo_total) VALUES
+    (1, 'SCOS-000001', 'PENDIENTE', 'SCOS', 1, 1, 'POLERA',   'POLERA PIQUÉ CORPORATIVA',  'UNISEX',    'ANTUAN SA', false, true,  100, CURRENT_DATE, 1060000.00),
+    (2, 'SCOS-000002', 'APROBADA', 'SCOS', 2, 2, 'PANTALON', 'PANTALÓN CARGO OPERARIO',   'MASCULINO', 'CLIENTE',   false, false,  50, CURRENT_DATE,  858550.00)
+ON DUPLICATE KEY UPDATE
+    estado = VALUES(estado),
+    costo_total = VALUES(costo_total);
 
 -- Telas de la SCOS-000001 (Polera Piqué)
 INSERT IGNORE INTO scos_telas (idscostela, solicitud_costos_id, aplicacion, descripcion, composicion, color, peso, unidad_medida) VALUES

@@ -16,7 +16,7 @@ public class SCOSLogotipoDTO {
     private String nombre;
     private String ubicacion;
     private String color;
-    private Double tamanio;
+    private String tamanio;
     private Integer cantidad;
     private BigDecimal precio;
 }

@@ -115,15 +115,23 @@ export default function SolicitudCostosContainer() {
           cantidad: a.cantidad,
         })),
         descripciones,
-        logotipos: (primeraPlantilla.logotipos || []).map(l => ({
-          tipo: l.tipo,
-          nombre: l.nombre,
-          ubicacion: l.ubicacion,
-          color: l.color,
-          tamanio: l.tamanio || l.tamano,
-          cantidad: l.cantidad,
-          precio: l.precio,
-        }))
+        logotipos: (primeraPlantilla.logotipos || []).map(l => {
+          // El backend guarda tamano como VARCHAR(50): combinamos valor+unidad => "6 cm"
+          const val    = l.tamanio || l.tamano || '';
+          const unidad = l.unidadMedidaLogo || 'cm';
+          const tamanoStr = val !== '' && val !== null && val !== undefined
+            ? `${val} ${unidad}`.trim()
+            : null;
+          return {
+            tipo:     l.tipo,
+            nombre:   l.nombre,
+            ubicacion: l.ubicacion,
+            color:    l.color,
+            tamanio:  tamanoStr,
+            cantidad: l.cantidad,
+            precio:   l.precio,
+          };
+        })
       };
       if (formData.idSolicitud && !isNaN(formData.idSolicitud)) {
         await updateSolicitudCostos(formData.idSolicitud, payload);
@@ -220,16 +228,24 @@ export default function SolicitudCostosContainer() {
         cantidad: a.cantidad
       }));
 
-      const logotipos = (record.logotipos || []).map(l => ({
-        id: Math.random().toString(36).substring(2, 9),
-        tipo: l.tipo,
-        nombre: l.nombre,
-        ubicacion: l.ubicacion,
-        color: l.color,
-        tamanio: l.tamanio || l.tamano,
-        cantidad: l.cantidad,
-        precio: l.precio
-      }));
+      const logotipos = (record.logotipos || []).map(l => {
+        // El backend devuelve tamano como string "6 cm" o "10 in" — separamos
+        const tamanoRaw  = l.tamanio || l.tamano || '';
+        const partes     = String(tamanoRaw).trim().split(/\s+/);
+        const valorNum   = partes[0] ? parseFloat(partes[0]) : '';
+        const unidadStr  = partes[1] || 'cm';
+        return {
+          id:              Math.random().toString(36).substring(2, 9),
+          tipo:            l.tipo,
+          nombre:          l.nombre,
+          ubicacion:       l.ubicacion,
+          color:           l.color,
+          tamanio:         isNaN(valorNum) ? '' : valorNum,
+          unidadMedidaLogo: unidadStr,
+          cantidad:        l.cantidad,
+          precio:          l.precio,
+        };
+      });
 
       const plantillas = [{
         id: record.id,

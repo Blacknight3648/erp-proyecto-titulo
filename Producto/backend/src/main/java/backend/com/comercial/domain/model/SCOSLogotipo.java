@@ -13,7 +13,7 @@ public class SCOSLogotipo {
     private String nombre;
     private String ubicacion;
     private String color;
-    private Double tamano;
+    private String tamano;
     private Integer cantidad;
     private BigDecimal precio;
 

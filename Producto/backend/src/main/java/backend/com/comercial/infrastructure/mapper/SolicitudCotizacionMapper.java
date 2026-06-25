@@ -73,6 +73,7 @@ public class SolicitudCotizacionMapper {
         entity.setNombre(domain.getNombre());
         entity.setUbicacion(domain.getUbicacion());
         entity.setColor(domain.getColor());
+        // tamano es String: puede contener "6 cm" o "10 in"
         entity.setTamano(domain.getTamano());
         entity.setCantidad(domain.getCantidad());
         entity.setPrecio(domain.getPrecio());

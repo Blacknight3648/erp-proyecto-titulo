@@ -15,6 +15,7 @@ export default function FichaPrendaPanel({ formData, readOnly, onAddItem, onUpda
                         onUpdate={(id, field, value) => !readOnly && onUpdateItem("logotipo", id, field, value)}
                         onRemove={(id) => !readOnly && onRemoveItem("logotipo", id)}
                         readOnly={readOnly}
+                        nombrePrenda={formData.nombrePrenda}
                     />
                 </div>
             )}
@@ -23,7 +24,7 @@ export default function FichaPrendaPanel({ formData, readOnly, onAddItem, onUpda
                 <div className="bg-slate-950 px-6 py-4 flex items-center gap-2.5">
                     <Shirt className="w-4 h-4 text-blue-400" />
                     <h2 className="text-sm font-semibold tracking-wide text-white">
-                        Ficha Integral de la Prenda
+                        Ficha Técnica
                     </h2>
                 </div>
 

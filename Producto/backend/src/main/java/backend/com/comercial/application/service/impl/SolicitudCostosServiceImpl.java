@@ -152,8 +152,15 @@ public class SolicitudCostosServiceImpl implements SolicitudCostosService {
         }
 
         if (dto.getLogotipos() != null) {
-            dto.getLogotipos().forEach(l -> domain.addLogotipo(new SCOSLogotipo(null, l.getTipo(), l.getNombre(),
-                    l.getUbicacion(), l.getColor(), l.getTamanio(), l.getCantidad(), l.getPrecio())));
+            dto.getLogotipos().forEach(l -> {
+                // Combinamos el valor numérico y la unidad en un solo String para guardar en tamano (VARCHAR 50)
+                String tamanoStr = null;
+                if (l.getTamanio() != null && !l.getTamanio().isBlank()) {
+                    tamanoStr = l.getTamanio().trim();
+                }
+                domain.addLogotipo(new SCOSLogotipo(null, l.getTipo(), l.getNombre(),
+                        l.getUbicacion(), l.getColor(), tamanoStr, l.getCantidad(), l.getPrecio()));
+            });
         }
     }
 

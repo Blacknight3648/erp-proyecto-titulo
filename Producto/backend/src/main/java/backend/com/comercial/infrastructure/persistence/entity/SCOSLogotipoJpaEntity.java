@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.math.BigDecimal;
+import jakarta.persistence.Column;
 
 @Entity
 @Table(name = "scos_logotipos")
@@ -28,7 +29,8 @@ public class SCOSLogotipoJpaEntity {
     private String nombre;
     private String ubicacion;
     private String color;
-    private Double tamano;
+    @Column(length = 50)
+    private String tamano;
     private Integer cantidad;
     
     @Column(precision = 14, scale = 2)

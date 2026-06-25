@@ -106,7 +106,7 @@ class SolicitudCostosServiceImplTest {
                 .nombre("Logo")
                 .ubicacion("Pecho")
                 .color("Negro")
-                .tamanio(5.0)
+                .tamanio("5.0 cm")
                 .cantidad(1)
                 .precio(BigDecimal.valueOf(1000))
                 .build();

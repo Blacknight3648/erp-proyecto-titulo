@@ -135,6 +135,7 @@ export default function FormTabs({
           }
           onRemove={(id) => !readOnly && handleRemoveItem("logotipo", id)}
           readOnly={readOnly}
+          nombrePrenda={formData.nombrePrenda || formData.nombre || formData.articuloDescripcion}
         />
       )}
 

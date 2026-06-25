@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { api, BACKEND_URL } from '../remote/service/api';
+import { api } from '../remote/service/api';
 import { toast } from 'sonner';
 
 /**
@@ -17,9 +17,14 @@ export function useMaestroSearch(tipo, fallbackOpts = []) {
   useEffect(() => {
     if (!tipo) return;
     const fetch = async () => {
+      const validTypes = ['TELA', 'PRENDA_LISTA', 'PRENDA_CONFECCIONAR', 'ACCESORIO'];
+      if (!validTypes.includes(tipo)) {
+        setItems(fallbackOpts);
+        return;
+      }
       try {
         setLoading(true);
-        const res  = await api.get(`${BACKEND_URL}/api/v3/maestros/articulos/tipo/${tipo}`);
+        const res  = await api.get(`/maestros/articulos/tipo/${tipo}`);
         const data = Array.isArray(res.data) ? res.data : [];
         const names = data.map(d => d.nombreArticulo || d.nombre || d).filter(Boolean);
         setItems(names.length > 0 ? names : fallbackOpts);
@@ -54,7 +59,7 @@ export function useMaestroSearch(tipo, fallbackOpts = []) {
       try {
         setLoading(true);
         const codigo = `${tipo.slice(0, 4)}${Date.now()}`.slice(0, 20);
-        await api.post(`${BACKEND_URL}/api/v3/maestros/articulos`, {
+        await api.post(`/maestros/articulos`, {
           codigoArticulo: codigo,
           nombreArticulo: val,
           tipoArticulo:   tipo,

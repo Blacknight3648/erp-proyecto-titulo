@@ -168,7 +168,7 @@ export default function TableroComercial() {
                                 <div className="space-y-4">
                                     {getColumnItems(column.id).map(item => (
                                         <div
-                                            key={item.id}
+                                            key={item.idSolicitud}
                                             onClick={() => handleCardClick(item)}
                                             className="bg-white p-6 rounded-[2rem] shadow-sm border border-gray-100 hover:shadow-xl hover:shadow-blue-50 hover:-translate-y-1 transition-all cursor-pointer group relative overflow-hidden"
                                         >

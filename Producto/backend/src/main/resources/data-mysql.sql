@@ -1,4 +1,10 @@
 -- ============================================================
+-- 0. SCHEMA FIXES (idempotent column-type corrections)
+-- ============================================================
+-- tamano was historically DOUBLE; ensure it is VARCHAR(50) to match the entity.
+ALTER TABLE scos_logotipos MODIFY COLUMN tamano VARCHAR(50);
+
+-- ============================================================
 -- 0. TIPO ARTÍCULO
 -- ============================================================
 INSERT IGNORE INTO tipo_articulo (id_tipo_articulo, codigo, nombre) VALUES

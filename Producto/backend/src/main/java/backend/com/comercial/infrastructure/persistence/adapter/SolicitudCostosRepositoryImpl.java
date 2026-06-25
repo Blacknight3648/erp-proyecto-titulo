@@ -94,6 +94,7 @@ public class SolicitudCostosRepositoryImpl implements SolicitudCostosRepository 
                     artRef.setIdArticulo(t.getIdArticulo());
                     te.setArticulo(artRef);
                 }
+                te.setAplicacion(t.getAplicacion());
                 te.setDescripcion(t.getDescripcion());
                 te.setProveedorReferencia(t.getProveedorReferencia());
                 if (t.getProveedorId() != null) {

@@ -291,9 +291,16 @@ export function usePlantillas() {
             setCache({}); // Limpiar cache general
             toast.success("Plantilla eliminada correctamente");
         } catch (err) {
-            console.error("[usePlantillas] Error deleting:", err);
-            toast.error("Error al eliminar la plantilla");
-            throw err;
+            if (err.response?.status === 404) {
+                // Si la configuración no existe en BD, el resultado final es el mismo (vacía).
+                setPlantillas(prev => prev.map(p => p.id === id ? { ...p, camposActivos: [] } : p));
+                setCache({});
+                toast.success("Plantilla eliminada correctamente");
+            } else {
+                console.error("[usePlantillas] Error deleting:", err);
+                toast.error("Error al eliminar la plantilla");
+                throw err;
+            }
         } finally {
             setLoading(false);
         }

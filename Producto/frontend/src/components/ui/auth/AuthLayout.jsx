@@ -17,11 +17,11 @@ export default function AuthLayout({ children }) {
 
                 {/* Logo */}
                 <div className="relative z-10 flex items-center gap-3">
-                    <img src={LogoNegro} alt="Atuan SA" className="w-11 h-11 object-contain" />
+                    <img src={LogoNegro} alt="Antuan SA" className="w-11 h-11 object-contain" />
 
                     <div className="flex flex-col">
                         <span className="text-xl font-bold tracking-tight text-white leading-none">
-                            Atuan <span className="text-slate-400 font-normal">SA</span>
+                            Antuan <span className="text-slate-400 font-normal">SA</span>
                         </span>
 
                         <span className="text-[9px] text-slate-500 tracking-widest uppercase mt-1 font-bold">

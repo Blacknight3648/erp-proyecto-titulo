@@ -60,10 +60,10 @@ export default function AuthLayout({ children }) {
 
                 {/* Logo móvil */}
                 <div className="flex lg:hidden items-center gap-2.5 mb-12">
-                    <img src={LogoNegro} alt="Atuan SA" className="w-8 h-8 object-contain" />
+                    <img src={LogoNegro} alt="Antuan SA" className="w-8 h-8 object-contain" />
 
                     <span className="text-md font-bold tracking-tight text-white">
-                        Atuan <span className="text-slate-500 font-normal">SA</span>
+                        Antuan <span className="text-slate-500 font-normal">SA</span>
                     </span>
                 </div>
 
@@ -106,7 +106,7 @@ export default function AuthLayout({ children }) {
                 <div className="mt-12 pt-6 border-t border-slate-900/60 text-left text-xs text-slate-600 max-w-xl lg:ml-8 xl:ml-16 w-full flex flex-col sm:flex-row sm:justify-between gap-2">
 
                     <span>
-                        Uso interno restringido · Atuan SA
+                        Uso interno restringido · Antuan SA
                     </span>
 
                     <a

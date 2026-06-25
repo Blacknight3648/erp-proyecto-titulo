@@ -156,6 +156,12 @@ public class CosteoServiceImpl implements CosteoService {
     }
 
     @Override
+    @Transactional
+    public void deleteBySolicitudCostosId(Long scosId) {
+        repository.deleteBySolicitudCostosId(scosId);
+    }
+
+    @Override
     @Transactional(readOnly = true)
     public java.util.List<CosteoDTO> obtenerDisponiblesParaEVN() {
         java.util.Set<Long> vinculados = new java.util.HashSet<>(evnRepository.findLinkedCosteoIds());

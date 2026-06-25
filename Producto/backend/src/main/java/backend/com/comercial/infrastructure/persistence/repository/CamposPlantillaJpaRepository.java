@@ -4,6 +4,7 @@ import backend.com.comercial.infrastructure.persistence.entity.CamposPlantillaJp
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -12,4 +13,6 @@ public interface CamposPlantillaJpaRepository extends JpaRepository<CamposPlanti
     Optional<CamposPlantillaJpaEntity> findByNombreCampoIgnoreCase(String nombreCampo);
 
     boolean existsByNombreCampoIgnoreCase(String nombreCampo);
+
+    List<CamposPlantillaJpaEntity> findAllByActivoTrue();
 }

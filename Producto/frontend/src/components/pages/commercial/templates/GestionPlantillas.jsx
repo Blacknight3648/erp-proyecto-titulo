@@ -8,6 +8,7 @@ import FieldModal from './Views/Modals/FieldModal';
 export default function GestionPlantillas() {
     const {
         configuraciones, loading, remove,
+        camposDisponibles,
         expanded, toggleExpand,
         adding, setAdding,
         newName, setNewName,
@@ -75,13 +76,14 @@ export default function GestionPlantillas() {
                         </div>
                     </div>
 
-                    <ConfiguracionTecnica 
+                    <ConfiguracionTecnica
                         isNew={true}
                         configId={null}
                         camposActivos={newCampos}
                         customFields={newCustomFields}
                         telas={newTelas}
                         accesorios={newAccesorios}
+                        availableFields={camposDisponibles}
                         onToggleField={(_, field) => toggleFieldInNew(field)}
                         onRemoveCustomField={removeCustomField}
                         onOpenFieldModal={(isNew, id) => setFieldModal({ open: true, isNew, configId: id, fieldName: "" })}
@@ -93,11 +95,12 @@ export default function GestionPlantillas() {
             )}
 
             {/* Lista de configuraciones */}
-            <ListaPlantillas 
+            <ListaPlantillas
                 configuraciones={configuraciones}
                 expanded={expanded}
                 toggleExpand={toggleExpand}
                 remove={remove}
+                availableFields={camposDisponibles}
                 editCampos={editCampos}
                 editTelas={editTelas}
                 editAccesorios={editAccesorios}

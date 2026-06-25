@@ -119,6 +119,7 @@ public class SolicitudCostosServiceImpl implements SolicitudCostosService {
     @Override
     @Transactional
     public void delete(Long id) {
+        costeoService.deleteBySolicitudCostosId(id);
         descripcionPlantillaRepository.deleteByIdSCOS(id);
         repository.deleteById(id);
     }

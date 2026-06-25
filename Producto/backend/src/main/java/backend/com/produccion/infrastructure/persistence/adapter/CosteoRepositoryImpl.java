@@ -73,4 +73,12 @@ public class CosteoRepositoryImpl implements CosteoRepository {
             return Optional.empty();
         return jpaRepository.findById(id).map(mapper::toDomain);
     }
+
+    @Override
+    public void deleteBySolicitudCostosId(Long solicitudCostosId) {
+        if (solicitudCostosId == null) return;
+        // Se borra iterando y usando delete para que actúen los cascades (orphanRemoval) en las listas de items
+        jpaRepository.findAllBySolicitudCostosId(solicitudCostosId)
+                .forEach(jpaRepository::delete);
+    }
 }

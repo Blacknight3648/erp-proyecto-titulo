@@ -9,6 +9,8 @@ public interface CamposPlantillaRepository {
 
     List<CamposPlantilla> findAll();
 
+    List<CamposPlantilla> findAllActivos();
+
     Optional<CamposPlantilla> findById(Long id);
 
     Optional<CamposPlantilla> findByNombreCampo(String nombreCampo);

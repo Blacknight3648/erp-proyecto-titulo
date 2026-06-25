@@ -142,8 +142,20 @@ export const ALL_FIELDS = new Set(Object.keys(FIELD_LABELS));
 export function usePlantillas() {
     const [cache, setCache] = useState({});
     const [plantillas, setPlantillas] = useState([]);
+    const [camposDisponibles, setCamposDisponibles] = useState([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
+
+    const fetchCamposDisponibles = useCallback(async () => {
+        try {
+            const { data } = await api.get(`${BACKEND_URL}/api/v3/comercial/plantillas`);
+            // La API devuelve solo campos con activo=true (filtrado en backend)
+            setCamposDisponibles(Array.isArray(data) ? data : []);
+        } catch (err) {
+            console.error("[usePlantillas] Error fetching campos del catálogo:", err);
+            // Fallback: dejar la lista vacía; ConfiguracionTecnica usará ALL_FIELDS
+        }
+    }, []);
 
     const fetchAll = useCallback(async () => {
         try {
@@ -169,7 +181,8 @@ export function usePlantillas() {
 
     useEffect(() => {
         fetchAll();
-    }, [fetchAll]);
+        fetchCamposDisponibles();
+    }, [fetchAll, fetchCamposDisponibles]);
 
     const getCamposForArticulo = useCallback(async (articuloDescripcion = '') => {
         const tipo = (articuloDescripcion || '').split(' - ')[0].trim().toUpperCase();
@@ -290,6 +303,7 @@ export function usePlantillas() {
         getCamposForArticulo,
         plantillas,
         configuraciones: plantillas, // Alias para compatibilidad con GestionPlantillas
+        camposDisponibles,
         save,
         remove,
         loading,

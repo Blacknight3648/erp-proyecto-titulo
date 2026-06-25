@@ -11,4 +11,5 @@ public interface CosteoJpaRepository extends JpaRepository<CosteoJpaEntity, Long
     Optional<CosteoJpaEntity> findBySolicitudCostosId(Long solicitudCostosId);
     java.util.List<CosteoJpaEntity> findAllBySolicitudCostosId(Long solicitudCostosId);
     Optional<CosteoJpaEntity> findByNotaVentaId(Long notaVentaId);
+    void deleteBySolicitudCostosId(Long solicitudCostosId);
 }

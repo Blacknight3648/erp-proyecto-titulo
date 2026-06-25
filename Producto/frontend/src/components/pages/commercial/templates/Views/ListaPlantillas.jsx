@@ -7,6 +7,7 @@ export default function ListaPlantillas({
     expanded,
     toggleExpand,
     remove,
+    availableFields,
     editCampos,
     editTelas,
     editAccesorios,
@@ -63,13 +64,14 @@ export default function ListaPlantillas({
                         {isOpen && (
                             <div className="p-8 pt-0 border-t border-gray-50 space-y-8 animate-in slide-in-from-top-2 duration-300">
                                 <div className="pt-6">
-                                    <ConfiguracionTecnica 
+                                    <ConfiguracionTecnica
                                         isNew={false}
                                         configId={config.id}
                                         camposActivos={localCampos}
                                         customFields={localCustomFields}
                                         telas={localTelas}
                                         accesorios={localAccesorios}
+                                        availableFields={availableFields}
                                         onToggleField={toggleFieldInEdit}
                                         onRemoveCustomField={removeCustomField}
                                         onOpenFieldModal={(isNew, id) => setFieldModal({ open: true, isNew, configId: id, fieldName: "" })}

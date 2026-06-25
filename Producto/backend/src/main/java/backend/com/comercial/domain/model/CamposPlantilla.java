@@ -15,4 +15,7 @@ public class CamposPlantilla {
 
     private Long idPlantilla;
     private String nombreCampo;
+
+    @Builder.Default
+    private boolean activo = true;
 }

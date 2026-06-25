@@ -9,6 +9,7 @@ export default function ConfiguracionTecnica({
     customFields,
     telas,
     accesorios,
+    availableFields,
     onToggleField,
     onRemoveCustomField,
     onOpenFieldModal,
@@ -16,6 +17,11 @@ export default function ConfiguracionTecnica({
     onUpdateTableItem,
     onRemoveTableItem
 }) {
+    // Usa campos de la API si están disponibles; si no, usa la lista hardcodeada como fallback
+    const camposList = (availableFields && availableFields.length > 0)
+        ? availableFields
+        : Array.from(ALL_FIELDS).map(nombre => ({ nombreCampo: nombre }));
+
     return (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             {/* Sección de Campos */}
@@ -33,11 +39,14 @@ export default function ConfiguracionTecnica({
                         Agregar Nuevo Campo
                     </button>
                 </div>
-                
+
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                    {Array.from(ALL_FIELDS).map(field => (
-                        <button 
-                            key={field} 
+                    {camposList.map(campo => {
+                        const field = campo.nombreCampo;
+                        const label = FIELD_LABELS[field] || field;
+                        return (
+                        <button
+                            key={field}
                             type="button"
                             onClick={() => onToggleField(configId, field)}
                             className={`flex items-center gap-2 px-3 py-2 rounded-xl text-[9px] font-black uppercase tracking-wide transition-all border ${
@@ -47,9 +56,10 @@ export default function ConfiguracionTecnica({
                             }`}
                         >
                             <div className={`w-2.5 h-2.5 rounded-sm flex-shrink-0 transition-all ${camposActivos.has(field) ? 'bg-blue-500' : 'bg-gray-200'}`} />
-                            {FIELD_LABELS[field]}
+                            {label}
                         </button>
-                    ))}
+                        );
+                    })}
                     
                     {/* Custom Fields */}
                     {Object.entries(customFields || {}).map(([key, item]) => (

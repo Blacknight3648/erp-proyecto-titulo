@@ -11,6 +11,7 @@ public interface CosteoService {
     Optional<CosteoDTO> findById(Long id);
     Optional<CosteoDTO> findBySolicitudCostosId(Long scosId);
     List<CosteoDTO> findAllBySolicitudCostosId(Long scosId);
+    void deleteBySolicitudCostosId(Long scosId);
     Optional<CosteoResumenEVNDTO> obtenerResumenEVN(Long idCosteo);
     /** Costeos APROBADOS y no vinculados a ningún ítem de EVN (disponibles para vincular). */
     List<CosteoDTO> obtenerDisponiblesParaEVN();

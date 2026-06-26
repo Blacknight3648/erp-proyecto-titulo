@@ -63,7 +63,7 @@ export const DEFAULT_OTROS_COSTOS = {
         { id: 1, etiqueta: 'PANTALON', costoCinta: 400, costoMO: 2600, mtsCinta: 2.4, total: 3560 },
         { id: 2, etiqueta: 'TOP', costoCinta: 400, costoMO: 2500, mtsCinta: 2.0, total: 3300 }
     ],
-    porcentajeComision: 0.05
+    porcentajeComision: 5.0
 };
 
 export const parseId = (id) => {
@@ -254,7 +254,7 @@ export const useEVNState = (initialEval = null) => {
                 referencia: initialEval.referencia || "",
                 condiciones: {
                     ...prev.condiciones,
-                    plazoEntrega: initialEval.fechaEvaluacion || ""
+                    plazoEntrega: ""
                 }
             }));
         } else {
@@ -326,7 +326,9 @@ export const useEVNState = (initialEval = null) => {
 
         const totalNeto = itemsConCostos.reduce((acc, item) => acc + (item.precioVentaTotal || 0), 0);
         const totalCostoGeneral = itemsConCostos.reduce((acc, item) => acc + (item.costoTotal || 0), 0);
-        const margenPesos = totalNeto - totalCostoGeneral;
+        const comisionPct = currentOtros.porcentajeComision || 0;
+        const comisionMonto = totalNeto * (comisionPct / 100);
+        const margenPesos = totalNeto - totalCostoGeneral - comisionMonto;
         const margenPorc = totalNeto > 0 ? (margenPesos / totalNeto) * 100 : 0;
 
         return {
@@ -460,6 +462,7 @@ export const useEVNState = (initialEval = null) => {
             clienteNombre: doc.clienteNombre
         }));
 
+        const cant = doc.cantidad || 1;
         const totalCosto = quote ? (
             (quote.costoHilos || 0) +
             (quote.costoManoObra || 0) +
@@ -469,6 +472,8 @@ export const useEVNState = (initialEval = null) => {
             (quote.costoTotalMateriaPrima || 0)
         ) : (doc.costoTotal || 0);
 
+        const unitCosto = totalCosto / cant;
+
         const newItem = {
             ...DEFAULT_ITEM,
             id: Date.now() + Math.random(),
@@ -477,9 +482,9 @@ export const useEVNState = (initialEval = null) => {
             cant: doc.cantidad || 0,
             tipo: 'SC',
             codigoInterno: doc.numero || "",
-            costoProducto: totalCosto,
-            costoTotalUnitario: totalCosto,
-            costoTotal: totalCosto * (doc.cantidad || 0)
+            costoProducto: unitCosto,
+            costoTotalUnitario: unitCosto,
+            costoTotal: totalCosto
         };
 
         setItems(prev => [...prev.filter(i => i.producto !== ""), newItem]);
@@ -529,6 +534,7 @@ export const useEVNState = (initialEval = null) => {
         }
 
         const newItems = selectedDocs.map((doc, index) => {
+            const cant = doc.cantidad || doc.cant || 1;
             const costoPersistido = doc.costoTotal || 0;
             const totalMateriales = costoPersistido > 0 ? costoPersistido : (
                 (doc.telas || []).reduce((sum, t) => sum + (t.precioTotal || t.costoTotal || ((t.precioUnitario || 0) * (t.consumo || 0))), 0) +
@@ -547,9 +553,9 @@ export const useEVNState = (initialEval = null) => {
                 proveedor: doc.clienteNombre || "",
                 tela: doc.telas?.[0]?.descripcion || "",
                 composicion: doc.telas?.[0]?.composicion || "",
-                costoProducto: totalMateriales,
-                costoLogo: totalLogo,
-                costoOrdenTrabajo: doc.costoFijo?.total || 0,
+                costoProducto: totalMateriales / cant,
+                costoLogo: totalLogo / cant,
+                costoOrdenTrabajo: (doc.costoFijo?.total || 0) / cant,
             };
         });
 

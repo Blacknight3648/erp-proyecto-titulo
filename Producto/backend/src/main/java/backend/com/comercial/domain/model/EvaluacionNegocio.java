@@ -174,6 +174,7 @@ public class EvaluacionNegocio {
             return new backend.com.shared.valueobjects.Money(BigDecimal.ZERO, "CLP");
         }
         BigDecimal montoVenta = getMontoTotal().getAmount();
+        // porcentajeComision es un porcentaje directo (e.g. 3.5 = 3.5%); se divide por 100
         BigDecimal comision = montoVenta.multiply(porcentajeComision)
                 .divide(new BigDecimal("100"), 2, java.math.RoundingMode.HALF_UP);
         return new backend.com.shared.valueobjects.Money(comision, "CLP");

@@ -209,23 +209,6 @@
   flex-shrink: 0;
 }
 
-/* =========================================================
-   SIDEBAR ACTIVE ITEM — Gradiente azul-lila corporativo
-   Referencia visual: Linear / Vercel nav activo
-   Psicología: contraste claro = sensación de control y foco
-========================================================= */
-.sidebar-active-item {
-  background: linear-gradient(
-    135deg,
-    rgba(74, 158, 255, 0.22) 0%,
-    rgba(99, 102, 241, 0.16) 100%
-  ) !important;
-  border: 1px solid rgba(74, 158, 255, 0.28) !important;
-  box-shadow:
-    0 2px 12px rgba(74, 158, 255, 0.14),
-    inset 0 1px 0 rgba(255, 255, 255, 0.08) !important;
-  color: #ffffff !important;
-}
 
 /* =========================================================
    TOPBAR / HEADER
@@ -515,7 +498,7 @@
 }
 
 .btn-destructive:hover {
-  background: #a8151f;
+  background: var(--destructive-hover);
   box-shadow: 0 4px 16px rgba(192, 25, 43, 0.30);
 }
 
@@ -569,46 +552,48 @@
   box-shadow: var(--shadow-sm);
 }
 
-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 0.875rem;
-}
+@layer base {
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.875rem;
+  }
 
-thead tr {
-  background: var(--surface-2);
-  border-bottom: 1px solid var(--border-strong);
-}
+  thead tr {
+    background: var(--surface-2);
+    border-bottom: 1px solid var(--border-strong);
+  }
 
-thead th {
-  padding: 0.8125rem 1rem;
-  text-align: left;
-  font-size: 0.725rem;
-  font-weight: var(--font-weight-semibold);
-  color: var(--muted-foreground);
-  text-transform: uppercase;
-  letter-spacing: 0.07em;
-  white-space: nowrap;
-}
+  thead th {
+    padding: 0.8125rem 1rem;
+    text-align: left;
+    font-size: 0.725rem;
+    font-weight: var(--font-weight-semibold);
+    color: var(--muted-foreground);
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    white-space: nowrap;
+  }
 
-tbody tr {
-  border-bottom: 1px solid var(--border);
-  transition: background-color var(--transition-fast);
-}
+  tbody tr {
+    border-bottom: 1px solid var(--border);
+    transition: background-color var(--transition-fast);
+  }
 
-tbody tr:last-child {
-  border-bottom: none;
-}
+  tbody tr:last-child {
+    border-bottom: none;
+  }
 
-tbody tr:hover {
-  background: var(--surface-3);
-}
+  tbody tr:hover {
+    background: var(--surface-3);
+  }
 
-tbody td {
-  padding: 0.9375rem 1rem;
-  color: var(--foreground);
-  vertical-align: middle;
-  line-height: 1.4;
+  tbody td {
+    padding: 0.9375rem 1rem;
+    color: var(--foreground);
+    vertical-align: middle;
+    line-height: 1.4;
+  }
 }
 
 /* =========================================================
@@ -678,39 +663,6 @@ tbody td {
   align-items: center;
   gap: 0.25rem;
   font-weight: var(--font-weight-medium);
-}
-
-/* =========================================================
-   LOGO
-========================================================= */
-
-.logo {
-  height: 5rem;
-  padding: 0.875rem;
-  transition:
-    transform var(--transition-normal),
-    filter var(--transition-normal);
-  will-change: transform, filter;
-}
-
-.logo:hover {
-  transform: translateY(-2px) scale(1.04);
-  filter: drop-shadow(0 8px 20px rgba(18, 67, 168, 0.25));
-}
-
-.logo.react:hover {
-  filter: drop-shadow(0 8px 24px rgba(34, 211, 238, 0.30));
-}
-
-@keyframes logo-spin {
-  from { transform: rotate(0deg); }
-  to   { transform: rotate(360deg); }
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
-  }
 }
 
 /* =========================================================

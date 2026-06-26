@@ -36,7 +36,7 @@ export default function TableroComercial() {
     const navigate = useNavigate();
     const [searchTerm, setSearchTerm] = useState('');
     const [viewMode, setViewMode] = useState('kanban'); // 'kanban' | 'list'
-    const { notasVenta, solicitudesCostos, load, loading } = useComercial();
+    const { notasVenta, solicitudesCostos, evaluacionesNegocio, load, loading } = useComercial();
     const [allSolicitudes, setAllSolicitudes] = useState([]);
 
     React.useEffect(() => {
@@ -44,27 +44,51 @@ export default function TableroComercial() {
     }, []);
 
     React.useEffect(() => {
-        // Combinar Solicitudes de Costos y Notas de Venta
-        // Las Notas de Venta generalmente representan estados finales del tablero
-        // Las Solicitudes de Costos representan los estados iniciales
+        // SCOS PENDIENTE → "Pendiente Costeo"
+        // SCOS APROBADA  → "Costeado" (el costeo fue aprobado, aún sin EVN)
+        const mapEstadoSCOS = (estado) => {
+            if (estado === 'PENDIENTE') return 'Pendiente Costeo';
+            if (estado === 'APROBADA')  return 'Costeado';
+            return 'Pendiente Costeo';
+        };
+
+        // EVN BORRADOR/EVALUACION → "Costeado" (en proceso de evaluación)
+        // EVN APROBADA/ADJUDICADA → "Costo Aprobado" (aprobada comercialmente)
+        const mapEstadoEVN = (estado) => {
+            if (estado === 'BORRADOR' || estado === 'EVALUACION') return 'Costeado';
+            if (estado === 'APROBADA' || estado === 'ADJUDICADA') return 'Costo Aprobado';
+            return null; // RECHAZADA, CANCELADA, CERRADA no aparecen en el tablero
+        };
 
         const scMapped = solicitudesCostos.map(sc => ({
             ...sc,
             idSolicitud: sc.numero || `SCOS-${sc.id}`,
             clienteNombre: sc.clienteNombre || 'S/N',
-            // El estado del SCOS puede venir mapeado del backend
-            estado: sc.estado === 'PENDIENTE' ? 'Pendiente Costeo' : sc.estado
+            estado: mapEstadoSCOS(sc.estado)
         }));
+
+        const evnMapped = (evaluacionesNegocio || [])
+            .map(evn => {
+                const estadoColumna = mapEstadoEVN(evn.estado);
+                if (!estadoColumna) return null;
+                return {
+                    ...evn,
+                    idSolicitud: evn.numero || `EVN-${evn.id}`,
+                    clienteNombre: evn.clienteNombre || 'S/N',
+                    estado: estadoColumna
+                };
+            })
+            .filter(Boolean);
 
         const nvMapped = notasVenta.map(nv => ({
             ...nv,
-            idSolicitud: nv.numeroNV ? nv.numeroNV : `NV-${nv.id}`,
+            idSolicitud: nv.numeroNV || `NV-${nv.idNV || nv.id}`,
             clienteNombre: nv.clienteNombre || 'S/N',
-            estado: 'Evaluado' // Las NVs ya están evaluadas/adjudicadas
+            estado: 'Evaluado'
         }));
 
-        setAllSolicitudes([...scMapped, ...nvMapped]);
-    }, [notasVenta, solicitudesCostos]);
+        setAllSolicitudes([...scMapped, ...evnMapped, ...nvMapped]);
+    }, [notasVenta, solicitudesCostos, evaluacionesNegocio]);
 
     const filteredItems = allSolicitudes.filter(item => {
         const clienteNombre = item.clienteNombre || 'S/N';
@@ -87,8 +111,9 @@ export default function TableroComercial() {
 
     const handleCardClick = (item) => {
         if (item.estado === 'Pendiente Costeo') navigate('/comercial/solicitudes-costos');
-        if (item.estado === 'Costeado') navigate('/comercial/costeo-mp');
+        if (item.estado === 'Costeado') navigate('/comercial/administracion-negocios');
         if (item.estado === 'Costo Aprobado') navigate('/comercial/administracion-negocios');
+        if (item.estado === 'Evaluado') navigate('/registros-nv');
     };
 
     return (

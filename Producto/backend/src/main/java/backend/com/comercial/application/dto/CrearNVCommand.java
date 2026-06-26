@@ -15,7 +15,6 @@ public class CrearNVCommand {
     /** Ignorado por el backend: el número lo asigna NumeroDocumentoService. */
     private Long numero;
 
-    @NotNull(message = "La evaluación de negocio es obligatoria")
     private Long evaluacionNegocioId;
 
     @NotNull(message = "El cliente es obligatorio")

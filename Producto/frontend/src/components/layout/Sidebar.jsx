@@ -39,7 +39,7 @@ const menuItems = [
     submenu: [
       { path: '/comercial/tablero',            label: 'Tablero Comercial',       icon: LayoutDashboard },
       { path: '/comercial/solicitudes-costos',        label: 'Solicitudes de Costos',      icon: DollarSign },
-      { path: '/comercial/solicitudes-cotizaciones',  label: 'Cotizaciones',            icon: FileText },
+      { path: '/comercial/solicitudes-cotizaciones',  label: 'Solicitudes de Cotizaciones',icon: FileText },
       { path: '/comercial/administracion-negocios',   label: 'Gestión de Negocios',     icon: Target },
       { path: '/registros-nv',                        label: 'Notas de Venta (NV)',     icon: FileText },
       { path: '/comercial/registros-sc',              label: 'Solicitudes de Compra', icon: ClipboardList },
@@ -221,7 +221,7 @@ export default function Sidebar({ isOpen, setIsOpen }) {
             {isOpen && (
               <div style={{ display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
                 <p style={{ margin: 0, fontWeight: 600, color: C.textPrimary, fontSize: '13px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                  Atuan S.A.
+                  Antuan S.A.
                 </p>
                 <p style={{ margin: 0, fontSize: '10px', color: C.textMuted, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.02em' }}>
                   Gestión Corporativa

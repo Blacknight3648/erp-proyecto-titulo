@@ -1,6 +1,6 @@
 import React from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { ChevronLeft, ClipboardList, AlertCircle, History, Construction } from 'lucide-react';
+import { ChevronLeft, ClipboardList, AlertCircle, History, Construction, FileText } from 'lucide-react';
 
 const routeConfigs = {
   '/comercial/registros-sc': {
@@ -8,6 +8,13 @@ const routeConfigs = {
     highlight: 'Compra',
     icon: ClipboardList,
     description: 'Estamos construyendo una nueva experiencia para la gestión de solicitudes de compra. Próximamente disponible.',
+    badge: 'Módulo en Desarrollo'
+  },
+  '/comercial/cotizaciones': {
+    title: 'Solicitud de',
+    highlight: 'Cotizaciones',
+    icon: FileText,
+    description: 'Estamos construyendo una nueva experiencia para la gestión de solicitudes de cotización. Próximamente disponible.',
     badge: 'Módulo en Desarrollo'
   },
   '/adquisiciones/estado-sc': {

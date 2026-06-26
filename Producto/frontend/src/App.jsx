@@ -78,8 +78,8 @@ function PrivateRoute({ children }) {
 function MainLayout({ children }) {
 
   const [isSidebarOpen, setIsSidebarOpen] = useState(() => window.innerWidth >= 768);
-  const location   = useLocation();
-  const hasModule  = !!getActiveModule(location.pathname);
+  const location = useLocation();
+  const hasModule = !!getActiveModule(location.pathname);
 
   return (
     <div className="flex min-h-screen">
@@ -90,9 +90,8 @@ function MainLayout({ children }) {
       />
 
       <div
-        className={`flex-1 transition-all duration-300 ${
-          isSidebarOpen ? "md:ml-64" : "md:ml-20"
-        } ml-0 flex flex-col min-h-screen overflow-hidden`}
+        className={`flex-1 transition-all duration-300 ${isSidebarOpen ? "md:ml-64" : "md:ml-20"
+          } ml-0 flex flex-col min-h-screen overflow-hidden`}
       >
 
         <Navbar isSidebarOpen={isSidebarOpen} setIsSidebarOpen={setIsSidebarOpen} />
@@ -101,9 +100,8 @@ function MainLayout({ children }) {
         <ModuleTabBar isSidebarOpen={isSidebarOpen} />
 
         <main
-          className={`${
-            hasModule ? 'mt-[120px]' : 'mt-[76px]'
-          } p-4 sm:p-6 lg:p-8 flex-1 animate-in fade-in duration-500 overflow-auto`}
+          className={`${hasModule ? 'mt-[120px]' : 'mt-[76px]'
+            } p-4 sm:p-6 lg:p-8 flex-1 animate-in fade-in duration-500 overflow-auto`}
         >
           {children}
         </main>
@@ -202,6 +200,11 @@ function App() {
             <Route
               path="/comercial/solicitudes-costos"
               element={<PrivateRoute><MainLayout><SolicitudCostosContainer /></MainLayout></PrivateRoute>}
+            />
+
+            <Route
+              path="/comercial/solicitudes-cotizaciones"
+              element={<PrivateRoute><MainLayout><UnderMaintenance /></MainLayout></PrivateRoute>}
             />
 
             <Route

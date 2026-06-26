@@ -10,16 +10,16 @@ import {
    TOKENS DE COLOR (sincronizados con Sidebar)
 ───────────────────────────────────────── */
 const C = {
-  bg:          '#090d16',
-  bgHover:     'rgba(255,255,255,0.04)',
+  bg: '#090d16',
+  bgHover: 'rgba(255,255,255,0.04)',
   bgActiveTab: 'rgba(56,189,248,0.07)',
-  border:      'rgba(255,255,255,0.05)',
-  borderDiv:   'rgba(255,255,255,0.04)',
+  border: 'rgba(255,255,255,0.05)',
+  borderDiv: 'rgba(255,255,255,0.04)',
   textPrimary: '#ffffff',
-  textSub:     '#94a3b8',
-  textMuted:   '#475569',
-  iconActive:  '#38bdf8',
-  accent:      '#38bdf8',
+  textSub: '#94a3b8',
+  textMuted: '#475569',
+  iconActive: '#38bdf8',
+  accent: '#38bdf8',
 };
 
 /* ─────────────────────────────────────────
@@ -27,57 +27,58 @@ const C = {
 ───────────────────────────────────────── */
 const MODULE_TABS = {
   comercial: {
-    label:     'Área Comercial',
+    label: 'Área Comercial',
     homeRoute: '/comercial/tablero',
     matchPaths: ['/comercial/', '/registros-nv', '/detalle-nv'],
     tabs: [
-      { path: '/comercial/tablero',                label: 'Tablero',         icon: LayoutDashboard },
-      { path: '/comercial/solicitudes-costos',      label: 'Sol. Costos',     icon: DollarSign      },
-      { path: '/comercial/administracion-negocios', label: 'Gest. Negocios',  icon: Target          },
-      { path: '/registros-nv',                      label: 'Notas de Venta',  icon: FileText        },
-      { path: '/comercial/gestion-proyectos',       label: 'Proyectos',       icon: Briefcase       },
-      { path: '/comercial/gestion-plantillas',      label: 'Plantillas',      icon: Settings        },
-      { path: '/comercial/ordenes-produccion',      label: 'Órd. Producción', icon: Scissors        },
+      { path: '/comercial/tablero', label: 'Tablero', icon: LayoutDashboard },
+      { path: '/comercial/solicitudes-costos', label: 'Sol. Costos', icon: DollarSign },
+      { path: '/comercial/solicitudes-cotizaciones', label: 'Solicitudes de Cotizaciones', icon: FileText },
+      { path: '/comercial/administracion-negocios', label: 'Gest. Negocios', icon: Target },
+      { path: '/registros-nv', label: 'Notas de Venta', icon: FileText },
+      { path: '/comercial/gestion-proyectos', label: 'Proyectos', icon: Briefcase },
+      { path: '/comercial/gestion-plantillas', label: 'Plantillas', icon: Settings },
+      { path: '/comercial/ordenes-produccion', label: 'Órd. Producción', icon: Scissors },
     ],
   },
   produccion: {
-    label:     'Producción',
+    label: 'Producción',
     homeRoute: '/dashboard-op',
     matchPaths: ['/produccion/', '/dashboard-op', '/op-registro'],
     tabs: [
-      { path: '/dashboard-op',           label: 'Dashboard',       icon: Factory      },
-      { path: '/produccion/tablero-op',  label: 'Seguimiento OP',  icon: LayoutDashboard },
-      { path: '/produccion/ordenes',     label: 'Órdenes',         icon: Scissors     },
-      { path: '/op-registro',            label: 'Registro OP',     icon: ClipboardList },
-      { path: '/produccion/costeo-mp',   label: 'Costeo MP',       icon: DollarSign   },
+      { path: '/dashboard-op', label: 'Dashboard', icon: Factory },
+      { path: '/produccion/tablero-op', label: 'Seguimiento OP', icon: LayoutDashboard },
+      { path: '/produccion/ordenes', label: 'Órdenes', icon: Scissors },
+      { path: '/op-registro', label: 'Registro OP', icon: ClipboardList },
+      { path: '/produccion/costeo-mp', label: 'Costeo MP', icon: DollarSign },
       { path: '/produccion/hoja-compra', label: 'Hojas de Compra', icon: ClipboardList },
-      { path: '/produccion/compras',     label: 'Compras',         icon: ShoppingCart },
+      { path: '/produccion/compras', label: 'Compras', icon: ShoppingCart },
     ],
   },
   usuarios: {
-    label:     'Gestión de Usuarios',
+    label: 'Gestión de Usuarios',
     homeRoute: '/gestion-usuarios/colaboradores',
     matchPaths: ['/gestion-usuarios/', '/gestion-usuarios', '/admin/areas', '/admin/roles'],
     tabs: [
-      { path: '/gestion-usuarios/colaboradores', label: 'Colaboradores', icon: Users     },
-      { path: '/gestion-usuarios/clientes',      label: 'Clientes',      icon: Users     },
-      { path: '/gestion-usuarios/proveedores',   label: 'Proveedores',   icon: Truck     },
-      { path: '/gestion-usuarios/vendedores',    label: 'Vendedores',    icon: BarChart3 },
-      { path: '/admin/areas',                    label: 'Áreas',         icon: Briefcase },
-      { path: '/admin/roles',                    label: 'Roles',         icon: Shield    },
+      { path: '/gestion-usuarios/colaboradores', label: 'Colaboradores', icon: Users },
+      { path: '/gestion-usuarios/clientes', label: 'Clientes', icon: Users },
+      { path: '/gestion-usuarios/proveedores', label: 'Proveedores', icon: Truck },
+      { path: '/gestion-usuarios/vendedores', label: 'Vendedores', icon: BarChart3 },
+      { path: '/admin/areas', label: 'Áreas', icon: Briefcase },
+      { path: '/admin/roles', label: 'Roles', icon: Shield },
     ],
   },
   trazabilidad: {
-    label:     'Trazabilidad Crítica',
+    label: 'Trazabilidad Crítica',
     homeRoute: '/trazabilidad/completa',
     matchPaths: ['/trazabilidad/'],
     tabs: [
-      { path: '/trazabilidad/completa', label: 'Traz. de Lote',    icon: Activity },
-      { path: '/trazabilidad/global',   label: 'Despachos y Log.', icon: Truck    },
+      { path: '/trazabilidad/completa', label: 'Traz. de Lote', icon: Activity },
+      { path: '/trazabilidad/global', label: 'Despachos y Log.', icon: Truck },
     ],
   },
   admin: {
-    label:     'Administración',
+    label: 'Administración',
     homeRoute: '/admin/datos-maestros',
     matchPaths: ['/admin/datos-maestros'],
     tabs: [
@@ -106,7 +107,7 @@ export function getActiveModule(pathname) {
 ───────────────────────────────────────── */
 export default function ModuleTabBar({ isSidebarOpen }) {
   const location = useLocation();
-  const navigate  = useNavigate();
+  const navigate = useNavigate();
   const activeModule = getActiveModule(location.pathname);
 
   /* Sin módulo activo → no renderizar nada */
@@ -196,9 +197,8 @@ export default function ModuleTabBar({ isSidebarOpen }) {
       `}</style>
 
       <header
-        className={`fixed top-[76px] right-0 z-[35] transition-all duration-300 ease-in-out left-0 ${
-          isSidebarOpen ? 'md:left-[260px]' : 'md:left-[72px]'
-        }`}
+        className={`fixed top-[76px] right-0 z-[35] transition-all duration-300 ease-in-out left-0 ${isSidebarOpen ? 'md:left-[260px]' : 'md:left-[72px]'
+          }`}
         style={{
           height: '44px',
           backgroundColor: C.bg,

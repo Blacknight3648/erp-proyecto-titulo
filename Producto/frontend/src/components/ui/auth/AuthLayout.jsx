@@ -17,11 +17,11 @@ export default function AuthLayout({ children }) {
 
                 {/* Logo */}
                 <div className="relative z-10 flex items-center gap-3">
-                    <img src={LogoNegro} alt="Atuan SA" className="w-11 h-11 object-contain" />
+                    <img src={LogoNegro} alt="Antuan Jury S.A." className="w-11 h-11 object-contain" />
 
                     <div className="flex flex-col">
                         <span className="text-xl font-bold tracking-tight text-white leading-none">
-                            Atuan <span className="text-slate-400 font-normal">SA</span>
+                            Antuan <span className="text-slate-400 font-normal">Jury S.A.</span>
                         </span>
 
                         <span className="text-[9px] text-slate-500 tracking-widest uppercase mt-1 font-bold">
@@ -60,10 +60,10 @@ export default function AuthLayout({ children }) {
 
                 {/* Logo móvil */}
                 <div className="flex lg:hidden items-center gap-2.5 mb-12">
-                    <img src={LogoNegro} alt="Atuan SA" className="w-8 h-8 object-contain" />
+                    <img src={LogoNegro} alt="Antuan Jury S.A." className="w-8 h-8 object-contain" />
 
                     <span className="text-md font-bold tracking-tight text-white">
-                        Atuan <span className="text-slate-500 font-normal">SA</span>
+                        Antuan <span className="text-slate-500 font-normal">Jury S.A.</span>
                     </span>
                 </div>
 
@@ -106,7 +106,7 @@ export default function AuthLayout({ children }) {
                 <div className="mt-12 pt-6 border-t border-slate-900/60 text-left text-xs text-slate-600 max-w-xl lg:ml-8 xl:ml-16 w-full flex flex-col sm:flex-row sm:justify-between gap-2">
 
                     <span>
-                        Uso interno restringido · Atuan SA
+                        Uso interno restringido · Antuan SA
                     </span>
 
                     <a

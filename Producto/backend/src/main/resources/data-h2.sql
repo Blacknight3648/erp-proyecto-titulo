@@ -253,9 +253,9 @@ MERGE INTO plantilla (id_plantilla, nombre_campo)
 MERGE INTO modelo_plantilla (id_modelo_plantilla, id_articulo, campos)
     KEY (id_modelo_plantilla)
     VALUES
-    (1, 1, 'gorro,bolsillos,mangas,forro'),                  -- Polar Fleece
-    (2, 2, 'cuello,relleno,bolsillos,abotonaduraCierre'),    -- Ripstop
-    (3, 3, 'mangas,pretinasRuedo');                          -- Jersey
+    (1, 1, 'GORRO,CUELLO,ABOTONADURA / CIERRE,CORTES Y APLICACIONES,FUELLES,MANGAS,PUÑOS,PRETINAS / RUEDO,BOLSILLOS,OBS. DEL MODELO'),                  -- Polar Fleece
+    (2, 2, 'CUELLO,ABOTONADURA / CIERRE,MANGAS,BOLSILLOS'),    -- Ripstop
+    (3, 3, 'CORTES Y APLICACIONES,MANGAS,PRETINAS / RUEDO');                          -- Jersey
 
 -- ============================================================
 -- 7.4. SOLICITUDES DE COSTOS (SCOS)

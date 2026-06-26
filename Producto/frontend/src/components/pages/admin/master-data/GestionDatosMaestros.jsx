@@ -4,6 +4,10 @@ import { api } from '../../../../remote/service/api';
 import { Toaster, toast } from 'sonner';
 import { confirmDelete } from '../../../../utils/confirmDelete';
 
+import { Card, CardHeader, CardTitle, CardContent } from "../../../ui/card";
+import { Input } from "../../../ui/input";
+import { Button } from "../../../ui/button";
+
 // labelField: campo que muestra en la tabla como "Nombre / Descripción"
 // formFields: campos del formulario con su label y nombre de campo en el DTO del backend
 const MASTER_DATA_ENTITIES = [
@@ -163,136 +167,143 @@ export default function GestionDatosMaestros() {
   );
 
   return (
-    <div className="flex h-[calc(100vh-6rem)] gap-6 animate-in fade-in duration-500">
+    <div className="flex h-[calc(100vh-6rem)] gap-6 animate-in fade-in duration-500 text-foreground bg-background">
       <Toaster position="top-right" richColors />
 
       {/* Sidebar for Entities */}
-      <div className="w-72 bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden flex flex-col">
-        <div className="p-6 border-b border-slate-100 bg-slate-50/50">
+      <Card className="w-72 overflow-hidden flex flex-col rounded-3xl">
+        <CardHeader className="p-6 border-b border-border bg-slate-50/50">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-blue-100 flex items-center justify-center text-blue-600">
+            <div className="w-10 h-10 rounded-xl bg-blue-100 dark:bg-blue-900/50 flex items-center justify-center text-blue-600 dark:text-blue-400">
               <Database size={20} />
             </div>
             <div>
-              <h2 className="font-bold text-slate-800 tracking-tight">Datos Maestros</h2>
-              <p className="text-xs text-slate-500 font-medium">Configuración base</p>
+              <CardTitle className="font-bold text-slate-800 dark:text-slate-200 tracking-tight">Datos Maestros</CardTitle>
+              <p className="text-xs text-muted-foreground font-medium">Configuración base</p>
             </div>
           </div>
-        </div>
+        </CardHeader>
 
-        <div className="flex-1 overflow-y-auto p-4 space-y-1 custom-scrollbar">
+        <CardContent className="flex-1 overflow-y-auto p-4 space-y-1 custom-scrollbar">
           {MASTER_DATA_ENTITIES.map((entity) => {
             const Icon = entity.icon;
             const isActive = activeEntity.id === entity.id;
             return (
-              <button
+              <Button
                 key={entity.id}
+                variant={isActive ? "secondary" : "ghost"}
                 onClick={() => setActiveEntity(entity)}
-                className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 text-sm font-semibold ${
+                className={`w-full flex items-center justify-start gap-3 px-4 py-3 text-sm font-semibold rounded-xl uppercase ${
                   isActive 
-                    ? 'bg-blue-50 text-blue-700' 
-                    : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
+                    ? 'bg-blue-50 text-blue-700 hover:bg-blue-100 border-none' 
+                    : 'text-muted-foreground hover:text-foreground'
                 }`}
               >
-                <Icon size={18} className={isActive ? 'text-blue-500' : 'text-slate-400'} />
+                <Icon size={18} className={isActive ? 'text-primary' : 'text-muted-foreground'} />
                 {entity.name}
-              </button>
+              </Button>
             );
           })}
-        </div>
-      </div>
+        </CardContent>
+      </Card>
 
       {/* Main Content Area */}
-      <div className="flex-1 bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden flex flex-col relative">
+      <Card className="flex-1 overflow-hidden flex flex-col relative rounded-3xl">
         {/* Header */}
-        <div className="p-6 border-b border-slate-100 flex items-center justify-between bg-white z-10">
+        <CardHeader className="p-6 border-b border-border flex flex-row items-center justify-between bg-white dark:bg-slate-900 z-10">
           <div>
-            <h1 className="text-2xl font-black text-slate-800 tracking-tight">Gestión de {activeEntity.name}</h1>
-            <p className="text-sm text-slate-500 mt-1 font-medium">
+            <CardTitle className="text-2xl font-black tracking-tight">Gestión de {activeEntity.name}</CardTitle>
+            <p className="text-sm text-muted-foreground mt-1 font-medium">
               Administra los registros maestros para el módulo de {activeEntity.name.toLowerCase()}
             </p>
           </div>
           
-          <button 
+          <Button 
             onClick={handleOpenNew}
-            className="flex items-center gap-2 bg-blue-600 text-white px-5 py-2.5 rounded-xl text-sm font-bold shadow-sm shadow-blue-600/20 hover:bg-blue-700 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200"
+            className="flex items-center gap-2 px-5 py-2.5 rounded-xl uppercase text-xs"
           >
             <Plus size={18} />
             Nuevo Registro
-          </button>
-        </div>
+          </Button>
+        </CardHeader>
 
         {/* Toolbar */}
         <div className="p-6 pb-2 flex gap-4">
           <div className="relative flex-1 max-w-md">
-            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
-            <input 
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground z-10" size={18} />
+            <Input 
               type="text"
               placeholder={`Buscar en ${activeEntity.name}...`}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+              className="pl-10 uppercase"
             />
           </div>
-          <button 
+          <Button 
+            variant="ghost"
+            size="sm"
             onClick={loadData}
-            className="p-2.5 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-all border border-transparent hover:border-blue-100"
+            className="p-2.5 text-muted-foreground hover:text-primary hover:bg-blue-50 dark:hover:bg-blue-950/20 border border-transparent rounded-xl"
             title="Recargar datos"
           >
             <RefreshCw size={18} className={loading ? "animate-spin" : ""} />
-          </button>
+          </Button>
         </div>
 
         {/* Table Content */}
-        <div className="flex-1 overflow-auto p-6 pt-4">
+        <CardContent className="flex-1 overflow-auto p-6 pt-4 custom-scrollbar">
           {loading ? (
-            <div className="flex flex-col items-center justify-center h-64 text-slate-400 space-y-4">
-              <RefreshCw size={32} className="animate-spin text-blue-500" />
+            <div className="flex flex-col items-center justify-center h-64 text-muted-foreground space-y-4">
+              <RefreshCw size={32} className="animate-spin text-primary" />
               <span className="font-medium">Cargando {activeEntity.name}...</span>
             </div>
           ) : filteredData.length === 0 ? (
-            <div className="flex flex-col items-center justify-center h-64 bg-slate-50 rounded-2xl border border-dashed border-slate-200">
-              <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center shadow-sm mb-4">
-                <Database className="text-slate-300" size={24} />
+            <div className="flex flex-col items-center justify-center h-64 bg-slate-50 dark:bg-slate-950/20 rounded-2xl border border-dashed border-border">
+              <div className="w-16 h-16 bg-white dark:bg-slate-900 rounded-full flex items-center justify-center shadow-sm mb-4">
+                <Database className="text-slate-350" size={24} />
               </div>
-              <h3 className="text-slate-600 font-bold">No hay registros</h3>
-              <p className="text-slate-400 text-sm mt-1">Crea el primer registro haciendo clic en "Nuevo Registro"</p>
+              <h3 className="text-foreground font-bold">No hay registros</h3>
+              <p className="text-muted-foreground text-sm mt-1">Crea el primer registro haciendo clic en "Nuevo Registro"</p>
             </div>
           ) : (
-            <div className="border border-slate-200 rounded-2xl overflow-hidden bg-white">
+            <div className="border border-border rounded-2xl overflow-hidden bg-white dark:bg-slate-950">
               <table className="w-full text-left text-sm whitespace-nowrap">
-                <thead className="bg-slate-50 border-b border-slate-200 text-slate-600 font-bold uppercase tracking-wider text-[11px]">
+                <thead className="bg-slate-50 dark:bg-slate-900 border-b border-border text-muted-foreground font-bold uppercase tracking-wider text-[11px]">
                   <tr>
                     <th className="px-6 py-4 w-20 text-center">ID</th>
                     <th className="px-6 py-4">Nombre / Descripción</th>
                     <th className="px-6 py-4 w-32 text-center">Acciones</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100 font-medium text-slate-700">
+                <tbody className="divide-y divide-border font-medium text-foreground">
                   {filteredData.map((item, index) => (
-                    <tr key={item.id || item.codigo || index} className="hover:bg-slate-50/80 transition-colors group">
+                    <tr key={item.id || item.codigo || index} className="hover:bg-slate-50/80 dark:hover:bg-slate-900/50 transition-colors group">
                       <td className="px-6 py-4 text-center">
-                        <span className="bg-slate-100 text-slate-500 px-2 py-1 rounded-md text-xs font-bold">
+                        <span className="bg-slate-100 dark:bg-slate-900 text-muted-foreground px-2 py-1 rounded-md text-xs font-bold">
                           {item.id || item.codigo || (index + 1)}
                         </span>
                       </td>
-                      <td className="px-6 py-4">
+                      <td className="px-6 py-4 uppercase">
                         {getLabel(item)}
                       </td>
                       <td className="px-6 py-4">
                         <div className="flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                          <button 
+                          <Button 
+                            variant="ghost"
+                            size="sm"
                             onClick={() => handleOpenEdit(item)}
-                            className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                            className="p-2 text-muted-foreground hover:text-primary hover:bg-blue-50 dark:hover:bg-blue-950/20 rounded-lg transition-colors"
                           >
                             <Edit size={16} />
-                          </button>
-                          <button 
+                          </Button>
+                          <Button 
+                            variant="ghost"
+                            size="sm"
                             onClick={() => handleDelete(item)}
-                            className="p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors"
+                            className="p-2 text-muted-foreground hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/20 rounded-lg transition-colors"
                           >
                             <Trash2 size={16} />
-                          </button>
+                          </Button>
                         </div>
                       </td>
                     </tr>
@@ -301,63 +312,67 @@ export default function GestionDatosMaestros() {
               </table>
             </div>
           )}
-        </div>
+        </CardContent>
 
         {/* Create / Edit Modal */}
         {isModalOpen && (
           <div className="absolute inset-0 z-50 flex items-center justify-center bg-slate-900/40 backdrop-blur-sm animate-in fade-in duration-200">
-            <div className="bg-white rounded-3xl p-8 max-w-md w-full mx-4 shadow-2xl border border-slate-100 animate-in zoom-in-95 duration-200">
-              <div className="flex items-center justify-between mb-6">
-                <h3 className="text-xl font-black text-slate-800 tracking-tight">
+            <Card className="p-8 max-w-md w-full mx-4 shadow-2xl animate-in zoom-in-95 duration-200 rounded-[2rem]">
+              <CardHeader className="flex flex-row items-center justify-between mb-6 p-0">
+                <CardTitle className="text-xl font-black tracking-tight">
                   {editingItem ? 'Editar' : 'Nuevo'} Registro
-                </h3>
-                <button 
+                </CardTitle>
+                <Button 
+                  variant="ghost"
+                  size="sm"
                   onClick={() => setIsModalOpen(false)}
-                  className="p-2 bg-slate-50 text-slate-400 rounded-full hover:bg-slate-100 hover:text-slate-700 transition-colors"
+                  className="p-2 bg-slate-50 dark:bg-slate-900 text-muted-foreground rounded-full hover:bg-slate-100 transition-colors h-9 w-9 flex items-center justify-center"
                 >
                   <X size={18} />
-                </button>
-              </div>
+                </Button>
+              </CardHeader>
 
-              <form onSubmit={handleSave} className="space-y-4">
-                {(activeEntity.formFields || []).map((f, i) => (
-                  <div key={f.field}>
-                    <label className="block text-sm font-bold text-slate-700 mb-2">
-                      {f.label}
-                    </label>
-                    <input
-                      type={f.type || 'text'}
-                      value={formData[f.field] ?? ''}
-                      onChange={(e) => setFormData({ ...formData, [f.field]: f.type === 'number' ? (e.target.value === '' ? '' : Number(e.target.value)) : e.target.value.toUpperCase() })}
-                      placeholder={f.label}
-                      style={f.type !== 'number' ? { textTransform: 'uppercase' } : undefined}
-                      className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
-                      autoFocus={i === 0}
-                    />
+              <form onSubmit={handleSave}>
+                <CardContent className="space-y-4 p-0">
+                  {(activeEntity.formFields || []).map((f, i) => (
+                    <div key={f.field}>
+                      <label className="block text-sm font-bold text-muted-foreground mb-2">
+                        {f.label}
+                      </label>
+                      <Input
+                        type={f.type || 'text'}
+                        value={formData[f.field] ?? ''}
+                        onChange={(e) => setFormData({ ...formData, [f.field]: f.type === 'number' ? (e.target.value === '' ? '' : Number(e.target.value)) : e.target.value.toUpperCase() })}
+                        placeholder={f.label}
+                        className="uppercase"
+                        autoFocus={i === 0}
+                      />
+                    </div>
+                  ))}
+
+                  <div className="flex gap-3 pt-4">
+                    <Button 
+                      type="button"
+                      variant="secondary"
+                      onClick={() => setIsModalOpen(false)}
+                      className="flex-1 py-3 px-4 rounded-xl font-bold uppercase text-xs"
+                    >
+                      Cancelar
+                    </Button>
+                    <Button 
+                      type="submit"
+                      className="flex-1 py-3 px-4 rounded-xl font-bold text-white bg-primary hover:bg-primary-hover shadow-md transition-colors flex items-center justify-center gap-2 uppercase text-xs"
+                    >
+                      <Save size={18} />
+                      Guardar
+                    </Button>
                   </div>
-                ))}
-
-                <div className="flex gap-3 pt-2">
-                  <button 
-                    type="button"
-                    onClick={() => setIsModalOpen(false)}
-                    className="flex-1 py-3 px-4 rounded-xl font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 transition-colors"
-                  >
-                    Cancelar
-                  </button>
-                  <button 
-                    type="submit"
-                    className="flex-1 py-3 px-4 rounded-xl font-bold text-white bg-blue-600 hover:bg-blue-700 shadow-md shadow-blue-600/20 transition-colors flex items-center justify-center gap-2"
-                  >
-                    <Save size={18} />
-                    Guardar
-                  </button>
-                </div>
+                </CardContent>
               </form>
-            </div>
+            </Card>
           </div>
         )}
-      </div>
+      </Card>
     </div>
   );
 }

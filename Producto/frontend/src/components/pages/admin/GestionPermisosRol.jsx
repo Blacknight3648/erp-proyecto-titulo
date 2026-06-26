@@ -1,9 +1,13 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { Shield, ChevronLeft, Save, Lock, Smartphone, Users, FileText, Package } from "lucide-react";
+import { Shield, ChevronLeft, Save, Lock, Users, FileText, Package } from "lucide-react";
 import { useRoles } from "../../../hooks/useRoles";
 import { usePermisos } from "../../../hooks/usePermisos";
 import { toast, Toaster } from "sonner";
+
+import { Card, CardHeader, CardTitle, CardContent } from "../../ui/card";
+import { Button } from "../../ui/button";
+import { Checkbox } from "../../ui/checkbox";
 
 const GestionPermisosRol = () => {
   const { id } = useParams();
@@ -64,97 +68,94 @@ const GestionPermisosRol = () => {
     }
   };
 
-  if (!rol) return <div className="p-10 text-center">Cargando rol...</div>;
+  if (!rol) return <div className="p-10 text-center text-muted-foreground">Cargando rol...</div>;
 
   return (
-    <div className="min-h-screen bg-slate-50 p-8">
+    <div className="min-h-screen bg-background p-8 font-sans antialiased text-foreground">
       <Toaster position="top-right" richColors />
       
       <div className="max-w-5xl mx-auto mb-8">
-        <button 
+        <Button 
+          variant="ghost"
+          size="sm"
           onClick={() => navigate("/admin/roles")}
-          className="flex items-center gap-2 text-slate-500 hover:text-slate-800 transition-colors mb-4 font-semibold"
+          className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors mb-4 font-semibold p-0 hover:bg-transparent"
         >
           <ChevronLeft size={20} />
           Volver a Roles
-        </button>
-
-        <div className="bg-white rounded-[2.5rem] p-8 shadow-xl border border-slate-100 flex items-center justify-between">
+        </Button>
+ 
+        <Card className="p-8 shadow-xl border border-border flex flex-col md:flex-row items-center justify-between gap-6">
           <div className="flex items-center gap-6">
-            <div className="p-5 bg-indigo-600 rounded-3xl text-white shadow-lg shadow-indigo-200">
+            <div className="p-5 bg-primary rounded-3xl text-white shadow-lg shadow-primary/20">
               <Lock size={32} />
             </div>
             <div>
-              <h1 className="text-3xl font-black text-slate-800 tracking-tight">Permisos de {rol.nombre}</h1>
-              <p className="text-slate-500 font-medium">Configure los accesos específicos para este perfil</p>
+              <h1 className="text-3xl font-black text-foreground tracking-tight">Permisos de {rol.nombre}</h1>
+              <p className="text-muted-foreground font-medium">Configure los accesos específicos para este perfil</p>
             </div>
           </div>
-          <button
+          <Button
             onClick={handleSave}
             disabled={saving}
-            className="px-8 py-4 bg-slate-900 text-white rounded-[1.5rem] font-bold flex items-center gap-3 hover:bg-black transition-all shadow-xl disabled:opacity-50"
+            className="px-8 py-4 bg-primary text-white rounded-2xl font-bold flex items-center gap-3 hover:bg-primary-hover transition-all shadow-xl disabled:opacity-50"
           >
             <Save size={20} />
             {saving ? "Guardando..." : "Guardar Matrix"}
-          </button>
-        </div>
+          </Button>
+        </Card>
       </div>
 
       <div className="max-w-5xl mx-auto space-y-6 pb-20">
         {Object.entries(groupedPermisos).map(([modulo, permisosModulo]) => (
-          <div key={modulo} className="bg-white rounded-[2rem] border border-slate-100 shadow-sm overflow-hidden animate-in slide-in-from-bottom-4 duration-500">
-            <div className="px-8 py-5 border-b border-slate-50 bg-slate-50/50 flex items-center gap-3">
+          <Card key={modulo} className="overflow-hidden border border-border shadow-sm animate-in slide-in-from-bottom-4 duration-500">
+            <CardHeader className="px-8 py-5 border-b border-border bg-slate-50/50 flex flex-row items-center gap-3">
               {getModuleIcon(modulo)}
-              <h3 className="text-sm font-black text-slate-800 uppercase tracking-widest">{modulo}</h3>
-            </div>
+              <CardTitle className="text-sm font-black text-slate-700 uppercase tracking-widest">{modulo}</CardTitle>
+            </CardHeader>
             
-            <div className="p-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {permisosModulo.map(p => (
-                <label 
-                  key={p.id}
-                  className={`relative flex items-center p-4 rounded-2xl border-2 transition-all cursor-pointer group ${
-                    permisosRol.includes(p.id) 
-                      ? "border-indigo-600 bg-indigo-50/30" 
-                      : "border-slate-100 bg-white hover:border-slate-200"
-                  }`}
-                >
-                  <input
-                    type="checkbox"
-                    className="sr-only"
-                    checked={permisosRol.includes(p.id)}
-                    onChange={() => togglePermiso(p.id)}
-                  />
-                  <div className={`w-6 h-6 rounded-lg border-2 mr-4 flex items-center justify-center transition-all ${
-                    permisosRol.includes(p.id) 
-                      ? "bg-indigo-600 border-indigo-600 text-white" 
-                      : "border-slate-200"
-                  }`}>
-                    {permisosRol.includes(p.id) && <div className="w-2 h-2 rounded-full bg-white" />}
-                  </div>
-                  <div>
-                    <p className={`text-sm font-bold ${permisosRol.includes(p.id) ? "text-indigo-900" : "text-slate-700"}`}>
-                      {p.nombre}
-                    </p>
-                    <p className="text-[10px] text-slate-400 font-medium mt-0.5 leading-tight">
-                      {p.descripcion || `Permitir acceso a ${p.nombre.toLowerCase()}`}
-                    </p>
-                  </div>
-                  {permisosRol.includes(p.id) && (
-                    <div className="absolute top-2 right-2">
-                       <Shield size={12} className="text-indigo-400" />
+            <CardContent className="p-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {permisosModulo.map(p => {
+                const isChecked = permisosRol.includes(p.id);
+                return (
+                  <label 
+                    key={p.id}
+                    className={`relative flex items-center p-4 rounded-2xl border-2 transition-all cursor-pointer group ${
+                      isChecked 
+                        ? "border-primary bg-primary/5" 
+                        : "border-gray-100 bg-white hover:border-gray-200"
+                    }`}
+                  >
+                    <Checkbox
+                      checked={isChecked}
+                      onCheckedChange={() => togglePermiso(p.id)}
+                      className="mr-4"
+                    />
+                    <div>
+                      <p className={`text-sm font-bold ${isChecked ? "text-primary" : "text-foreground"}`}>
+                        {p.nombre}
+                      </p>
+                      <p className="text-[10px] text-muted-foreground font-medium mt-0.5 leading-tight">
+                        {p.descripcion || `Permitir acceso a ${p.nombre.toLowerCase()}`}
+                      </p>
                     </div>
-                  )}
-                </label>
-              ))}
-            </div>
-          </div>
+                    {isChecked && (
+                      <div className="absolute top-2 right-2">
+                         <Shield size={12} className="text-primary" />
+                      </div>
+                    )}
+                  </label>
+                );
+              })}
+            </CardContent>
+          </Card>
         ))}
 
         {Object.keys(groupedPermisos).length === 0 && !loadingPermisos && (
-          <div className="text-center p-20 bg-white rounded-[2rem] border-2 border-dashed border-slate-200">
-            <Shield size={48} className="mx-auto text-slate-200 mb-4" />
-            <p className="text-slate-400 font-bold uppercase tracking-widest">No se encontraron permisos configurados</p>
-          </div>
+          <Card className="text-center p-20 bg-white border-2 border-dashed border-border flex flex-col items-center justify-center">
+            <Shield size={48} className="text-muted-foreground mb-4" />
+            <p className="text-muted-foreground font-bold uppercase tracking-widest">No se encontraron permisos configurados</p>
+          </Card>
         )}
       </div>
     </div>

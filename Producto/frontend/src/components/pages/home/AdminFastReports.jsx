@@ -5,6 +5,7 @@ import {
     Users,
     ChevronRight
 } from 'lucide-react';
+import { Card } from '../../ui/card';
 
 const QUICK_LINKS = [
     {
@@ -35,7 +36,7 @@ const QUICK_LINKS = [
 
 export function AdminFastReports({ onNavigate }) {
     return (
-        <div className="flex flex-col gap-2 w-full">
+        <Card className="flex flex-col gap-2 w-full p-4 bg-card border border-border">
             <div className="mb-1 pl-1">
                 <h3 className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/80">
                     Acceso Rápido
@@ -57,14 +58,14 @@ export function AdminFastReports({ onNavigate }) {
                             rounded-xl
                             border
                             border-border/60
-                            bg-surface-1
+                            bg-muted/20
                             px-4
                             py-3
                             text-left
                             transition-all
                             duration-200
                             hover:border-primary/30
-                            hover:bg-surface-2/40
+                            hover:bg-muted/60
                         "
                     >
                         {/* Contenedor del Ícono */}
@@ -77,7 +78,7 @@ export function AdminFastReports({ onNavigate }) {
                                 items-center
                                 justify-center
                                 rounded-lg
-                                bg-surface-2
+                                bg-muted
                                 border
                                 border-border/40
                                 transition-all
@@ -101,11 +102,11 @@ export function AdminFastReports({ onNavigate }) {
 
                         {/* Textos Informativos */}
                         <div className="min-w-0 flex-1">
-                            <p className="text-xs font-semibold text-foreground/90 tracking-tight transition-colors group-hover:text-primary">
+                            <p className="text-sm font-bold text-foreground tracking-tight transition-colors group-hover:text-primary">
                                 {link.label}
                             </p>
 
-                            <p className="mt-0.5 text-[11px] text-muted-foreground/80 truncate">
+                            <p className="mt-0.5 text-xs font-medium leading-relaxed text-muted-foreground/90 truncate">
                                 {link.description}
                             </p>
                         </div>
@@ -127,6 +128,6 @@ export function AdminFastReports({ onNavigate }) {
                     </button>
                 );
             })}
-        </div>
+        </Card>
     );
 }

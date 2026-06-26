@@ -91,10 +91,10 @@ export default function Welcome() {
                 <div>
                     <div className="mb-4 flex items-center justify-between">
                         <div>
-                            <h2 className="text-base font-bold tracking-tight text-slate-800">
+                            <h2 className="text-base font-bold tracking-tight text-foreground">
                                 Módulos del Sistema
                             </h2>
-                            <p className="mt-0.5 text-xs text-slate-500">
+                            <p className="mt-0.5 text-xs text-muted-foreground">
                                 Seleccione un módulo para comenzar a operar
                             </p>
                         </div>

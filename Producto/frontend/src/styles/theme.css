@@ -41,96 +41,96 @@
      PALETA DE MARCA — LIGHT MODE (iOS System Colors)
   ========================================= */
 
-  --brand-royal:        #5c8ef2; /* Soft Periwinkle Blue */
-  --brand-royal-hover:  #4b7ddb;
-  --brand-royal-light:  #eef2ff;
+  --brand-royal:        #2563EB; /* Primary Blue */
+  --brand-royal-hover:  #1D4ED8;
+  --brand-royal-light:  #EFF6FF;
 
-  --brand-indigo:       #8B5CF6; /* Violet-500 — purple accent principal */
+  --brand-indigo:       #8B5CF6; /* Purple */
   --brand-indigo-hover: #7C3AED;
   --brand-indigo-light: #F5F3FF;
 
-  --brand-emerald:       #34c759; /* iOS System Green */
-  --brand-emerald-hover: #2da84b;
-  --brand-emerald-light: #eafaf1;
+  --brand-emerald:       #10B981; /* Success */
+  --brand-emerald-hover: #059669;
+  --brand-emerald-light: #ECFDF5;
 
-  --brand-steel:       #6B7FA8; /* Steel Blue — intermedio entre royal y teal */
-  --brand-steel-light: #eef1f8;
+  --brand-steel:       #64748B; /* Secondary Text */
+  --brand-steel-light: #F1F5F9;
 
-  --brand-teal:        #30b0c7; /* iOS System Teal */
-  --brand-teal-light:  #ecfcfd;
+  --brand-teal:        #06B6D4; 
+  --brand-teal-light:  #ECFEFF;
 
-  --brand-amber:       #ff9500; /* iOS System Orange */
-  --brand-amber-light: #fff8eb;
+  --brand-amber:       #F59E0B; /* Warning */
+  --brand-amber-light: #FEF3C7;
 
-  --brand-red:         #ff3b30; /* iOS System Red */
-  --brand-red-light:   #ffefee;
+  --brand-red:         #EF4444; /* Danger */
+  --brand-red-light:   #FEF2F2;
 
-  --brand-violet:       #af52de; /* iOS System Purple */
-  --brand-violet-light: #fcf5ff;
+  --brand-violet:       #8B5CF6; /* Purple */
+  --brand-violet-light: #F5F3FF;
 
   /* =========================================
-     FONDO Y SUPERFICIE — LIGHT (iOS Glassmorphism)
+     FONDO Y SUPERFICIE — LIGHT 
   ========================================= */
 
-  --background:         #f5f5f7; /* Apple Web Premium Light Gray */
-  --surface-1:          #ffffff;
-  --surface-2:          #f5f5f7;
-  --surface-3:          #e8e8ed;
+  --background:         #F7F8FC; 
+  --surface-1:          #FFFFFF;
+  --surface-2:          #F7F8FC;
+  --surface-3:          #E5E7EB;
   --surface-glass:      rgba(255, 255, 255, 0.70);
   --surface-glass-md:   rgba(255, 255, 255, 0.85);
 
-  --foreground:         #1d1d1f; /* Apple Charcoal */
+  --foreground:         #0F172A; /* Primary Text */
 
   /* =========================================
      TOKENS DE COMPONENTES — LIGHT
   ========================================= */
 
-  --card:               rgba(255, 255, 255, 0.90);
-  --card-foreground:    #1d1d1f;
+  --card:               #FFFFFF;
+  --card-foreground:    #0F172A;
 
-  --popover:            #ffffff;
-  --popover-foreground: #1d1d1f;
+  --popover:            #FFFFFF;
+  --popover-foreground: #0F172A;
 
-  --primary:            #5c8ef2;
-  --primary-hover:      #4b7ddb;
-  --primary-foreground: #ffffff;
+  --primary:            #2563EB; /* Primary Blue */
+  --primary-hover:      #1D4ED8;
+  --primary-foreground: #FFFFFF;
 
-  --secondary:          #f5f3ff;
-  --secondary-foreground: #7c3aed;
+  --secondary:          #F1F5F9;
+  --secondary-foreground: #0F172A;
 
-  --muted:              #f5f5f7;
-  --muted-foreground:   #86868b; /* Apple Muted Gray */
+  --muted:              #F8FAFC;
+  --muted-foreground:   #64748B; /* Secondary Text */
 
-  --accent:             #eef2ff;
-  --accent-foreground:  #5c8ef2;
+  --accent:             #EFF6FF;
+  --accent-foreground:  #2563EB;
 
-  --destructive:        #ff3b30;
-  --destructive-hover:  #e0352c;
-  --destructive-foreground: #ffffff;
+  --destructive:        #EF4444; /* Danger */
+  --destructive-hover:  #DC2626;
+  --destructive-foreground: #FFFFFF;
 
-  --success:            #34c759;
-  --success-foreground: #ffffff;
-  --success-bg:         #eafaf1;
+  --success:            #10B981;
+  --success-foreground: #FFFFFF;
+  --success-bg:         rgba(16, 185, 129, 0.1);
 
-  --warning:            #ff9500;
-  --warning-foreground: #ffffff;
-  --warning-bg:         #fff8eb;
+  --warning:            #F59E0B;
+  --warning-foreground: #FFFFFF;
+  --warning-bg:         rgba(245, 158, 11, 0.1);
 
-  --info:               #30b0c7;
-  --info-foreground:    #ffffff;
-  --info-bg:            #ecfcfd;
+  --info:               #3B82F6;
+  --info-foreground:    #FFFFFF;
+  --info-bg:            #EFF6FF;
 
-  --border:             rgba(0, 0, 0, 0.08);
-  --border-strong:      rgba(0, 0, 0, 0.16);
+  --border:             #E5E7EB;
+  --border-strong:      #D1D5DB;
 
-  --input:              #ffffff;
-  --input-background:   rgba(255, 255, 255, 0.95);
-  --input-border:       rgba(0, 0, 0, 0.12);
-  --input-border-focus: #5c8ef2;
+  --input:              #FFFFFF;
+  --input-background:   #FFFFFF;
+  --input-border:       #E5E7EB;
+  --input-border-focus: #2563EB;
 
-  --switch-background:  #e3e3e8;
+  --switch-background:  #E2E8F0;
 
-  --ring:               rgba(92, 142, 242, 0.25);
+  --ring:               rgba(37, 99, 235, 0.25);
 
   /* =========================================
      CHART COLORS
@@ -147,29 +147,29 @@
      Psicología: azul profundo = confianza, control, tecnología
   ========================================= */
 
-  --sidebar:                    #0B1A2E; /* Deep Navy corporate */
-  --sidebar-foreground:         #C4D6E8; /* Texto principal — alto contraste */
-  --sidebar-primary:            #5BABFF; /* Blue accent vivo */
+  --sidebar:                    #111827; /* Primary Navy */
+  --sidebar-foreground:         #94A3B8; /* Muted Text */
+  --sidebar-primary:            #2563EB; /* Primary Blue */
   --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent:             rgba(91, 171, 255, 0.14);
-  --sidebar-accent-foreground:  #EAF2FC;
-  --sidebar-border:             rgba(255, 255, 255, 0.08);
-  --sidebar-ring:               rgba(91, 171, 255, 0.35);
-  --sidebar-muted:              #4A6A88;  /* Labels y secciones */
-  --sidebar-active-bg:          rgba(91, 171, 255, 0.18);
-  --sidebar-active-border:      #5BABFF;
-  --sidebar-hover-bg:           rgba(255, 255, 255, 0.06);
+  --sidebar-accent:             rgba(37, 99, 235, 0.12);
+  --sidebar-accent-foreground:  #F8FAFC;
+  --sidebar-border:             #1E293B; /* Secondary Navy */
+  --sidebar-ring:               rgba(37, 99, 235, 0.35);
+  --sidebar-muted:              #64748B; /* Secondary Text */
+  --sidebar-active-bg:          rgba(37, 99, 235, 0.15);
+  --sidebar-active-border:      #2563EB;
+  --sidebar-hover-bg:           rgba(255, 255, 255, 0.05);
   /* Texto en niveles explícitos (evita /opacity inestable sobre CSS vars) */
-  --sidebar-text-default:       #9DB8CF; /* Items inactivos */
-  --sidebar-text-sub:           #6A8EA8; /* Sub-items */
+  --sidebar-text-default:       #94A3B8; /* Items inactivos */
+  --sidebar-text-sub:           #64748B; /* Sub-items */
   /* Tokens para logo, popups y submenús */
-  --sidebar-logo-bg:            rgba(91, 171, 255, 0.15);
-  --sidebar-logo-border:        rgba(91, 171, 255, 0.30);
-  --sidebar-sub-border:         rgba(91, 171, 255, 0.22);
-  --sidebar-sub-active:         rgba(91, 171, 255, 0.18);
-  --sidebar-popup-bg:           #0E1F36;
-  --sidebar-popup-border:       rgba(91, 171, 255, 0.22);
-  --sidebar-disabled:           rgba(120, 160, 195, 0.28);
+  --sidebar-logo-bg:            rgba(37, 99, 235, 0.15);
+  --sidebar-logo-border:        rgba(37, 99, 235, 0.30);
+  --sidebar-sub-border:         rgba(37, 99, 235, 0.22);
+  --sidebar-sub-active:         rgba(37, 99, 235, 0.18);
+  --sidebar-popup-bg:           #1E293B; /* Secondary Navy */
+  --sidebar-popup-border:       #1E293B;
+  --sidebar-disabled:           rgba(100, 116, 139, 0.28);
 
   /* =========================================
      SHADOW SYSTEM — Premium Depth
@@ -469,8 +469,7 @@
 
   html {
     font-size: var(--font-size);
-    /* Pila de fuentes nativa de Apple antes de las variables por si acaso */
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-family: var(--font-family);
     scroll-behavior: smooth;
     -webkit-text-size-adjust: 100%;
   }

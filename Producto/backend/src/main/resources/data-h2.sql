@@ -235,21 +235,16 @@ MERGE INTO articulo (id_articulo, codigo_articulo, nombre_articulo, descripcion_
 MERGE INTO plantilla (id_plantilla, nombre_campo)
     KEY (id_plantilla)
     VALUES
-    (1,  'forro'),
-    (2,  'relleno'),
-    (3,  'colorForro'),
-    (4,  'gorro'),
-    (5,  'cuello'),
-    (6,  'abotonaduraCierre'),
-    (7,  'cortesAplicaciones'),
-    (8,  'fuelles'),
-    (9,  'mangas'),
-    (10, 'pretinasRuedo'),
-    (11, 'bolsillos'),
-    (12, 'cintaDetalle'),
-    (13, 'logoDetalle'),
-    (14, 'accesoriosDetalle'),
-    (15, 'obsModelo');
+    (1,  'GORRO'),
+    (2,  'CUELLO'),
+    (3,  'ABOTONADURA / CIERRE'),
+    (4,  'CORTES Y APLICACIONES'),
+    (5,  'FUELLES'),
+    (6,  'MANGAS'),
+    (7, 'PUÑOS'),
+    (8,  'PRETINAS / RUEDO'),
+    (9,  'BOLSILLOS'),
+    (10, 'OBS. DEL MODELO');
 
 -- ============================================================
 -- 7.3. MODELO PLANTILLA (Mapeo Artículo e Id Plantilla)

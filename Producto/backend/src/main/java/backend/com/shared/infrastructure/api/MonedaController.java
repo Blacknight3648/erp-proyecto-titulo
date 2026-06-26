@@ -14,7 +14,7 @@ import java.util.List;
  * Controlador REST para la gestión del catálogo de Monedas.
  *
  * <p>
- * Base URL: {@code /api/v3/maestros/monedas}
+ * Base URL: {@code /api/v1/maestros/monedas}
  * </p>
  *
  * <p>
@@ -33,7 +33,7 @@ import java.util.List;
  * </ul>
  */
 @RestController
-@RequestMapping("/api/v3/maestros/monedas")
+@RequestMapping("/api/v1/maestros/monedas")
 @RequiredArgsConstructor
 public class MonedaController {
 

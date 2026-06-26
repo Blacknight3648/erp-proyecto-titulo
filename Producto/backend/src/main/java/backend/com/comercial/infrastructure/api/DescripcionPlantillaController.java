@@ -18,7 +18,7 @@ public class DescripcionPlantillaController {
 
     
 
-    @GetMapping("/api/v3/comercial/scos/{idSCOS}/descripciones")
+    @GetMapping("/api/v1/comercial/scos/{idSCOS}/descripciones")
     public ResponseEntity<List<DescripcionPlantillaDTO>> listarPorSCOS(@PathVariable Long idSCOS) {
         return ResponseEntity.ok(descripcionService.listarPorSCOS(idSCOS));
     }

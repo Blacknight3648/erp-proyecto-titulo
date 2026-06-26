@@ -14,7 +14,7 @@ import java.util.List;
  * Controlador REST para la gestión del catálogo de Atributos Técnicos de tela.
  *
  * <p>
- * Base URL: {@code /api/v3/maestros/atributos-tecnicos}
+ * Base URL: {@code /api/v1/maestros/atributos-tecnicos}
  * </p>
  *
  * <p>
@@ -35,7 +35,7 @@ import java.util.List;
  * </ul>
  */
 @RestController
-@RequestMapping("/api/v3/maestros/atributos-tecnicos")
+@RequestMapping("/api/v1/maestros/atributos-tecnicos")
 @RequiredArgsConstructor
 public class AtributoTecnicoController {
 

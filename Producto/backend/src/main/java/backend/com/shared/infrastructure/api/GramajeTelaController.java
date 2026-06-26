@@ -14,7 +14,7 @@ import java.util.List;
  * Controlador REST para la gestión del catálogo de Gramajes de Tela.
  *
  * <p>
- * Base URL: {@code /api/v3/maestros/gramajes-tela}
+ * Base URL: {@code /api/v1/maestros/gramajes-tela}
  * </p>
  *
  * <p>
@@ -34,7 +34,7 @@ import java.util.List;
  * </ul>
  */
 @RestController
-@RequestMapping("/api/v3/maestros/gramajes-tela")
+@RequestMapping("/api/v1/maestros/gramajes-tela")
 @RequiredArgsConstructor
 public class GramajeTelaController {
 

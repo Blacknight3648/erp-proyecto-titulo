@@ -14,7 +14,7 @@ import java.util.List;
  * Controlador REST para la gestión del catálogo de Composiciones textiles.
  *
  * <p>
- * Base URL: {@code /api/v3/maestros/composiciones}
+ * Base URL: {@code /api/v1/maestros/composiciones}
  * </p>
  *
  * <p>
@@ -35,7 +35,7 @@ import java.util.List;
  * </ul>
  */
 @RestController
-@RequestMapping("/api/v3/maestros/composiciones")
+@RequestMapping("/api/v1/maestros/composiciones")
 @RequiredArgsConstructor
 public class ComposicionController {
 

@@ -9,18 +9,19 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/v3/comercial/modelos-plantilla")
+@RequestMapping("/api/v1/comercial/modelos-plantilla")
 @RequiredArgsConstructor
 public class ArticuloCamposPlantillaController {
 
     private final ArticuloCamposPlantillaService modeloPlantillaService;
 
     /** Crea o actualiza (upsert) los campos de plantilla de un artículo. */
-    @PostMapping
+    @PostMapping("/crear-plantilla")
     public ResponseEntity<ArticuloCamposPlantillaDTO> guardar(
             @Valid @RequestBody ArticuloCamposPlantillaDTO request) {
         return ResponseEntity.ok(modeloPlantillaService.guardar(request));
     }
+    
 
     /** Devuelve la configuración del artículo: { idArticulo, nombreArticulo, camposPlantilla:[...] }. */
     @GetMapping("/articulo/{idArticulo}")

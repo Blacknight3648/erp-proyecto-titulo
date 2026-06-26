@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v3/maestros/tipos-articulo")
+@RequestMapping("/api/v1/maestros/tipos-articulo")
 @RequiredArgsConstructor
 public class TipoArticuloController {
 

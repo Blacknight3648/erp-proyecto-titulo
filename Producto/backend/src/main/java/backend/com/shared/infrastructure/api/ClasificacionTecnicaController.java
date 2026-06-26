@@ -15,7 +15,7 @@ import java.util.List;
  * tela.
  *
  * <p>
- * Base URL: {@code /api/v3/maestros/clasificaciones-tecnicas}
+ * Base URL: {@code /api/v1/maestros/clasificaciones-tecnicas}
  * </p>
  *
  * <p>
@@ -35,7 +35,7 @@ import java.util.List;
  * </ul>
  */
 @RestController
-@RequestMapping("/api/v3/maestros/clasificaciones-tecnicas")
+@RequestMapping("/api/v1/maestros/clasificaciones-tecnicas")
 @RequiredArgsConstructor
 public class ClasificacionTecnicaController {
 

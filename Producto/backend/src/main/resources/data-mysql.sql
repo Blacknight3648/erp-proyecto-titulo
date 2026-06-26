@@ -8,9 +8,9 @@ ALTER TABLE scos_logotipos MODIFY COLUMN tamano VARCHAR(50);
 -- 0. TIPO ARTÍCULO
 -- ============================================================
 INSERT IGNORE INTO tipo_articulo (id_tipo_articulo, codigo, nombre) VALUES
-    (1, 'TELA',         'Tela'),
-    (2, 'PRENDA_LISTA', 'Prenda Lista'),
-    (3, 'ACCESORIO',    'Accesorio');
+    (1, 'TELA',         'TELA'),
+    (2, 'PRENDA_LISTA', 'PRENDA LISTA'),
+    (3, 'ACCESORIO',    'ACCESORIO');
 
 -- ============================================================
 -- 1. ÁREAS
@@ -50,8 +50,8 @@ INSERT IGNORE INTO roles (id_role, nombre, descripcion, area_id) VALUES
 -- 3. USUARIOS (RUTs y Teléfonos validados)
 -- ============================================================
 INSERT IGNORE INTO usuarios (id_usuario, run, nombre, apellidos, email, password, telefono, enabled) VALUES
-    (1, '15342981-2', 'CARLOS',    'ITURRIETA MÉNDEZ',  'c.iturrieta@empresa.cl', '$2a$10$xyz1234567890123456789', '+56988223344', true),
-    (2, '17589432-K', 'VALENTINA', 'LAGOS ESPINOZA',    'v.lagos@empresa.cl',     '$2a$10$abc1234567890123456789', '+56977445566', true);
+    (1, '15342981-2', 'CARLOS',    'ITURRIETA MÉNDEZ',  'C.ITURRIETA@EMPRESA.CL', '$2a$10$xyz1234567890123456789', '+56988223344', true),
+    (2, '17589432-K', 'VALENTINA', 'LAGOS ESPINOZA',    'V.LAGOS@EMPRESA.CL',     '$2a$10$abc1234567890123456789', '+56977445566', true);
 
 -- ============================================================
 -- 4. VENDEDORES
@@ -102,9 +102,9 @@ INSERT IGNORE INTO tipos_contacto (tipo_contacto_id, descripcion_tipo_contacto) 
     (3, 'FINANZAS');
 
 INSERT IGNORE INTO contactos (contacto_id, nombre_contacto, telefono_contacto, email_contacto, tipo_contacto_id, fk_contacto) VALUES
-    (1, 'CONTACTO HITES',          '+56227275000', 'contacto.hites@hites.cl',       1, 1),
-    (2, 'CONTACTO MEDCELL',        '+56224396000', 'compras@medcell.cl',             1, 2),
-    (3, 'CONTACTO GEODIS WILSON',  '+56223816500', 'info.chile@geodis.com',          1, 3);
+    (1, 'CONTACTO HITES',          '+56227275000', 'CONTACTO.HITES@HITES.CL',       1, 1),
+    (2, 'CONTACTO MEDCELL',        '+56224396000', 'COMPRAS@MEDCELL.CL',             1, 2),
+    (3, 'CONTACTO GEODIS WILSON',  '+56223816500', 'INFO.CHILE@GEODIS.COM',          1, 3);
 
 -- ============================================================
 -- 5.2. GEOGRAFÍA Y DIRECCIONES
@@ -173,16 +173,16 @@ INSERT IGNORE INTO dato_bancario (dato_bancario_id, numero_cuenta, banco_id, tip
 -- 7. CATEGORÍAS Y SUBCATEGORÍAS DE TEXTIL
 -- ============================================================
 INSERT IGNORE INTO categoria_tela (id_categoria_tela, codigo_categoria_tela, nombre_categoria_tela) VALUES
-    (1, 'TEJ-PLN', 'Tejido Plano'),
-    (2, 'TEJ-PNT', 'Tejido de Punto'),
-    (3, 'NO-TEJ',  'No Tejido / Técnico');
+    (1, 'TEJ-PLN', 'TEJIDO PLANO'),
+    (2, 'TEJ-PNT', 'TEJIDO DE PUNTO'),
+    (3, 'NO-TEJ',  'NO TEJIDO / TÉCNICO');
 
 INSERT IGNORE INTO subcategoria_tela (id_subcategoria_tela, codigo_subcategoria_tela, nombre_subcategoria_tela, id_categoria_tela) VALUES
-    (1, 'PLN-COTT', 'Algodón Plano',     1),
-    (2, 'PLN-SYNT', 'Sintético Plano',   1),
-    (3, 'PNT-FLEE', 'Fleece / Polar',    2),
-    (4, 'PNT-JRSY', 'Jersey',            2),
-    (5, 'TEC-IMPR', 'Impermeable Tech',  3);
+    (1, 'PLN-COTT', 'ALGODÓN PLANO',     1),
+    (2, 'PLN-SYNT', 'SINTÉTICO PLANO',   1),
+    (3, 'PNT-FLEE', 'FLEECE / POLAR',    2),
+    (4, 'PNT-JRSY', 'JERSEY',            2),
+    (5, 'TEC-IMPR', 'IMPERMEABLE TECH',  3);
 
 -- ============================================================
 -- 7.1. ARTÍCULOS (Catálogo Base)
@@ -200,29 +200,24 @@ INSERT IGNORE INTO articulo (id_articulo, codigo_articulo, nombre_articulo, desc
 -- 7.2. CATÁLOGO DE CAMPOS DE PLANTILLA
 -- ============================================================
 INSERT IGNORE INTO plantilla (id_plantilla, nombre_campo) VALUES
-    (1,  'forro'),
-    (2,  'relleno'),
-    (3,  'colorForro'),
-    (4,  'gorro'),
-    (5,  'cuello'),
-    (6,  'abotonaduraCierre'),
-    (7,  'cortesAplicaciones'),
-    (8,  'fuelles'),
-    (9,  'mangas'),
-    (10, 'pretinasRuedo'),
-    (11, 'bolsillos'),
-    (12, 'cintaDetalle'),
-    (13, 'logoDetalle'),
-    (14, 'accesoriosDetalle'),
-    (15, 'obsModelo');
+    (1,  'GORRO'),
+    (2,  'CUELLO'),
+    (3,  'ABOTONADURA / CIERRE'),
+    (4,  'CORTES Y APLICACIONES'),
+    (5,  'FUELLES'),
+    (6,  'MANGAS'),
+    (7, 'PUÑOS'),
+    (8,  'PRETINAS / RUEDO'),
+    (9,  'BOLSILLOS'),
+    (10, 'OBS. DEL MODELO');
 
 -- ============================================================
 -- 7.3. MODELO PLANTILLA (Mapeo Artículo e Id Plantilla)
 -- ============================================================
 INSERT IGNORE INTO modelo_plantilla (id_modelo_plantilla, id_articulo, campos) VALUES
-    (1, 1, 'gorro,bolsillos,mangas,forro'),
-    (2, 2, 'cuello,relleno,bolsillos,abotonaduraCierre,fuelles,cintaDetalle'),
-    (3, 3, 'mangas,pretinasRuedo,cuello,logoDetalle');
+    (1, 1, 'GORRO,BOLSILLOS,MANGAS,PUÑOS'),
+    (2, 2, 'CUELLO,BOLSILLOS,ABOTONADURA/CIERRE,FUELLES'),
+    (3, 3, 'MANGAS,PRETINAS/RUEDO,CUELLO');
 
 -- ============================================================
 -- 7.4. SOLICITUDES DE COSTOS (SCOS)
@@ -426,65 +421,65 @@ INSERT IGNORE INTO moneda (id_moneda, codigo_moneda, nombre_moneda, simbolo) VAL
     (3, 'EUR', 'EURO',                  '€');
 
 INSERT IGNORE INTO unidad_medida (id_unidad_medida, nombre_unidad, abreviatura) VALUES
-    (1, 'Metro',          'M'),
-    (2, 'Metro Cuadrado', 'M2'),
-    (3, 'Kilogramo',      'KG'),
-    (4, 'Unidad',         'UN'),
-    (5, 'Par',            'PAR'),
-    (6, 'Caja',           'CJA'),
-    (7, 'Rollo',          'ROL');
+    (1, 'METRO',          'M'),
+    (2, 'METRO CUADRADO', 'M2'),
+    (3, 'KILOGRAMO',      'KG'),
+    (4, 'UNIDAD',         'UN'),
+    (5, 'PAR',            'PAR'),
+    (6, 'CAJA',           'CJA'),
+    (7, 'ROLLO',          'ROL');
 
 -- ============================================================
 -- 7.12. MAESTROS DE TELA
 -- ============================================================
 INSERT IGNORE INTO familia_tela (id_familia_tela, codigo_familia, nombre_familia) VALUES
-    (1,  'FT-01', 'Jersey'),
-    (2,  'FT-02', 'Rib'),
-    (3,  'FT-03', 'Interlock'),
-    (4,  'FT-04', 'Fleece / French Terry'),
-    (5,  'FT-05', 'Polar / Sherpa'),
-    (6,  'FT-06', 'Scuba / Neoprene'),
-    (7,  'FT-07', 'Piqué / Lacoste'),
-    (8,  'FT-08', 'Tafetán / Popelín'),
-    (9,  'FT-09', 'Sarga / Drill'),
-    (10, 'FT-10', 'Denim'),
-    (11, 'FT-11', 'Gabardina'),
-    (12, 'FT-12', 'Terciopelo / Velvet'),
-    (13, 'FT-13', 'Punto Roma / Bengalina'),
-    (14, 'FT-14', 'Licra / Spandex plano'),
-    (15, 'FT-15', 'Malla deportiva / Mesh'),
-    (16, 'FT-16', 'Oxford / Ripstop'),
-    (17, 'FT-17', 'Lana / Paño'),
-    (18, 'FT-18', 'Lino / Ramio'),
-    (19, 'FT-19', 'Seda / Satén'),
-    (20, 'FT-20', 'Microfibra / Softshell');
+    (1,  'FT-01', 'JERSEY'),
+    (2,  'FT-02', 'RIB'),
+    (3,  'FT-03', 'INTERLOCK'),
+    (4,  'FT-04', 'FLEECE / FRENCH TERRY'),
+    (5,  'FT-05', 'POLAR / SHERPA'),
+    (6,  'FT-06', 'SCUBA / NEOPRENE'),
+    (7,  'FT-07', 'PIQUÉ / LACOSTE'),
+    (8,  'FT-08', 'TAFETÁN / POPELÍN'),
+    (9,  'FT-09', 'SARGA / DRILL'),
+    (10, 'FT-10', 'DENIM'),
+    (11, 'FT-11', 'GABARDINA'),
+    (12, 'FT-12', 'TERCIOPELO / VELVET'),
+    (13, 'FT-13', 'PUNTO ROMA / BENGALINA'),
+    (14, 'FT-14', 'LICRA / SPANDEX PLANO'),
+    (15, 'FT-15', 'MALLA DEPORTIVA / MESH'),
+    (16, 'FT-16', 'OXFORD / RIPSTOP'),
+    (17, 'FT-17', 'LANA / PAÑO'),
+    (18, 'FT-18', 'LINO / RAMIO'),
+    (19, 'FT-19', 'SEDA / SATÉN'),
+    (20, 'FT-20', 'MICROFIBRA / SOFTSHELL');
 
 INSERT IGNORE INTO clasificacion_tecnica (id_clasificacion_tecnica, nombre_clasificacion) VALUES
-    (1, 'Tejido de Punto'),
-    (2, 'Tejido Plano'),
-    (3, 'No Tejido / TNT'),
-    (4, 'Técnico / Funcional'),
-    (5, 'Alta Prestación');
+    (1, 'TEJIDO DE PUNTO'),
+    (2, 'TEJIDO PLANO'),
+    (3, 'NO TEJIDO / TNT'),
+    (4, 'TÉCNICO / FUNCIONAL'),
+    (5, 'ALTA PRESTACIÓN');
 
 INSERT IGNORE INTO composicion (id_composicion, codigo_composicion, descripcion_composicion, clasificacion, uso_tipico) VALUES
-    (1,  'CO-01',  '100% ALGODÓN',                       'Natural',       'POLERAS, BÁSICOS, ROPA INTERIOR'),
-    (2,  'CO-02',  '100% POLIÉSTER',                     'Sintético',     'DEPORTIVO, SUBLIMACIÓN, FORRO'),
-    (3,  'CO-03',  '50% ALGODÓN / 50% POLIÉSTER',        'Mixto',         'POLERAS MIX, USO GENERAL'),
-    (4,  'CO-04',  '65% POLIÉSTER / 35% ALGODÓN',        'Mixto',         'UNIFORMES CORPORATIVOS'),
-    (5,  'CO-05',  '95% ALGODÓN / 5% ELASTANO',          'Natural-Elást', 'POLERAS AJUSTADAS, CASUALWEAR'),
-    (6,  'CO-06',  '95% POLIÉSTER / 5% ELASTANO',        'Sint-Elást',    'DEPORTIVO TÉCNICO, LEGGINGS'),
-    (7,  'CO-07',  '60% ALGODÓN / 40% POLIÉSTER',        'Mixto',         'PRENDAS ESCOLARES, UNIFORMES'),
-    (8,  'CO-08',  '80% ALGODÓN / 20% POLIÉSTER',        'Mixto',         'CAMISAS, POLERAS PREMIUM MIX'),
-    (9,  'CO-09',  '100% VISCOSA / RAYÓN',                'Celulósico',    'BLUSAS, VESTIDOS, FORRO LIVIANO'),
-    (10, 'CO-10',  '100% NYLON / POLIAMIDA',              'Sintético',     'CHAQUETAS, CORTAVIENTOS'),
-    (11, 'CO-11',  '88% POLIÉSTER / 12% ELASTANO',        'Sint-Elást',    'ROPA DEPORTIVA COMPRESIÓN'),
-    (12, 'CO-12',  '70% ALGODÓN / 30% POLIÉSTER',         'Mixto',         'POLERAS ESCOLARES'),
-    (13, 'CO-13',  '100% LANA MERINO',                    'Natural',       'PAÑOS, ABRIGOS PREMIUM'),
-    (14, 'CO-14',  '100% LINO',                           'Natural',       'VERANO, GUAYABERAS'),
-    (15, 'CO-15',  '55% LINO / 45% ALGODÓN',              'Natural',       'ROPA VERANO PREMIUM'),
-    (16, 'CO-16',  '50% VISCOSA / 50% POLIÉSTER',         'Mixto',         'VESTIDOS, BLUSAS'),
-    (17, 'CO-17',  '90% POLIÉSTER / 10% ELASTANO',        'Sint-Elást',    'MALLAS, CYCLING'),
-    (18, 'CO-18',  '100% ALGODÓN ORGÁNICO',               'Natural',       'LÍNEA ECO, BEBÉ');
+    (1,  'CO-01',  '100% ALGODÓN',                       'NATURAL',       'POLERAS, BÁSICOS, ROPA INTERIOR'),
+    (2,  'CO-02',  '100% POLIÉSTER',                     'SINTÉTICO',     'DEPORTIVO, SUBLIMACIÓN, FORRO'),
+    (3,  'CO-03',  '50% ALGODÓN / 50% POLIÉSTER',        'MIXTO',         'POLERAS MIX, USO GENERAL'),
+    (4,  'CO-04',  '65% POLIÉSTER / 35% ALGODÓN',        'MIXTO',         'UNIFORMES CORPORATIVOS'),
+    (5,  'CO-05',  '95% ALGODÓN / 5% ELASTANO',          'NATURAL-ELÁST', 'POLERAS AJUSTADAS, CASUALWEAR'),
+    (6,  'CO-06',  '95% POLIÉSTER / 5% ELASTANO',        'SINT-ELÁST',    'DEPORTIVO TÉCNICO, LEGGINGS'),
+    (7,  'CO-07',  '60% ALGODÓN / 40% POLIÉSTER',        'MIXTO',         'PRENDAS ESCOLARES, UNIFORMES'),
+    (8,  'CO-08',  '80% ALGODÓN / 20% POLIÉSTER',        'MIXTO',         'CAMISAS, POLERAS PREMIUM MIX'),
+    (9,  'CO-09',  '100% VISCOSA / RAYÓN',                'CELULÓSICO',    'BLUSAS, VESTIDOS, FORRO LIVIANO'),
+    (10, 'CO-10',  '100% NYLON / POLIAMIDA',              'SINTÉTICO',     'CHAQUETAS, CORTAVIENTOS'),
+    (11, 'CO-11',  '88% POLIÉSTER / 12% ELASTANO',        'SINT-ELÁST',    'ROPA DEPORTIVA COMPRESIÓN'),
+    (12, 'CO-12',  '70% ALGODÓN / 30% POLIÉSTER',         'MIXTO',         'POLERAS ESCOLARES'),
+    (13, 'CO-13',  '100% LANA MERINO',                    'NATURAL',       'PAÑOS, ABRIGOS PREMIUM'),
+    (14, 'CO-14',  '100% LINO',                           'NATURAL',       'VERANO, GUAYABERAS'),
+    (15, 'CO-15',  '55% LINO / 45% ALGODÓN',              'NATURAL',       'ROPA VERANO PREMIUM'),
+    (16, 'CO-16',  '50% VISCOSA / 50% POLIÉSTER',         'MIXTO',         'VESTIDOS, BLUSAS'),
+    (17, 'CO-17',  '90% POLIÉSTER / 10% ELASTANO',        'SINT-ELÁST',    'MALLAS, CYCLING'),
+    (18, 'CO-18',  '100% ALGODÓN ORGÁNICO',               'NATURAL',       'LÍNEA ECO, BEBÉ');
 
 INSERT IGNORE INTO gramaje_tela (id_gramaje, codigo_gramaje, valor_gramos_m2, categoria_vestuario) VALUES
     (1,  'GR-01',  120.00, 'VERANO / ROPA INTERIOR LIVIANA'),
@@ -530,17 +525,17 @@ INSERT IGNORE INTO color_tela (id_color, codigo_color, descripcion_color, es_pan
     (23, 'COL-23',  'MARINO MELANGE', FALSE);
 
 INSERT IGNORE INTO atributo_tecnico (id_atributo, codigo_atributo, clasificacion, descripcion_tecnica, impacto_erp) VALUES
-    (1,  'AT-01', 'Funcional',   'ANTIMICROBIANO',                      'CERTIFICADO REQUERIDO PARA EXPORTACIÓN'),
-    (2,  'AT-02', 'Funcional',   'TRANSPIRABLE / MOISTURE WICKING',     'INDICAR EN FICHA TÉCNICA DEPORTIVA'),
-    (3,  'AT-03', 'Funcional',   'UPF 50+ PROTECCIÓN SOLAR',            'APLICA A PRENDAS OUTDOOR/VERANO'),
-    (4,  'AT-04', 'Funcional',   'IGNÍFUGO / RETARDANTE DE LLAMA',      'HOMOLOGACIÓN OBLIGATORIA PARA EPP'),
-    (5,  'AT-05', 'Funcional',   'ANTIESTÁTICO',                        'REQUERIDO EN AMBIENTES INDUSTRIALES'),
-    (6,  'AT-06', 'Funcional',   'IMPERMEABLE / DWR',                   'APLICA A SOFTSHELL Y CORTAVIENTOS'),
-    (7,  'AT-07', 'Funcional',   'TERMORREGULADOR / PCM',               'INDICAR RANGO TEMPERATURA EN FICHA'),
-    (8,  'AT-08', 'Acabado',     'SUAVIZADO ENZIMÁTICO',                'PROCESO POST-CONFECCIÓN, AFECTA GRAMAJE FINAL'),
-    (9,  'AT-09', 'Acabado',     'SANFORIZADO / PRE-LAVADO',            'CONTROL DE ENCOGIMIENTO EN ORDEN DE COMPRA'),
-    (10, 'AT-10', 'Acabado',     'PILLING REDUCIDO',                    'NORMA MARTINDALE MÍNIMA 5000 CICLOS'),
-    (11, 'AT-11', 'Acabado',     'EASY CARE / ANTI-ARRUGAS',            'INDICAR INSTRUCCIÓN LAVADO EN ETIQUETA'),
-    (12, 'AT-12', 'Sustentable', 'GOTS CERTIFIED (ORGÁNICO)',           'CÓDIGO CERTIFICACIÓN EN PO DE COMPRA'),
-    (13, 'AT-13', 'Sustentable', 'RECICLADO (GRS CERTIFIED)',           'TRAZABILIDAD REQUERIDA DESDE PROVEEDOR');
+    (1,  'AT-01', 'FUNCIONAL',   'ANTIMICROBIANO',                      'CERTIFICADO REQUERIDO PARA EXPORTACIÓN'),
+    (2,  'AT-02', 'FUNCIONAL',   'TRANSPIRABLE / MOISTURE WICKING',     'INDICAR EN FICHA TÉCNICA DEPORTIVA'),
+    (3,  'AT-03', 'FUNCIONAL',   'UPF 50+ PROTECCIÓN SOLAR',            'APLICA A PRENDAS OUTDOOR/VERANO'),
+    (4,  'AT-04', 'FUNCIONAL',   'IGNÍFUGO / RETARDANTE DE LLAMA',      'HOMOLOGACIÓN OBLIGATORIA PARA EPP'),
+    (5,  'AT-05', 'FUNCIONAL',   'ANTIESTÁTICO',                        'REQUERIDO EN AMBIENTES INDUSTRIALES'),
+    (6,  'AT-06', 'FUNCIONAL',   'IMPERMEABLE / DWR',                   'APLICA A SOFTSHELL Y CORTAVIENTOS'),
+    (7,  'AT-07', 'FUNCIONAL',   'TERMORREGULADOR / PCM',               'INDICAR RANGO TEMPERATURA EN FICHA'),
+    (8,  'AT-08', 'ACABADO',     'SUAVIZADO ENZIMÁTICO',                'PROCESO POST-CONFECCIÓN, AFECTA GRAMAJE FINAL'),
+    (9,  'AT-09', 'ACABADO',     'SANFORIZADO / PRE-LAVADO',            'CONTROL DE ENCOGIMIENTO EN ORDEN DE COMPRA'),
+    (10, 'AT-10', 'ACABADO',     'PILLING REDUCIDO',                    'NORMA MARTINDALE MÍNIMA 5000 CICLOS'),
+    (11, 'AT-11', 'ACABADO',     'EASY CARE / ANTI-ARRUGAS',            'INDICAR INSTRUCCIÓN LAVADO EN ETIQUETA'),
+    (12, 'AT-12', 'SUSTENTABLE', 'GOTS CERTIFIED (ORGÁNICO)',           'CÓDIGO CERTIFICACIÓN EN PO DE COMPRA'),
+    (13, 'AT-13', 'SUSTENTABLE', 'RECICLADO (GRS CERTIFIED)',           'TRAZABILIDAD REQUERIDA DESDE PROVEEDOR');
 

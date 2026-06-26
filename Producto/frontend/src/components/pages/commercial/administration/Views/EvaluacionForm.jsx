@@ -206,8 +206,8 @@ export default function EvaluacionForm({ data, onChange, porcentajeComision, onC
                                     min="0" max="100" step="0.5"
                                     className={`${inputCls} pl-10`}
                                     placeholder="5"
-                                    value={porcentajeComision !== undefined ? (porcentajeComision * 100).toFixed(1) : ''}
-                                    onChange={(e) => onComisionChange(parseFloat(e.target.value || 0) / 100)}
+                                    value={porcentajeComision !== undefined ? porcentajeComision : ''}
+                                    onChange={(e) => onComisionChange(parseFloat(e.target.value || 0))}
                                     disabled={disabled}
                                 />
                             </div>

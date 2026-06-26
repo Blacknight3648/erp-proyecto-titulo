@@ -253,11 +253,11 @@ INSERT IGNORE INTO evaluaciones_negocio (idevn, numero, referencia, cliente_nomb
 
 -- Items de EVN-000001 (100 Poleras Piqué para HITES) — articulo_id=3: Jersey Piqué
 INSERT IGNORE INTO evaluacion_negocio_items (idevni, evaluacion_negocio_id, proveedor_id, articulo_id, nro_item, descripcion, modelo, tela, genero, cantidad, precio_unitario, moneda_precio_unitario, costo_unitario, moneda_costo_unitario, costo_producto, costo_logo, tipo_item) VALUES
-    (1, 1, 1, 3, 1, 'POLERA PIQUÉ CORPORATIVA BORDADA', 'SLIM FIT MANGA CORTA', 'JERSEY PIQUÉ 180G', 'UNISEX', 100, 10600.00, 'CLP', 8400.00, 'CLP', 840000.00, 220000.00, 'OP');
+    (1, 1, 1, 3, 1, 'POLERA PIQUÉ CORPORATIVA BORDADA', 'SLIM FIT MANGA CORTA', 'JERSEY PIQUÉ 180G', 'UNISEX', 100, 10600.00, 'CLP', 8400.00, 'CLP', 6200.00, 2200.00, 'OP');
 
 -- Items de EVN-000002 (50 Pantalones Cargo para MEDCELL) — articulo_id=2: Ripstop Impermeable
 INSERT IGNORE INTO evaluacion_negocio_items (idevni, evaluacion_negocio_id, proveedor_id, articulo_id, nro_item, descripcion, modelo, tela, genero, cantidad, precio_unitario, moneda_precio_unitario, costo_unitario, moneda_costo_unitario, costo_producto, tipo_item) VALUES
-    (2, 2, 1, 2, 1, 'PANTALÓN CARGO OPERARIO REFORZADO', 'CARGO 6 BOLSILLOS', 'RIPSTOP IMPERMEABLE 150G', 'MASCULINO', 50, 23100.00, 'CLP', 17171.00, 'CLP', 858550.00, 'OP');
+    (2, 2, 1, 2, 1, 'PANTALÓN CARGO OPERARIO REFORZADO', 'CARGO 6 BOLSILLOS', 'RIPSTOP IMPERMEABLE 150G', 'MASCULINO', 50, 23100.00, 'CLP', 17171.00, 'CLP', 17171.00, 'OP');
 
 -- Condiciones comerciales EVN-000001 (HITES)
 -- anticipo 50%, flete incluido, garantía 30 días, validez oferta 30 días

@@ -25,8 +25,11 @@ import {
 
 // El backend emite estos estados (EstadoEVN.java):
 // BORRADOR | EVALUACION | APROBADA | ADJUDICADA | RECHAZADA | CANCELADA | CERRADA
-const ESTADOS_ACTIVOS = new Set(['BORRADOR', 'EVALUACION', 'APROBADA']);
-const ESTADOS_CERRADOS = new Set(['ADJUDICADA', 'RECHAZADA', 'CANCELADA', 'CERRADA']);
+// ADJUDICADA va en Activos: el deal fue ganado y aún se puede generar NV desde allí
+const ESTADOS_ACTIVOS = new Set(['BORRADOR', 'EVALUACION', 'APROBADA', 'ADJUDICADA']);
+const ESTADOS_CERRADOS = new Set(['RECHAZADA', 'CANCELADA', 'CERRADA']);
+// Solo estos estados pueden adjudicarse o editarse (separado del filtro de tabs)
+const ESTADOS_ADJUDICABLES = new Set(['BORRADOR', 'EVALUACION', 'APROBADA']);
 
 const ESTADO_STYLE = {
     BORRADOR:   { badge: 'bg-amber-100 text-amber-700 border border-amber-200',   dot: 'bg-amber-500' },
@@ -172,12 +175,14 @@ export default function ListaEVN({ onNueva, onEditar, onVer }) {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                     {filteredEvaluations.map((ev) => {
                         const estado = ev.estado || 'BORRADOR';
-                        const puedeAdjudicar = ESTADOS_ACTIVOS.has(estado);
+                        const puedeAdjudicar = ESTADOS_ADJUDICABLES.has(estado);
                         const estadoStyle = ESTADO_STYLE[estado] || ESTADO_STYLE.CANCELADA;
 
                         // Normalizar monto y margen desde los campos que el backend realmente devuelve
                         const montoTotal = ev.montoTotal ?? ev.totalNeto ?? ev.totalVenta ?? 0;
-                        const margenPorc = ev.margenPorc ?? ev.margenGanancia ?? null;
+                        // rentabilidadEsperada viene del backend como porcentaje real (0-100)
+                        // margenGanancia es el valor absoluto en CLP, no un porcentaje
+                        const margenPorc = ev.rentabilidadEsperada ?? null;
                         const margenNum  = margenPorc !== null ? parseFloat(margenPorc) : null;
                         const margenColor = margenNum === null ? 'text-gray-400'
                             : margenNum >= 25 ? 'text-emerald-600'

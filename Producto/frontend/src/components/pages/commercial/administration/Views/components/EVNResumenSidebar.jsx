@@ -10,8 +10,8 @@ function FilaResumen({ label, value, colorValue = 'text-white', size = 'text-xl'
 }
 
 export default function EVNResumenSidebar({ totals, otrosCostos }) {
-    const comisionPct  = (otrosCostos?.porcentajeComision || 0) * 100;
-    const comisionMonto = (totals.totalNeto || 0) * (otrosCostos?.porcentajeComision || 0);
+    const comisionPct  = otrosCostos?.porcentajeComision || 0;
+    const comisionMonto = (totals.totalNeto || 0) * (comisionPct / 100);
     const margenNum    = parseFloat(totals.margenPorc || 0);
     const colorMargen  = margenNum >= 25 ? 'text-green-400' : margenNum >= 15 ? 'text-yellow-400' : 'text-red-400';
 

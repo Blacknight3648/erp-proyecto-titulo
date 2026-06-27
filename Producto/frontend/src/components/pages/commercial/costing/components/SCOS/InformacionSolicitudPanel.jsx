@@ -15,7 +15,7 @@ const labelStyles = `block text-xs font-semibold text-slate-500 mb-1.5 tracking-
 export default function InformacionSolicitudPanel({ formData, setFormData, readOnly }) {
     const { clientes } = useClientes();
     const { vendedores } = useVendedores();
-    const { plantillas } = usePlantillas();
+    const { plantillas, getCamposForArticulo } = usePlantillas();
 
     const clienteOptions = (clientes || []).map(c => ({
         value: String(c.clienteId),
@@ -35,19 +35,23 @@ export default function InformacionSolicitudPanel({ formData, setFormData, readO
         { value: 'OTRO', label: 'OTRO' },
     ];
 
-    const handlePrendaChange = (textValue) => {
+    const handlePrendaChange = async (textValue) => {
         if (readOnly) return;
         const cleanValue = (textValue || '').toUpperCase();
         const configMaster = (plantillas || []).find(p => p.nombreArticulo?.toUpperCase() === cleanValue);
 
         if (configMaster) {
+            const camposSet = await getCamposForArticulo(cleanValue);
+            const camposActivos = camposSet ? [...camposSet] : [];
+
             const newPlantilla = {
                 id: generateId(),
                 nombre: configMaster.nombreArticulo,
                 descripcion: configMaster.nombreArticulo,
                 nombrePrenda: configMaster.nombreArticulo,
                 genero: "",
-                camposActivos: [],
+                camposActivos,
+                detallesPrenda: {},
                 telas: [],
                 accesorios: [],
                 logotipos: [],
@@ -58,13 +62,15 @@ export default function InformacionSolicitudPanel({ formData, setFormData, readO
                 ...prev,
                 articuloDescripcion: cleanValue,
                 nombrePrenda: configMaster.nombreArticulo,
+                esPrendaNueva: false,
                 plantillas: [newPlantilla]
             }));
         } else {
             setFormData(prev => ({
                 ...prev,
                 articuloDescripcion: cleanValue,
-                nombrePrenda: textValue
+                nombrePrenda: textValue,
+                esPrendaNueva: cleanValue !== '' && cleanValue !== 'OTRO'
             }));
         }
     };

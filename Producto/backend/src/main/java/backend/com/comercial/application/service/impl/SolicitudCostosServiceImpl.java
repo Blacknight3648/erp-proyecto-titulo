@@ -17,7 +17,10 @@ import backend.com.comercial.domain.repository.SolicitudCostosRepository;
 import backend.com.produccion.application.dto.CosteoDTO;
 import backend.com.produccion.application.service.CosteoService;
 import backend.com.shared.application.service.NumeroDocumentoService;
+import backend.com.shared.domain.enums.TipoArticulo;
+import backend.com.shared.domain.model.Articulo;
 import backend.com.shared.exception.EntityNotFoundException;
+import backend.com.shared.infrastructure.persistence.repository.ArticuloRepository;
 import backend.com.shared.valueobjects.DocumentNumber;
 import backend.com.shared.valueobjects.Money;
 import lombok.RequiredArgsConstructor;
@@ -39,6 +42,7 @@ public class SolicitudCostosServiceImpl implements SolicitudCostosService {
     private final DescripcionPlantillaService descripcionPlantillaService;
     private final DescripcionPlantillaRepository descripcionPlantillaRepository;
     private final NumeroDocumentoService numeroDocumentoService;
+    private final ArticuloRepository articuloRepository;
 
     @Override
     @Transactional
@@ -64,6 +68,7 @@ public class SolicitudCostosServiceImpl implements SolicitudCostosService {
 
         SolicitudCostos saved = repository.save(domain);
         persistirDescripciones(saved.getIdSCOS(), dto);
+        resolverOCrearArticulo(dto);
         generatePreCosteo(saved);
 
         return mapToDTO(saved);
@@ -101,6 +106,7 @@ public class SolicitudCostosServiceImpl implements SolicitudCostosService {
         SolicitudCostos saved = repository.save(updated);
         descripcionPlantillaRepository.deleteByIdSCOS(saved.getIdSCOS());
         persistirDescripciones(saved.getIdSCOS(), dto);
+        resolverOCrearArticulo(dto);
         generatePreCosteo(saved);
 
         return mapToDTO(saved);
@@ -223,6 +229,28 @@ public class SolicitudCostosServiceImpl implements SolicitudCostosService {
                         ? descripcionPlantillaService.listarPorSCOS(domain.getIdSCOS())
                         : new ArrayList<>())
                 .build();
+    }
+
+    private void resolverOCrearArticulo(SolicitudCostosCreateDTO dto) {
+        if (dto.getArticuloDescripcion() == null || dto.getArticuloDescripcion().isBlank()) return;
+
+        String nombre = dto.getArticuloDescripcion().trim().toUpperCase();
+
+        boolean existeComoPrendaConfeccionar = articuloRepository
+                .findByTipoArticulo(TipoArticulo.PRENDA_CONFECCIONAR)
+                .stream()
+                .anyMatch(a -> a.getNombreArticulo().equalsIgnoreCase(nombre));
+
+        if (!existeComoPrendaConfeccionar && Boolean.TRUE.equals(dto.getEsPrendaNueva())) {
+            Articulo nuevo = Articulo.builder()
+                    .codigoArticulo("PRENDA-" + nombre.replaceAll("\\s+", "-"))
+                    .nombreArticulo(nombre)
+                    .descripcionArticulo(dto.getNombrePrenda() != null ? dto.getNombrePrenda() : nombre)
+                    .tipoArticulo(TipoArticulo.PRENDA_CONFECCIONAR)
+                    .activo(true)
+                    .build();
+            articuloRepository.save(nuevo);
+        }
     }
 
     private void generatePreCosteo(SolicitudCostos scos) {

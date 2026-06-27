@@ -8,9 +8,10 @@ ALTER TABLE scos_logotipos MODIFY COLUMN tamano VARCHAR(50);
 -- 0. TIPO ARTÍCULO
 -- ============================================================
 INSERT IGNORE INTO tipo_articulo (id_tipo_articulo, codigo, nombre) VALUES
-    (1, 'TELA',         'TELA'),
-    (2, 'PRENDA_LISTA', 'PRENDA LISTA'),
-    (3, 'ACCESORIO',    'ACCESORIO');
+    (1, 'TELA',                 'TELA'),
+    (2, 'PRENDA_LISTA',         'PRENDA LISTA'),
+    (3, 'ACCESORIO',            'ACCESORIO'),
+    (4, 'PRENDA_CONFECCIONAR',  'PRENDA A CONFECCIONAR');
 
 -- ============================================================
 -- 1. ÁREAS
@@ -194,7 +195,13 @@ INSERT IGNORE INTO articulo (id_articulo, codigo_articulo, nombre_articulo, desc
     (4, 'ART-ACC-001',  'CIERRE YKK 60CM METÁLICO',    'CIERRE METÁLICO YKK NYLON NO. 5, LONGITUD 60CM',           NULL, 3, true, NULL, NULL),
     (5, 'ART-ACC-002',  'BOTÓN SNAP 15MM NÁCAR',        'BOTÓN TIPO SNAP NACARADO RESISTENTE AL LAVADO, 15MM',      NULL, 3, true, NULL, NULL),
     (6, 'ART-ACC-003',  'HILO INDUSTRIAL 40/2 POLIÉSTER','HILO COSTURA INDUSTRIAL POLIÉSTER 40/2 CONE 5000M',       NULL, 3, true, NULL, NULL),
-    (7, 'ART-ACC-004',  'CINTA REFLECTANTE 50MM',       'CINTA REFLECTANTE CERTIFICADA EN ISO 20471, ANCHO 50MM',   NULL, 3, true, NULL, NULL);
+    (7, 'ART-ACC-004',  'CINTA REFLECTANTE 50MM',       'CINTA REFLECTANTE CERTIFICADA EN ISO 20471, ANCHO 50MM',   NULL, 3, true, NULL, NULL),
+    -- Prendas a confeccionar (id_tipo_articulo = 4)
+    (8,  'ART-PRC-001', 'POLERÓN',  'Prenda tipo polerón / sudadera con capucha',   NULL, 4, true, NULL, NULL),
+    (9,  'ART-PRC-002', 'PARKA',    'Prenda tipo parka con aislación',               NULL, 4, true, NULL, NULL),
+    (10, 'ART-PRC-003', 'CHALECO',  'Chaleco sin mangas funcional o corporativo',    NULL, 4, true, NULL, NULL),
+    (11, 'ART-PRC-004', 'POLERA',   'Polera manga corta o larga',                    NULL, 4, true, NULL, NULL),
+    (12, 'ART-PRC-005', 'PANTALÓN', 'Pantalón de trabajo o corporativo',             NULL, 4, true, NULL, NULL);
 
 -- ============================================================
 -- 7.2. CATÁLOGO DE CAMPOS DE PLANTILLA
@@ -217,7 +224,13 @@ INSERT IGNORE INTO plantilla (id_plantilla, nombre_campo) VALUES
 INSERT IGNORE INTO modelo_plantilla (id_modelo_plantilla, id_articulo, campos) VALUES
     (1, 1, 'GORRO,BOLSILLOS,MANGAS,PUÑOS'),
     (2, 2, 'CUELLO,BOLSILLOS,ABOTONADURA/CIERRE,FUELLES'),
-    (3, 3, 'MANGAS,PRETINAS/RUEDO,CUELLO');
+    (3, 3, 'MANGAS,PRETINAS/RUEDO,CUELLO'),
+    -- Plantillas para prendas a confeccionar (claves camelCase = FIELD_LABELS keys)
+    (4, 8,  'gorro,cuello,abotonaduraCierre,cortesAplicaciones,mangas,puños,bolsillos,obsModelo'),
+    (5, 9,  'gorro,cuello,abotonaduraCierre,fuelles,mangas,puños,bolsillos,obsModelo'),
+    (6, 10, 'cuello,abotonaduraCierre,cortesAplicaciones,bolsillos,obsModelo'),
+    (7, 11, 'cuello,mangas,pretinasRuedo,obsModelo'),
+    (8, 12, 'abotonaduraCierre,fuelles,pretinasRuedo,bolsillos,obsModelo');
 
 -- ============================================================
 -- 7.4. SOLICITUDES DE COSTOS (SCOS)

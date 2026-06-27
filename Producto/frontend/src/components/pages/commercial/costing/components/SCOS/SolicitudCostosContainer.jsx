@@ -54,6 +54,10 @@ export default function SolicitudCostosContainer() {
     }
 
     try {
+      // Prenda nueva si el usuario escribió en el campo libre (no seleccionó del listado)
+      const esPrendaNueva = !!(formData.articuloDescripcion && formData.esPrendaNueva);
+      console.log('[SCOS] primeraPlantilla.accesorios:', (formData.plantillas || [])[0]?.accesorios);
+
       // Convertir detallesPrenda del panel de especificaciones técnicas
       // al formato que espera el backend: [{nombreCampo, valorDescripcion}]
       const primeraPlantilla = (formData.plantillas || [])[0] || {};
@@ -94,6 +98,7 @@ export default function SolicitudCostosContainer() {
         cantidad: parseInt(formData.cantidad) || 0,
         esMuestra: formData.esMuestra,
         hasLogo: formData.hasLogo,
+        esPrendaNueva,
         tallaje: formData.tallaje,
         tipo: "SCOS",
         telas: (primeraPlantilla.telas || []).map(t => ({

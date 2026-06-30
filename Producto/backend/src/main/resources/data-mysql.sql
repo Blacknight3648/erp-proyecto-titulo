@@ -426,6 +426,150 @@ INSERT IGNORE INTO document_counter (tipo, ultimo_numero) VALUES
     ('HC',   1);
 
 -- ============================================================
+-- 8. DATOS DE PRUEBA DASHBOARD — FLUJO END-TO-END
+--    Objetivo: poblar KPIs y gráficos del Welcome con valores
+--    representativos que reflejen el flujo real del ERP.
+-- ============================================================
+
+-- ── 8.1. SCOS ADICIONALES EN ESTADO PENDIENTE ──────────────
+-- Agrega 2 SCOS para que el KPI "SCOS Pendientes" muestre 3
+INSERT IGNORE INTO solicitudes_costos
+    (idscos, numero, estado, tipo, cliente_id, vendedor_id,
+     articulo_descripcion, nombre_prenda, genero, tallaje,
+     es_muestra, has_logo, cantidad, fecha, costo_total)
+VALUES
+    (3, 'SCOS-000003', 'PENDIENTE', 'SCOS', 3, 1,
+     'POLERON', 'POLERÓN CORPORATIVO CON CAPUCHA', 'UNISEX', 'ESTANDAR',
+     false, true, 200, CURRENT_DATE, 0.00),
+    (4, 'SCOS-000004', 'PENDIENTE', 'SCOS', 1, 2,
+     'CHALECO', 'CHALECO CORPORATIVO ACOLCHADO', 'UNISEX', 'TALLA UNICA',
+     true, false, 50, CURRENT_DATE, 0.00)
+ON DUPLICATE KEY UPDATE estado = VALUES(estado);
+
+-- ── 8.2. EVN EN BORRADOR / EVALUACIÓN ──────────────────────
+-- Agrega 2 EVN activas para que el KPI "EVN en Evaluación" muestre 2
+-- (el código filtra estado IN ['BORRADOR', 'EVALUACION'])
+INSERT IGNORE INTO evaluaciones_negocio
+    (idevn, numero, referencia, cliente_nombre, cliente_id, vendedor_id,
+     estado, fecha_evaluacion, porcentaje_comision, created_at, updated_at)
+VALUES
+    (3, 'EVN-000003',
+     'COTIZACIÓN POLERÓN CORPORATIVO CON CAPUCHA — GEODIS WILSON',
+     'GEODIS WILSON', 3, 1,
+     'BORRADOR', CURRENT_DATE, 5.00, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+    (4, 'EVN-000004',
+     'PROPUESTA CHALECO ACOLCHADO CORPORATIVO — HITES S.A.',
+     'HITES S.A.', 1, 2,
+     'EVALUACION', CURRENT_DATE, 4.00, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+ON DUPLICATE KEY UPDATE estado = VALUES(estado);
+
+-- Items básicos EVN-000003 (Polerón para GEODIS)
+INSERT IGNORE INTO evaluacion_negocio_items
+    (idevni, evaluacion_negocio_id, proveedor_id, articulo_id, nro_item,
+     descripcion, modelo, tela, genero,
+     cantidad, precio_unitario, moneda_precio_unitario,
+     costo_unitario, moneda_costo_unitario,
+     costo_producto, costo_logo, tipo_item)
+VALUES
+    (3, 3, 1, 8, 1,
+     'POLERÓN CORPORATIVO CAPUCHA BORDADO', 'HOODIE REGULAR FIT', 'POLAR FLEECE 280G', 'UNISEX',
+     200, 18500.00, 'CLP', 13800.00, 'CLP', 11200.00, 2600.00, 'OP');
+
+-- Items básicos EVN-000004 (Chaleco para HITES)
+INSERT IGNORE INTO evaluacion_negocio_items
+    (idevni, evaluacion_negocio_id, proveedor_id, articulo_id, nro_item,
+     descripcion, modelo, tela, genero,
+     cantidad, precio_unitario, moneda_precio_unitario,
+     costo_unitario, moneda_costo_unitario,
+     costo_producto, tipo_item)
+VALUES
+    (4, 4, 3, 10, 1,
+     'CHALECO CORPORATIVO ACOLCHADO IMPERMEABLE', 'VEST SOFTSHELL', 'RIPSTOP IMPERMEABLE 150G', 'UNISEX',
+     50, 32000.00, 'CLP', 23500.00, 'CLP', 23500.00, 'OP');
+
+-- ── 8.3. NOTAS DE VENTA HISTÓRICAS (Ene–May 2026) ──────────
+-- Pobla el gráfico "Ventas Mensuales" con datos de los meses anteriores.
+-- Estas NV representan negocios ya cerrados (estado ENTREGADA).
+-- Se usan los EVN existentes (1 y 2) como referencia comercial.
+INSERT IGNORE INTO notas_venta
+    (idnv, numeronv, evaluacion_negocio_id, cliente_id, vendedor_id,
+     estado, es_kit,
+     fecha_emision, fecha_entrega_estimada,
+     monto_subtotal, moneda_subtotal,
+     monto_iva,     moneda_iva,
+     monto_total,   moneda_total,
+     created_at, updated_at)
+VALUES
+    -- Enero 2026 — GEODIS, 80 poleras basic
+    (3, 'NV-00003', NULL, 3, 1,
+     'ENTREGADA', false,
+     '2026-01-20', '2026-02-10',
+     730000.00, 'CLP', 138700.00, 'CLP', 868700.00, 'CLP',
+     '2026-01-20 09:00:00', '2026-01-20 09:00:00'),
+    -- Febrero 2026 — HITES, 120 poleras
+    (4, 'NV-00004', 1, 1, 1,
+     'ENTREGADA', false,
+     '2026-02-14', '2026-03-05',
+     1272000.00, 'CLP', 241680.00, 'CLP', 1513680.00, 'CLP',
+     '2026-02-14 10:00:00', '2026-02-14 10:00:00'),
+    -- Marzo 2026 — MEDCELL, 30 pantalones cargo
+    (5, 'NV-00005', 2, 2, 2,
+     'ENTREGADA', false,
+     '2026-03-08', '2026-04-01',
+     515130.00, 'CLP', 97874.70, 'CLP', 613004.70, 'CLP',
+     '2026-03-08 11:00:00', '2026-03-08 11:00:00'),
+    -- Abril 2026 — GEODIS, 150 poleras corporativas
+    (6, 'NV-00006', NULL, 3, 2,
+     'ENTREGADA', false,
+     '2026-04-22', '2026-05-15',
+     1590000.00, 'CLP', 302100.00, 'CLP', 1892100.00, 'CLP',
+     '2026-04-22 08:30:00', '2026-04-22 08:30:00'),
+    -- Mayo 2026 — HITES, 60 chalecos acolchados
+    (7, 'NV-00007', NULL, 1, 1,
+     'ENTREGADA', false,
+     '2026-05-10', '2026-06-01',
+     1920000.00, 'CLP', 364800.00, 'CLP', 2284800.00, 'CLP',
+     '2026-05-10 14:00:00', '2026-05-10 14:00:00')
+ON DUPLICATE KEY UPDATE estado = VALUES(estado);
+
+-- Items simplificados de las NV históricas (un ítem por NV)
+INSERT IGNORE INTO notas_venta_items
+    (id_item_nv, nota_venta_id, nro_item, modelo, tela, composicion, color,
+     talla, genero, codigo, proveedor_id, lleva_logo, tipo_item,
+     requiere_ot, cantidad, precio_unitario, moneda_precio_unitario,
+     total, moneda_total, articulo_id)
+VALUES
+    (7, 3, 1, 'BÁSICA MANGA CORTA',    'JERSEY PIQUÉ 180G', '100% ALGODÓN', 'BLANCO',     'M', 'UNISEX',    'POL-BAS-M',   1, 'NO', 'OP', false,  80, 9125.00, 'CLP',  730000.00, 'CLP', 3),
+    (8, 4, 1, 'SLIM FIT MANGA CORTA',  'JERSEY PIQUÉ 180G', '100% ALGODÓN', 'AZUL NAVY',  'M', 'UNISEX',    'POL-PIQUE-M', 1, 'SI', 'OP', false, 120, 10600.00, 'CLP', 1272000.00, 'CLP', 3),
+    (9, 5, 1, 'CARGO 6 BOLSILLOS',     'RIPSTOP 150G',      '100% POLIÉSTER','VERDE OLIVA','M', 'MASCULINO', 'PAN-CARGO-M', 1, 'NO', 'OP', false,  30, 17171.00, 'CLP',  515130.00, 'CLP', 2),
+    (10, 6, 1,'SLIM FIT MANGA CORTA',  'JERSEY PIQUÉ 180G', '100% ALGODÓN', 'NEGRO',      'L', 'UNISEX',    'POL-PIQUE-L', 1, 'SI', 'OP', false, 150, 10600.00, 'CLP', 1590000.00, 'CLP', 3),
+    (11, 7, 1,'VEST SOFTSHELL',        'RIPSTOP 150G',      '100% POLIÉSTER','NEGRO',      'M', 'UNISEX',    'CHL-SOFT-M',  3, 'NO', 'OP', false,  60, 32000.00, 'CLP', 1920000.00, 'CLP', 10)
+ON DUPLICATE KEY UPDATE cantidad = VALUES(cantidad);
+
+-- ── 8.4. OP ADICIONAL EN ESTADO PENDIENTE ──────────────────
+-- Agrega una segunda OP para que el KPI "OPs en Planta" muestre 2
+-- (OP-00001 ya existe EN_PROCESO; esta nueva es PENDIENTE — aún sin costeo)
+INSERT IGNORE INTO orden_produccion
+    (idop, costeo_version_id, numeroop, nota_venta_id, estado,
+     fecha_inicio, fecha_entrega_programada, observaciones,
+     created_at, updated_at)
+VALUES
+    (2, NULL, 'OP-00002', 2, 'PENDIENTE',
+     DATE_ADD(CURRENT_DATE, INTERVAL 3 DAY),
+     DATE_ADD(CURRENT_DATE, INTERVAL 40 DAY),
+     'POLERA PIQUÉ CORPORATIVA — HITES S.A. — 100 UNIDADES — EN ESPERA DE INSUMOS',
+     CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+ON DUPLICATE KEY UPDATE estado = VALUES(estado);
+
+-- ── 8.5. ACTUALIZAR CONTADORES ─────────────────────────────
+INSERT INTO document_counter (tipo, ultimo_numero) VALUES
+    ('NV',   7),
+    ('EVN',  4),
+    ('SCOS', 4),
+    ('OP',   2)
+ON DUPLICATE KEY UPDATE ultimo_numero = VALUES(ultimo_numero);
+
+-- ============================================================
 -- 7.11. MAESTROS GLOBALES (Moneda, Unidad de Medida)
 -- ============================================================
 INSERT IGNORE INTO moneda (id_moneda, codigo_moneda, nombre_moneda, simbolo) VALUES

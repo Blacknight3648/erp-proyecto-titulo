@@ -4,6 +4,9 @@ import {
     DollarSign,
     TrendingUp,
     Percent,
+    ClipboardList,
+    Scale,
+    Factory,
 } from "lucide-react";
 
 import {
@@ -30,28 +33,28 @@ const KPI_CONFIG = [
         ringColor: "hover:border-blue-500 hover:shadow-sm",
     },
     {
-        id: "utilidad",
-        label: "Utilidad Neta",
-        icon: TrendingUp,
-        colorText: "text-emerald-600 dark:text-emerald-400",
-        colorBg: "bg-emerald-50 dark:bg-emerald-950/40",
-        ringColor: "hover:border-emerald-500 hover:shadow-sm",
+        id: "scos",
+        label: "SCOS Pendientes",
+        icon: ClipboardList,
+        colorText: "text-amber-600 dark:text-amber-400",
+        colorBg: "bg-amber-50 dark:bg-amber-950/40",
+        ringColor: "hover:border-amber-500 hover:shadow-sm",
     },
     {
-        id: "rentabilidad",
-        label: "Margen",
-        icon: Percent,
+        id: "evn",
+        label: "EVN en Evaluación",
+        icon: Scale,
         colorText: "text-indigo-600 dark:text-indigo-400",
         colorBg: "bg-indigo-50 dark:bg-indigo-950/40",
         ringColor: "hover:border-indigo-500 hover:shadow-sm",
     },
     {
-        id: "clientes",
-        label: "Clientes Activos",
-        icon: Users,
-        colorText: "text-amber-600 dark:text-amber-400",
-        colorBg: "bg-amber-50 dark:bg-amber-950/40",
-        ringColor: "hover:border-amber-500 hover:shadow-sm",
+        id: "ops",
+        label: "OPs en Planta",
+        icon: Factory,
+        colorText: "text-emerald-600 dark:text-emerald-400",
+        colorBg: "bg-emerald-50 dark:bg-emerald-950/40",
+        ringColor: "hover:border-emerald-500 hover:shadow-sm",
     },
 ];
 
@@ -79,9 +82,12 @@ export default function AdminDashboard({
 }) {
     const values = {
         ventas: stats.ventas ?? "$0",
-        utilidad: stats.utilidad ?? "$0",
-        rentabilidad: stats.rentabilidad ?? "0%",
-        clientes: stats.clientes ?? 0,
+        scos: stats.scos ?? 0,
+        evn: stats.evn ?? 0,
+        ops: stats.ops ?? 0,
+        totalScos: stats.totalScos ?? 0,
+        totalEvn: stats.totalEvn ?? 0,
+        totalOps: stats.totalOps ?? 0,
     };
 
     return (
@@ -208,23 +214,23 @@ export default function AdminDashboard({
             {/* Resumen inferior */}
             <div className="grid gap-6 grid-cols-1 lg:grid-cols-3">
                 <Card className="p-6 bg-card border border-border flex flex-col justify-center">
-                    <p className="text-[9px] font-black text-muted-foreground uppercase tracking-widest mb-1">Ventas Totales</p>
+                    <p className="text-[9px] font-black text-muted-foreground uppercase tracking-widest mb-1">Total SCOS Registradas</p>
                     <p className="text-3xl font-black text-blue-600 dark:text-blue-400 tracking-tight italic">
-                        {values.ventas}
+                        {values.totalScos}
                     </p>
                 </Card>
 
                 <Card className="p-6 bg-card border border-border flex flex-col justify-center">
-                    <p className="text-[9px] font-black text-muted-foreground uppercase tracking-widest mb-1">Utilidad Neta</p>
+                    <p className="text-[9px] font-black text-muted-foreground uppercase tracking-widest mb-1">Total EVN Creadas</p>
                     <p className="text-3xl font-black text-emerald-600 dark:text-emerald-400 tracking-tight italic">
-                        {values.utilidad}
+                        {values.totalEvn}
                     </p>
                 </Card>
 
                 <Card className="p-6 bg-card border border-border flex flex-col justify-center">
-                    <p className="text-[9px] font-black text-muted-foreground uppercase tracking-widest mb-1">Margen Actual</p>
+                    <p className="text-[9px] font-black text-muted-foreground uppercase tracking-widest mb-1">Total OPs Emitidas</p>
                     <p className="text-3xl font-black text-indigo-600 dark:text-indigo-400 tracking-tight italic">
-                        {values.rentabilidad}
+                        {values.totalOps}
                     </p>
                 </Card>
             </div>

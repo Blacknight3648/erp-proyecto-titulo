@@ -42,6 +42,7 @@ export default function CosteosOP() {
         moCinta, setMoCinta,
         moCosturaSellada, setMoCosturaSellada,
         moAcolchado, setMoAcolchado,
+        observacionesManoObra, setObservacionesManoObra,
         costoHilo, setCostoHilo,
         costoMoPropia, setCostoMoPropia,
         costoGratificacion, setCostoGratificacion,
@@ -107,6 +108,7 @@ export default function CosteosOP() {
                     moCinta={moCinta} setMoCinta={setMoCinta}
                     moCosturaSellada={moCosturaSellada} setMoCosturaSellada={setMoCosturaSellada}
                     moAcolchado={moAcolchado} setMoAcolchado={setMoAcolchado}
+                    observacionesManoObra={observacionesManoObra} setObservacionesManoObra={setObservacionesManoObra}
                     costoHilo={costoHilo} setCostoHilo={setCostoHilo}
                     costoMoPropia={costoMoPropia} setCostoMoPropia={setCostoMoPropia}
                     costoGratificacion={costoGratificacion} setCostoGratificacion={setCostoGratificacion}

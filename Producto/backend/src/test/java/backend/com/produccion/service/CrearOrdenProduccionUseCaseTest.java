@@ -138,14 +138,14 @@ class CrearOrdenProduccionUseCaseTest {
     private Costeo costeo(Long idCosteo, String numeroCosteo) {
         return new Costeo(idCosteo, numeroCosteo != null ? new DocumentNumber(numeroCosteo) : null,
                 30L, 10L, "Cliente Test", 20L, "Vendedor Test",
-                Money.zero("CLP"), Money.zero("CLP"), Money.zero("CLP"), Money.zero("CLP"), Money.zero("CLP"),
+                Money.zero("CLP"), Money.zero("CLP"), "", Money.zero("CLP"), Money.zero("CLP"), Money.zero("CLP"),
                 BigDecimal.ZERO, null, null, null, null, null, null,
                 Money.zero("CLP"), BigDecimal.ZERO, Money.zero("CLP"), new ArrayList<>());
     }
 
     private CosteoVersion costeoVersion(Long id, Long costeoId, int numeroVersion) {
         return new CosteoVersion(id, costeoId, numeroVersion, LocalDateTime.now(), "Versión inicial al crear OP",
-                "SYSTEM", new ArrayList<>(), Money.zero("CLP"), Money.zero("CLP"), Money.zero("CLP"),
+                "SYSTEM", new ArrayList<>(), Money.zero("CLP"), "", Money.zero("CLP"), Money.zero("CLP"),
                 Money.zero("CLP"), Money.zero("CLP"), BigDecimal.ZERO, Money.zero("CLP"), BigDecimal.ZERO,
                 Money.zero("CLP"));
     }

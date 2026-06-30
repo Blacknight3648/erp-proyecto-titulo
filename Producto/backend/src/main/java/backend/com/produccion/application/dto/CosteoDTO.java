@@ -28,6 +28,7 @@ public class CosteoDTO {
     // Costos base
     private BigDecimal costoHilos;
     private BigDecimal costoManoObra;
+    private String observacionesManoObra;
     private BigDecimal costoEtiquetas;
     private BigDecimal costoEmbalaje;
     private BigDecimal costoFlete;

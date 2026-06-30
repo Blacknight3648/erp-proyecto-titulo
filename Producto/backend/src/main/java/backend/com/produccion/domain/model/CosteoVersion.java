@@ -22,6 +22,7 @@ public class CosteoVersion {
     private List<CosteoItemVersion> items = new ArrayList<>();
 
     private Money totalManoObra;
+    private String observacionesManoObra;
     private Money totalHilo;
     private Money totalFlete;
     private Money totalEmbalaje;
@@ -33,7 +34,7 @@ public class CosteoVersion {
 
     public CosteoVersion(Long idCosteoVersion, Long costeoId, Integer numeroVersion, LocalDateTime fechaCreacion,
             String motivoCambio, String usuarioCreador, List<CosteoItemVersion> items, Money totalManoObra,
-            Money totalHilo, Money totalFlete, Money totalEmbalaje, Money totalEtiquetas,
+            String observacionesManoObra, Money totalHilo, Money totalFlete, Money totalEmbalaje, Money totalEtiquetas,
             BigDecimal porcentajeCostoFijo, Money costoTotalMateriaPrima, BigDecimal margenBrutoSugerido,
             Money precioVentaSugerido) {
         this.idCosteoVersion = idCosteoVersion;
@@ -44,6 +45,7 @@ public class CosteoVersion {
         this.usuarioCreador = usuarioCreador;
         this.items = items != null ? items : new ArrayList<>();
         this.totalManoObra = totalManoObra;
+        this.observacionesManoObra = observacionesManoObra;
         this.totalHilo = totalHilo;
         this.totalFlete = totalFlete;
         this.totalEmbalaje = totalEmbalaje;

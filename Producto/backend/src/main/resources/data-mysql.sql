@@ -50,9 +50,9 @@ INSERT IGNORE INTO roles (id_role, nombre, descripcion, area_id) VALUES
 -- ============================================================
 -- 3. USUARIOS (RUTs y Teléfonos validados)
 -- ============================================================
-INSERT IGNORE INTO usuarios (id_usuario, run, nombre, apellidos, email, password, telefono, enabled) VALUES
-    (1, '15342981-2', 'CARLOS',    'ITURRIETA MÉNDEZ',  'C.ITURRIETA@EMPRESA.CL', '$2a$10$xyz1234567890123456789', '+56988223344', true),
-    (2, '17589432-K', 'VALENTINA', 'LAGOS ESPINOZA',    'V.LAGOS@EMPRESA.CL',     '$2a$10$abc1234567890123456789', '+56977445566', true);
+INSERT IGNORE INTO usuarios (id_usuario, run, nombre, apellidos, email, password, telefono, fecha_nacimiento, direccion, region, comuna, enabled) VALUES
+    (1, '15342981-2', 'CARLOS',    'ITURRIETA MÉNDEZ',  'C.ITURRIETA@EMPRESA.CL', '$2a$10$xyz1234567890123456789', '+56988223344', '1985-03-12', 'Av. Providencia 1234', 'Metropolitana', 'Providencia', true),
+    (2, '17589432-K', 'VALENTINA', 'LAGOS ESPINOZA',    'V.LAGOS@EMPRESA.CL',     '$2a$10$abc1234567890123456789', '+56977445566', '1992-07-22', 'Los Álamos 567',      'Valparaíso',    'Viña del Mar', true);
 
 -- ============================================================
 -- 4. VENDEDORES

@@ -47,6 +47,9 @@ public class CosteoJpaEntity {
     @Column(name = "costo_mano_obra", precision = 12, scale = 2)
     private BigDecimal costoManoObra;
 
+    @Column(name = "observaciones_mano_obra", length = 1000)
+    private String observacionesManoObra;
+
     @Column(name = "costo_etiquetas", precision = 12, scale = 2)
     private BigDecimal costoEtiquetas;
 

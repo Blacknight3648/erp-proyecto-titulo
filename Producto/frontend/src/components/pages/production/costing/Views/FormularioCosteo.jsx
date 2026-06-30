@@ -47,6 +47,7 @@ export default function FormularioCosteo({
     moCinta, setMoCinta,
     moCosturaSellada, setMoCosturaSellada,
     moAcolchado, setMoAcolchado,
+    observacionesManoObra, setObservacionesManoObra,
     costoHilo, setCostoHilo,
     costoMoPropia, setCostoMoPropia,
     costoGratificacion, setCostoGratificacion,
@@ -421,6 +422,20 @@ export default function FormularioCosteo({
                                                 </div>
                                             ))}
                                         </div>
+                                        
+                                        {/* Observaciones de Mano de Obra (Taller de destino, etc.) */}
+                                        <div className="space-y-2 mt-6">
+                                            <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest block ml-1">Observaciones / Taller de Mano de Obra</label>
+                                            <textarea
+                                                rows={3}
+                                                disabled={costeoEstado === EstadoCosteo.APROBADO}
+                                                value={observacionesManoObra}
+                                                onChange={(e) => setObservacionesManoObra(e.target.value)}
+                                                placeholder="Especificar taller de destino, observaciones especiales de costura, etc..."
+                                                className={`w-full p-4 bg-gray-50 border border-gray-100 rounded-2xl text-sm font-bold ${costeoEstado === EstadoCosteo.APROBADO ? 'text-gray-400 bg-gray-100/50' : 'text-gray-700 focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500'} transition-all outline-none resize-none`}
+                                            />
+                                        </div>
+
                                         <div className="mt-8 p-6 bg-blue-50 rounded-2xl border border-blue-100 flex justify-between items-center">
                                             <span className="text-sm font-black text-blue-800 uppercase italic">Total Mano de Obra Directa</span>
                                             <span className="text-2xl font-black text-blue-600 tracking-tight">${totalMO.toLocaleString('es-CL')}</span>

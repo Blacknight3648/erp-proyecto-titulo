@@ -36,6 +36,8 @@ public class Costeo {
     private Long vendedorId;
     private String vendedorNombre;
 
+    private String observacionesManoObra;
+
     // Detalle de costos (Money para precios, BigDecimal para cantidades)
     private Money costoHilos;
     private Money costoManoObra;
@@ -67,6 +69,7 @@ public class Costeo {
         c.numeroCosteo = numero;
         c.notaVentaId = notaVentaId;
         c.solicitudCostosId = null;
+        c.observacionesManoObra = "";
         c.costoHilos = new Money(java.math.BigDecimal.ZERO, "CLP");
         c.costoManoObra = new Money(java.math.BigDecimal.ZERO, "CLP");
         c.costoEtiquetas = new Money(java.math.BigDecimal.ZERO, "CLP");
@@ -88,7 +91,7 @@ public class Costeo {
 
     public Costeo(Long id, DocumentNumber numero, Long solicitudCostosId, 
             Long clienteId, String clienteNombre, Long vendedorId, String vendedorNombre,
-            Money costoHilos, Money costoManoObra,
+            Money costoHilos, Money costoManoObra, String observacionesManoObra,
             Money costoEtiquetas, Money costoEmbalaje, Money costoFlete,
             BigDecimal porcentajeCostoFijo, Money precioCinta1, BigDecimal cantidadCinta1,
             Money precioCinta2, BigDecimal cantidadCinta2, Money vivoReflectivo,
@@ -104,6 +107,7 @@ public class Costeo {
         this.vendedorNombre = vendedorNombre;
         this.costoHilos = costoHilos;
         this.costoManoObra = costoManoObra;
+        this.observacionesManoObra = observacionesManoObra;
         this.costoEtiquetas = costoEtiquetas;
         this.costoEmbalaje = costoEmbalaje;
         this.costoFlete = costoFlete;

@@ -45,6 +45,7 @@ public class CosteoVersionMapper {
                 entity.getUsuarioCreador(),
                 items,
                 toMoney(entity.getTotalManoObra()),
+                entity.getObservacionesManoObra(),
                 toMoney(entity.getTotalHilo()),
                 toMoney(entity.getTotalFlete()),
                 toMoney(entity.getTotalEmbalaje()),
@@ -69,6 +70,7 @@ public class CosteoVersionMapper {
         entity.setMotivoCambio(domain.getMotivoCambio());
         entity.setUsuarioCreador(domain.getUsuarioCreador());
         entity.setTotalManoObra(toBigDecimal(domain.getTotalManoObra()));
+        entity.setObservacionesManoObra(domain.getObservacionesManoObra());
         entity.setTotalHilo(toBigDecimal(domain.getTotalHilo()));
         entity.setTotalFlete(toBigDecimal(domain.getTotalFlete()));
         entity.setTotalEmbalaje(toBigDecimal(domain.getTotalEmbalaje()));

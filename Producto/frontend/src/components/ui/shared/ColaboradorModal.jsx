@@ -7,7 +7,27 @@ import { validateRUN, formatRUN } from '../../../utils/validations';
 import { useRoles } from '../../../hooks/useRoles';
 import { useAreas } from '../../../hooks/useAreas';
 
-// --- FORMATEADORES ESTÁNDAR ---
+const REGIONES_COMUNAS = {
+  "Arica y Parinacota": ["Arica", "Camarones", "Putre", "General Lagos"],
+  "Tarapacá": ["Iquique", "Alto Hospicio", "Pozo Almonte", "Camiña", "Colchane", "Huara", "Pica"],
+  "Antofagasta": ["Antofagasta", "Mejillones", "Sierra Gorda", "Taltal", "Calama", "Ollagüe", "San Pedro de Atacama", "Tocopilla", "María Elena"],
+  "Atacama": ["Copiapó", "Caldera", "Tierra Amarilla", "Chañaral", "Diego de Almagro", "Vallenar", "Alto del Carmen", "Freirina", "Huasco"],
+  "Coquimbo": ["La Serena", "Coquimbo", "Andacollo", "La Higuera", "Paihuano", "Vicuña", "Illapel", "Canela", "Los Vilos", "Salamanca", "Ovalle", "Combarbalá", "Monte Patria", "Punitaqui", "Río Hurtado"],
+  "Valparaíso": ["Valparaíso", "Casablanca", "Concón", "Juan Fernández", "Puchuncaví", "Quintero", "Viña del Mar", "Isla de Pascua", "Los Andes", "Calle Larga", "Rinconada", "San Esteban", "La Ligua", "Cabildo", "Papudo", "Petorca", "Zapallar", "Quillota", "Calera", "Hijuelas", "La Cruz", "Nogales", "San Antonio", "Algarrobo", "Cartagena", "El Quisco", "El Tabo", "Santo Domingo", "San Felipe", "Catemu", "Llaillay", "Panquehue", "Putaendo", "Santa María", "Quilpué", "Limache", "Olmué", "Villa Alemana"],
+  "Metropolitana de Santiago": ["Santiago", "Cerrillos", "Cerro Navia", "Conchalí", "El Bosque", "Estación Central", "Huechuraba", "Independencia", "La Cisterna", "La Florida", "La Granja", "La Pintana", "La Reina", "Las Condes", "Lo Barnechea", "Lo Espejo", "Lo Prado", "Macul", "Maipú", "Ñuñoa", "Pedro Aguirre Cerda", "Peñalolén", "Providencia", "Pudahuel", "Quilicura", "Quinta Normal", "Recoleta", "Renca", "San Joaquín", "San Miguel", "San Ramón", "Vitacura", "Puente Alto", "Pirque", "San José de Maipo", "Colina", "Lampa", "Tiltil", "San Bernardo", "Buin", "Calera de Tango", "Paine", "Melipilla", "Alhué", "Curacaví", "María Pinto", "San Pedro", "Talagante", "El Monte", "Isla de Maipo", "Padre Hurtado", "Peñaflor"],
+  "O'Higgins": ["Rancagua", "Codegua", "Coinco", "Coltauco", "Doñihue", "Graneros", "Las Cabras", "Machalí", "Malloa", "Mostazal", "Olivar", "Peumo", "Pichidegua", "Quinta de Tilcoco", "Rengo", "Requínoa", "San Vicente", "Pichilemu", "La Estrella", "Litueche", "Marchihue", "Navidad", "Paredones", "San Fernando", "Chépica", "Chimbarongo", "Lolol", "Nancagua", "Palmilla", "Peralillo", "Placilla", "Pumanque", "Santa Cruz"],
+  "Maule": ["Talca", "Constitución", "Curepto", "Empedrado", "Maule", "Pelarco", "Pencahue", "Río Claro", "San Clemente", "San Rafael", "Cauquenes", "Chanco", "Pelluhue", "Curicó", "Hualañé", "Licantén", "Molina", "Rauco", "Romeral", "Sagrada Familia", "Teno", "Vichuquén", "Linares", "Colbún", "Longaví", "Parral", "Retiro", "San Javier", "Villa Alegre", "Yerbas Buenas"],
+  "Ñuble": ["Chillán", "Bulnes", "Chillán Viejo", "El Carmen", "Pemuco", "Pinto", "Quillón", "San Ignacio", "Yungay", "Cobquecura", "Coelemu", "Ninhue", "Portezuelo", "Quirihue", "Ránquil", "Treguaco", "Coihueco", "Ñiquén", "San Carlos", "San Fabián", "San Nicolás"],
+  "Biobío": ["Concepción", "Coronel", "Chiguayante", "Florida", "Hualqui", "Lota", "Penco", "San Pedro de la Paz", "Santa Juana", "Talcahuano", "Tomé", "Hualpén", "Lebu", "Arauco", "Cañete", "Contulmo", "Curanilahue", "Los Álamos", "Tirúa", "Los Ángeles", "Antuco", "Cabrero", "Laja", "Mulchén", "Nacimiento", "Negrete", "Quilaco", "Quilleco", "San Rosendo", "Santa Bárbara", "Tucapel", "Yumbel", "Alto Biobío"],
+  "La Araucanía": ["Temuco", "Carahue", "Cunco", "Curarrehue", "Freire", "Galvarino", "Gorbea", "Lautaro", "Loncoche", "Melipeuco", "Nueva Imperial", "Padre las Casas", "Perquenco", "Pitrufquén", "Pucón", "Saavedra", "Teodoro Schmidt", "Toltén", "Vilcún", "Villarrica", "Cholchol", "Angol", "Collipulli", "Curacautín", "Ercilla", "Lonquimay", "Los Sauces", "Lumaco", "Purén", "Renaico", "Traiguén", "Victoria"],
+  "Los Ríos": ["Valdivia", "Corral", "Futrono", "La Unión", "Lago Ranco", "Lanco", "Los Lagos", "Máfil", "Mariquina", "Paillaco", "Panguipulli", "Río Bueno"],
+  "Los Lagos": ["Puerto Montt", "Calbuco", "Cochamó", "Fresia", "Frutillar", "Los Muermos", "Llanquihue", "Maullín", "Puerto Varas", "Castro", "Ancud", "Chonchi", "Curaco de Vélez", "Dalcahue", "Puqueldón", "Queilén", "Quellón", "Quemchi", "Quinchao", "Osorno", "Puerto Octay", "Purranque", "Puyehue", "Río Negro", "San Juan de la Costa", "San Pablo", "Chaitén", "Futaleufú", "Hualaihué", "Palena"],
+  "Aysén": ["Coyhaique", "Lago Verde", "Aysén", "Cisnes", "Guaitecas", "Cochrane", "O'Higgins", "Tortel", "Chile Chico", "Río Ibáñez"],
+  "Magallanes": ["Punta Arenas", "Laguna Blanca", "Río Verde", "San Gregorio", "Cabo de Hornos", "Antártica", "Porvenir", "Primavera", "Timaukel", "Natales", "Torres del Paine"]
+};
+
+const REGIONES = Object.keys(REGIONES_COMUNAS);
+
 const formatPhoneInput = (value) => {
   const clean = value.replace(/\D/g, '').slice(0, 9);
   if (!clean) return '';
@@ -38,7 +58,6 @@ export default function ColaboradorModal({ onClose, onSave, collaboratorToEdit =
     area: '',
     rol: '',
     password: '',
-    passwordChangeConsent: false,
     activo: true
   };
 
@@ -46,7 +65,6 @@ export default function ColaboradorModal({ onClose, onSave, collaboratorToEdit =
   const [errors, setErrors] = useState({});
   const [touched, setTouched] = useState({});
 
-  // Carga de datos iniciales
   useEffect(() => {
     if (collaboratorToEdit) {
       setFormData({
@@ -62,7 +80,6 @@ export default function ColaboradorModal({ onClose, onSave, collaboratorToEdit =
         area: collaboratorToEdit.areas?.[0]?.nombre || collaboratorToEdit.area || '',
         rol: collaboratorToEdit.roles?.[0]?.nombre || collaboratorToEdit.rol || '',
         password: '',
-        passwordChangeConsent: false,
         activo: collaboratorToEdit.enabled ?? collaboratorToEdit.activo ?? true,
       });
     } else {
@@ -72,7 +89,6 @@ export default function ColaboradorModal({ onClose, onSave, collaboratorToEdit =
     setTouched({});
   }, [collaboratorToEdit]);
 
-  // Lógica de filtrado de roles por área
   const filteredRoles = useMemo(() => {
     if (!formData.area) return [];
     const selectedAreaObj = areas.find(a => a.nombre === formData.area);
@@ -81,14 +97,13 @@ export default function ColaboradorModal({ onClose, onSave, collaboratorToEdit =
     return roles.filter(r => r.areaId === selectedAreaId);
   }, [roles, formData.area, areas]);
 
-  // Auto-selección de rol único
   useEffect(() => {
     if (filteredRoles.length === 1 && formData.rol !== filteredRoles[0].nombre) {
       setFormData(prev => ({ ...prev, rol: filteredRoles[0].nombre }));
     }
   }, [filteredRoles]);
 
-  // --- VALIDADOR ESTÁNDAR POR CAMPO ---
+  // --- VALIDADOR CENTRALIZADO ---
   const validateField = (name, value) => {
     let error = '';
 
@@ -120,16 +135,35 @@ export default function ColaboradorModal({ onClose, onSave, collaboratorToEdit =
         break;
       case 'region':
       case 'comuna':
+        if (!value.trim()) error = 'Este campo es requerido';
         break;
       case 'password':
         if (!collaboratorToEdit && (!value || value.length < 4)) {
           error = 'La clave debe tener al menos 4 caracteres';
-        } else if (value && value.length < 4) {
-          error = 'La clave debe tener al menos 4 caracteres';
-        } else if (collaboratorToEdit && value && !formData.passwordChangeConsent) {
-          error = 'Debes confirmar que cuentas con el consentimiento del colaborador';
         }
         break;
+      case 'fechaNacimiento': {
+        if (!value) break;
+        const fechaNac = new Date(value);
+        const hoy = new Date();
+        if (isNaN(fechaNac.getTime())) {
+          error = 'Fecha inválida';
+          break;
+        }
+        let edad = hoy.getFullYear() - fechaNac.getFullYear();
+        const mes = hoy.getMonth() - fechaNac.getMonth();
+        if (mes < 0 || (mes === 0 && hoy.getDate() < fechaNac.getDate())) {
+          edad--;
+        }
+        if (fechaNac > hoy) {
+          error = 'La persona aún no ha nacido';
+        } else if (edad < 18) {
+          error = 'Debe ser mayor de edad (18+ años)';
+        } else if (edad > 110) {
+          error = 'La edad no puede superar los 110 años';
+        }
+        break;
+      }
       default:
         break;
     }
@@ -141,7 +175,6 @@ export default function ColaboradorModal({ onClose, onSave, collaboratorToEdit =
     const { name, value, type, checked } = e.target;
     let finalValue = type === 'checkbox' ? checked : value;
 
-    // Aplicar formateadores dinámicos en tiempo de escritura
     if (name === 'usuarioRun') {
       finalValue = formatRunInput(value);
     } else if (name === 'telefono') {
@@ -150,9 +183,17 @@ export default function ColaboradorModal({ onClose, onSave, collaboratorToEdit =
       finalValue = value.toLowerCase().trim();
     }
 
+    if (name === 'region') {
+      setFormData(prev => ({ ...prev, region: finalValue, comuna: '' }));
+      if (touched['region']) {
+        const error = validateField('region', finalValue);
+        setErrors(prev => ({ ...prev, region: error, comuna: '' }));
+      }
+      return;
+    }
+
     setFormData(prev => ({ ...prev, [name]: finalValue }));
 
-    // Validar inmediatamente si el usuario ya interactuó con el campo
     if (touched[name]) {
       const error = validateField(name, finalValue);
       setErrors(prev => ({ ...prev, [name]: error }));
@@ -166,35 +207,24 @@ export default function ColaboradorModal({ onClose, onSave, collaboratorToEdit =
     setErrors(prev => ({ ...prev, [name]: error }));
   };
 
-  // Validación del formulario completo para el botón Submit
   const isFormValid = useMemo(() => {
-    // Campos obligatorios
-    const mandatoryFields = ['usuarioNombre', 'usuarioApellidos', 'usuarioRun', 'usuarioEmail'];
+    const mandatoryFields = ['usuarioNombre', 'usuarioApellidos', 'usuarioRun', 'usuarioEmail', 'region', 'comuna'];
     if (!collaboratorToEdit) mandatoryFields.push('password');
 
-    // Verificar que no existan errores activos
     const hasErrors = Object.values(errors).some(err => !!err);
     if (hasErrors) return false;
 
-    // Verificar que los campos requeridos tengan contenido válido
     return mandatoryFields.every(field => {
       const value = formData[field];
       return value && validateField(field, value) === '';
-    });
+    }) && validateField('fechaNacimiento', formData.fechaNacimiento) === '';
   }, [errors, formData, collaboratorToEdit]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    // Al editar, solo se revalidan los campos que el usuario realmente tocó/cambió,
-    // para no bloquear el guardado por datos legados que ya no pasan las reglas actuales.
-    // Al crear un colaborador nuevo, se validan todos los campos.
-    const fieldsToValidate = collaboratorToEdit
-      ? Object.keys(formData).filter(key => touched[key])
-      : Object.keys(formData);
-
     const currentErrors = {};
-    fieldsToValidate.forEach(key => {
+    Object.keys(formData).forEach(key => {
       const error = validateField(key, formData[key]);
       if (error) currentErrors[key] = error;
     });
@@ -202,8 +232,8 @@ export default function ColaboradorModal({ onClose, onSave, collaboratorToEdit =
     if (Object.keys(currentErrors).length > 0) {
       setErrors(currentErrors);
       const allTouched = {};
-      fieldsToValidate.forEach(key => { allTouched[key] = true; });
-      setTouched(prev => ({ ...prev, ...allTouched }));
+      Object.keys(formData).forEach(key => { allTouched[key] = true; });
+      setTouched(allTouched);
       toast.error('Por favor, revisa los errores en el formulario');
       return;
     }
@@ -214,7 +244,6 @@ export default function ColaboradorModal({ onClose, onSave, collaboratorToEdit =
       usuarioApellidos: formData.usuarioApellidos.trim(),
       usuarioEmail: formData.usuarioEmail.trim(),
       usuarioPassword: formData.password || undefined,
-      passwordChangeConsent: formData.password ? formData.passwordChangeConsent : undefined,
       telefono: formData.telefono ? `+56${formData.telefono.replace(/\s/g, '')}` : '',
       fechaNacimiento: formData.fechaNacimiento || null,
       direccion: formData.direccion || '',
@@ -239,15 +268,10 @@ export default function ColaboradorModal({ onClose, onSave, collaboratorToEdit =
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm animate-in fade-in duration-200">
       <div className="bg-white w-full max-w-2xl rounded-2xl p-6 md:p-8 shadow-xl border border-slate-100 relative max-h-[90vh] overflow-y-auto flex flex-col">
         
-        {/* Botón Cerrar */}
-        <button
-          onClick={onClose}
-          className="absolute top-5 right-5 p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-50 rounded-xl transition-all"
-        >
+        <button onClick={onClose} className="absolute top-5 right-5 p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-50 rounded-xl transition-all">
           <X className="w-5 h-5" />
         </button>
 
-        {/* Cabecera */}
         <div className="mb-6">
           <h2 className="text-xl font-bold text-slate-900">
             {collaboratorToEdit ? 'Editar Perfil del Colaborador' : 'Registrar Nuevo Colaborador'}
@@ -259,7 +283,7 @@ export default function ColaboradorModal({ onClose, onSave, collaboratorToEdit =
 
         <form onSubmit={handleSubmit} className="space-y-6 flex-1">
           
-          {/* SECCIÓN 1: IDENTIDAD */}
+          {/* SECCIÓN 1 */}
           <div className="space-y-4">
             <div className="flex items-center gap-3">
               <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">Identidad y Contacto</span>
@@ -267,7 +291,6 @@ export default function ColaboradorModal({ onClose, onSave, collaboratorToEdit =
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {/* Nombre */}
               <div>
                 <label className="block text-xs font-semibold text-slate-600 mb-1.5">Nombre *</label>
                 <div className="relative">
@@ -286,7 +309,6 @@ export default function ColaboradorModal({ onClose, onSave, collaboratorToEdit =
                 <FieldError name="usuarioNombre" />
               </div>
 
-              {/* Apellidos */}
               <div>
                 <label className="block text-xs font-semibold text-slate-600 mb-1.5">Apellidos *</label>
                 <div className="relative">
@@ -305,11 +327,10 @@ export default function ColaboradorModal({ onClose, onSave, collaboratorToEdit =
                 <FieldError name="usuarioApellidos" />
               </div>
 
-              {/* RUN */}
               <div>
                 <label className="block text-xs font-semibold text-slate-600 mb-1.5">RUN *</label>
                 <div className="relative">
-                  <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-xs font-bold text-slate-400">N°</span>
+                  <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-xs font-bold text-slate-400">ID</span>
                   <input
                     name="usuarioRun"
                     value={formData.usuarioRun}
@@ -324,7 +345,6 @@ export default function ColaboradorModal({ onClose, onSave, collaboratorToEdit =
                 <FieldError name="usuarioRun" />
               </div>
 
-              {/* Email */}
               <div>
                 <label className="block text-xs font-semibold text-slate-600 mb-1.5">Email Corporativo *</label>
                 <div className="relative">
@@ -343,7 +363,6 @@ export default function ColaboradorModal({ onClose, onSave, collaboratorToEdit =
                 <FieldError name="usuarioEmail" />
               </div>
 
-              {/* Teléfono */}
               <div>
                 <label className="block text-xs font-semibold text-slate-600 mb-1.5">Teléfono Móvil</label>
                 <div className="relative">
@@ -363,7 +382,7 @@ export default function ColaboradorModal({ onClose, onSave, collaboratorToEdit =
                 <FieldError name="telefono" />
               </div>
 
-              {/* Fecha Nacimiento */}
+              {/* Input de Fecha con Validador */}
               <div>
                 <label className="block text-xs font-semibold text-slate-600 mb-1.5">Fecha de Nacimiento</label>
                 <div className="relative">
@@ -373,14 +392,18 @@ export default function ColaboradorModal({ onClose, onSave, collaboratorToEdit =
                     name="fechaNacimiento"
                     value={formData.fechaNacimiento}
                     onChange={handleChange}
-                    className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#635bff]/20 focus:border-[#635bff] transition-all"
+                    onBlur={handleBlur}
+                    className={`w-full pl-10 pr-4 py-2.5 bg-slate-50 border rounded-xl text-sm transition-all focus:outline-none focus:ring-2 focus:ring-[#635bff]/20 ${
+                      errors.fechaNacimiento && touched.fechaNacimiento ? 'border-rose-400 focus:border-rose-500' : 'border-slate-200 focus:border-[#635bff]'
+                    }`}
                   />
                 </div>
+                <FieldError name="fechaNacimiento" />
               </div>
             </div>
           </div>
 
-          {/* SECCIÓN 2: UBICACIÓN */}
+          {/* SECCIÓN 2 */}
           <div className="space-y-4">
             <div className="flex items-center gap-3">
               <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">Ubicación</span>
@@ -402,47 +425,54 @@ export default function ColaboradorModal({ onClose, onSave, collaboratorToEdit =
                 </div>
               </div>
 
-              {/* Región */}
               <div>
-                <label className="block text-xs font-semibold text-slate-600 mb-1.5">Región</label>
+                <label className="block text-xs font-semibold text-slate-600 mb-1.5">Región *</label>
                 <div className="relative">
-                  <MapPin className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-                  <input
+                  <MapPin className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
+                  <select
                     name="region"
                     value={formData.region}
                     onChange={handleChange}
                     onBlur={handleBlur}
-                    className={`w-full pl-10 pr-4 py-2.5 bg-slate-50 border rounded-xl text-sm transition-all focus:outline-none focus:ring-2 focus:ring-[#635bff]/20 ${
+                    className={`w-full pl-10 pr-8 py-2.5 bg-slate-50 border rounded-xl text-sm transition-all focus:outline-none focus:ring-2 focus:ring-[#635bff]/20 appearance-none cursor-pointer ${
                       errors.region && touched.region ? 'border-rose-400 focus:border-rose-500' : 'border-slate-200 focus:border-[#635bff]'
                     }`}
-                    placeholder="Ej: Valparaíso"
-                  />
+                  >
+                    <option value="">— Seleccionar región —</option>
+                    {REGIONES.map(r => (
+                      <option key={r} value={r}>{r}</option>
+                    ))}
+                  </select>
                 </div>
                 <FieldError name="region" />
               </div>
 
-              {/* Comuna */}
               <div>
-                <label className="block text-xs font-semibold text-slate-600 mb-1.5">Comuna</label>
+                <label className="block text-xs font-semibold text-slate-600 mb-1.5">Comuna *</label>
                 <div className="relative">
-                  <MapPin className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-                  <input
+                  <MapPin className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
+                  <select
                     name="comuna"
                     value={formData.comuna}
                     onChange={handleChange}
                     onBlur={handleBlur}
-                    className={`w-full pl-10 pr-4 py-2.5 bg-slate-50 border rounded-xl text-sm transition-all focus:outline-none focus:ring-2 focus:ring-[#635bff]/20 ${
+                    disabled={!formData.region}
+                    className={`w-full pl-10 pr-8 py-2.5 bg-slate-50 border rounded-xl text-sm transition-all focus:outline-none focus:ring-2 focus:ring-[#635bff]/20 appearance-none cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed ${
                       errors.comuna && touched.comuna ? 'border-rose-400 focus:border-rose-500' : 'border-slate-200 focus:border-[#635bff]'
                     }`}
-                    placeholder="Ej: Quilpué"
-                  />
+                  >
+                    <option value="">— Seleccionar comuna —</option>
+                    {(REGIONES_COMUNAS[formData.region] || []).map(c => (
+                      <option key={c} value={c}>{c}</option>
+                    ))}
+                  </select>
                 </div>
                 <FieldError name="comuna" />
               </div>
             </div>
           </div>
 
-          {/* SECCIÓN 3: CARGO Y SEGURIDAD */}
+          {/* SECCIÓN 3 */}
           <div className="space-y-4">
             <div className="flex items-center gap-3">
               <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">Cargo y Seguridad</span>
@@ -450,7 +480,6 @@ export default function ColaboradorModal({ onClose, onSave, collaboratorToEdit =
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {/* Área */}
               <div>
                 <label className="block text-xs font-semibold text-slate-600 mb-1.5">Área Asignada</label>
                 <div className="relative">
@@ -469,7 +498,6 @@ export default function ColaboradorModal({ onClose, onSave, collaboratorToEdit =
                 </div>
               </div>
 
-              {/* Rol */}
               <div>
                 <label className="block text-xs font-semibold text-slate-600 mb-1.5">Rol de Usuario</label>
                 <div className="relative">
@@ -488,7 +516,6 @@ export default function ColaboradorModal({ onClose, onSave, collaboratorToEdit =
                 </div>
               </div>
 
-              {/* Contraseña */}
               <div className="sm:col-span-2">
                 <label className="block text-xs font-semibold text-slate-600 mb-1.5">
                   {collaboratorToEdit ? 'Nueva Contraseña (Opcional)' : 'Contraseña de Acceso *'}
@@ -512,7 +539,7 @@ export default function ColaboradorModal({ onClose, onSave, collaboratorToEdit =
             </div>
           </div>
 
-          {/* ESTADO ACTIVACIÓN */}
+          {/* ESTADO */}
           <div className="flex items-center justify-between p-4 bg-slate-50 rounded-xl border border-slate-100">
             <div className="flex items-center gap-3">
               <div className={`w-9 h-9 rounded-lg flex items-center justify-center transition-all ${formData.activo ? 'bg-emerald-50 text-emerald-600' : 'bg-slate-200 text-slate-400'}`}>
@@ -529,7 +556,6 @@ export default function ColaboradorModal({ onClose, onSave, collaboratorToEdit =
             </label>
           </div>
 
-          {/* Botón de envío */}
           <button
             type="submit"
             disabled={!isFormValid}

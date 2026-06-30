@@ -132,9 +132,17 @@ public class UserServiceImpl implements UserService {
         if (userActualizado.getUsuarioPassword() != null && !userActualizado.getUsuarioPassword().isBlank()) {
             user.setUsuarioPassword(userActualizado.getUsuarioPassword());
         }
-        if (userActualizado.getTelefono() != null && !userActualizado.getTelefono().isBlank()) 
+        if (userActualizado.getTelefono() != null && !userActualizado.getTelefono().isBlank())
             user.setTelefono(userActualizado.getTelefono());
-        if (userActualizado.getUsuarioRun() != null && !userActualizado.getUsuarioRun().isBlank()) 
+        if (userActualizado.getFechaNacimiento() != null)
+            user.setFechaNacimiento(userActualizado.getFechaNacimiento());
+        if (userActualizado.getDireccion() != null)
+            user.setDireccion(userActualizado.getDireccion());
+        if (userActualizado.getRegion() != null)
+            user.setRegion(userActualizado.getRegion());
+        if (userActualizado.getComuna() != null)
+            user.setComuna(userActualizado.getComuna());
+        if (userActualizado.getUsuarioRun() != null && !userActualizado.getUsuarioRun().isBlank())
             user.setUsuarioRun(userActualizado.getUsuarioRun());
         user.setEnabled(userActualizado.isEnabled());
 

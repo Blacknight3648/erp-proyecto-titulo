@@ -35,6 +35,7 @@ public class CosteoMapper {
                 null, // vendedorNombre (populated in service)
                 new Money(entity.getCostoHilos() != null ? entity.getCostoHilos() : BigDecimal.ZERO, "CLP"),
                 new Money(entity.getCostoManoObra() != null ? entity.getCostoManoObra() : BigDecimal.ZERO, "CLP"),
+                entity.getObservacionesManoObra(),
                 new Money(entity.getCostoEtiquetas() != null ? entity.getCostoEtiquetas() : BigDecimal.ZERO, "CLP"),
                 new Money(entity.getCostoEmbalaje() != null ? entity.getCostoEmbalaje() : BigDecimal.ZERO, "CLP"),
                 new Money(entity.getCostoFlete() != null ? entity.getCostoFlete() : BigDecimal.ZERO, "CLP"),
@@ -70,6 +71,7 @@ public class CosteoMapper {
         entity.setNotaVentaId(domain.getNotaVentaId());
         entity.setCostoHilos(domain.getCostoHilos().getAmount());
         entity.setCostoManoObra(domain.getCostoManoObra().getAmount());
+        entity.setObservacionesManoObra(domain.getObservacionesManoObra());
         entity.setCostoEtiquetas(domain.getCostoEtiquetas().getAmount());
         entity.setCostoEmbalaje(domain.getCostoEmbalaje().getAmount());
         entity.setCostoFlete(domain.getCostoFlete().getAmount());
@@ -110,6 +112,7 @@ public class CosteoMapper {
                 .vendedorNombre(domain.getVendedorNombre())
                 .costoHilos(domain.getCostoHilos().getAmount())
                 .costoManoObra(domain.getCostoManoObra().getAmount())
+                .observacionesManoObra(domain.getObservacionesManoObra())
                 .costoEtiquetas(domain.getCostoEtiquetas().getAmount())
                 .costoEmbalaje(domain.getCostoEmbalaje().getAmount())
                 .costoFlete(domain.getCostoFlete().getAmount())
@@ -139,6 +142,7 @@ public class CosteoMapper {
                 dto.getVendedorNombre(),
                 new Money(dto.getCostoHilos() != null ? dto.getCostoHilos() : BigDecimal.ZERO, "CLP"),
                 new Money(dto.getCostoManoObra() != null ? dto.getCostoManoObra() : BigDecimal.ZERO, "CLP"),
+                dto.getObservacionesManoObra(),
                 new Money(dto.getCostoEtiquetas() != null ? dto.getCostoEtiquetas() : BigDecimal.ZERO, "CLP"),
                 new Money(dto.getCostoEmbalaje() != null ? dto.getCostoEmbalaje() : BigDecimal.ZERO, "CLP"),
                 new Money(dto.getCostoFlete() != null ? dto.getCostoFlete() : BigDecimal.ZERO, "CLP"),

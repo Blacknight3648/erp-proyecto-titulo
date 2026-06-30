@@ -81,6 +81,7 @@ export function useCosteosOPState() {
     const [moCinta, setMoCinta] = useState(0);
     const [moCosturaSellada, setMoCosturaSellada] = useState(0);
     const [moAcolchado, setMoAcolchado] = useState(0);
+    const [observacionesManoObra, setObservacionesManoObra] = useState('');
 
     // Costos Fijos state
     const [costoHilo, setCostoHilo] = useState(0);
@@ -289,6 +290,7 @@ export function useCosteosOPState() {
             if (savedCosteo) {
                 setCostoHilo(savedCosteo.costoHilos || 0);
                 setCostoMoPropia(savedCosteo.costoManoObra || 0);
+                setObservacionesManoObra(savedCosteo.observacionesManoObra || '');
                 setCostoGratificacion(0);
                 setCostoEtiqueta(savedCosteo.costoEtiquetas || 0);
                 setCostoEmbalaje(savedCosteo.costoEmbalaje || 0);
@@ -299,6 +301,7 @@ export function useCosteosOPState() {
             } else {
                 setCostoHilo(0);
                 setCostoMoPropia(0);
+                setObservacionesManoObra('');
                 setCostoGratificacion(0);
                 setCostoEtiqueta(0);
                 setCostoEmbalaje(0);
@@ -499,6 +502,7 @@ export function useCosteosOPState() {
                 numeroCosteo: `C-${(currentSolicitud.numero || currentSolicitud.id).toString().slice(-10)}-${Date.now().toString().slice(-4)}`,
                 costoHilos: costoHilo,
                 costoManoObra: totalMO + costoMoPropia + costoGratificacion,
+                observacionesManoObra: observacionesManoObra,
                 costoEtiquetas: costoEtiqueta,
                 costoEmbalaje: costoEmbalaje,
                 costoFlete: costoFlete,
@@ -593,6 +597,7 @@ export function useCosteosOPState() {
         moCinta, setMoCinta,
         moCosturaSellada, setMoCosturaSellada,
         moAcolchado, setMoAcolchado,
+        observacionesManoObra, setObservacionesManoObra,
         costoHilo, setCostoHilo,
         costoMoPropia, setCostoMoPropia,
         costoGratificacion, setCostoGratificacion,

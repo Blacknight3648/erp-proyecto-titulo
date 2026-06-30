@@ -175,8 +175,8 @@ export default function GestionUsuariosColaboradores() {
 
                       {/* Rol y Área */}
                       <td className="p-4">
-                        <div className="text-sm font-medium text-slate-800">{c.rol || "Sin Rol"}</div>
-                        <div className="text-xs text-slate-400">{c.area || "Sin Área"}</div>
+                        <div className="text-sm font-medium text-slate-800">{c.roles?.[0]?.nombre || c.rol || "Sin Rol"}</div>
+                        <div className="text-xs text-slate-400">{c.areas?.[0]?.nombre || c.area || "Sin Área"}</div>
                       </td>
 
                       {/* Estado con Badge (Estilo "Paid" de tu imagen) */}

@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
 import java.util.Set;
 
 @Data
@@ -20,6 +21,10 @@ public class UserDTO {
     private String usuarioEmail;
     private String usuarioPassword;
     private String telefono;
+    private LocalDate fechaNacimiento;
+    private String direccion;
+    private String region;
+    private String comuna;
     private boolean enabled;
 
     // Roles completos del usuario

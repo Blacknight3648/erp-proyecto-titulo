@@ -20,7 +20,6 @@ import EVNResumenSidebar from "./components/EVNResumenSidebar";
 import QuotationSelectionModal from "./components/QuotationSelectionModal";
 import CosteoSelectionModal from "./components/CosteoSelectionModal";
 import FirmaAprobacionModal from "./Modals/FirmaAprobacionModal";
-import EvaluacionForm from "./EvaluacionForm";
 import { useEVNState, parseId, DEFAULT_ITEM } from '../../../../../hooks/useEVNState';
 import { EvaluacionNegocioService } from '../../../../../remote/service/EvaluacionNegocioService';
 import { useAuth } from '../../../../../contexts/AuthContext';
@@ -513,22 +512,24 @@ export default function DetalleEVN({ initialEval, onBack, mode = 'create' }) {
                                 <h3 className="text-sm font-black text-gray-800 uppercase tracking-widest italic">Otros Costos y Gastos Operacionales</h3>
                             </div>
 
-                            {/* Grid de gastos adicionales — 6 campos */}
-                            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-10">
+                            {/* Grid de gastos adicionales — 7 campos */}
+                            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-7 gap-4 mb-10">
                                 {[
-                                    { key: 'garantiaSeriedad',         label: 'Garantía Seriedad' },
-                                    { key: 'garantiaFielCumplimiento', label: 'Garantía Cumplimiento' },
-                                    { key: 'flete',                    label: 'Flete Especial' },
-                                    { key: 'certificacion',            label: 'Certificación' },
-                                    { key: 'muestras',                 label: 'Muestras Físicas' },
-                                    { key: 'entregaPersonalizada',     label: 'Entrega Personalizada' },
-                                ].map(({ key, label }) => (
+                                    { key: 'garantiaSeriedad',         label: 'Garantía Seriedad', prefix: '$' },
+                                    { key: 'garantiaFielCumplimiento', label: 'Garantía Cumplimiento', prefix: '$' },
+                                    { key: 'flete',                    label: 'Flete Especial', prefix: '$' },
+                                    { key: 'certificacion',            label: 'Certificación', prefix: '$' },
+                                    { key: 'muestras',                 label: 'Muestras Físicas', prefix: '$' },
+                                    { key: 'entregaPersonalizada',     label: 'Entrega Personalizada', prefix: '$' },
+                                    { key: 'porcentajeComision',       label: '% Comisión Ejecutivo', prefix: '%' },
+                                ].map(({ key, label, prefix }) => (
                                     <div key={key}>
                                         <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-1.5 ml-1 h-8 flex items-end">{label}</p>
                                         <div className="relative">
-                                            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-300 text-[10px] font-black pointer-events-none">$</span>
+                                            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-300 text-[10px] font-black pointer-events-none">{prefix}</span>
                                             <input
                                                 type="number"
+                                                step={key === 'porcentajeComision' ? "0.1" : "1"}
                                                 className="w-full pl-6 pr-3 py-2.5 bg-gray-50 border border-gray-100 rounded-xl text-xs font-black text-gray-700 focus:ring-2 focus:ring-indigo-100 focus:border-indigo-200 outline-none transition-all disabled:opacity-60 disabled:cursor-default"
                                                 value={otrosCostos[key] ?? 0}
                                                 onChange={(e) => setOtrosCostos({ ...otrosCostos, [key]: parseFloat(e.target.value) || 0 })}
@@ -669,34 +670,7 @@ export default function DetalleEVN({ initialEval, onBack, mode = 'create' }) {
                             </div>
                         </div>
 
-                        {/* Commercial Conditions */}
-                        <div className="bg-white rounded-[2rem] shadow-sm border border-gray-100 p-8">
-                            <div className="flex items-center space-x-3 mb-8">
-                                <div className="w-2 h-6 bg-indigo-600 rounded-full" />
-                                <h3 className="text-sm font-black text-gray-800 uppercase tracking-widest italic">Condiciones Comerciales y Formales</h3>
-                            </div>
 
-                            <EvaluacionForm
-                                data={{ ...evalData, margenFinal: totals.margenPorc }}
-                                onChange={setEvalData}
-                                porcentajeComision={otrosCostos.porcentajeComision}
-                                onComisionChange={(val) => setOtrosCostos({ ...otrosCostos, porcentajeComision: val })}
-                                disabled={isReadOnly}
-                            />
-
-                            {!isReadOnly && (
-                                <div className="mt-8 flex justify-end items-center pt-8 border-t border-gray-50">
-                                    <button
-                                        onClick={onGenerarPropuestaInterno}
-                                        disabled={isSaving}
-                                        className="flex items-center gap-3 px-6 py-3 bg-gray-900 hover:bg-indigo-600 text-white rounded-2xl text-[11px] font-black uppercase tracking-widest shadow-xl shadow-gray-200 transition-colors disabled:opacity-60"
-                                    >
-                                        {isSaving ? 'Guardando...' : 'Guardar Condiciones'}
-                                        <ArrowRight className="w-4 h-4" />
-                                    </button>
-                                </div>
-                            )}
-                        </div>
                     </div>
 
                     <div className="space-y-6">

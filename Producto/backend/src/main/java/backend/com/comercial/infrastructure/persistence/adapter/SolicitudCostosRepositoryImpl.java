@@ -128,14 +128,9 @@ public class SolicitudCostosRepositoryImpl implements SolicitudCostosRepository 
                     artRef.setIdArticulo(a.getIdArticulo());
                     ae.setArticulo(artRef);
                 }
+                ae.setTipo(a.getTipo());
                 ae.setDescripcion(a.getDescripcion());
-                ae.setProveedorReferencia(a.getProveedorReferencia());
-                ae.setConsumo(a.getConsumo());
-                ae.setUnidadMedida(a.getUnidadMedida());
-                if (a.getPrecioUnitario() != null) {
-                    ae.setPrecioUnitario(a.getPrecioUnitario().getAmount());
-                    ae.setMonedaPrecioUnitario(a.getPrecioUnitario().getCurrency());
-                }
+                ae.setCantidad(a.getCantidad());
                 ae.setTempId(a.getTempId());
                 entity.addAccesorio(ae);
             }

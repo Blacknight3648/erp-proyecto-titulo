@@ -42,7 +42,7 @@ export default function SolicitudFormSCOS({
         if (section === "telas") {
             newItem = { ...baseItem, aplicacion: "", nombre: "", composicion: "", color: "", peso: 0, unidadMedida: "MTRS" };
         } else if (section === "accesorios") {
-            newItem = { ...baseItem, nombreAccesorio: "", tipo: "", cantidad: 0 };
+            newItem = { ...baseItem, nombreAccesorio: "", tipo: "", cantidad: null };
         } else if (section === "logotipo") {
             newItem = { ...baseItem, tipo: "", nombre: "", ubicacion: "", color: "", tamanio: 0, cantidad: 0, precio: 0 };
         } else if (section === "plantillas") {

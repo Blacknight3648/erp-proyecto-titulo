@@ -139,6 +139,12 @@ export const FIELD_LABELS = {
 
 export const ALL_FIELDS = new Set(Object.keys(FIELD_LABELS));
 
+// Reverso: nombre display en mayúsculas → clave camelCase
+// Ej: 'ABOTONADURA / CIERRE' → 'abotonaduraCierre'
+const DISPLAY_TO_CAMPO = Object.fromEntries(
+    Object.entries(FIELD_LABELS).map(([k, v]) => [v.toUpperCase(), k])
+);
+
 export function usePlantillas() {
     const [cache, setCache] = useState({});
     const [plantillas, setPlantillas] = useState([]);
@@ -146,15 +152,8 @@ export function usePlantillas() {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
 
-    const fetchCamposDisponibles = useCallback(async () => {
-        try {
-            const { data } = await api.get(`${BACKEND_URL}/api/v3/comercial/plantillas`);
-            // La API devuelve solo campos con activo=true (filtrado en backend)
-            setCamposDisponibles(Array.isArray(data) ? data : []);
-        } catch (err) {
-            console.error("[usePlantillas] Error fetching campos del catálogo:", err);
-            // Fallback: dejar la lista vacía; ConfiguracionTecnica usará ALL_FIELDS
-        }
+    const fetchCamposDisponibles = useCallback(() => {
+        setCamposDisponibles(Object.keys(FIELD_LABELS).map(k => ({ nombreCampo: k })));
     }, []);
 
     const fetchAll = useCallback(async () => {
@@ -200,7 +199,10 @@ export function usePlantillas() {
             // El endpoint ahora devuelve UN objeto { idArticulo, nombreArticulo, camposPlantilla:[...] }.
             const lista = data?.camposPlantilla ?? [];
             if (lista.length > 0) {
-                const campos = new Set(lista);
+                // El backend guarda nombres display en mayúsculas (ej: 'ABOTONADURA / CIERRE').
+                // Revertimos a clave camelCase para que ConfiguracionTecnica.has(field) funcione.
+                const normalized = lista.map(v => DISPLAY_TO_CAMPO[v] ?? v);
+                const campos = new Set(normalized);
                 setCache(prev => ({ ...prev, [tipo]: campos }));
                 return campos;
             }

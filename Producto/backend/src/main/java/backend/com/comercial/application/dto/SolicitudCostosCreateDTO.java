@@ -43,4 +43,5 @@ public class SolicitudCostosCreateDTO {
     private java.math.BigDecimal costoTotal;
 
     private Boolean esPrendaNueva;
+    private List<String> camposPlantilla;
 }

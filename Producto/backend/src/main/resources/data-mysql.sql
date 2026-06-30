@@ -213,7 +213,7 @@ INSERT IGNORE INTO plantilla (id_plantilla, nombre_campo) VALUES
     (4,  'CORTES Y APLICACIONES'),
     (5,  'FUELLES'),
     (6,  'MANGAS'),
-    (7, 'PUÑOS'),
+    (7,  'PUÑOS'),
     (8,  'PRETINAS / RUEDO'),
     (9,  'BOLSILLOS'),
     (10, 'OBS. DEL MODELO');
@@ -223,14 +223,14 @@ INSERT IGNORE INTO plantilla (id_plantilla, nombre_campo) VALUES
 -- ============================================================
 INSERT IGNORE INTO modelo_plantilla (id_modelo_plantilla, id_articulo, campos) VALUES
     (1, 1, 'GORRO,BOLSILLOS,MANGAS,PUÑOS'),
-    (2, 2, 'CUELLO,BOLSILLOS,ABOTONADURA/CIERRE,FUELLES'),
-    (3, 3, 'MANGAS,PRETINAS/RUEDO,CUELLO'),
-    -- Plantillas para prendas a confeccionar (claves camelCase = FIELD_LABELS keys)
-    (4, 8,  'gorro,cuello,abotonaduraCierre,cortesAplicaciones,mangas,puños,bolsillos,obsModelo'),
-    (5, 9,  'gorro,cuello,abotonaduraCierre,fuelles,mangas,puños,bolsillos,obsModelo'),
-    (6, 10, 'cuello,abotonaduraCierre,cortesAplicaciones,bolsillos,obsModelo'),
-    (7, 11, 'cuello,mangas,pretinasRuedo,obsModelo'),
-    (8, 12, 'abotonaduraCierre,fuelles,pretinasRuedo,bolsillos,obsModelo');
+    (2, 2, 'CUELLO,BOLSILLOS,ABOTONADURA / CIERRE,FUELLES'),
+    (3, 3, 'MANGAS,PRETINAS / RUEDO,CUELLO'),
+    -- Plantillas prendas a confeccionar (nombres display en mayúsculas)
+    (4, 8,  'GORRO,CUELLO,ABOTONADURA / CIERRE,CORTES Y APLICACIONES,MANGAS,PUÑOS,BOLSILLOS,OBS. DEL MODELO'),
+    (5, 9,  'GORRO,CUELLO,ABOTONADURA / CIERRE,FUELLES,MANGAS,PUÑOS,BOLSILLOS,OBS. DEL MODELO'),
+    (6, 10, 'CUELLO,ABOTONADURA / CIERRE,CORTES Y APLICACIONES,BOLSILLOS,OBS. DEL MODELO'),
+    (7, 11, 'CUELLO,MANGAS,PRETINAS / RUEDO,OBS. DEL MODELO'),
+    (8, 12, 'ABOTONADURA / CIERRE,FUELLES,PRETINAS / RUEDO,BOLSILLOS,OBS. DEL MODELO');
 
 -- ============================================================
 -- 7.4. SOLICITUDES DE COSTOS (SCOS)

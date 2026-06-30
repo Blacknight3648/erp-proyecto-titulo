@@ -1,7 +1,7 @@
 import { ClipboardList } from "lucide-react";
 import { useClientes } from "../../../../../../hooks/useClientes.js";
 import { useVendedores } from "../../../../../../hooks/useVendedores.js";
-import { usePlantillas } from "../../../../../../hooks/usePlantillas.js";
+import { usePlantillas, FIELD_LABELS } from "../../../../../../hooks/usePlantillas.js";
 import ComboField from "../../../../../../components/ui/shared/ComboField.jsx";
 
 const generateId = () => {
@@ -24,7 +24,7 @@ export default function InformacionSolicitudPanel({ formData, setFormData, readO
 
     const vendedorOptions = (vendedores || []).map(v => ({
         value: String(v.id),
-        label: `${v.nombreUsuario} ${v.apellidosUsuario}`,
+        label: v.nombreVendedor || v.nombreUsuario || '',
     }));
 
     const plantillaOptions = [
@@ -65,12 +65,29 @@ export default function InformacionSolicitudPanel({ formData, setFormData, readO
                 esPrendaNueva: false,
                 plantillas: [newPlantilla]
             }));
+        } else if (cleanValue === 'OTRO') {
+            // El usuario indicó que es una prenda nueva — el nombre real viene de nombrePrenda
+            setFormData(prev => ({
+                ...prev,
+                articuloDescripcion: 'OTRO',
+                esPrendaNueva: true,
+                plantillas: [{
+                    id: generateId(),
+                    camposActivos: Object.keys(FIELD_LABELS),
+                    detallesPrenda: {},
+                    telas: prev.plantillas?.[0]?.telas || [],
+                    accesorios: prev.plantillas?.[0]?.accesorios || [],
+                    logotipos: prev.plantillas?.[0]?.logotipos || [],
+                    cintas: [],
+                    vinculos: []
+                }]
+            }));
         } else {
             setFormData(prev => ({
                 ...prev,
                 articuloDescripcion: cleanValue,
                 nombrePrenda: textValue,
-                esPrendaNueva: cleanValue !== '' && cleanValue !== 'OTRO'
+                esPrendaNueva: cleanValue !== ''
             }));
         }
     };

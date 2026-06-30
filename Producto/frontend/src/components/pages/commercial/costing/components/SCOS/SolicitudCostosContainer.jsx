@@ -4,6 +4,7 @@ import autoTable from "jspdf-autotable";
 import SolicitudListView from "../../../../../../components/layout/SolicitudListView.jsx";
 import SolicitudForm from "./SolicitudFormSCOS.jsx";
 import { useComercial } from "../../../../../../hooks/useComercial.js";
+import { FIELD_LABELS } from "../../../../../../hooks/usePlantillas.js";
 import {toast} from "sonner";
 
 const initialSCOSForm = {
@@ -48,14 +49,18 @@ export default function SolicitudCostosContainer() {
 
 
   const handleSave = async () => {
-    if (!formData.articuloDescripcion || !formData.clienteId || !formData.genero) {
-      toast.error("Por favor complete el articulo, seleccione un cliente y defina el género");
+    // Cuando se seleccionó 'OTRO', el nombre real del artículo viene de nombrePrenda
+    const articuloDescripcionFinal = formData.articuloDescripcion === 'OTRO'
+      ? (formData.nombrePrenda || '').toUpperCase().trim()
+      : formData.articuloDescripcion;
+
+    if (!articuloDescripcionFinal || !formData.clienteId || !formData.genero) {
+      toast.error("Por favor complete el artículo, seleccione un cliente y defina el género");
       return;
     }
 
     try {
-      // Prenda nueva si el usuario escribió en el campo libre (no seleccionó del listado)
-      const esPrendaNueva = !!(formData.articuloDescripcion && formData.esPrendaNueva);
+      const esPrendaNueva = !!(formData.esPrendaNueva);
       console.log('[SCOS] primeraPlantilla.accesorios:', (formData.plantillas || [])[0]?.accesorios);
 
       // Convertir detallesPrenda del panel de especificaciones técnicas
@@ -80,25 +85,35 @@ export default function SolicitudCostosContainer() {
                 tempMaterialId: isNumericMatId ? null : v.materialId,
                 cantidad: parseInt(v.cantidad) || 1
               };
-            });
+            })
+            .filter(v => v.materialId !== null);
 
+          // La tabla `plantilla` almacena los nombres en mayúsculas (ej: 'ABOTONADURA / CIERRE').
+          // FIELD_LABELS tiene el label display (ej: 'Abotonadura / Cierre') → .toUpperCase() = exacto.
+          const nombreCampoBackend = (FIELD_LABELS[nombreCampo] || nombreCampo).toUpperCase();
           return {
-            nombreCampo,
+            nombreCampo: nombreCampoBackend,
             valorDescripcion: String(valorDescripcion),
             vinculos: vinculosFiltrados
           };
         });
 
+      // Campos que el usuario llenó en Especificaciones Técnicas (camelCase keys)
+      const camposPlantillaActivos = Object.keys(detallesPrenda).filter(
+        k => detallesPrenda[k] !== null && detallesPrenda[k] !== undefined && String(detallesPrenda[k]).trim() !== ''
+      );
+
       const payload = {
-        clienteId: parseInt(formData.clienteId) ,
-        vendedorId: formData.vendedorId ? parseInt(formData.vendedorId): null ,
-        articuloDescripcion: formData.articuloDescripcion,
+        clienteId: parseInt(formData.clienteId),
+        vendedorId: formData.vendedorId ? parseInt(formData.vendedorId) : null,
+        articuloDescripcion: articuloDescripcionFinal,
         nombrePrenda: formData.nombrePrenda,
         genero: formData.genero,
         cantidad: parseInt(formData.cantidad) || 0,
         esMuestra: formData.esMuestra,
         hasLogo: formData.hasLogo,
         esPrendaNueva,
+        camposPlantilla: esPrendaNueva ? camposPlantillaActivos : undefined,
         tallaje: formData.tallaje,
         tipo: "SCOS",
         telas: (primeraPlantilla.telas || []).map(t => ({
@@ -149,7 +164,7 @@ export default function SolicitudCostosContainer() {
       setView("list");
     } catch (e) {
       console.error("Error saving to backend", e);
-      toast.error("Error al guardar en el servidor");
+      toast.error(e.response?.data?.mensaje || "Error al guardar en el servidor");
     }
   };
 
@@ -192,6 +207,12 @@ export default function SolicitudCostosContainer() {
   };
 
 
+  // Mapeo inverso: label display en mayúsculas → clave camelCase de FIELD_LABELS
+  // Ej: 'ABOTONADURA / CIERRE' → 'abotonaduraCierre'
+  const LABEL_TO_CAMPO = Object.fromEntries(
+    Object.entries(FIELD_LABELS).map(([key, label]) => [label.toUpperCase(), key])
+  );
+
   const handleOpenForm = (record, type = "SCOS") => {
     if (record) {
       // Reconstruir detallesPrenda y vínculos a partir de descripciones del backend
@@ -199,13 +220,16 @@ export default function SolicitudCostosContainer() {
       const vinculos = [];
 
       (record.descripciones || []).forEach(d => {
-        detallesPrenda[d.nombreCampo] = d.valorDescripcion;
-        
+        // El backend guarda el nombre en mayúsculas (ej: 'ABOTONADURA / CIERRE').
+        // PlantillasPanel usa claves camelCase (ej: 'abotonaduraCierre') → revertir aquí.
+        const camelKey = LABEL_TO_CAMPO[d.nombreCampo?.toUpperCase()] || d.nombreCampo;
+        detallesPrenda[camelKey] = d.valorDescripcion;
+
         if (d.vinculos && d.vinculos.length > 0) {
           d.vinculos.forEach(v => {
             vinculos.push({
               id: v.id || v.tempId || Math.random().toString(36).substring(2, 9),
-              fieldName: d.nombreCampo,
+              fieldName: camelKey,
               materialType: v.materialType,
               materialId: v.materialId || v.tempMaterialId,
               cantidad: v.cantidad || 1

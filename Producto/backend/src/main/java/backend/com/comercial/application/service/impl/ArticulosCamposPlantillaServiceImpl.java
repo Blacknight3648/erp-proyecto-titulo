@@ -66,12 +66,26 @@ public class ArticulosCamposPlantillaServiceImpl implements ArticuloCamposPlanti
         modeloPlantillaRepository.deleteByArticuloId(idArticulo);
     }
 
-    /** Limpia nombres: trim, descarta vacíos y duplicados (preservando orden). */
+    /** Mapeo camelCase → nombre display en mayúsculas (igual que FIELD_LABELS del frontend). */
+    private static final java.util.Map<String, String> CAMPO_TO_DISPLAY = java.util.Map.ofEntries(
+            java.util.Map.entry("gorro",              "GORRO"),
+            java.util.Map.entry("cuello",             "CUELLO"),
+            java.util.Map.entry("abotonaduraCierre",  "ABOTONADURA / CIERRE"),
+            java.util.Map.entry("cortesAplicaciones", "CORTES Y APLICACIONES"),
+            java.util.Map.entry("fuelles",            "FUELLES"),
+            java.util.Map.entry("mangas",             "MANGAS"),
+            java.util.Map.entry("puños",              "PUÑOS"),
+            java.util.Map.entry("pretinasRuedo",      "PRETINAS / RUEDO"),
+            java.util.Map.entry("bolsillos",          "BOLSILLOS"),
+            java.util.Map.entry("obsModelo",          "OBS. DEL MODELO")
+    );
+
+    /** Normaliza a nombres display en mayúsculas y descarta duplicados. */
     private List<String> normalizar(List<String> campos) {
         if (campos == null) return List.of();
         return campos.stream()
                 .filter(c -> c != null && !c.trim().isEmpty())
-                .map(String::trim)
+                .map(c -> CAMPO_TO_DISPLAY.getOrDefault(c.trim(), c.trim().toUpperCase()))
                 .distinct()
                 .toList();
     }

@@ -89,17 +89,14 @@ public class SolicitudCostosMapper {
 
     private SCOSAccesorio mapAccesorioToDomain(SCOSAccesorioJpaEntity entity) {
         if (entity == null) return null;
+        String nombre = entity.getArticulo() != null
+                ? entity.getArticulo().getNombreArticulo()
+                : entity.getDescripcion();
         return new SCOSAccesorio(
                 entity.getArticulo() != null ? entity.getArticulo().getIdArticulo() : null,
                 entity.getTipo(),
-                entity.getDescripcion(),
+                nombre,
                 entity.getCantidad(),
-                entity.getProveedor() != null ? entity.getProveedor().getProveedorId() : null,
-                entity.getProveedorReferencia(),
-                entity.getConsumo(),
-                entity.getUnidadMedida(),
-                new Money(entity.getPrecioUnitario() != null ? entity.getPrecioUnitario() : BigDecimal.ZERO,
-                        entity.getMonedaPrecioUnitario() != null ? entity.getMonedaPrecioUnitario() : "CLP"),
                 null);
     }
 
@@ -196,13 +193,7 @@ public class SolicitudCostosMapper {
             ae.setTipo(a.getTipo());
             ae.setDescripcion(a.getDescripcion());
             ae.setCantidad(a.getCantidad());
-            ae.setProveedorReferencia(a.getProveedorReferencia());
-            ae.setConsumo(a.getConsumo());
-            ae.setUnidadMedida(a.getUnidadMedida());
-            if (a.getPrecioUnitario() != null) {
-                ae.setPrecioUnitario(a.getPrecioUnitario().getAmount());
-                ae.setMonedaPrecioUnitario(a.getPrecioUnitario().getCurrency());
-            }
+            ae.setTempId(a.getTempId());
             entity.addAccesorio(ae);
         });
 

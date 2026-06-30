@@ -1,10 +1,13 @@
 package backend.com.comercial.application.service.impl;
 
+import backend.com.comercial.application.dto.ArticuloCamposPlantillaDTO;
 import backend.com.comercial.application.dto.SCOSAccesorioDTO;
+import backend.com.shared.exception.BusinessRuleException;
 import backend.com.comercial.application.dto.SCOSLogotipoDTO;
 import backend.com.comercial.application.dto.SCOSTelaDTO;
 import backend.com.comercial.application.dto.SolicitudCostosCreateDTO;
 import backend.com.comercial.application.dto.SolicitudCostosDTO;
+import backend.com.comercial.application.service.ArticuloCamposPlantillaService;
 import backend.com.comercial.application.service.DescripcionPlantillaService;
 import backend.com.comercial.application.service.SolicitudCostosService;
 import backend.com.comercial.domain.enums.EstadoSCOS;
@@ -37,12 +40,18 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class SolicitudCostosServiceImpl implements SolicitudCostosService {
 
+    private static final List<String> ALL_STANDARD_CAMPOS = List.of(
+            "gorro", "cuello", "abotonaduraCierre", "cortesAplicaciones",
+            "fuelles", "mangas", "puños", "pretinasRuedo", "bolsillos", "obsModelo"
+    );
+
     private final SolicitudCostosRepository repository;
     private final CosteoService costeoService;
     private final DescripcionPlantillaService descripcionPlantillaService;
     private final DescripcionPlantillaRepository descripcionPlantillaRepository;
     private final NumeroDocumentoService numeroDocumentoService;
     private final ArticuloRepository articuloRepository;
+    private final ArticuloCamposPlantillaService articuloCamposPlantillaService;
 
     @Override
     @Transactional
@@ -145,16 +154,15 @@ public class SolicitudCostosServiceImpl implements SolicitudCostosService {
         }
 
         if (dto.getAccesorios() != null) {
-            dto.getAccesorios().forEach(a -> domain.addAccesorio(new SCOSAccesorio(null,
-                    a.getTipo(),
-                    a.getNombreAccesorio(),
-                    a.getCantidad(),
-                    null,
-                    a.getProveedorReferencia(),
-                    a.getConsumo() != null ? a.getConsumo() : BigDecimal.ZERO,
-                    a.getUnidadMedida() != null ? a.getUnidadMedida() : "un",
-                    new Money(a.getPrecioUnitario() != null ? a.getPrecioUnitario() : BigDecimal.ZERO, "CLP"),
-                    a.getTempId())));
+            dto.getAccesorios().forEach(a -> {
+                Integer idArticulo = resolverArticuloAccesorio(a.getNombreAccesorio());
+                domain.addAccesorio(new SCOSAccesorio(
+                        idArticulo,
+                        a.getTipo(),
+                        a.getNombreAccesorio(),
+                        a.getCantidad(),
+                        a.getTempId()));
+            });
         }
 
         if (dto.getLogotipos() != null) {
@@ -213,12 +221,7 @@ public class SolicitudCostosServiceImpl implements SolicitudCostosService {
                 .accesorios(domain.getAccesorios().stream().map(a -> SCOSAccesorioDTO.builder()
                         .tipo(a.getTipo())
                         .nombreAccesorio(a.getDescripcion())
-                        .proveedorReferencia(a.getProveedorReferencia())
                         .cantidad(a.getCantidad())
-                        .consumo(a.getConsumo())
-                        .unidadMedida(a.getUnidadMedida())
-                        .precioUnitario(a.getPrecioUnitario().getAmount())
-                        .precioTotal(BigDecimal.ZERO)
                         .build()).collect(Collectors.toList()))
                 .logotipos(domain.getLogotipos().stream()
                         .map(l -> new SCOSLogotipoDTO(l.getTipo(), l.getNombre(),
@@ -231,26 +234,52 @@ public class SolicitudCostosServiceImpl implements SolicitudCostosService {
                 .build();
     }
 
+    private Integer resolverArticuloAccesorio(String nombre) {
+        if (nombre == null || nombre.isBlank()) return null;
+        String nombreNorm = nombre.trim();
+        return articuloRepository.findByTipoArticulo(TipoArticulo.ACCESORIO)
+                .stream()
+                .filter(a -> a.getNombreArticulo().equalsIgnoreCase(nombreNorm))
+                .findFirst()
+                .map(Articulo::getIdArticulo)
+                .orElse(null);
+    }
+
     private void resolverOCrearArticulo(SolicitudCostosCreateDTO dto) {
+        if (!Boolean.TRUE.equals(dto.getEsPrendaNueva())) return;
         if (dto.getArticuloDescripcion() == null || dto.getArticuloDescripcion().isBlank()) return;
 
         String nombre = dto.getArticuloDescripcion().trim().toUpperCase();
 
-        boolean existeComoPrendaConfeccionar = articuloRepository
+        boolean yaExiste = articuloRepository
                 .findByTipoArticulo(TipoArticulo.PRENDA_CONFECCIONAR)
                 .stream()
                 .anyMatch(a -> a.getNombreArticulo().equalsIgnoreCase(nombre));
 
-        if (!existeComoPrendaConfeccionar && Boolean.TRUE.equals(dto.getEsPrendaNueva())) {
-            Articulo nuevo = Articulo.builder()
-                    .codigoArticulo("PRENDA-" + nombre.replaceAll("\\s+", "-"))
-                    .nombreArticulo(nombre)
-                    .descripcionArticulo(dto.getNombrePrenda() != null ? dto.getNombrePrenda() : nombre)
-                    .tipoArticulo(TipoArticulo.PRENDA_CONFECCIONAR)
-                    .activo(true)
-                    .build();
-            articuloRepository.save(nuevo);
+        if (yaExiste) {
+            throw new BusinessRuleException("La prenda \"" + nombre + "\" ya existe en el sistema");
         }
+
+        String codigo = "ART-PRC-" + java.util.UUID.randomUUID().toString()
+                .replace("-", "").substring(0, 6).toUpperCase();
+
+        Articulo nuevo = Articulo.builder()
+                .codigoArticulo(codigo)
+                .nombreArticulo(nombre)
+                .descripcionArticulo(dto.getNombrePrenda() != null ? dto.getNombrePrenda() : nombre)
+                .tipoArticulo(TipoArticulo.PRENDA_CONFECCIONAR)
+                .activo(true)
+                .build();
+        Articulo guardado = articuloRepository.save(nuevo);
+
+        List<String> campos = (dto.getCamposPlantilla() != null && !dto.getCamposPlantilla().isEmpty())
+                ? dto.getCamposPlantilla()
+                : ALL_STANDARD_CAMPOS;
+
+        articuloCamposPlantillaService.guardar(ArticuloCamposPlantillaDTO.builder()
+                .idArticulo(guardado.getIdArticulo())
+                .camposPlantilla(campos)
+                .build());
     }
 
     private void generatePreCosteo(SolicitudCostos scos) {

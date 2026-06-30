@@ -86,7 +86,7 @@ export default function AccesoriosSCOSPanel({ data, onAdd, onUpdate, onRemove, r
                                         <input
                                             type="number"
                                             min="1"
-                                            value={item.cantidad || ""}
+                                            value={item.cantidad ?? ""}
                                             readOnly={readOnly}
                                             onChange={(e) => {
                                                 if (readOnly) return;

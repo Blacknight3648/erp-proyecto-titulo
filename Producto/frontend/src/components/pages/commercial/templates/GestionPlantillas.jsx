@@ -47,6 +47,14 @@ export default function GestionPlantillas() {
                         onClick={() => setAdding(true)}
                         className="flex items-center gap-2 px-5 py-3 bg-blue-600 text-white rounded-2xl font-black text-[10px] uppercase tracking-widest shadow-lg shadow-blue-100 hover:bg-blue-700 hover:-translate-y-0.5 transition-all"
                     >
+                        <Plus className="w-4 h-4" /> Gestionar Campos de Plantillas
+                    </button>
+                )}                
+                {!adding && (
+                    <button
+                        onClick={() => setAdding(true)}
+                        className="flex items-center gap-2 px-5 py-3 bg-blue-600 text-white rounded-2xl font-black text-[10px] uppercase tracking-widest shadow-lg shadow-blue-100 hover:bg-blue-700 hover:-translate-y-0.5 transition-all"
+                    >
                         <Plus className="w-4 h-4" /> Nueva Prenda
                     </button>
                 )}

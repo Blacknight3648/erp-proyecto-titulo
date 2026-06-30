@@ -93,14 +93,8 @@ public class GenerarHCDesdeOPUseCase {
                             }
                         }
                     }
-                    if (proveedorId == null && scos.getAccesorios() != null) {
-                        for (backend.com.comercial.domain.model.SCOSAccesorio a : scos.getAccesorios()) {
-                            if (itemVersion.getArticuloId().equals(a.getIdArticulo())) {
-                                proveedorId = a.getProveedorId();
-                                break;
-                            }
-                        }
-                    }
+                    // Los accesorios no tienen proveedor directo en el dominio SCOS;
+                    // el fallback (paso 2) lo resuelve desde el artículo.
                 }
 
                 // 2. Intentar resolver por Articulo (si SCOS no lo tiene)

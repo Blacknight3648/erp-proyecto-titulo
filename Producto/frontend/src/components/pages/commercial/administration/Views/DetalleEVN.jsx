@@ -524,7 +524,7 @@ export default function DetalleEVN({ initialEval, onBack, mode = 'create' }) {
                                     { key: 'entregaPersonalizada',     label: 'Entrega Personalizada' },
                                 ].map(({ key, label }) => (
                                     <div key={key}>
-                                        <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-1.5 ml-1">{label}</p>
+                                        <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-1.5 ml-1 h-8 flex items-end">{label}</p>
                                         <div className="relative">
                                             <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-300 text-[10px] font-black pointer-events-none">$</span>
                                             <input
@@ -561,7 +561,7 @@ export default function DetalleEVN({ initialEval, onBack, mode = 'create' }) {
                                                 { field: 'cantRecintos',       label: 'Recintos' },
                                             ].map(({ field, label }) => (
                                                 <div key={field}>
-                                                    <p className="text-[8px] font-black text-indigo-400 uppercase mb-1">{label}</p>
+                                                    <p className="text-[8px] font-black text-indigo-400 uppercase mb-1 h-6 flex items-end">{label}</p>
                                                     <input
                                                         type="number"
                                                         className="w-full px-3 py-2 bg-white border border-indigo-100 rounded-xl text-[11px] font-black disabled:opacity-60 disabled:cursor-default"

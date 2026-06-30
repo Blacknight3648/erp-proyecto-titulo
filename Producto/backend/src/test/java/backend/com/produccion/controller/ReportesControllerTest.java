@@ -3,6 +3,7 @@ package backend.com.produccion.controller;
 import backend.com.produccion.application.dto.HojaCompraDTO;
 import backend.com.produccion.application.dto.OrdenCompraDTO;
 import backend.com.produccion.application.dto.OrdenServicioDTO;
+import backend.com.produccion.application.service.DashboardOPService;
 import backend.com.produccion.application.service.HojaCompraService;
 import backend.com.produccion.application.service.OrdenCompraService;
 import backend.com.produccion.application.service.OrdenServicioService;
@@ -43,6 +44,9 @@ class ReportesControllerTest {
 
     @MockitoBean
     private OrdenServicioService ordenServicioService;
+
+    @MockitoBean
+    private DashboardOPService dashboardOPService;
 
     @MockitoBean
     private backend.com.shared.infrastructure.persistence.repository.Jpa.IdempotencyTokenJpaRepository idempotencyTokenJpaRepository;
@@ -111,6 +115,30 @@ class ReportesControllerTest {
 
             verify(ordenServicioService).listarPorEstado(EstadoOS.EN_PROCESO);
             verify(ordenServicioService).listarPorEstado(EstadoOS.RECEPCIONADA);
+        }
+
+        @Test
+        @DisplayName("GET /dashboard-op - Retorna las alertas de manufactura y entregas")
+        void dashboardOP_retornaAlertas() throws Exception {
+            backend.com.produccion.application.dto.DashboardOPResponse response = backend.com.produccion.application.dto.DashboardOPResponse.builder()
+                    .opAtrasada(2)
+                    .corteAtrasado(1)
+                    .recepcionLogoAtrasado(0)
+                    .envioAtrasado(0)
+                    .devolucionTallerAtrasada(3)
+                    .entregas7d(1)
+                    .build();
+
+            when(dashboardOPService.calcular()).thenReturn(response);
+
+            mockMvc.perform(get("/api/v1/reportes/dashboard-op"))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.opAtrasada").value(2))
+                    .andExpect(jsonPath("$.corteAtrasado").value(1))
+                    .andExpect(jsonPath("$.devolucionTallerAtrasada").value(3))
+                    .andExpect(jsonPath("$.entregas7d").value(1));
+
+            verify(dashboardOPService).calcular();
         }
     }
 }

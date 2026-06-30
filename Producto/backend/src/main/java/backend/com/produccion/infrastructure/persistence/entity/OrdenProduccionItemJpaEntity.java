@@ -12,6 +12,7 @@ public class OrdenProduccionItemJpaEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id_op_item")
     private Long idOPItem;
 
     @ManyToOne(fetch = FetchType.LAZY)

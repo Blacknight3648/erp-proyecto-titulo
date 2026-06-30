@@ -1,9 +1,37 @@
+import { useState, useEffect, useCallback } from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts';
 import { AlertCircle, Zap, Activity, Calendar, RefreshCw, Hammer, Scissors, Palette, Truck, Box, Clock } from 'lucide-react';
-import { mockOP, mockOPKPIs } from '../../../data/mockData';
+import { mockOPKPIs } from '../../../data/mockData';
+import { api } from '../../../remote/service/api';
+
+const DASHBOARD_DEFAULTS = {
+    opAtrasada: 0,
+    corteAtrasado: 0,
+    recepcionLogoAtrasado: 0,
+    envioAtrasado: 0,
+    devolucionTallerAtrasada: 0,
+    entregas7d: 0,
+};
 
 export default function DashboardOP() {
-    const { opAtrasada, corteAtrasado, recepcionLogoAtrasado, envioAtrasado, devolucionTallerAtrasada, entregas7d } = mockOP;
+    const [alertas, setAlertas] = useState(DASHBOARD_DEFAULTS);
+    const [loading, setLoading] = useState(true);
+
+    const fetchDashboard = useCallback(async () => {
+        setLoading(true);
+        try {
+            const { data } = await api.get('/reportes/dashboard-op');
+            setAlertas({ ...DASHBOARD_DEFAULTS, ...data });
+        } catch (err) {
+            console.error('Error cargando dashboard operacional OP:', err);
+        } finally {
+            setLoading(false);
+        }
+    }, []);
+
+    useEffect(() => { fetchDashboard(); }, [fetchDashboard]);
+
+    const { opAtrasada, corteAtrasado, recepcionLogoAtrasado, envioAtrasado, devolucionTallerAtrasada, entregas7d } = alertas;
     const { tiemposPorEtapa, promedioPorLote, distribucionLote } = mockOPKPIs;
 
     // Helper for table cell colors
@@ -41,8 +69,12 @@ export default function DashboardOP() {
                         <span>10/01/2026</span>
                         <span className="text-gray-300">→</span>
                         <span>10/02/2026</span>
-                        <button className="ml-2 p-1.5 bg-gray-900 text-white rounded-lg">
-                            <RefreshCw className="w-3.5 h-3.5" />
+                        <button
+                            className="ml-2 p-1.5 bg-gray-900 text-white rounded-lg disabled:opacity-50"
+                            onClick={fetchDashboard}
+                            disabled={loading}
+                        >
+                            <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
                         </button>
                     </div>
                 </div>

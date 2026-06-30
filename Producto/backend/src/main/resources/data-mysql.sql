@@ -389,12 +389,12 @@ ON DUPLICATE KEY UPDATE
 -- 7.8. ORDEN DE PRODUCCIÓN (OP)
 -- ============================================================
 -- OP-00001: Pantalón Cargo MEDCELL → referencia NV-00001 (cliente MEDCELL, EN_PRODUCCION)
-INSERT IGNORE INTO orden_produccion (idop, costeo_version_id, numeroop, nota_venta_id, estado, fecha_inicio, fecha_entrega_programada, observaciones, created_at, updated_at) VALUES
+INSERT IGNORE INTO orden_produccion (id_op, costeo_version_id, numero_op, nota_venta_id, estado, fecha_inicio, fecha_entrega_programada, observaciones, created_at, updated_at) VALUES
     (1, 1, 'OP-00001', 1, 'EN_PROCESO', CURRENT_DATE, DATE_ADD(CURRENT_DATE, INTERVAL 30 DAY),
      'PANTALÓN CARGO OPERARIO — LABORATORIO MEDCELL — 50 UNIDADES TALLAS M/L', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
 -- Items de la OP (artículos a producir, desglosados por talla)
-INSERT IGNORE INTO produccion_orden_items (idopitem, orden_produccion_id, articulo_id, nro_item, modelo, tela, color, talla, genero, codigo, lleva_logo, cantidad) VALUES
+INSERT IGNORE INTO produccion_orden_items (id_op_item, orden_produccion_id, articulo_id, nro_item, modelo, tela, color, talla, genero, codigo, lleva_logo, cantidad) VALUES
     (1, 1, 2, 1, 'CARGO 6 BOLSILLOS', 'RIPSTOP IMPERMEABLE 150G', 'VERDE OLIVA', 'M', 'MASCULINO', 'PAN-CARGO-M', 'NO', 25),
     (2, 1, 2, 2, 'CARGO 6 BOLSILLOS', 'RIPSTOP IMPERMEABLE 150G', 'VERDE OLIVA', 'L', 'MASCULINO', 'PAN-CARGO-L', 'NO', 25);
 
@@ -547,19 +547,65 @@ VALUES
 ON DUPLICATE KEY UPDATE cantidad = VALUES(cantidad);
 
 -- ── 8.4. OP ADICIONAL EN ESTADO PENDIENTE ──────────────────
--- Agrega una segunda OP para que el KPI "OPs en Planta" muestre 2
--- (OP-00001 ya existe EN_PROCESO; esta nueva es PENDIENTE — aún sin costeo)
+-- Agrega una segunda OP (poleras HITES) para que el KPI "OPs en Planta" muestre 2.
+-- Reutiliza costeo_version_id=1 (requerido NOT NULL por la entidad JPA).
 INSERT IGNORE INTO orden_produccion
-    (idop, costeo_version_id, numeroop, nota_venta_id, estado,
+    (id_op, costeo_version_id, numero_op, nota_venta_id, estado,
      fecha_inicio, fecha_entrega_programada, observaciones,
      created_at, updated_at)
 VALUES
-    (2, NULL, 'OP-00002', 2, 'PENDIENTE',
+    (2, 1, 'OP-00002', 2, 'PENDIENTE',
      DATE_ADD(CURRENT_DATE, INTERVAL 3 DAY),
-     DATE_ADD(CURRENT_DATE, INTERVAL 40 DAY),
+     DATE_ADD(CURRENT_DATE, INTERVAL 12 DAY),
      'POLERA PIQUÉ CORPORATIVA — HITES S.A. — 100 UNIDADES — EN ESPERA DE INSUMOS',
      CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
-ON DUPLICATE KEY UPDATE estado = VALUES(estado);
+ON DUPLICATE KEY UPDATE estado = VALUES(estado), fecha_entrega_programada = VALUES(fecha_entrega_programada);
+
+-- ── 8.5. SEGUIMIENTO DE OPs (produccion_seguimiento_op) ────
+-- Estas fechas generan valores reales en el dashboard operacional:
+--   OP-00001 (EN_PROCESO): recibida hace 5d sin OC confirmada → opAtrasada
+--                           logo enviado hace 4d sin retorno  → recepcionLogoAtrasado
+--   OP-00002 (PENDIENTE):  recibida hace 4d sin OC confirmada → opAtrasada
+--   entregas7d: OP-00002 vence en 12d (fuera de ventana 7d por diseño)
+--   Resultado esperado: opAtrasada=2, recepcionLogoAtrasado=1, resto=0, entregas7d=1
+INSERT IGNORE INTO produccion_seguimiento_op
+    (id_seguimiento, orden_produccion_id,
+     fecha_recepcion_op, fin_tizado, fecha_estado_oc_mp, recepcion_compras,
+     inicio_corte, fin_corte,
+     inicio_logo, estado_ida_logo, regreso_logo, estado_rec_logo,
+     inicio_taller_externo, fin_taller_externo, calidad_taller, obs_taller,
+     fin_terminacion, fin_personalizado)
+VALUES
+    -- Seguimiento OP-00001 (Pantalón Cargo MEDCELL)
+    (1, 1,
+     DATE_SUB(CURRENT_DATE, INTERVAL 5 DAY),   -- fecha_recepcion_op: 5 días atrás
+     DATE_SUB(CURRENT_DATE, INTERVAL 4 DAY),   -- fin_tizado
+     NULL,                                      -- sin OC confirmada → ALERTA opAtrasada
+     NULL,
+     DATE_SUB(CURRENT_DATE, INTERVAL 3 DAY),   -- inicio_corte
+     DATE_SUB(CURRENT_DATE, INTERVAL 1 DAY),   -- fin_corte (2 días — dentro del límite 10d)
+     DATE_SUB(CURRENT_DATE, INTERVAL 4 DAY),   -- inicio_logo: hace 4d > límite 3d → ALERTA
+     'IDA_COMPLETA',
+     NULL,                                      -- regreso_logo: aún no retorna
+     NULL,
+     NULL, NULL, NULL, NULL,
+     NULL, NULL),
+    -- Seguimiento OP-00002 (Polera Piqué HITES — recién recibida)
+    (2, 2,
+     DATE_SUB(CURRENT_DATE, INTERVAL 4 DAY),   -- fecha_recepcion_op: 4 días atrás
+     NULL,                                      -- sin tizado aún
+     NULL,                                      -- sin OC confirmada → ALERTA opAtrasada
+     NULL,
+     NULL, NULL,
+     NULL, NULL, NULL, NULL,
+     NULL, NULL, NULL, NULL,
+     NULL, NULL)
+ON DUPLICATE KEY UPDATE
+    fecha_recepcion_op   = VALUES(fecha_recepcion_op),
+    fecha_estado_oc_mp   = VALUES(fecha_estado_oc_mp),
+    inicio_logo          = VALUES(inicio_logo),
+    estado_ida_logo      = VALUES(estado_ida_logo),
+    regreso_logo         = VALUES(regreso_logo);
 
 -- ── 8.5. ACTUALIZAR CONTADORES ─────────────────────────────
 INSERT INTO document_counter (tipo, ultimo_numero) VALUES

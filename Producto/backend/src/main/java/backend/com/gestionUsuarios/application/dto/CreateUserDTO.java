@@ -22,4 +22,7 @@ public class CreateUserDTO {
     private Set<String> roles; // nombres de roles
     private Set<String> areas; // nombres de áreas
     private Boolean enabled;
+    // El ADMIN debe confirmar que cuenta con el consentimiento del colaborador
+    // para poder cambiarle la contraseña.
+    private Boolean passwordChangeConsent;
 }

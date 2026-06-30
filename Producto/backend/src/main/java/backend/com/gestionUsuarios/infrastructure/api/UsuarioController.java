@@ -52,7 +52,8 @@ public class UsuarioController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<UserDTO> update(@PathVariable Long id, @RequestBody CreateUserDTO dto) {
+    public ResponseEntity<UserDTO> update(@PathVariable Long id, @RequestBody CreateUserDTO dto,
+            @RequestHeader(value = "X-User", required = false) String adminUser) {
         if (id == null) {
             throw new IllegalArgumentException("El id no puede ser nulo");
         }
@@ -60,7 +61,7 @@ public class UsuarioController {
             throw new IllegalArgumentException("El DTO no puede ser nulo");
         }
 
-        User updated = userService.actualizarUsuario(id, dto);
+        User updated = userService.actualizarUsuario(id, dto, adminUser);
 
         return ResponseEntity.ok(userMapper.toUserDTO(updated));
     }

@@ -297,13 +297,13 @@ MERGE INTO produccion_costeo_versiones (id_costeo_version, costeo_id, numero_ver
     VALUES
     (1, 1, 1, CURRENT_TIMESTAMP, 'SISTEMA');
 
-MERGE INTO orden_produccion (idop, costeo_version_id, numeroop, nota_venta_id, estado, fecha_inicio, fecha_entrega_programada, observaciones, created_at, updated_at)
-    KEY (idop)
+MERGE INTO orden_produccion (id_op, costeo_version_id, numero_op, nota_venta_id, estado, fecha_inicio, fecha_entrega_programada, observaciones, created_at, updated_at)
+    KEY (id_op)
     VALUES
     (1, 1, 'OP- 00001', 2, 'EN_PROCESO', CURRENT_DATE, DATEADD('DAY', 30, CURRENT_DATE), 'Producción Pantalón Cargo Operario - Laboratorio Medcell', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
-MERGE INTO produccion_orden_items (idopitem, orden_produccion_id, articulo_id, nro_item, modelo, tela, color, talla, genero, codigo, lleva_logo, cantidad)
-    KEY (idopitem)
+MERGE INTO produccion_orden_items (id_op_item, orden_produccion_id, articulo_id, nro_item, modelo, tela, color, talla, genero, codigo, lleva_logo, cantidad)
+    KEY (id_op_item)
     VALUES
     (1, 1, 2, 1, 'Pantalón Cargo', 'Ripstop Impermeable', 'Verde', 'M', 'MASCULINO', 'PANT-CARGO-M', 'SI', 25),
     (2, 1, 2, 2, 'Pantalón Cargo', 'Ripstop Impermeable', 'Verde', 'L', 'MASCULINO', 'PANT-CARGO-L', 'SI', 25);
@@ -517,8 +517,8 @@ ALTER TABLE produccion_costeo_items ALTER COLUMN id_costeo_item RESTART WITH 500
 -- EVN / NV / OP
 ALTER TABLE evaluaciones_negocio ALTER COLUMN idevn RESTART WITH 1000;
 ALTER TABLE notas_venta ALTER COLUMN idnv RESTART WITH 1000;
-ALTER TABLE orden_produccion ALTER COLUMN idop RESTART WITH 100;
-ALTER TABLE produccion_orden_items ALTER COLUMN idopitem RESTART WITH 1000;
+ALTER TABLE orden_produccion ALTER COLUMN id_op RESTART WITH 100;
+ALTER TABLE produccion_orden_items ALTER COLUMN id_op_item RESTART WITH 1000;
 ALTER TABLE produccion_hojas_compra ALTER COLUMN id_hc RESTART WITH 100;
 ALTER TABLE produccion_hoja_compra_items ALTER COLUMN id_hc_item RESTART WITH 1000;
 

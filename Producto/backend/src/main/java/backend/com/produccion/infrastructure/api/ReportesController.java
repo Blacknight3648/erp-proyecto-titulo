@@ -1,8 +1,10 @@
 package backend.com.produccion.infrastructure.api;
 
+import backend.com.produccion.application.dto.DashboardOPResponse;
 import backend.com.produccion.application.dto.HojaCompraDTO;
 import backend.com.produccion.application.dto.OrdenCompraDTO;
 import backend.com.produccion.application.dto.OrdenServicioDTO;
+import backend.com.produccion.application.service.DashboardOPService;
 import backend.com.produccion.application.service.HojaCompraService;
 import backend.com.produccion.application.service.OrdenCompraService;
 import backend.com.produccion.application.service.OrdenServicioService;
@@ -24,6 +26,15 @@ public class ReportesController {
     private final HojaCompraService hojaCompraService;
     private final OrdenCompraService ordenCompraService;
     private final OrdenServicioService ordenServicioService;
+    private final DashboardOPService dashboardOPService;
+
+    /**
+     * Dashboard operacional de OPs: alertas de retraso en etapas de manufactura.
+     */
+    @GetMapping("/dashboard-op")
+    public ResponseEntity<DashboardOPResponse> dashboardOP() {
+        return ResponseEntity.ok(dashboardOPService.calcular());
+    }
 
     /**
      * Hojas de Compra pendientes de aprobar (estado BORRADOR).

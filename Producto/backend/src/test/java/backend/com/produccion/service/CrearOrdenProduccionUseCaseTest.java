@@ -99,7 +99,7 @@ class CrearOrdenProduccionUseCaseTest {
     private NotaVenta notaVenta(Long evaluacionNegocioId, List<ItemNV> items) {
         Long evnId = evaluacionNegocioId != null ? evaluacionNegocioId : 7L;
         return new NotaVenta(1L, new DocumentNumber("NV-001"), evnId, 10L, 20L,
-                EstadoNV.APROBADA, false, null, LocalDate.now(), LocalDate.now().plusDays(10),
+                EstadoNV.EMITIDA, false, null, LocalDate.now(), LocalDate.now().plusDays(10),
                 Money.zero("CLP"), Money.zero("CLP"), Money.zero("CLP"), items);
     }
 

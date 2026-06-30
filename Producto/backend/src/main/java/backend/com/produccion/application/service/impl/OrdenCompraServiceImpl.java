@@ -1,7 +1,9 @@
 package backend.com.produccion.application.service.impl;
 
 import backend.com.produccion.application.UseCase.GenerarOCConsolidadaUseCase;
+import backend.com.produccion.application.UseCase.GenerarOCLoteUseCase;
 import backend.com.produccion.application.dto.GenerarOCConsolidadaRequest;
+import backend.com.produccion.application.dto.GenerarOCLoteRequest;
 import backend.com.produccion.application.dto.HCItemOCItemLinkDTO;
 import backend.com.produccion.application.dto.OrdenCompraDTO;
 import backend.com.produccion.application.dto.OrdenCompraItemDTO;
@@ -31,11 +33,19 @@ public class OrdenCompraServiceImpl implements OrdenCompraService {
 
     private final OrdenCompraRepository ordenCompraRepository;
     private final GenerarOCConsolidadaUseCase generarOCConsolidadaUseCase;
+    private final GenerarOCLoteUseCase generarOCLoteUseCase;
     private final HojaCompraRepository hojaCompraRepository;
 
     @Override
     public OrdenCompraDTO generarConsolidada(GenerarOCConsolidadaRequest request) {
         return toDTO(generarOCConsolidadaUseCase.ejecutar(request));
+    }
+
+    @Override
+    public List<OrdenCompraDTO> generarLote(GenerarOCLoteRequest request) {
+        return generarOCLoteUseCase.ejecutar(request).stream()
+                .map(this::toDTO)
+                .collect(Collectors.toList());
     }
 
     @Override

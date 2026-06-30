@@ -49,6 +49,20 @@ export const OrdenCompraService = {
         }
     },
 
+    /**
+     * Genera varias OC en una sola tanda atómica.
+     * Payload: { grupos: [{ proveedorId, hcItemIds: number[], fechaEntregaEstimada?, observaciones? }] }
+     */
+    generarLote: async (grupos) => {
+        try {
+            const response = await api.post('/ordenes-compra/consolidar-lote', { grupos });
+            return OrdenCompraDTO.listFromResponse(response);
+        } catch (error) {
+            console.error('Error generando lote de OC:', error);
+            throw error;
+        }
+    },
+
     marcarEnviada: async (idOC) => {
         try {
             const response = await api.patch(`/ordenes-compra/${idOC}/enviar`);

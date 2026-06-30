@@ -327,33 +327,9 @@ export function useCosteosOPState() {
             });
         });
 
-        // Cargar Telas de la ficha si existen
-        const sourceTelas = record.telas?.length > 0 ? record.telas : (record.plantillas?.[0]?.telas || []);
-        sourceTelas.forEach((t, idx) => {
-            initialInsumos.push({
-                id: t.id || `TELA-${idx}`,
-                producto: t.nombre || t.aplicacion || 'Tela',
-                costo: 0,
-                cantidad: t.consumo || 0,
-                unidad: t.unidadMedida || 'm',
-                categoryId: 'telas',
-                composicion: t.composicion,
-                color: t.color
-            });
-        });
-
-        // Cargar Accesorios de la ficha si existen
-        const sourceAccesorios = record.accesorios?.length > 0 ? record.accesorios : (record.plantillas?.[0]?.accesorios || []);
-        sourceAccesorios.forEach((a, idx) => {
-            initialInsumos.push({
-                id: a.id || `ACC-${idx}`,
-                producto: a.nombreAccesorio || a.tipo || 'Accesorio',
-                costo: 0,
-                cantidad: a.consumo || a.cantidad || 0,
-                unidad: a.unidadMedida || 'un',
-                categoryId: 'accesorios'
-            });
-        });
+        // Telas y Accesorios de la SCOS NO se precargan: solo se agregan a la tabla
+        // editable cuando el usuario los suma explícitamente desde el panel
+        // "Solicitud de costos" (ver handleAddItemFromSCOS).
 
         if (savedCosteo && savedCosteo.items && savedCosteo.items.length > 0) {
             savedCosteo.items.forEach(savedItem => {
@@ -413,6 +389,36 @@ export function useCosteosOPState() {
             cantidad: 0,
             categoryId: cat
         }]);
+    };
+
+    const handleAddItemFromSCOS = (item, categoryId) => {
+        const nextId = insumos.length > 0 ? Math.max(...insumos.map(i => {
+            if (typeof i.id === 'number') return i.id;
+            const num = parseInt(i.id?.toString().replace('REQ-', '').replace('NEW-', ''));
+            return isNaN(num) ? 0 : num;
+        })) + 1 : 1;
+
+        const nuevoItem = categoryId === 'telas'
+            ? {
+                id: `NEW-${nextId}`,
+                producto: item.nombre || item.aplicacion || 'Tela',
+                costo: 0,
+                cantidad: item.consumo || 0,
+                unidad: item.unidadMedida || 'm',
+                categoryId: 'telas',
+                composicion: item.composicion,
+                color: item.color
+            }
+            : {
+                id: `NEW-${nextId}`,
+                producto: item.nombreAccesorio || item.tipo || 'Accesorio',
+                costo: 0,
+                cantidad: item.consumo || item.cantidad || 0,
+                unidad: item.unidadMedida || 'un',
+                categoryId: 'accesorios'
+            };
+
+        setInsumos(prev => [...prev, nuevoItem]);
     };
 
     const handleValidateCostos = async () => {
@@ -610,6 +616,7 @@ export function useCosteosOPState() {
         handleUpdateItem,
         handleRemoveItem,
         handleAddItem,
+        handleAddItemFromSCOS,
         handleValidateCostos,
         handleAprobarCosteo,
         handleRechazarCosteo,

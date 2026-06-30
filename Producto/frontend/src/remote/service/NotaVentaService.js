@@ -43,5 +43,15 @@ export const NotaVentaService = {
             console.error("Error fetching next number for NV:", error);
             throw error;
         }
+    },
+
+    getTrazabilidad: async (id) => {
+        try {
+            const response = await api.get(`/comercial/notas-venta/${id}/trazabilidad`);
+            return response.data || [];
+        } catch (error) {
+            console.error(`Error fetching trazabilidad de NV ${id}:`, error);
+            throw error;
+        }
     }
 };

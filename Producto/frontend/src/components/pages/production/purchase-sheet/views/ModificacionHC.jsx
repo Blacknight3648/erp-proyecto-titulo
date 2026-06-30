@@ -7,7 +7,7 @@ export default function ModificacionHC({
     registros,
     setView,
     formatCLP,
-    consolidarOC,
+    consolidarOCLote,
 }) {
     const hcActual = registros?.find(r => r.id === selectedHC);
 
@@ -20,7 +20,7 @@ export default function ModificacionHC({
         <HCModificacion
             hc={hcActual}
             onBack={handleBack}
-            onConsolidar={consolidarOC}
+            onConsolidarLote={consolidarOCLote}
             formatCLP={formatCLP}
         />
     );

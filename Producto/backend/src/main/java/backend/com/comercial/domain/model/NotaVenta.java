@@ -105,11 +105,11 @@ public class NotaVenta {
         this.montoTotal = this.montoSubtotal.add(this.montoIva);
     }
 
-    public void aprobar() {
+    public void emitir() {
         if (this.estado != EstadoNV.BORRADOR) {
-            throw new IllegalStateException("Solo las Notas de Venta en Borrador pueden ser aprobadas");
+            throw new IllegalStateException("Solo las Notas de Venta en Borrador pueden ser emitidas");
         }
-        this.estado = EstadoNV.APROBADA;
+        this.estado = EstadoNV.EMITIDA;
     }
 
     public void cancelar() {

@@ -1,6 +1,7 @@
 package backend.com.produccion.infrastructure.api;
 
 import backend.com.produccion.application.dto.GenerarOCConsolidadaRequest;
+import backend.com.produccion.application.dto.GenerarOCLoteRequest;
 import backend.com.produccion.application.dto.OrdenCompraDTO;
 import backend.com.produccion.application.dto.OrdenCompraItemDTO;
 import backend.com.produccion.application.service.OrdenCompraService;
@@ -26,6 +27,13 @@ public class OrdenCompraController {
             @Valid @RequestBody GenerarOCConsolidadaRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(ordenCompraService.generarConsolidada(request));
+    }
+
+    @PostMapping("/consolidar-lote")
+    public ResponseEntity<List<OrdenCompraDTO>> generarLote(
+            @Valid @RequestBody GenerarOCLoteRequest request) {
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(ordenCompraService.generarLote(request));
     }
 
     @GetMapping

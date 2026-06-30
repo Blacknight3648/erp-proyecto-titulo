@@ -65,9 +65,9 @@ public class NotaVentaController {
         return consultarTrazabilidadUseCase.ejecutar(id);
     }
 
-    @PatchMapping("/{id}/aprobar")
-    public NVResponse aprobar(@PathVariable Long id, @Valid @RequestBody FirmaAprobacionRequest body) {
-        return gestionarNVUseCase.aprobar(id, body.getAprobador(), body.getObservacion());
+    @PatchMapping("/{id}/emitir")
+    public NVResponse emitir(@PathVariable Long id, @Valid @RequestBody FirmaAprobacionRequest body) {
+        return gestionarNVUseCase.emitir(id, body.getAprobador(), body.getObservacion());
     }
 
     @PatchMapping("/{id}/cancelar")

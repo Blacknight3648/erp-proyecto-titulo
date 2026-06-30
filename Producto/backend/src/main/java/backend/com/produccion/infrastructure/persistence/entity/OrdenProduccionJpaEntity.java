@@ -45,4 +45,7 @@ public class OrdenProduccionJpaEntity extends AuditableJpaEntity {
 
     @OneToMany(mappedBy = "ordenProduccion", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OrdenProduccionItemJpaEntity> items = new ArrayList<>();
+
+    @OneToOne(mappedBy = "ordenProduccion", cascade = CascadeType.ALL, orphanRemoval = true)
+    private SeguimientoOPJpaEntity seguimiento;
 }

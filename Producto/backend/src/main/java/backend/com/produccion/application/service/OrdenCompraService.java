@@ -1,6 +1,7 @@
 package backend.com.produccion.application.service;
 
 import backend.com.produccion.application.dto.GenerarOCConsolidadaRequest;
+import backend.com.produccion.application.dto.GenerarOCLoteRequest;
 import backend.com.produccion.application.dto.OrdenCompraDTO;
 import backend.com.produccion.application.dto.OrdenCompraItemDTO;
 import backend.com.produccion.domain.enums.EstadoOC;
@@ -12,6 +13,12 @@ import java.util.Optional;
 public interface OrdenCompraService {
 
     OrdenCompraDTO generarConsolidada(GenerarOCConsolidadaRequest request);
+
+    /**
+     * Genera varias OC (una por grupo proveedor+items) en una sola transacción
+     * atómica: si un grupo falla, no se persiste ninguna OC de la tanda.
+     */
+    List<OrdenCompraDTO> generarLote(GenerarOCLoteRequest request);
 
     OrdenCompraDTO marcarEnviada(Long idOC);
 

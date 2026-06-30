@@ -25,7 +25,7 @@ export default function HojaCompra() {
         aprobar,
         cerrar,
         handleOpenModificacion,
-        consolidarOC,
+        consolidarOCLote,
         formatCLP,
         totalItems,
         totalBudget,
@@ -86,7 +86,7 @@ export default function HojaCompra() {
                     registros={registros}
                     setView={setView}
                     formatCLP={formatCLP}
-                    consolidarOC={consolidarOC}
+                    consolidarOCLote={consolidarOCLote}
                 />
             )}
         </div>

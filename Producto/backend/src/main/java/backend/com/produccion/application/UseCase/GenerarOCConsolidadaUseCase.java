@@ -33,6 +33,15 @@ public class GenerarOCConsolidadaUseCase {
 
     @Transactional
     public OrdenCompra ejecutar(GenerarOCConsolidadaRequest request) {
+        return ordenCompraRepository.save(construirOC(request));
+    }
+
+    /**
+     * Construye la OrdenCompra a partir de un grupo (proveedor + hcItemIds) sin
+     * persistirla, para permitir que GenerarOCLoteUseCase la combine con otras
+     * OC dentro de una única transacción atómica.
+     */
+    OrdenCompra construirOC(GenerarOCConsolidadaRequest request) {
         validar(request);
 
         Set<Long> hcItemIdsSet = new HashSet<>(request.getHcItemIds());
@@ -123,7 +132,7 @@ public class GenerarOCConsolidadaUseCase {
             oc.addItem(ocItem);
         }
 
-        return ordenCompraRepository.save(oc);
+        return oc;
     }
 
     private void validar(GenerarOCConsolidadaRequest request) {

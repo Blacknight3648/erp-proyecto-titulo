@@ -1,6 +1,8 @@
 package backend.com.produccion.infrastructure.api;
 
 import backend.com.produccion.application.UseCase.CalcularAvanceUseCase;
+import backend.com.produccion.application.UseCase.ActualizarSeguimientoUseCase;
+import backend.com.produccion.application.dto.ActualizarSeguimientoCommand;
 import backend.com.produccion.application.dto.AvanceOPResponse;
 import backend.com.produccion.application.dto.OPResponse;
 import backend.com.produccion.domain.repository.OrdenProduccionRepository;
@@ -19,6 +21,7 @@ public class OrdenProduccionController {
 
     private final OrdenProduccionRepository repository;
     private final CalcularAvanceUseCase calcularAvanceUseCase;
+    private final ActualizarSeguimientoUseCase actualizarSeguimientoUseCase;
 
     @GetMapping
     public List<OPResponse> getAll() {
@@ -47,5 +50,10 @@ public class OrdenProduccionController {
     @GetMapping("/{id}/avance")
     public ResponseEntity<AvanceOPResponse> avance(@PathVariable Long id) {
         return ResponseEntity.ok(calcularAvanceUseCase.calcular(id));
+    }
+
+    @PutMapping("/{id}/seguimiento")
+    public ResponseEntity<AvanceOPResponse> actualizarSeguimiento(@PathVariable Long id, @RequestBody ActualizarSeguimientoCommand cmd) {
+        return ResponseEntity.ok(actualizarSeguimientoUseCase.actualizar(id, cmd));
     }
 }

@@ -28,7 +28,10 @@ import {
     Tag,
     Truck,
     Building2,
-    Loader2
+    Loader2,
+    Plus,
+    X,
+    PackageCheck
 } from 'lucide-react';
 import { useProveedores } from '../../../../../hooks/useProveedores';
 
@@ -38,12 +41,13 @@ const STATUS_BADGE = {
     CERRADA:  'bg-slate-100 text-slate-500 border-slate-200',
 };
 
-export default function HCModificacion({ hc, onBack, onConsolidar, formatCLP }) {
+export default function HCModificacion({ hc, onBack, onConsolidarLote, formatCLP }) {
     const { proveedores, loading: loadingProveedores } = useProveedores();
     const [proveedorId, setProveedorId] = useState('');
     const [fechaEntrega, setFechaEntrega] = useState('');
     const [observaciones, setObservaciones] = useState('');
     const [selectedIds, setSelectedIds] = useState(() => new Set());
+    const [draftGroups, setDraftGroups] = useState([]);
     const [submitting, setSubmitting] = useState(false);
     const [localError, setLocalError] = useState(null);
     const [successMsg, setSuccessMsg] = useState(null);
@@ -55,7 +59,8 @@ export default function HCModificacion({ hc, onBack, onConsolidar, formatCLP }) 
     );
 
     const items = hc.items || [];
-    const itemsDisponibles = items.filter(i => !i.ocId);
+    const draftItemIds = new Set(draftGroups.flatMap(g => g.items.map(i => i.id)));
+    const itemsDisponibles = items.filter(i => !i.ocId && !draftItemIds.has(i.id));
     const itemsAsignados = items.filter(i => !!i.ocId);
 
     const toggleItem = (id) => {
@@ -70,26 +75,53 @@ export default function HCModificacion({ hc, onBack, onConsolidar, formatCLP }) 
         .filter(i => selectedIds.has(i.id))
         .reduce((acc, i) => acc + (parseFloat(i.cantidadRequerida || 0) * parseFloat(i.precioEstimado || 0)), 0);
 
-    const puedeGenerar = hc.status === 'APROBADA' && proveedorId && selectedIds.size > 0 && !submitting;
+    const puedeAgregarGrupo = hc.status === 'APROBADA' && proveedorId && selectedIds.size > 0 && !submitting;
+    const puedeGenerarLote = hc.status === 'APROBADA' && draftGroups.length > 0 && !submitting;
 
-    const handleGenerar = async () => {
-        if (!puedeGenerar) return;
+    const handleAgregarGrupo = () => {
+        if (!puedeAgregarGrupo) return;
+        const proveedor = proveedores.find(p => String(p.proveedorId) === String(proveedorId));
+        const itemsGrupo = items
+            .filter(i => selectedIds.has(i.id))
+            .map(i => ({ id: i.id, insumo: i.insumo, cantidadRequerida: i.cantidadRequerida, precioEstimado: i.precioEstimado }));
+
+        setDraftGroups(prev => [...prev, {
+            id: `grupo-${Date.now()}`,
+            proveedorId: Number(proveedorId),
+            proveedorNombre: proveedor?.nombreProveedor || `Proveedor #${proveedorId}`,
+            items: itemsGrupo,
+            totalEstimado: itemsGrupo.reduce((acc, i) => acc + (parseFloat(i.cantidadRequerida || 0) * parseFloat(i.precioEstimado || 0)), 0),
+            fechaEntrega,
+            observaciones,
+        }]);
+        setSelectedIds(new Set());
+        setProveedorId('');
+        setFechaEntrega('');
+        setObservaciones('');
+        setLocalError(null);
+    };
+
+    const handleQuitarGrupo = (id) => {
+        setDraftGroups(prev => prev.filter(g => g.id !== id));
+    };
+
+    const handleGenerarLote = async () => {
+        if (!puedeGenerarLote) return;
         setSubmitting(true);
         setLocalError(null);
         setSuccessMsg(null);
+        const cantidad = draftGroups.length;
         try {
-            await onConsolidar({
-                proveedorId: Number(proveedorId),
-                hcItemIds: Array.from(selectedIds),
-                fechaEntregaEstimada: fechaEntrega || undefined,
-                observaciones: observaciones || undefined,
-            });
-            setSelectedIds(new Set());
-            setObservaciones('');
-            setFechaEntrega('');
-            setSuccessMsg('Orden de Compra generada correctamente.');
+            await onConsolidarLote(draftGroups.map(g => ({
+                proveedorId: g.proveedorId,
+                hcItemIds: g.items.map(i => i.id),
+                fechaEntregaEstimada: g.fechaEntrega || undefined,
+                observaciones: g.observaciones || undefined,
+            })));
+            setDraftGroups([]);
+            setSuccessMsg(`${cantidad} Orden${cantidad === 1 ? '' : 'es'} de Compra generada${cantidad === 1 ? '' : 's'} correctamente.`);
         } catch (e) {
-            setLocalError(e?.response?.data?.message || e?.message || 'Error generando la Orden de Compra');
+            setLocalError(e?.response?.data?.message || e?.message || 'Error generando las Órdenes de Compra');
         } finally {
             setSubmitting(false);
         }
@@ -157,7 +189,7 @@ export default function HCModificacion({ hc, onBack, onConsolidar, formatCLP }) 
                                 </div>
                                 <div>
                                     <CardTitle className="text-sm font-black text-slate-800 uppercase tracking-widest">Insumos Disponibles para Compra</CardTitle>
-                                    <CardDescription className="text-[9px] font-bold uppercase tracking-widest text-slate-400 mt-1">Selecciona los insumos a incluir en la nueva Orden de Compra</CardDescription>
+                                    <CardDescription className="text-[9px] font-bold uppercase tracking-widest text-slate-400 mt-1">Selecciona los insumos y asigna un proveedor para agregarlos a la tanda</CardDescription>
                                 </div>
                             </div>
                         </CardHeader>
@@ -264,16 +296,16 @@ export default function HCModificacion({ hc, onBack, onConsolidar, formatCLP }) 
                     )}
                 </div>
 
-                {/* Sidebar: Form de generación de OC */}
+                {/* Sidebar: Form de armado + tanda de OC */}
                 <div className="space-y-8">
                     <Card className="rounded-[2.5rem] bg-slate-900 border-none shadow-2xl p-4 overflow-hidden">
                         <CardHeader className="p-8 pb-4">
                             <CardTitle className="text-[10px] font-black text-slate-400 uppercase tracking-[0.25em] mb-1 flex items-center gap-2">
                                 <Building2 className="w-4 h-4 text-indigo-400" />
-                                Generar Orden de Compra
+                                Agregar Grupo a la Tanda
                             </CardTitle>
                             <CardDescription className="text-[9px] font-bold uppercase tracking-widest text-slate-500">
-                                Consolida los insumos seleccionados con un proveedor
+                                Asigna los insumos seleccionados a un proveedor
                             </CardDescription>
                         </CardHeader>
                         <CardContent className="p-8 pt-0 space-y-6">
@@ -326,8 +358,61 @@ export default function HCModificacion({ hc, onBack, onConsolidar, formatCLP }) 
                             </div>
 
                             <Button
-                                onClick={handleGenerar}
-                                disabled={!puedeGenerar}
+                                onClick={handleAgregarGrupo}
+                                disabled={!puedeAgregarGrupo}
+                                className="w-full bg-white/10 hover:bg-white/20 text-white rounded-2xl h-14 font-black text-xs uppercase tracking-widest transition-all active:scale-95 flex items-center justify-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed"
+                            >
+                                <Plus className="w-4 h-4" />
+                                Agregar a la Tanda
+                            </Button>
+                        </CardContent>
+                    </Card>
+
+                    {/* Tanda de OC a generar */}
+                    <Card className="rounded-[2.5rem] border-white/40 bg-white/60 backdrop-blur-md shadow-2xl shadow-slate-200/50 overflow-hidden border">
+                        <CardHeader className="p-8 pb-4">
+                            <CardTitle className="text-[10px] font-black text-slate-800 uppercase tracking-[0.25em] mb-1 flex items-center gap-2">
+                                <PackageCheck className="w-4 h-4 text-indigo-500" />
+                                Tanda de Órdenes de Compra ({draftGroups.length})
+                            </CardTitle>
+                            <CardDescription className="text-[9px] font-bold uppercase tracking-widest text-slate-400">
+                                Se generarán todas juntas, en una sola transacción
+                            </CardDescription>
+                        </CardHeader>
+                        <CardContent className="p-8 pt-0 space-y-4">
+                            {draftGroups.length === 0 ? (
+                                <p className="text-[10px] font-bold text-slate-300 uppercase tracking-widest italic text-center py-6">
+                                    Aún no hay grupos en la tanda
+                                </p>
+                            ) : (
+                                <div className="space-y-3">
+                                    {draftGroups.map((g) => (
+                                        <div key={g.id} className="bg-slate-50 border border-slate-100 rounded-2xl p-4 space-y-2">
+                                            <div className="flex items-start justify-between gap-2">
+                                                <div>
+                                                    <p className="text-xs font-black text-slate-800 uppercase tracking-tight">{g.proveedorNombre}</p>
+                                                    <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">{g.items.length} insumo{g.items.length === 1 ? '' : 's'}{g.fechaEntrega ? ` · Entrega ${g.fechaEntrega}` : ''}</p>
+                                                </div>
+                                                <button
+                                                    onClick={() => handleQuitarGrupo(g.id)}
+                                                    disabled={submitting}
+                                                    className="shrink-0 p-1.5 rounded-lg text-slate-400 hover:text-red-600 hover:bg-red-50 transition-all disabled:opacity-40"
+                                                    title="Quitar grupo de la tanda"
+                                                >
+                                                    <X className="w-3.5 h-3.5" />
+                                                </button>
+                                            </div>
+                                            <p className="text-sm font-black text-indigo-600 tabular-nums">
+                                                {formatCLP ? formatCLP(g.totalEstimado) : g.totalEstimado}
+                                            </p>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+
+                            <Button
+                                onClick={handleGenerarLote}
+                                disabled={!puedeGenerarLote}
                                 className="w-full bg-indigo-600 hover:bg-indigo-700 text-white rounded-2xl h-14 font-black text-xs uppercase tracking-widest shadow-2xl shadow-indigo-500/20 transition-all active:scale-95 flex items-center justify-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed"
                             >
                                 {submitting ? (
@@ -335,7 +420,9 @@ export default function HCModificacion({ hc, onBack, onConsolidar, formatCLP }) 
                                 ) : (
                                     <ShoppingCart className="w-4 h-4" />
                                 )}
-                                {submitting ? 'Generando OC...' : 'Generar Orden de Compra'}
+                                {submitting
+                                    ? 'Generando...'
+                                    : `Generar ${draftGroups.length} Orden${draftGroups.length === 1 ? '' : 'es'} de Compra`}
                             </Button>
                         </CardContent>
                     </Card>

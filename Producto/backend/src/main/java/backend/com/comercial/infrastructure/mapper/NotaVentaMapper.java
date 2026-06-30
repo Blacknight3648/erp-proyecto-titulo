@@ -16,6 +16,7 @@ import backend.com.shared.valueobjects.DocumentNumber;
 import backend.com.shared.valueobjects.Money;
 import org.springframework.stereotype.Component;
 
+import java.math.BigDecimal;
 import java.util.stream.Collectors;
 
 @Component
@@ -36,9 +37,9 @@ public class NotaVentaMapper {
                 entity.getDetalleKit(),
                 entity.getFechaEmision(),
                 entity.getFechaEntregaEstimada(),
-                new Money(entity.getMontoSubtotal(), entity.getMonedaSubtotal()),
-                new Money(entity.getMontoIva(), entity.getMonedaIva()),
-                new Money(entity.getMontoTotal(), entity.getMonedaTotal()),
+                safeMoneyFromEntity(entity.getMontoSubtotal(), entity.getMonedaSubtotal()),
+                safeMoneyFromEntity(entity.getMontoIva(), entity.getMonedaIva()),
+                safeMoneyFromEntity(entity.getMontoTotal(), entity.getMonedaTotal()),
                 entity.getItems().stream().map(this::toItemDomain).collect(Collectors.toList()));
     }
 
@@ -63,7 +64,7 @@ public class NotaVentaMapper {
                 entity.getDetalleOt(),
                 entity.getLogoDetalle(),
                 entity.getCantidad(),
-                new Money(entity.getPrecioUnitario(), entity.getMonedaPrecioUnitario()),
+                safeMoneyFromEntity(entity.getPrecioUnitario(), entity.getMonedaPrecioUnitario()),
                 entity.getTallas().stream().map(this::toTallaDomain).collect(Collectors.toList()));
         if (entity.getOpId() != null) {
             item.vincularOp(entity.getOpId());
@@ -75,6 +76,13 @@ public class NotaVentaMapper {
         if (entity == null)
             return null;
         return new ItemNVTalla(entity.getTalla(), entity.getCantidad());
+    }
+
+    private Money safeMoneyFromEntity(BigDecimal amount, String currency) {
+        if (amount == null || currency == null || currency.isBlank()) {
+            return Money.zero("CLP");
+        }
+        return new Money(amount, currency);
     }
 
     public NotaVentaJpaEntity toEntity(NotaVenta domain) {

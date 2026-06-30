@@ -30,11 +30,14 @@ export default function CosteosOP() {
         handleUpdateItem,
         handleRemoveItem,
         handleAddItem,
+        handleAddItemFromSCOS,
         handleValidateCostos,
         handleAprobarCosteo,
         handleRechazarCosteo,
         handleReabrirCosteo,
         clientes,
+        showTelasSCOS, setShowTelasSCOS,
+        showAccesoriosSCOS, setShowAccesoriosSCOS,
         moPrenda, setMoPrenda,
         moCinta, setMoCinta,
         moCosturaSellada, setMoCosturaSellada,
@@ -97,6 +100,9 @@ export default function CosteosOP() {
                     handleUpdateItem={handleUpdateItem}
                     handleRemoveItem={handleRemoveItem}
                     handleAddItem={handleAddItem}
+                    handleAddItemFromSCOS={handleAddItemFromSCOS}
+                    showTelasSCOS={showTelasSCOS} setShowTelasSCOS={setShowTelasSCOS}
+                    showAccesoriosSCOS={showAccesoriosSCOS} setShowAccesoriosSCOS={setShowAccesoriosSCOS}
                     moPrenda={moPrenda} setMoPrenda={setMoPrenda}
                     moCinta={moCinta} setMoCinta={setMoCinta}
                     moCosturaSellada={moCosturaSellada} setMoCosturaSellada={setMoCosturaSellada}

@@ -23,7 +23,7 @@ public class GestionarNVUseCase {
     private final GestionarOrdenTrabajoUseCase gestionarOTUseCase;
 
     @Transactional
-    public NVResponse aprobar(Long id, String aprobador, String observacion) {
+    public NVResponse emitir(Long id, String aprobador, String observacion) {
         if (aprobador == null || aprobador.isBlank()) {
             throw new ValidationException("Se requiere identificar al aprobador para firmar la NV");
         }
@@ -31,19 +31,19 @@ public class GestionarNVUseCase {
                 .orElseThrow(() -> new EntityNotFoundException("Nota de Venta no encontrada: " + id));
 
         EstadoNV anterior = nv.getEstado();
-        nv.aprobar();
+        nv.emitir();
         repository.save(nv);
 
-        // Al aprobar la NV se generan las OT de modificación de los ítems que las
-        // requieren (requiereOt). aprobar() solo transiciona desde BORRADOR (one-shot),
-        // por lo que esto no duplica OT en reaprobaciones.
+        // Al emitir la NV se generan las OT de modificación de los ítems que las
+        // requieren (requiereOt). emitir() solo transiciona desde BORRADOR (one-shot),
+        // por lo que esto no duplica OT en reemisiones.
         gestionarOTUseCase.generarDesdeNotaVenta(nv);
 
         historialService.registrar(TIPO_ENTIDAD, nv.getIdNV(),
                 anterior != null ? anterior.name() : null,
                 nv.getEstado().name(),
                 aprobador,
-                observacion != null ? observacion : "Aprobación firmada por " + aprobador);
+                observacion != null ? observacion : "Emisión firmada por " + aprobador);
 
         return NVResponse.fromDomain(nv);
     }

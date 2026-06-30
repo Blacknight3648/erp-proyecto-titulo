@@ -63,7 +63,7 @@ export default function DetalleOP({
                             </p>
                             <div className="flex items-center space-x-3 mt-2">
                                 <button
-                                    onClick={() => navigate('/detalle-nv')}
+                                    onClick={() => navigate('/detalle-nv', { state: { selectedNV: selectedOP.notaVentaId || selectedOP.nv_id } })}
                                     className="flex items-center space-x-1 text-[10px] font-black text-blue-500 uppercase tracking-widest hover:text-blue-700 hover:underline transition-all"
                                 >
                                     <span>NV Origen #{selectedOP.notaVentaId || selectedOP.nv_id}</span>

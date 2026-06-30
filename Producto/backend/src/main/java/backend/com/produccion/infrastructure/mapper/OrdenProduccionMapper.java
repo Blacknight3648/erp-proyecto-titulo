@@ -18,11 +18,17 @@ public class OrdenProduccionMapper {
     @PersistenceContext
     private EntityManager em;
 
+    private final SeguimientoOPMapper seguimientoOPMapper;
+
+    public OrdenProduccionMapper(SeguimientoOPMapper seguimientoOPMapper) {
+        this.seguimientoOPMapper = seguimientoOPMapper;
+    }
+
     public OrdenProduccion toDomain(OrdenProduccionJpaEntity entity) {
         if (entity == null)
             return null;
 
-        return new OrdenProduccion(
+        OrdenProduccion op = new OrdenProduccion(
                 entity.getIdOP(),
                 entity.getCosteoVersion() != null ? entity.getCosteoVersion().getIdCosteoVersion()
                         : null,
@@ -33,6 +39,9 @@ public class OrdenProduccionMapper {
                 entity.getFechaEntregaProgramada(),
                 entity.getObservaciones(),
                 entity.getItems().stream().map(this::itemToDomain).collect(Collectors.toList()));
+                
+        op.setSeguimiento(seguimientoOPMapper.toDomain(entity.getSeguimiento()));
+        return op;
     }
 
     public OrdenProduccionJpaEntity toJpaEntity(OrdenProduccion domain) {
@@ -57,6 +66,10 @@ public class OrdenProduccionMapper {
             entity.setItems(domain.getItems().stream()
                     .map(item -> itemToJpaEntity(item, entity))
                     .collect(Collectors.toList()));
+        }
+        
+        if (domain.getSeguimiento() != null) {
+            entity.setSeguimiento(seguimientoOPMapper.toJpaEntity(domain.getSeguimiento(), entity));
         }
 
         return entity;

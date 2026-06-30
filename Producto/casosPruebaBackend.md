@@ -1369,22 +1369,22 @@ class NotaVentaTest {
 | Campo              | Detalle                                                                     |
 |--------------------|-----------------------------------------------------------------------------|
 | **ID**             | CP-NV-002                                                                   |
-| **Método**         | `aprobar()`                                                                 |
-| **Descripción**    | Verifica que una NV en BORRADOR pasa a APROBADA                              |
+| **Método**         | `emitir()`                                                                  |
+| **Descripción**    | Verifica que una NV en BORRADOR pasa a EMITIDA                               |
 | **Entrada**        | NV con estado=BORRADOR                                                      |
-| **Resultado**      | estado cambia a APROBADA                                                    |
+| **Resultado**      | estado cambia a EMITIDA                                                     |
 
 ```java
 @Test
-@DisplayName("CP-NV-002: Aprobar NotaVenta en BORRADOR cambia a APROBADA")
-void aprobar_enBorrador_cambiaAAprobada() {
+@DisplayName("CP-NV-002: Emitir NotaVenta en BORRADOR cambia a EMITIDA")
+void emitir_enBorrador_cambiaAEmitida() {
     NotaVenta nv = NotaVenta.crear(
             new DocumentNumber("NV", 1L), 1L, 1L, 1L, false, null,
             LocalDate.now().plusDays(30));
 
-    nv.aprobar();
+    nv.emitir();
 
-    assertEquals(EstadoNV.APROBADA, nv.getEstado());
+    assertEquals(EstadoNV.EMITIDA, nv.getEstado());
 }
 ```
 
@@ -1395,21 +1395,21 @@ void aprobar_enBorrador_cambiaAAprobada() {
 | Campo              | Detalle                                                                     |
 |--------------------|-----------------------------------------------------------------------------|
 | **ID**             | CP-NV-003                                                                   |
-| **Método**         | `aprobar()`                                                                 |
-| **Descripción**    | Verifica que no se puede aprobar una NV que no está en BORRADOR              |
-| **Entrada**        | NV con estado=APROBADA                                                      |
+| **Método**         | `emitir()`                                                                  |
+| **Descripción**    | Verifica que no se puede emitir una NV que no está en BORRADOR               |
+| **Entrada**        | NV con estado=EMITIDA                                                       |
 | **Resultado**      | Se lanza `IllegalStateException`                                            |
 
 ```java
 @Test
-@DisplayName("CP-NV-003: Aprobar NV ya aprobada lanza IllegalStateException")
-void aprobar_noEnBorrador_lanzaIllegalStateException() {
+@DisplayName("CP-NV-003: Emitir NV ya emitida lanza IllegalStateException")
+void emitir_noEnBorrador_lanzaIllegalStateException() {
     NotaVenta nv = NotaVenta.crear(
             new DocumentNumber("NV", 1L), 1L, 1L, 1L, false, null,
             LocalDate.now().plusDays(30));
-    nv.aprobar(); // Ahora está APROBADA
+    nv.emitir(); // Ahora está EMITIDA
 
-    assertThrows(IllegalStateException.class, nv::aprobar);
+    assertThrows(IllegalStateException.class, nv::emitir);
 }
 ```
 
@@ -1514,7 +1514,7 @@ void calcularTotales_conUnItem_calculaCorrectamente() {
 | **Método**         | N/A (enum values)                                                           |
 | **Descripción**    | Verifica que el enum contiene exactamente los 6 estados esperados            |
 | **Entrada**        | N/A                                                                         |
-| **Resultado**      | 6 valores: BORRADOR, APROBADA, EN_PRODUCCION, COMPLETADA, ENTREGADA, CANCELADA |
+| **Resultado**      | 6 valores: BORRADOR, EMITIDA, EN_PRODUCCION, COMPLETADA, ENTREGADA, CANCELADA |
 
 ```java
 class EstadoNVTest {
@@ -1525,7 +1525,7 @@ class EstadoNVTest {
         EstadoNV[] valores = EstadoNV.values();
         assertEquals(6, valores.length);
         assertNotNull(EstadoNV.valueOf("BORRADOR"));
-        assertNotNull(EstadoNV.valueOf("APROBADA"));
+        assertNotNull(EstadoNV.valueOf("EMITIDA"));
         assertNotNull(EstadoNV.valueOf("EN_PRODUCCION"));
         assertNotNull(EstadoNV.valueOf("COMPLETADA"));
         assertNotNull(EstadoNV.valueOf("ENTREGADA"));
@@ -1551,7 +1551,7 @@ class EstadoNVTest {
 @DisplayName("CP-ENV-002: EstadoNV tiene descripción correcta")
 void estadoNV_descripcionCorrecta() {
     assertEquals("Borrador", EstadoNV.BORRADOR.getDescripcion());
-    assertEquals("Aprobada", EstadoNV.APROBADA.getDescripcion());
+    assertEquals("Emitida", EstadoNV.EMITIDA.getDescripcion());
     assertEquals("Cancelada", EstadoNV.CANCELADA.getDescripcion());
 }
 ```

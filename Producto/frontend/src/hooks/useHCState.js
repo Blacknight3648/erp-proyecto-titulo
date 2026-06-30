@@ -127,11 +127,11 @@ export function useHCState(initialView = 'list') {
         setView('modificacion');
     }, []);
 
-    /** Consolida items de la HC seleccionada en una nueva Orden de Compra */
-    const consolidarOC = useCallback(async (payload) => {
-        const oc = await OrdenCompraService.generarConsolidada(payload);
+    /** Consolida varios grupos (proveedor + items) en una sola tanda atómica de OCs */
+    const consolidarOCLote = useCallback(async (grupos) => {
+        const ocs = await OrdenCompraService.generarLote(grupos);
         await refresh();
-        return oc;
+        return ocs;
     }, [refresh]);
 
     /** Helpers para items (solo afectan el formData local; las HC no se editan línea por línea por API) */
@@ -191,7 +191,7 @@ export function useHCState(initialView = 'list') {
         aprobar,
         cerrar,
         handleOpenModificacion,
-        consolidarOC,
+        consolidarOCLote,
         formatCLP,
         ...calculations,
     };

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
     FileText,
     ShoppingCart,
@@ -19,18 +19,70 @@ import {
     Truck,
     Box
 } from 'lucide-react';
+import { NotaVentaService } from '../../../../../remote/service/NotaVentaService';
+import { OrdenProduccionService } from '../../../../../remote/service/OrdenProduccionService';
+import { TrazabilidadService } from '../../../../../remote/service/TrazabilidadService';
 
-export default function DetalleNV({ 
-    selectedNV, 
-    setSelectedNV, 
-    registros, 
-    setView 
+const FASES_ORDEN = ['CORTE', 'CONFECCION', 'BORDADO', 'ESTAMPADO', 'TERMINACION'];
+const FASE_LABEL = {
+    CORTE: 'Corte',
+    CONFECCION: 'Confección',
+    BORDADO: 'Bordado',
+    ESTAMPADO: 'Estampado',
+    TERMINACION: 'Terminación'
+};
+
+export default function DetalleNV({
+    selectedNV,
+    setSelectedNV,
+    registros,
+    setView
 }) {
-    // En un escenario real, cargaríamos el detalle completo del backend.
-    // Aquí simulamos el enriquecimiento de datos para la vista 360.
-    
-    const nv = registros.find(r => String(r.numeroNV || r.idNV || r.id) === String(selectedNV)) || registros[0];
-    
+    const nv = registros.find(r => String(r.idNV || r.id) === String(selectedNV) || String(r.numeroNV) === String(selectedNV)) || registros[0];
+
+    const [avance, setAvance] = useState(null);
+    const [trazaOP, setTrazaOP] = useState(null);
+
+    useEffect(() => {
+        let cancelado = false;
+
+        async function cargarTrazabilidad() {
+            if (!nv?.idNV) {
+                setAvance(null);
+                setTrazaOP(null);
+                return;
+            }
+            try {
+                const trace = await NotaVentaService.getTrazabilidad(nv.idNV);
+                const opTrace = (trace || []).find(t => t.tipoDocumento === 'Orden Producción');
+                if (!opTrace) {
+                    if (!cancelado) {
+                        setAvance(null);
+                        setTrazaOP(null);
+                    }
+                    return;
+                }
+                const [avanceOP, trazaOPData] = await Promise.all([
+                    OrdenProduccionService.getAvance(opTrace.id),
+                    TrazabilidadService.obtenerPorOP(opTrace.id)
+                ]);
+                if (!cancelado) {
+                    setAvance(avanceOP);
+                    setTrazaOP(trazaOPData);
+                }
+            } catch (err) {
+                console.error('Error cargando trazabilidad de la NV:', err);
+                if (!cancelado) {
+                    setAvance(null);
+                    setTrazaOP(null);
+                }
+            }
+        }
+
+        cargarTrazabilidad();
+        return () => { cancelado = true; };
+    }, [nv?.idNV]);
+
     if (!nv) return <div>No se encontró la información de la NV</div>;
 
     const data = {
@@ -49,27 +101,29 @@ export default function DetalleNV({
             price: item.precioUnitario || 0,
             supplier: item.nombreProveedor || item.supplier || 'PEDIENTE'
         })),
-        linkedSC: {
-            id: nv.solicitudCompraId || 'SC-PEND',
-            date: nv.fechaEmision || nv.fecha,
-            status: 'Aprobada',
-            requester: 'Depto. Producción'
-        },
-        linkedOCs: [
-            { id: 'OC-61034', supplier: 'TEXTIL PACÍFICO', date: '2024-02-12', status: 'En Tránsito', origin: 'SC' },
-            { id: 'OS-90041', supplier: 'TALLER LOGO PREMIUM', date: '2024-02-15', status: 'Iniciado', origin: 'OP' }
-        ],
-        productionTracking: [
-            { stage: 'Tizado', status: 'Completado', progress: 100, date: nv.fechaEmision || nv.fecha },
-            { stage: 'Corte', status: 'Completado', progress: 100, date: nv.fechaEmision || nv.fecha },
-            { stage: 'Logo', status: 'Completado', progress: 100, date: nv.fechaEmision || nv.fecha },
-            { stage: 'Entrega', status: nv.estado === 'Entregado' ? 'Completado' : 'Pendiente', progress: nv.estado === 'Entregado' ? 100 : 0, date: nv.fechaEmision || nv.fecha }
-        ]
     };
 
-    const mockSuppliers = [
-        'TEXTIL PACÍFICO', 'HILADOS NACIONALES', 'AVITEX LTDA', 'IMPORTADORA SUR', 'TELAS COLÓN', 'MAQUILA CENTRO'
-    ];
+    const ordenesTrabajo = avance?.ordenesTrabajo || [];
+    const porcentajeGlobal = avance?.porcentajeGlobal ?? 0;
+
+    const productionTracking = FASES_ORDEN
+        .map(fase => ordenesTrabajo.filter(ot => ot.fase === fase))
+        .filter(ots => ots.length > 0)
+        .map(ots => {
+            const fase = ots[0].fase;
+            const totalUnidades = ots.reduce((acc, ot) => acc + (ot.cantidadTotal || 0), 0);
+            const totalProcesado = ots.reduce((acc, ot) => acc + (ot.cantidadProducida || 0) + (ot.cantidadMerma || 0), 0);
+            const progress = totalUnidades > 0 ? Math.round((totalProcesado / totalUnidades) * 100) : 0;
+            return {
+                stage: FASE_LABEL[fase] || fase,
+                status: progress >= 100 ? 'Completado' : progress > 0 ? 'En Proceso' : 'Pendiente',
+                progress
+            };
+        });
+
+    const hojaCompra = trazaOP?.hojaCompra || null;
+    const ordenesCompra = trazaOP?.ordenesCompra || [];
+    const estadoOP = trazaOP?.estadoOP || null;
 
     return (
         <div className="max-w-6xl mx-auto space-y-8 animate-in slide-in-from-right-8 duration-700 p-6 pb-24">
@@ -114,9 +168,9 @@ export default function DetalleNV({
                     <div className="absolute top-1/2 left-0 w-full h-1 bg-white/5 -translate-y-1/2 hidden md:block"></div>
                     {[
                         { icon: FileText, label: 'Nota Venta', id: data.id, active: true },
-                        { icon: ShoppingCart, label: 'Solicitud Compra', id: data.linkedSC.id, active: true },
-                        { icon: CheckCircle2, label: 'Orden Compra', id: 'Múltiples', active: true },
-                        { icon: Package, label: 'Producción', id: 'Finalizado', active: true },
+                        { icon: ShoppingCart, label: 'Hoja de Compra', id: hojaCompra?.numeroHC || 'Pendiente', active: !!hojaCompra },
+                        { icon: CheckCircle2, label: 'Orden Compra', id: ordenesCompra.length > 0 ? `${ordenesCompra.length} OC` : 'Pendiente', active: ordenesCompra.length > 0 },
+                        { icon: Package, label: 'Producción', id: estadoOP || 'Pendiente', active: estadoOP === 'EN_PROCESO' || estadoOP === 'COMPLETADA' },
                         { icon: Box, label: 'Bodega / Empaque', id: 'Revisado', active: data.status === 'Entregado' || data.status === 'Completado' },
                         { icon: Truck, label: 'Pedido Entregado', id: 'Despachado', active: data.status === 'Entregado' || data.status === 'Completado' }
                     ].map((step, idx) => (
@@ -200,33 +254,37 @@ export default function DetalleNV({
                     <div className="flex-1 max-w-xl bg-gray-50/80 p-6 rounded-[2rem] border border-gray-100/50">
                         <div className="flex justify-between items-center mb-3">
                             <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Progreso Global</span>
-                            <span className="text-sm font-black text-blue-600">
-                                {Math.round(data.productionTracking.reduce((acc, curr) => acc + curr.progress, 0) / data.productionTracking.length)}%
-                            </span>
+                            <span className="text-sm font-black text-blue-600">{Math.round(porcentajeGlobal)}%</span>
                         </div>
                         <div className="w-full h-3 bg-gray-200 rounded-full overflow-hidden shadow-inner">
                             <div
                                 className="h-full bg-gradient-to-r from-blue-500 to-indigo-600 transition-all duration-1000"
-                                style={{ width: `${Math.round(data.productionTracking.reduce((acc, curr) => acc + curr.progress, 0) / data.productionTracking.length)}%` }}
+                                style={{ width: `${Math.round(porcentajeGlobal)}%` }}
                             ></div>
                         </div>
                     </div>
                 </div>
 
-                <div className="relative pt-8 pb-12">
-                    <div className="absolute top-[4.5rem] left-0 w-full h-1 bg-gray-100 rounded-full -z-0"></div>
-                    <div className="flex justify-between relative z-10 text-center">
-                        {data.productionTracking.map((stage, idx) => (
-                            <div key={idx} className="flex flex-col items-center flex-1">
-                                <div className={`w-14 h-14 rounded-2xl border-4 border-white shadow-xl flex items-center justify-center mb-4 ${stage.status === 'Completado' ? 'bg-green-500 text-white' : 'bg-blue-600 text-white animate-pulse'}`}>
-                                    {stage.status === 'Completado' ? <CheckCircle2 className="w-7 h-7" /> : <span className="text-lg font-black">{idx + 1}</span>}
-                                </div>
-                                <h4 className="text-[11px] font-black uppercase text-gray-800 mb-1">{stage.stage}</h4>
-                                <span className={`text-[9px] font-black uppercase ${stage.status === 'Completado' ? 'text-green-600' : 'text-blue-600'}`}>{stage.status}</span>
-                            </div>
-                        ))}
+                {productionTracking.length === 0 ? (
+                    <div className="text-center py-10 bg-gray-50/50 rounded-[2rem] border border-dashed border-gray-100">
+                        <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest italic">Producción aún no iniciada</span>
                     </div>
-                </div>
+                ) : (
+                    <div className="relative pt-8 pb-12">
+                        <div className="absolute top-[4.5rem] left-0 w-full h-1 bg-gray-100 rounded-full -z-0"></div>
+                        <div className="flex justify-between relative z-10 text-center">
+                            {productionTracking.map((stage, idx) => (
+                                <div key={idx} className="flex flex-col items-center flex-1">
+                                    <div className={`w-14 h-14 rounded-2xl border-4 border-white shadow-xl flex items-center justify-center mb-4 ${stage.status === 'Completado' ? 'bg-green-500 text-white' : stage.status === 'En Proceso' ? 'bg-blue-600 text-white animate-pulse' : 'bg-gray-300 text-white'}`}>
+                                        {stage.status === 'Completado' ? <CheckCircle2 className="w-7 h-7" /> : <span className="text-lg font-black">{idx + 1}</span>}
+                                    </div>
+                                    <h4 className="text-[11px] font-black uppercase text-gray-800 mb-1">{stage.stage}</h4>
+                                    <span className={`text-[9px] font-black uppercase ${stage.status === 'Completado' ? 'text-green-600' : stage.status === 'En Proceso' ? 'text-blue-600' : 'text-gray-400'}`}>{stage.status}</span>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                )}
             </div>
         </div>
     );

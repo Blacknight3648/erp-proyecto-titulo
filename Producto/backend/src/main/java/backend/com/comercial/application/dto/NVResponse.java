@@ -54,9 +54,9 @@ public class NVResponse {
         response.setDetalleKit(domain.getDetalleKit());
         response.setFechaEmision(domain.getFechaEmision());
         response.setFechaEntregaEstimada(domain.getFechaEntregaEstimada());
-        response.setMontoSubtotal(domain.getMontoSubtotal().getAmount());
-        response.setMontoIva(domain.getMontoIva().getAmount());
-        response.setMontoTotal(domain.getMontoTotal().getAmount());
+        response.setMontoSubtotal(domain.getMontoSubtotal()!= null ? domain.getMontoSubtotal().getAmount() : BigDecimal.ZERO);
+        response.setMontoIva(domain.getMontoIva()!= null ? domain.getMontoIva().getAmount() : BigDecimal.ZERO);
+        response.setMontoTotal(domain.getMontoTotal()!= null ? domain.getMontoTotal().getAmount() : BigDecimal.ZERO);
 
         response.setItems(domain.getItems().stream().map(item -> {
             ItemNVResponse itemResponse = new ItemNVResponse();
@@ -67,8 +67,8 @@ public class NVResponse {
             itemResponse.setColor(item.getColor());
             itemResponse.setTalla(item.getTalla());
             itemResponse.setCantidad(item.getCantidad());
-            itemResponse.setPrecioUnitario(item.getPrecioUnitario().getAmount());
-            itemResponse.setTotal(item.getTotal().getAmount());
+            itemResponse.setPrecioUnitario(item.getPrecioUnitario()!= null ? item.getPrecioUnitario().getAmount() : BigDecimal.ZERO);
+            itemResponse.setTotal(item.getTotal()!= null ? item.getTotal().getAmount() : BigDecimal.ZERO);
             itemResponse.setRequiereOt(item.getRequiereOt());
             itemResponse.setDetalleOt(item.getDetalleOt());
             return itemResponse;

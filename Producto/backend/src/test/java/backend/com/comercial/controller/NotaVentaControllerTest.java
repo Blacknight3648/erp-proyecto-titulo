@@ -86,7 +86,7 @@ public class NotaVentaControllerTest {
                     1L,
                     1L,
                     1L,
-                    EstadoNV.APROBADA,
+                    EstadoNV.EMITIDA,
                     false,
                     null,
                     LocalDate.now(),
@@ -169,15 +169,15 @@ public class NotaVentaControllerTest {
     class Acciones {
 
         @Test
-        @DisplayName("PATCH /aprobar")
-        void aprobar() throws Exception {
+        @DisplayName("PATCH /emitir")
+        void emitir() throws Exception {
             FirmaAprobacionRequest req = new FirmaAprobacionRequest();
             req.setAprobador("Juan");
 
-            when(gestionarNVUseCase.aprobar(eq(1L), any(), any()))
+            when(gestionarNVUseCase.emitir(eq(1L), any(), any()))
                     .thenReturn(nvResponse(1L, "NV-001"));
 
-            mockMvc.perform(patch("/api/v1/comercial/notas-venta/1/aprobar")
+            mockMvc.perform(patch("/api/v1/comercial/notas-venta/1/emitir")
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(objectMapper.writeValueAsString(req)))
                     .andExpect(status().isOk());

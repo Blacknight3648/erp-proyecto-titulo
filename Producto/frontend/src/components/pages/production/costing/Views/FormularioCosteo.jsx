@@ -7,10 +7,11 @@ import {
     Coins, 
     FileText, 
     ChevronUp, 
-    ChevronDown, 
+    ChevronDown,
     TrendingDown,
     ShieldCheck,
-    AlertTriangle
+    AlertTriangle,
+    Plus
 } from 'lucide-react';
 import CosteoTable from '../../../commercial/costing/components/shared/CosteoTable';
 import { FIELD_LABELS } from '../../../../../hooks/usePlantillas';
@@ -37,6 +38,7 @@ export default function FormularioCosteo({
     handleUpdateItem,
     handleRemoveItem,
     handleAddItem,
+    handleAddItemFromSCOS,
     showTelasSCOS,
     setShowTelasSCOS,
     showAccesoriosSCOS,
@@ -305,6 +307,15 @@ export default function FormularioCosteo({
                                                                 <span className="text-[8px] font-black text-orange-400 uppercase tracking-widest block">Peso</span>
                                                                 <span className="text-xs font-bold text-gray-700 uppercase">{t.peso || '0'} {t.unidadMedida || 'gr'}</span>
                                                             </div>
+                                                            {costeoEstado !== EstadoCosteo.APROBADO && (
+                                                                <button
+                                                                    onClick={() => handleAddItemFromSCOS(t, 'telas')}
+                                                                    className="px-3 py-2 bg-orange-600 text-white text-[9px] font-black rounded-lg uppercase tracking-widest hover:bg-orange-700 transition-all flex items-center"
+                                                                >
+                                                                    <Plus className="w-3 h-3 mr-1.5" />
+                                                                    Agregar
+                                                                </button>
+                                                            )}
                                                         </div>
                                                     ))}
                                                     {(currentSolicitud?.plantillas?.[0]?.telas || []).length === 0 && (
@@ -348,6 +359,15 @@ export default function FormularioCosteo({
                                                                 <span className="text-[8px] font-black text-blue-400 uppercase tracking-widest block">Cantidad</span>
                                                                 <span className="text-sm font-black text-blue-600 italic">{a.cantidad || 0} un</span>
                                                             </div>
+                                                            {costeoEstado !== EstadoCosteo.APROBADO && (
+                                                                <button
+                                                                    onClick={() => handleAddItemFromSCOS(a, 'accesorios')}
+                                                                    className="px-3 py-2 bg-blue-600 text-white text-[9px] font-black rounded-lg uppercase tracking-widest hover:bg-blue-700 transition-all flex items-center"
+                                                                >
+                                                                    <Plus className="w-3 h-3 mr-1.5" />
+                                                                    Agregar
+                                                                </button>
+                                                            )}
                                                         </div>
                                                     ))}
                                                     {(currentSolicitud?.plantillas?.[0]?.accesorios || []).length === 0 && (

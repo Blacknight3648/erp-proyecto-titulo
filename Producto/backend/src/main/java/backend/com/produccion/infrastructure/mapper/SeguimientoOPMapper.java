@@ -21,7 +21,7 @@ public class SeguimientoOPMapper {
         
         domain.setFechaRecepcionOp(entity.getFechaRecepcionOp());
         domain.setFinTizado(entity.getFinTizado());
-        domain.setFechaEstadoOcMp(entity.getFechaEstadoOcMp());
+        domain.setEstadoOcMp(entity.getEstadoOcMp());
         domain.setRecepcionCompras(entity.getRecepcionCompras());
         domain.setInicioCorte(entity.getInicioCorte());
         domain.setFinCorte(entity.getFinCorte());
@@ -50,7 +50,7 @@ public class SeguimientoOPMapper {
         
         entity.setFechaRecepcionOp(domain.getFechaRecepcionOp());
         entity.setFinTizado(domain.getFinTizado());
-        entity.setFechaEstadoOcMp(domain.getFechaEstadoOcMp());
+        entity.setEstadoOcMp(domain.getEstadoOcMp());
         entity.setRecepcionCompras(domain.getRecepcionCompras());
         entity.setInicioCorte(domain.getInicioCorte());
         entity.setFinCorte(domain.getFinCorte());

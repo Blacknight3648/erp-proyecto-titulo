@@ -8,6 +8,7 @@ import ListaOPs from './Views/ListaOPs';
 import DetalleOP from './Views/DetalleOP';
 import BulkEditOP from './Views/BulkEditOP';
 import SelectionModal from './Views/Modals/SelectionModal';
+import ConfirmModal from './Views/Modals/ConfirmModal';
 
 export default function OpRegistro() {
     const navigate = useNavigate();
@@ -34,7 +35,9 @@ export default function OpRegistro() {
         calculateTotalQty,
         ordenes,
         isLoadingOrdenes,
-        mockOpDetails
+        mockOpDetails,
+        searchTerm, setSearchTerm,
+        clientFilter, setClientFilter
     } = useOpRegistroState();
 
     const getClientName = (op) => {
@@ -81,6 +84,11 @@ export default function OpRegistro() {
                     handleVerDetalles={handleVerDetalles}
                     handleBulkEdit={handleBulkEdit}
                     getClientName={getClientName}
+                    mockOpDetails={mockOpDetails}
+                    searchTerm={searchTerm}
+                    setSearchTerm={setSearchTerm}
+                    clientFilter={clientFilter}
+                    setClientFilter={setClientFilter}
                 />
             )}
 
@@ -141,6 +149,12 @@ export default function OpRegistro() {
                     setShowSelectionModal(false);
                     setView('bulk_edit');
                 }}
+            />
+
+            <ConfirmModal 
+                show={showConfirmModal}
+                onConfirm={finalizeSave}
+                onCancel={() => setShowConfirmModal(false)}
             />
         </div>
     );

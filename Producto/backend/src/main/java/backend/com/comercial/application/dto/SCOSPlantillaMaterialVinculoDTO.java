@@ -13,7 +13,7 @@ import lombok.*;
 @AllArgsConstructor
 public class SCOSPlantillaMaterialVinculoDTO {
 
-    private Long id;
+    private Long idSCOSPlantillaMaterialVinculo;
     private String tempId;          // solo FE
     private String materialType;    // "TELA" | "ACCESORIO"
     private Long materialId;

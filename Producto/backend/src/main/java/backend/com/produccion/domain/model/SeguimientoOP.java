@@ -3,6 +3,7 @@ package backend.com.produccion.domain.model;
 import backend.com.produccion.domain.enums.CalidadTaller;
 import backend.com.produccion.domain.enums.EstadoIdaLogo;
 import backend.com.produccion.domain.enums.EstadoRecLogo;
+import backend.com.produccion.domain.enums.EstadoOcMp;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -16,7 +17,7 @@ public class SeguimientoOP {
     
     private LocalDate fechaRecepcionOp;
     private LocalDate finTizado;
-    private LocalDate fechaEstadoOcMp;
+    private EstadoOcMp estadoOcMp;
     private LocalDate recepcionCompras;
     private LocalDate inicioCorte;
     private LocalDate finCorte;
@@ -42,7 +43,7 @@ public class SeguimientoOP {
         int llenos = 0;
         if (fechaRecepcionOp != null) llenos++;
         if (finTizado != null) llenos++;
-        if (fechaEstadoOcMp != null) llenos++;
+        if (estadoOcMp != null) llenos++;
         if (recepcionCompras != null) llenos++;
         if (inicioCorte != null) llenos++;
         if (finCorte != null) llenos++;

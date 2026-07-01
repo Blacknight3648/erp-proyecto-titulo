@@ -16,6 +16,7 @@ public class OrdenTrabajoJpaEntity extends AuditableJpaEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id_ot")
     private Long idOT;
 
     @Column(name = "nota_venta_id", nullable = false)

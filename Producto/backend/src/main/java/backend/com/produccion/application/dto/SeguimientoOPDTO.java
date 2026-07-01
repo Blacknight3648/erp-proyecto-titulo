@@ -10,7 +10,7 @@ public class SeguimientoOPDTO {
     private Long ordenProduccionId;
     private LocalDate fechaRecepcionOp;
     private LocalDate finTizado;
-    private LocalDate fechaEstadoOcMp;
+    private String estadoOcMp;
     private LocalDate recepcionCompras;
     private LocalDate inicioCorte;
     private LocalDate finCorte;
@@ -31,7 +31,7 @@ public class SeguimientoOPDTO {
         dto.setOrdenProduccionId(seg.getOrdenProduccionId());
         dto.setFechaRecepcionOp(seg.getFechaRecepcionOp());
         dto.setFinTizado(seg.getFinTizado());
-        dto.setFechaEstadoOcMp(seg.getFechaEstadoOcMp());
+        dto.setEstadoOcMp(seg.getEstadoOcMp() != null ? seg.getEstadoOcMp().name() : null);
         dto.setRecepcionCompras(seg.getRecepcionCompras());
         dto.setInicioCorte(seg.getInicioCorte());
         dto.setFinCorte(seg.getFinCorte());

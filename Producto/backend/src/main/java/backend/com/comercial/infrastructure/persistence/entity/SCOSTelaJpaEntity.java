@@ -18,6 +18,7 @@ public class SCOSTelaJpaEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id_scos_tela")
     private Long idSCOSTela;
 
     @ManyToOne(fetch = FetchType.LAZY)

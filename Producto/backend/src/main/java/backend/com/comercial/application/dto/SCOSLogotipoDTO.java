@@ -12,6 +12,7 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 @Builder
 public class SCOSLogotipoDTO {
+    private Long idSCOSLogotipo;
     private String tipo;
     private String nombre;
     private String ubicacion;

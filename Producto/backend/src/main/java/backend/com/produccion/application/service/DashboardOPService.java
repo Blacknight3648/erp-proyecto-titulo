@@ -50,7 +50,7 @@ public class DashboardOPService {
             SeguimientoOPJpaEntity s = segOpt.get();
 
             // OP Atrasada: recibida hace > 3 días sin confirmación de OC de MP
-            if (s.getFechaRecepcionOp() != null && s.getFechaEstadoOcMp() == null) {
+            if (s.getFechaRecepcionOp() != null && s.getEstadoOcMp() == null) {
                 if (ChronoUnit.DAYS.between(s.getFechaRecepcionOp(), hoy) > 3) opAtrasada++;
             }
 

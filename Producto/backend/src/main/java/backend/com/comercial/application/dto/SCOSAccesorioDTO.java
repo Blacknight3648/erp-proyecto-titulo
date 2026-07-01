@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class SCOSAccesorioDTO {
-    private Long id;
+    private Long idSCOSAccesorio;
     private String tempId;
     private String tipo;
     private String nombreAccesorio;

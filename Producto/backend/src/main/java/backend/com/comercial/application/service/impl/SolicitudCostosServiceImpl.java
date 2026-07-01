@@ -224,7 +224,7 @@ public class SolicitudCostosServiceImpl implements SolicitudCostosService {
                         .cantidad(a.getCantidad())
                         .build()).collect(Collectors.toList()))
                 .logotipos(domain.getLogotipos().stream()
-                        .map(l -> new SCOSLogotipoDTO(l.getTipo(), l.getNombre(),
+                        .map(l -> new SCOSLogotipoDTO(l.getId(), l.getTipo(), l.getNombre(),
                                 l.getUbicacion(), l.getColor(),
                                 l.getTamano(), l.getCantidad(), l.getPrecio()))
                         .collect(Collectors.toList()))

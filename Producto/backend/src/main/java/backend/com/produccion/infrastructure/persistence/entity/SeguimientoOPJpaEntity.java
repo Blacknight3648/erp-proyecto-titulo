@@ -3,6 +3,8 @@ package backend.com.produccion.infrastructure.persistence.entity;
 import backend.com.produccion.domain.enums.CalidadTaller;
 import backend.com.produccion.domain.enums.EstadoIdaLogo;
 import backend.com.produccion.domain.enums.EstadoRecLogo;
+
+import backend.com.produccion.domain.enums.EstadoOcMp;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -25,7 +27,10 @@ public class SeguimientoOPJpaEntity {
 
     private LocalDate fechaRecepcionOp;
     private LocalDate finTizado;
-    private LocalDate fechaEstadoOcMp;
+
+    @Enumerated(EnumType.STRING)
+    private EstadoOcMp estadoOcMp;
+
     private LocalDate recepcionCompras;
     private LocalDate inicioCorte;
     private LocalDate finCorte;

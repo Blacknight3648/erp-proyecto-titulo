@@ -11,7 +11,7 @@ public class SCOSPlantillaMaterialVinculoMapper {
     public SCOSPlantillaMaterialVinculo toDomain(SCOSPlantillaMaterialVinculoJpaEntity entity) {
         if (entity == null) return null;
         return SCOSPlantillaMaterialVinculo.builder()
-                .id(entity.getId())
+                .id(entity.getIdSCOSPlantillaMaterialVinculo())
                 .materialType(entity.getMaterialType())
                 .materialId(entity.getMaterialId())
                 .cantidad(entity.getCantidad())
@@ -21,7 +21,7 @@ public class SCOSPlantillaMaterialVinculoMapper {
     public SCOSPlantillaMaterialVinculoJpaEntity toEntity(SCOSPlantillaMaterialVinculo domain) {
         if (domain == null) return null;
         return SCOSPlantillaMaterialVinculoJpaEntity.builder()
-                .id(domain.getId())
+                .idSCOSPlantillaMaterialVinculo(domain.getId())
                 .materialType(domain.getMaterialType())
                 .materialId(domain.getMaterialId())
                 .cantidad(domain.getCantidad())
@@ -31,7 +31,7 @@ public class SCOSPlantillaMaterialVinculoMapper {
     public SCOSPlantillaMaterialVinculoDTO toDTO(SCOSPlantillaMaterialVinculo domain) {
         if (domain == null) return null;
         return SCOSPlantillaMaterialVinculoDTO.builder()
-                .id(domain.getId())
+                .idSCOSPlantillaMaterialVinculo(domain.getId())
                 .materialType(domain.getMaterialType())
                 .materialId(domain.getMaterialId())
                 .cantidad(domain.getCantidad())
@@ -41,7 +41,7 @@ public class SCOSPlantillaMaterialVinculoMapper {
     public SCOSPlantillaMaterialVinculo toDomain(SCOSPlantillaMaterialVinculoDTO dto) {
         if (dto == null) return null;
         return SCOSPlantillaMaterialVinculo.builder()
-                .id(dto.getId())
+                .id(dto.getIdSCOSPlantillaMaterialVinculo())
                 .materialType(dto.getMaterialType())
                 .materialId(dto.getMaterialId())
                 .cantidad(dto.getCantidad())

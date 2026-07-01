@@ -24,6 +24,13 @@ public class ActualizarSeguimientoUseCase {
 
         seg.setFechaRecepcionOp(cmd.getFechaRecepcionOp());
         seg.setFinTizado(cmd.getFinTizado());
+        
+        if (cmd.getEstadoOcMp() != null) {
+            seg.setEstadoOcMp(backend.com.produccion.domain.enums.EstadoOcMp.valueOf(cmd.getEstadoOcMp()));
+        } else {
+            seg.setEstadoOcMp(null);
+        }
+        
         seg.setRecepcionCompras(cmd.getRecepcionCompras());
         seg.setInicioCorte(cmd.getInicioCorte());
         seg.setFinCorte(cmd.getFinCorte());
@@ -43,6 +50,7 @@ public class ActualizarSeguimientoUseCase {
             seg.setEstadoRecLogo(null);
         }
 
+        seg.setInicioTallerExterno(cmd.getInicioTallerExterno());
         seg.setFinTallerExterno(cmd.getFinTallerExterno());
 
         if (cmd.getCalidadTaller() != null) {

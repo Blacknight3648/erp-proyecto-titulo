@@ -69,9 +69,9 @@ export default function ListaNV({
                     {registros
                         .filter(r => String(r.numeroNV || r.folio || r.id).includes(searchTerm) || (r.clienteNombre || r.cliente)?.toLowerCase().includes(searchTerm.toLowerCase()))
                         .map((record) => (
-                        <div 
-                            key={record.idNV || record.id} 
-                            onClick={() => handleOpenForm(record, 'view')} 
+                        <div
+                            key={record.idNV || record.id}
+                            onClick={() => handleOpenForm(record, record.estado === 'BORRADOR' ? 'edit' : 'view')}
                             className="group bg-white p-6 rounded-[2.5rem] border-2 border-gray-50 hover:border-blue-500 hover:shadow-2xl transition-all cursor-pointer relative overflow-hidden"
                         >
                             <div className="flex justify-between items-start mb-4">
@@ -79,7 +79,10 @@ export default function ListaNV({
                                     <span className="text-[10px] font-black text-gray-300 uppercase tracking-widest">{record.numeroNV || `NV-${record.idNV || record.id}`}</span>
                                     <h3 className="text-md font-black text-gray-800 group-hover:text-blue-600 uppercase mt-1">{record.clienteNombre}</h3>
                                 </div>
-                                <span className="px-3 py-1 bg-green-100 text-green-600 rounded-full text-[9px] font-black uppercase">Emitida</span>
+                                {record.estado === 'BORRADOR'
+                                    ? <span className="px-3 py-1 bg-amber-100 text-amber-600 rounded-full text-[9px] font-black uppercase">Borrador</span>
+                                    : <span className="px-3 py-1 bg-green-100 text-green-600 rounded-full text-[9px] font-black uppercase">Emitida</span>
+                                }
                             </div>
                             <div className="space-y-3 mb-6">
                                 <div className="flex items-center gap-2">
@@ -91,7 +94,7 @@ export default function ListaNV({
                                 </div>
                             </div>
                             <div className="flex items-center justify-between text-[10px] font-black uppercase text-blue-600 opacity-0 group-hover:opacity-100 transition-all">
-                                <span>Ver Detalle</span>
+                                <span>{record.estado === 'BORRADOR' ? 'Editar Borrador' : 'Ver Detalle'}</span>
                                 <ChevronRight className="w-4 h-4" />
                             </div>
                         </div>

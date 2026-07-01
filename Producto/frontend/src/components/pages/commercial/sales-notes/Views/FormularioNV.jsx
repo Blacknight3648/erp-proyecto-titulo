@@ -35,7 +35,7 @@ export default function FormularioNV({
                     </div>
                     <div>
                         <h2 className="text-3xl font-black text-gray-800 tracking-tight italic">
-                            {isReadOnly ? 'Detalle Nota de Venta' : sourceEVN ? 'Generar desde Plantilla' : 'Nueva Nota de Venta'}
+                            {isReadOnly ? 'Detalle Nota de Venta' : formData.idNV ? 'Editar Nota de Venta' : sourceEVN ? 'Generar desde Plantilla' : 'Nueva Nota de Venta'}
                         </h2>
                         <div className="flex items-center space-x-3 mt-1">
                             {sourceEVN && (
@@ -50,7 +50,7 @@ export default function FormularioNV({
                     <div className="bg-blue-600/5 px-6 py-3 rounded-2xl border border-blue-100 flex items-center space-x-4">
                         <div>
                             <p className="text-[9px] font-black text-blue-400 uppercase tracking-widest">Folio Correlativo</p>
-                            <p className="text-2xl font-black text-blue-700 italic font-mono">#{isReadOnly ? formData.numeroNV : nextNumbers.nv}</p>
+                            <p className="text-2xl font-black text-blue-700 italic font-mono">#{(isReadOnly || formData.idNV) ? formData.numeroNV : nextNumbers.nv}</p>
                         </div>
                     </div>
                 </div>
@@ -260,7 +260,19 @@ export default function FormularioNV({
                             >
                                 <FileText className="w-4 h-4" /> PDF
                             </button>
-                            <button onClick={handleConfirmNV} disabled={isSubmitting || !formData.clienteId || formData.vendedorId === '' || formData.items.length === 0} className="px-12 py-5 bg-blue-600 hover:bg-blue-500 text-white font-black rounded-3xl text-[10px] uppercase tracking-[0.2em] shadow-2xl flex items-center gap-4 disabled:opacity-50 transition-all">
+                            <button
+                                onClick={() => handleConfirmNV(true)}
+                                disabled={isSubmitting || !formData.clienteId || formData.vendedorId === '' || formData.items.length === 0}
+                                className="px-10 py-5 bg-gray-600 hover:bg-gray-500 text-white font-black rounded-3xl text-[10px] uppercase tracking-[0.2em] shadow-xl flex items-center gap-3 disabled:opacity-50 transition-all"
+                            >
+                                <Save className="w-4 h-4" />
+                                <span>Guardar Borrador</span>
+                            </button>
+                            <button
+                                onClick={() => handleConfirmNV(false)}
+                                disabled={isSubmitting || !formData.clienteId || formData.vendedorId === '' || formData.items.length === 0}
+                                className="px-12 py-5 bg-blue-600 hover:bg-blue-500 text-white font-black rounded-3xl text-[10px] uppercase tracking-[0.2em] shadow-2xl flex items-center gap-4 disabled:opacity-50 transition-all"
+                            >
                                 {isSubmitting ? <div className="animate-spin w-4 h-4 border-2 border-white/20 border-t-white rounded-full" /> : <Save className="w-4 h-4" />}
                                 <span>{isSubmitting ? 'Procesando...' : 'Emitir Nota de Venta'}</span>
                             </button>

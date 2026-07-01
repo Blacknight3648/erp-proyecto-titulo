@@ -34,4 +34,6 @@ public class CrearNVCommand {
 
     @Valid
     private List<ItemNVDTO> items;
+
+    private Boolean emitir = false;
 }

@@ -104,14 +104,14 @@ class CrearOrdenProduccionUseCaseTest {
     }
 
     private ItemNV itemOP(int nroItem, Integer cantidad, String llevaLogo, String logoDetalle) {
-        return new ItemNV((long) (100 + nroItem), nroItem, 1, "Polera Basica", "Algodón", "100% Algodón",
-                "Azul", "M", "Unisex", "COD-" + nroItem, 5L, llevaLogo, TipoItem.OP, true, "Detalle OT",
+        return new ItemNV((long) (100 + nroItem), nroItem, 1, "Polera Basica", null, "Algodón", "100% Algodón",
+                "Azul", "M", "Unisex", "COD-" + nroItem, 5L, null, llevaLogo, TipoItem.OP, true, "Detalle OT",
                 logoDetalle, cantidad, new Money(new BigDecimal("5000"), "CLP"), List.of());
     }
 
     private ItemNV itemNoOP(int nroItem) {
         return new ItemNV((long) (200 + nroItem), nroItem, 2, "Tela Insumo", null, null, null, null, null,
-                "COD-X" + nroItem, null, "N/A", TipoItem.SC, false, null, null, 10,
+                null, "COD-X" + nroItem, null, null, "N/A", TipoItem.SC, false, null, null, 10,
                 new Money(new BigDecimal("1000"), "CLP"), List.of());
     }
 

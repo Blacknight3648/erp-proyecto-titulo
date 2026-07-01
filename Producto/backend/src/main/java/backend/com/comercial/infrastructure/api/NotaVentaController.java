@@ -1,5 +1,6 @@
 package backend.com.comercial.infrastructure.api;
 
+import backend.com.comercial.application.UseCase.ActualizarNVUseCase;
 import backend.com.comercial.application.UseCase.ConsultarTrazabilidadUseCase;
 import backend.com.comercial.application.UseCase.CrearNVUseCase;
 import backend.com.comercial.application.UseCase.GestionarNVUseCase;
@@ -25,6 +26,7 @@ import java.util.stream.Collectors;
 public class NotaVentaController {
 
     private final CrearNVUseCase crearNVUseCase;
+    private final ActualizarNVUseCase actualizarNVUseCase;
     private final ConsultarTrazabilidadUseCase consultarTrazabilidadUseCase;
     private final GestionarNVUseCase gestionarNVUseCase;
     private final NotaVentaRepository repository;
@@ -51,6 +53,11 @@ public class NotaVentaController {
     @PostMapping
     public NVResponse crear(@Valid @RequestBody CrearNVCommand command) {
         return crearNVUseCase.ejecutar(command);
+    }
+
+    @PutMapping("/{id}")
+    public NVResponse actualizar(@PathVariable Long id, @Valid @RequestBody CrearNVCommand command) {
+        return actualizarNVUseCase.ejecutar(id, command);
     }
 
     @GetMapping("/{id}")

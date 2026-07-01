@@ -39,6 +39,7 @@ public class NVResponse {
         private BigDecimal total;
         private Boolean requiereOt;
         private String detalleOt;
+        private String tipoItem;
     }
 
     public static NVResponse fromDomain(NotaVenta domain) {
@@ -71,6 +72,7 @@ public class NVResponse {
             itemResponse.setTotal(item.getTotal()!= null ? item.getTotal().getAmount() : BigDecimal.ZERO);
             itemResponse.setRequiereOt(item.getRequiereOt());
             itemResponse.setDetalleOt(item.getDetalleOt());
+            itemResponse.setTipoItem(item.getTipoItem() != null ? item.getTipoItem().name() : null);
             return itemResponse;
         }).collect(Collectors.toList()));
 

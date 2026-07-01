@@ -12,8 +12,25 @@ export default function ListaOPs({
     handleModificarRegistro,
     handleVerDetalles,
     handleBulkEdit,
-    getClientName
+    getClientName,
+    mockOpDetails,
+    searchTerm, setSearchTerm,
+    clientFilter, setClientFilter
 }) {
+    // Get unique clients for the dropdown
+    const uniqueClients = [...new Set(ordenes.map(op => getClientName(op)))].filter(c => c && c !== '-');
+
+    // Filter the ordenes array
+    const filteredOrdenes = ordenes.filter(op => {
+        const matchesSearch = !searchTerm || 
+            (op.numeroOP || `OP-${op.id}`).toLowerCase().includes(searchTerm.toLowerCase()) ||
+            getClientName(op).toLowerCase().includes(searchTerm.toLowerCase());
+            
+        const matchesClient = !clientFilter || getClientName(op) === clientFilter;
+        
+        return matchesSearch && matchesClient;
+    });
+
     return (
         <div className="max-w-2xl mx-auto bg-gray-50/30 min-h-[calc(100vh-120px)] p-4 pb-24 relative animate-in fade-in duration-700">
             <h1 className="text-3xl font-black text-blue-600 mb-8 text-center tracking-tight uppercase italic">Registro de Producción</h1>
@@ -24,8 +41,15 @@ export default function ListaOPs({
                 </div>
 
                 <div className="space-y-3">
-                    <select className="w-full p-4 bg-white border border-gray-200 rounded-2xl text-[10px] font-black uppercase tracking-widest focus:ring-2 focus:ring-blue-500 outline-none appearance-none cursor-pointer">
-                        <option>Filtrar por Cliente...</option>
+                    <select 
+                        className="w-full p-4 bg-white border border-gray-200 rounded-2xl text-[10px] font-black uppercase tracking-widest focus:ring-2 focus:ring-blue-500 outline-none appearance-none cursor-pointer"
+                        value={clientFilter}
+                        onChange={(e) => setClientFilter(e.target.value)}
+                    >
+                        <option value="">Filtrar por Cliente...</option>
+                        {uniqueClients.map((client, idx) => (
+                            <option key={idx} value={client}>{client}</option>
+                        ))}
                     </select>
 
                     <div className="relative">
@@ -33,6 +57,8 @@ export default function ListaOPs({
                             type="text"
                             placeholder="Buscar OP o Cliente..."
                             className="w-full p-4 bg-white border border-gray-200 rounded-2xl text-sm font-medium focus:ring-2 focus:ring-blue-500 outline-none placeholder:text-gray-400 shadow-inner"
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
                         />
                     </div>
 
@@ -58,7 +84,7 @@ export default function ListaOPs({
             </div>
 
             <div className="space-y-2 max-h-[500px] overflow-y-auto pr-2 custom-scrollbar">
-                {ordenes.map((op) => {
+                {filteredOrdenes.map((op) => {
                     const isSelected = selectedOP?.id === op.id;
                     const isMultiSelected = selectedOPIds.includes(op.id);
 
@@ -118,9 +144,9 @@ export default function ListaOPs({
                         </div>
                     );
                 })}
-                {ordenes.length === 0 && (
+                {filteredOrdenes.length === 0 && (
                     <p className="text-center py-10 text-gray-300 font-bold italic uppercase tracking-widest text-xs">
-                        No hay Ordenes de Producción registradas
+                        No hay Ordenes de Producción registradas que coincidan con la búsqueda
                     </p>
                 )}
             </div>

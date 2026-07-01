@@ -20,6 +20,7 @@ public class NotaVentaJpaEntity extends AuditableJpaEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id_nv")
     private Long idNV;
 
     @Column(unique = true, length = 20, nullable = false)

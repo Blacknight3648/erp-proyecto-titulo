@@ -101,7 +101,7 @@ public class SolicitudCostosMapper {
     }
 
     private SCOSLogotipo mapLogotipoToDomain(SCOSLogotipoJpaEntity entity) {
-        return new SCOSLogotipo(entity.getId(), entity.getTipo(), entity.getNombre(),
+        return new SCOSLogotipo(entity.getIdSCOSLogotipo(), entity.getTipo(), entity.getNombre(),
                 entity.getUbicacion(), entity.getColor(), entity.getTamano(),
                 entity.getCantidad(), entity.getPrecio());
         // tamano ya es String (VARCHAR 50) — puede contener "6 cm", "10 in", etc.

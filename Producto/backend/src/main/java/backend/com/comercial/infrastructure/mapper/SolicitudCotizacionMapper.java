@@ -44,7 +44,7 @@ public class SolicitudCotizacionMapper {
     }
 
     private SCOSLogotipo mapLogotipoToDomain(SCOSLogotipoJpaEntity entity) {
-        return new SCOSLogotipo(entity.getId(), entity.getTipo(), entity.getNombre(),
+        return new SCOSLogotipo(entity.getIdSCOSLogotipo(), entity.getTipo(), entity.getNombre(),
                 entity.getUbicacion(), entity.getColor(), entity.getTamano(),
                 entity.getCantidad(), entity.getPrecio());
     }

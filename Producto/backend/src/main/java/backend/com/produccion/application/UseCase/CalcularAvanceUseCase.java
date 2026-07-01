@@ -32,7 +32,7 @@ public class CalcularAvanceUseCase {
         SeguimientoOP seg = optSeg.get();
         resp.setFechaRecepcionOp(seg.getFechaRecepcionOp());
         resp.setFinTizado(seg.getFinTizado());
-        resp.setFechaEstadoOcMp(seg.getFechaEstadoOcMp());
+        resp.setEstadoOcMp(seg.getEstadoOcMp() != null ? seg.getEstadoOcMp().name() : null);
         resp.setRecepcionCompras(seg.getRecepcionCompras());
         resp.setInicioCorte(seg.getInicioCorte());
         resp.setFinCorte(seg.getFinCorte());
@@ -52,7 +52,7 @@ public class CalcularAvanceUseCase {
 
         if (seg.getFechaRecepcionOp() != null) camposLlenos++;
         if (seg.getFinTizado() != null) camposLlenos++;
-        if (seg.getFechaEstadoOcMp() != null) camposLlenos++;
+        if (seg.getEstadoOcMp() != null) camposLlenos++;
         if (seg.getRecepcionCompras() != null) camposLlenos++;
         if (seg.getInicioCorte() != null) camposLlenos++;
         if (seg.getFinCorte() != null) camposLlenos++;

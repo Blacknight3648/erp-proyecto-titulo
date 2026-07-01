@@ -5,7 +5,10 @@ import backend.com.produccion.application.UseCase.ActualizarSeguimientoUseCase;
 import backend.com.produccion.application.dto.ActualizarSeguimientoCommand;
 import backend.com.produccion.application.dto.AvanceOPResponse;
 import backend.com.produccion.application.dto.OPResponse;
+import backend.com.produccion.application.dto.SeguimientoOPDTO;
+import backend.com.produccion.domain.model.SeguimientoOP;
 import backend.com.produccion.domain.repository.OrdenProduccionRepository;
+import backend.com.produccion.domain.repository.SeguimientoOPRepository;
 import backend.com.shared.exception.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -22,6 +25,7 @@ public class OrdenProduccionController {
     private final OrdenProduccionRepository repository;
     private final CalcularAvanceUseCase calcularAvanceUseCase;
     private final ActualizarSeguimientoUseCase actualizarSeguimientoUseCase;
+    private final SeguimientoOPRepository seguimientoRepository;
 
     @GetMapping
     public List<OPResponse> getAll() {
@@ -52,8 +56,15 @@ public class OrdenProduccionController {
         return ResponseEntity.ok(calcularAvanceUseCase.calcular(id));
     }
 
+    @GetMapping("/{id}/seguimiento")
+    public ResponseEntity<SeguimientoOPDTO> getSeguimiento(@PathVariable Long id) {
+        SeguimientoOP seg = seguimientoRepository.findByOrdenProduccionId(id)
+                .orElseGet(() -> new SeguimientoOP(id));
+        return ResponseEntity.ok(SeguimientoOPDTO.from(seg));
+    }
+
     @PutMapping("/{id}/seguimiento")
-    public ResponseEntity<AvanceOPResponse> actualizarSeguimiento(@PathVariable Long id, @RequestBody ActualizarSeguimientoCommand cmd) {
+    public ResponseEntity<SeguimientoOPDTO> actualizarSeguimiento(@PathVariable Long id, @RequestBody ActualizarSeguimientoCommand cmd) {
         return ResponseEntity.ok(actualizarSeguimientoUseCase.actualizar(id, cmd));
     }
 }

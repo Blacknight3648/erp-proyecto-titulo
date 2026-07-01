@@ -99,7 +99,8 @@ export default function DetalleNV({
             size: item.size || item.talla || 'M',
             quantity: item.cantidad || item.qty || 0,
             price: item.precioUnitario || 0,
-            supplier: item.nombreProveedor || item.supplier || 'PEDIENTE'
+            supplier: item.nombreProveedor || item.supplier || 'PEDIENTE',
+            tipoItem: item.tipoItem || item.tipo || '-'
         })),
     };
 
@@ -205,6 +206,7 @@ export default function DetalleNV({
                         <thead>
                             <tr className="bg-indigo-50/50">
                                 <th className="p-5 text-[9px] font-black text-indigo-600 uppercase tracking-widest">Prenda / Tipo</th>
+                                <th className="p-5 text-[9px] font-black text-indigo-600 uppercase tracking-widest text-center">Origen</th>
                                 <th className="p-5 text-[9px] font-black text-indigo-600 uppercase tracking-widest">Especificaciones</th>
                                 <th className="p-5 text-[9px] font-black text-indigo-600 uppercase tracking-widest text-center">Talla</th>
                                 <th className="p-5 text-[9px] font-black text-indigo-600 uppercase tracking-widest text-center">Cant.</th>
@@ -221,6 +223,11 @@ export default function DetalleNV({
                                             </div>
                                             <span className="text-[11px] font-black text-gray-800 uppercase">{item.garment}</span>
                                         </div>
+                                    </td>
+                                    <td className="p-5 text-center">
+                                        <span className={`text-[10px] font-black uppercase tracking-widest px-3 py-1.5 rounded-lg border ${item.tipoItem === 'OP' ? 'bg-blue-50 text-blue-600 border-blue-100' : item.tipoItem === 'SC' ? 'bg-amber-50 text-amber-600 border-amber-100' : item.tipoItem === 'SCI' ? 'bg-emerald-50 text-emerald-600 border-emerald-100' : 'bg-gray-50 text-gray-600 border-gray-200'}`}>
+                                            {item.tipoItem}
+                                        </span>
                                     </td>
                                     <td className="p-5">
                                         <span className="text-[10px] font-bold text-gray-500 uppercase tracking-wide bg-white px-3 py-1 rounded-full border border-gray-100">{item.fabric} - {item.color}</span>

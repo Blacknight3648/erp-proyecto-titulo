@@ -2,6 +2,13 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
+import { useOpRegistroState } from '../../../../hooks/useOpRegistroState';
+import { validateNumericInput } from '../../../../utils/validations';
+import ListaOPs from './Views/ListaOPs';
+import DetalleOP from './Views/DetalleOP';
+import BulkEditOP from './Views/BulkEditOP';
+import SelectionModal from './Views/Modals/SelectionModal';
+import ConfirmModal from './Views/Modals/ConfirmModal';
 import { useOpRegistroState } from '../../../hooks/useOpRegistroState';
 import { validateNumericInput } from '../../../utils/validations';
 import ListaOPs from './ListaOPs';
@@ -34,7 +41,9 @@ export default function OpRegistro() {
         calculateTotalQty,
         ordenes,
         isLoadingOrdenes,
-        mockOpDetails
+        mockOpDetails,
+        searchTerm, setSearchTerm,
+        clientFilter, setClientFilter
     } = useOpRegistroState();
 
     const getClientName = (op) => {
@@ -81,6 +90,11 @@ export default function OpRegistro() {
                     handleVerDetalles={handleVerDetalles}
                     handleBulkEdit={handleBulkEdit}
                     getClientName={getClientName}
+                    mockOpDetails={mockOpDetails}
+                    searchTerm={searchTerm}
+                    setSearchTerm={setSearchTerm}
+                    clientFilter={clientFilter}
+                    setClientFilter={setClientFilter}
                 />
             )}
 
@@ -141,6 +155,12 @@ export default function OpRegistro() {
                     setShowSelectionModal(false);
                     setView('bulk_edit');
                 }}
+            />
+
+            <ConfirmModal 
+                show={showConfirmModal}
+                onConfirm={finalizeSave}
+                onCancel={() => setShowConfirmModal(false)}
             />
         </div>
     );

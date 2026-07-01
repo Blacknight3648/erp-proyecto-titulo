@@ -48,7 +48,7 @@ class CalcularAvanceUseCaseTest {
         SeguimientoOP seg = new SeguimientoOP(10L);
         seg.setFechaRecepcionOp(LocalDate.now());
         seg.setFinTizado(LocalDate.now());
-        seg.setFechaEstadoOcMp(LocalDate.now());
+        seg.setEstadoOcMp(backend.com.produccion.domain.enums.EstadoOcMp.OC_EMITIDA);
         seg.setRecepcionCompras(LocalDate.now());
         seg.setInicioCorte(LocalDate.now());
         seg.setFinCorte(LocalDate.now());

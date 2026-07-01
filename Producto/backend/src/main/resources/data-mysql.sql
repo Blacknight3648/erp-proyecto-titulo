@@ -237,7 +237,7 @@ INSERT IGNORE INTO modelo_plantilla (id_modelo_plantilla, id_articulo, campos) V
 -- ============================================================
 -- SCOS-000001: 100 Poleras Piqué para HITES — aprobado, con costo real
 -- SCOS-000002: 50 Pantalones Cargo para MEDCELL — aprobado, con costo real
-INSERT INTO solicitudes_costos (idscos, numero, estado, tipo, cliente_id, vendedor_id, articulo_descripcion, nombre_prenda, genero, tallaje, es_muestra, has_logo, cantidad, fecha, costo_total) VALUES
+INSERT INTO solicitudes_costos (id_scos, numero, estado, tipo, cliente_id, vendedor_id, articulo_descripcion, nombre_prenda, genero, tallaje, es_muestra, has_logo, cantidad, fecha, costo_total) VALUES
     (1, 'SCOS-000001', 'PENDIENTE', 'SCOS', 1, 1, 'POLERA',   'POLERA PIQUÉ CORPORATIVA',  'UNISEX',    'ANTUAN SA', false, true,  100, CURRENT_DATE, 1060000.00),
     (2, 'SCOS-000002', 'APROBADA', 'SCOS', 2, 2, 'PANTALON', 'PANTALÓN CARGO OPERARIO',   'MASCULINO', 'CLIENTE',   false, false,  50, CURRENT_DATE,  858550.00)
 ON DUPLICATE KEY UPDATE
@@ -245,17 +245,17 @@ ON DUPLICATE KEY UPDATE
     costo_total = VALUES(costo_total);
 
 -- Telas de la SCOS-000001 (Polera Piqué)
-INSERT IGNORE INTO scos_telas (idscostela, solicitud_costos_id, aplicacion, descripcion, composicion, color, peso, unidad_medida) VALUES
+INSERT IGNORE INTO scos_telas (id_scos_tela, solicitud_costos_id, aplicacion, descripcion, composicion, color, peso, unidad_medida) VALUES
     (1, 1, 'CUERPO', 'JERSEY PIQUÉ ALGODÓN 180 GSM', '100% ALGODÓN PEINADO', 'AZUL NAVY', 180, 'MTRS');
 
 -- Telas de la SCOS-000002 (Pantalón Cargo)
-INSERT IGNORE INTO scos_telas (idscostela, solicitud_costos_id, aplicacion, descripcion, composicion, color, peso, unidad_medida) VALUES
+INSERT IGNORE INTO scos_telas (id_scos_tela, solicitud_costos_id, aplicacion, descripcion, composicion, color, peso, unidad_medida) VALUES
     (2, 2, 'CUERPO', 'RIPSTOP IMPERMEABLE 150 GSM', '100% POLIÉSTER DWR', 'VERDE OLIVA', 150, 'MTRS');
 
 -- ============================================================
 -- 7.5. EVALUACIONES DE NEGOCIO (EVN)
 -- ============================================================
-INSERT IGNORE INTO evaluaciones_negocio (idevn, numero, referencia, cliente_nombre, cliente_id, vendedor_id, estado, fecha_evaluacion, porcentaje_comision, created_at, updated_at) VALUES
+INSERT IGNORE INTO evaluaciones_negocio (id_evn, numero, referencia, cliente_nombre, cliente_id, vendedor_id, estado, fecha_evaluacion, porcentaje_comision, created_at, updated_at) VALUES
     (1, 'EVN-000001', 'COTIZACIÓN POLERAS CORPORATIVAS TEMPORADA 2024', 'HITES S.A.',          1, 1, 'ADJUDICADA', CURRENT_DATE, 5.00, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
     (2, 'EVN-000002', 'LICITACIÓN PANTALONES CARGO PERSONAL OPERATIVO',  'LABORATORIO MEDCELL', 2, 2, 'ADJUDICADA', CURRENT_DATE, 3.50, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
@@ -276,7 +276,7 @@ INSERT IGNORE INTO evaluacion_negocio_items (idevni, evaluacion_negocio_id, prov
 -- ============================================================
 -- NV-00001: MEDCELL, 50 pantalones → EN_PRODUCCION (tiene OP activa)
 -- NV-00002: HITES, 100 poleras    → EMITIDA (sin OP aún, comercial adjudicada)
-INSERT IGNORE INTO notas_venta (idnv, numeronv, evaluacion_negocio_id, cliente_id, vendedor_id, estado, es_kit, fecha_emision, fecha_entrega_estimada, monto_subtotal, moneda_subtotal, monto_iva, moneda_iva, monto_total, moneda_total, created_at, updated_at) VALUES
+INSERT IGNORE INTO notas_venta (id_nv, numeronv, evaluacion_negocio_id, cliente_id, vendedor_id, estado, es_kit, fecha_emision, fecha_entrega_estimada, monto_subtotal, moneda_subtotal, monto_iva, moneda_iva, monto_total, moneda_total, created_at, updated_at) VALUES
     (1, 'NV-00001', 2, 2, 2, 'EN_PRODUCCION', false, CURRENT_DATE, DATE_ADD(CURRENT_DATE, INTERVAL 45 DAY),  858550.00, 'CLP', 163124.50, 'CLP', 1021674.50, 'CLP', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
     (2, 'NV-00002', 1, 1, 1, 'EMITIDA',        false, CURRENT_DATE, DATE_ADD(CURRENT_DATE, INTERVAL 30 DAY), 1060000.00, 'CLP', 201400.00, 'CLP', 1261400.00, 'CLP', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
@@ -434,7 +434,7 @@ INSERT IGNORE INTO document_counter (tipo, ultimo_numero) VALUES
 -- ── 8.1. SCOS ADICIONALES EN ESTADO PENDIENTE ──────────────
 -- Agrega 2 SCOS para que el KPI "SCOS Pendientes" muestre 3
 INSERT IGNORE INTO solicitudes_costos
-    (idscos, numero, estado, tipo, cliente_id, vendedor_id,
+    (id_scos, numero, estado, tipo, cliente_id, vendedor_id,
      articulo_descripcion, nombre_prenda, genero, tallaje,
      es_muestra, has_logo, cantidad, fecha, costo_total)
 VALUES
@@ -450,7 +450,7 @@ ON DUPLICATE KEY UPDATE estado = VALUES(estado);
 -- Agrega 2 EVN activas para que el KPI "EVN en Evaluación" muestre 2
 -- (el código filtra estado IN ['BORRADOR', 'EVALUACION'])
 INSERT IGNORE INTO evaluaciones_negocio
-    (idevn, numero, referencia, cliente_nombre, cliente_id, vendedor_id,
+    (id_evn, numero, referencia, cliente_nombre, cliente_id, vendedor_id,
      estado, fecha_evaluacion, porcentaje_comision, created_at, updated_at)
 VALUES
     (3, 'EVN-000003',
@@ -492,7 +492,7 @@ VALUES
 -- Estas NV representan negocios ya cerrados (estado ENTREGADA).
 -- Se usan los EVN existentes (1 y 2) como referencia comercial.
 INSERT IGNORE INTO notas_venta
-    (idnv, numeronv, evaluacion_negocio_id, cliente_id, vendedor_id,
+    (id_nv, numeronv, evaluacion_negocio_id, cliente_id, vendedor_id,
      estado, es_kit,
      fecha_emision, fecha_entrega_estimada,
      monto_subtotal, moneda_subtotal,
@@ -501,7 +501,7 @@ INSERT IGNORE INTO notas_venta
      created_at, updated_at)
 VALUES
     -- Enero 2026 — GEODIS, 80 poleras basic
-    (3, 'NV-00003', NULL, 3, 1,
+    (3, 'NV-00003', 3, 3, 1,
      'ENTREGADA', false,
      '2026-01-20', '2026-02-10',
      730000.00, 'CLP', 138700.00, 'CLP', 868700.00, 'CLP',
@@ -519,13 +519,13 @@ VALUES
      515130.00, 'CLP', 97874.70, 'CLP', 613004.70, 'CLP',
      '2026-03-08 11:00:00', '2026-03-08 11:00:00'),
     -- Abril 2026 — GEODIS, 150 poleras corporativas
-    (6, 'NV-00006', NULL, 3, 2,
+    (6, 'NV-00006', 3, 3, 2,
      'ENTREGADA', false,
      '2026-04-22', '2026-05-15',
      1590000.00, 'CLP', 302100.00, 'CLP', 1892100.00, 'CLP',
      '2026-04-22 08:30:00', '2026-04-22 08:30:00'),
     -- Mayo 2026 — HITES, 60 chalecos acolchados
-    (7, 'NV-00007', NULL, 1, 1,
+    (7, 'NV-00007', 4, 1, 1,
      'ENTREGADA', false,
      '2026-05-10', '2026-06-01',
      1920000.00, 'CLP', 364800.00, 'CLP', 2284800.00, 'CLP',
@@ -570,7 +570,7 @@ ON DUPLICATE KEY UPDATE estado = VALUES(estado), fecha_entrega_programada = VALU
 --   Resultado esperado: opAtrasada=2, recepcionLogoAtrasado=1, resto=0, entregas7d=1
 INSERT IGNORE INTO produccion_seguimiento_op
     (id_seguimiento, orden_produccion_id,
-     fecha_recepcion_op, fin_tizado, fecha_estado_oc_mp, recepcion_compras,
+     fecha_recepcion_op, fin_tizado, estado_oc_mp, recepcion_compras,
      inicio_corte, fin_corte,
      inicio_logo, estado_ida_logo, regreso_logo, estado_rec_logo,
      inicio_taller_externo, fin_taller_externo, calidad_taller, obs_taller,
@@ -602,7 +602,7 @@ VALUES
      NULL, NULL)
 ON DUPLICATE KEY UPDATE
     fecha_recepcion_op   = VALUES(fecha_recepcion_op),
-    fecha_estado_oc_mp   = VALUES(fecha_estado_oc_mp),
+    estado_oc_mp   = VALUES(estado_oc_mp),
     inicio_logo          = VALUES(inicio_logo),
     estado_ida_logo      = VALUES(estado_ida_logo),
     regreso_logo         = VALUES(regreso_logo);

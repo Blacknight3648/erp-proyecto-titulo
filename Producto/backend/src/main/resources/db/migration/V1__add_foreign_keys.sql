@@ -19,19 +19,19 @@
 -- =============================================================================
 ALTER TABLE orden_produccion
     ADD CONSTRAINT fk_op_nota_venta
-    FOREIGN KEY (nota_venta_id) REFERENCES notas_venta (idnv);
+    FOREIGN KEY (nota_venta_id) REFERENCES notas_venta (id_nv);
 
 ALTER TABLE produccion_orden_trabajo
     ADD CONSTRAINT fk_ot_nota_venta
-    FOREIGN KEY (nota_venta_id) REFERENCES notas_venta (idnv);
+    FOREIGN KEY (nota_venta_id) REFERENCES notas_venta (id_nv);
 
 ALTER TABLE produccion_orden_trabajo
     ADD CONSTRAINT fk_ot_orden_produccion
-    FOREIGN KEY (orden_produccion_id) REFERENCES orden_produccion (idop);
+    FOREIGN KEY (orden_produccion_id) REFERENCES orden_produccion (id_op);
 
 ALTER TABLE produccion_costeos
     ADD CONSTRAINT fk_costeo_solicitud_costos
-    FOREIGN KEY (solicitud_costos_id) REFERENCES solicitudes_costos (idscos);
+    FOREIGN KEY (solicitud_costos_id) REFERENCES solicitudes_costos (id_scos);
 
 -- fk_evn_costeo eliminada: costeo_id es ahora BIGINT ARRAY (List<Long>)
 -- Un ARRAY no puede referenciar una columna escalar con FOREIGN KEY.
@@ -39,7 +39,7 @@ ALTER TABLE produccion_costeos
 
 ALTER TABLE notas_venta
     ADD CONSTRAINT fk_nv_evaluacion_negocio
-    FOREIGN KEY (evaluacion_negocio_id) REFERENCES evaluaciones_negocio (idevn);
+    FOREIGN KEY (evaluacion_negocio_id) REFERENCES evaluaciones_negocio (id_evn);
 
 ALTER TABLE produccion_costeo_versiones
     ADD CONSTRAINT fk_costeo_version_costeo
@@ -170,7 +170,7 @@ ALTER TABLE especificacion_tecnica
 
 ALTER TABLE scos_telas
     ADD CONSTRAINT fk_scostelas_solicitud
-    FOREIGN KEY (solicitud_costos_id) REFERENCES solicitudes_costos (idscos) ON DELETE CASCADE;
+    FOREIGN KEY (solicitud_costos_id) REFERENCES solicitudes_costos (id_scos) ON DELETE CASCADE;
 
 ALTER TABLE scos_telas
     ADD CONSTRAINT fk_scostelas_proveedor
@@ -181,4 +181,4 @@ ALTER TABLE scos_telas
 -- =============================================================================
 ALTER TABLE produccion_registro_avance
     ADD CONSTRAINT fk_avance_ot
-    FOREIGN KEY (orden_trabajo_id) REFERENCES produccion_orden_trabajo (idot) ON DELETE CASCADE;
+    FOREIGN KEY (orden_trabajo_id) REFERENCES produccion_orden_trabajo (id_ot) ON DELETE CASCADE;

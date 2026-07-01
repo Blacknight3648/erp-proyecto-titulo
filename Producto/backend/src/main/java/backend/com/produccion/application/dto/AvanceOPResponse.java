@@ -14,7 +14,7 @@ public class AvanceOPResponse {
     // Hitos / Seguimiento
     private LocalDate fechaRecepcionOp;
     private LocalDate finTizado;
-    private LocalDate fechaEstadoOcMp;
+    private String estadoOcMp;
     private LocalDate recepcionCompras;
     private LocalDate inicioCorte;
     private LocalDate finCorte;

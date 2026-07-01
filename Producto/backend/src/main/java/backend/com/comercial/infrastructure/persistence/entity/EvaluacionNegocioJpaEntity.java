@@ -19,6 +19,7 @@ public class EvaluacionNegocioJpaEntity extends AuditableJpaEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id_evn")
     private Long idEVN;
 
     @Column(unique = true, length = 20, nullable = false)

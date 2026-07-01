@@ -63,7 +63,7 @@ class DescripcionPlantillaServiceImplTest {
 
     private SCOSPlantillaMaterialVinculoDTO vinculoDTO(Long id) {
         return SCOSPlantillaMaterialVinculoDTO.builder()
-                .id(id)
+                .idSCOSPlantillaMaterialVinculo(id)
                 .materialType("TELA")
                 .materialId(100L)
                 .cantidad(1)

@@ -200,6 +200,7 @@ export default function HCModificacion({ hc, onBack, onConsolidarLote, formatCLP
                                         <TableHead className="pl-10 w-[60px]"></TableHead>
                                         <TableHead className="font-black text-[9px] uppercase tracking-widest text-slate-400 py-5">Insumo</TableHead>
                                         <TableHead className="font-black text-[9px] uppercase tracking-widest text-slate-400">Tipo</TableHead>
+                                        <TableHead className="font-black text-[9px] uppercase tracking-widest text-slate-400">Proveedor Ref.</TableHead>
                                         <TableHead className="font-black text-[9px] uppercase tracking-widest text-slate-400 text-center">Cant. Requerida</TableHead>
                                         <TableHead className="font-black text-[9px] uppercase tracking-widest text-slate-400 text-right pr-10">Precio Ref.</TableHead>
                                     </TableRow>
@@ -222,6 +223,16 @@ export default function HCModificacion({ hc, onBack, onConsolidarLote, formatCLP
                                                     <Tag className="w-2.5 h-2.5 mr-1" />
                                                     {item.tipoInsumo || '—'}
                                                 </Badge>
+                                            </TableCell>
+                                            <TableCell>
+                                                {item.proveedorNombre ? (
+                                                    <span className="inline-flex items-center gap-1.5 text-[10px] font-bold text-slate-600 uppercase tracking-wide">
+                                                        <Truck className="w-3 h-3 text-slate-400 shrink-0" />
+                                                        {item.proveedorNombre}
+                                                    </span>
+                                                ) : (
+                                                    <span className="text-[10px] font-bold text-slate-300 uppercase tracking-wide">—</span>
+                                                )}
                                             </TableCell>
                                             <TableCell className="text-center font-black text-xs text-slate-800 tabular-nums">
                                                 {item.cantidadRequerida ?? '—'}

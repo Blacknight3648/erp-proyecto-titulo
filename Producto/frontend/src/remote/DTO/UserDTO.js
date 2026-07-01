@@ -1,5 +1,5 @@
 import { api } from "../remote/service/api";
-import { UserDTO } from "../remote/DTO/UserDTO";
+import { UserDTO } from "./UserDTO";
 
 const buildPayload = (usuario) => ({
     nombre: usuario.usuarioNombre,

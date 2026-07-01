@@ -1,0 +1,134 @@
+import React from 'react';
+import { useCosteosOPState } from '../../../hooks/useCosteosOPState';
+import ListaCosteos from './ListaCosteos';
+import FormularioCosteo from './FormularioCosteo';
+import DashboardCosteos from './DashboardCosteos';
+import PriceComparisonModal from './PriceComparisonModal';
+
+export default function CosteosOP() {
+    const {
+        view, setView,
+        activeTab, setActiveTab,
+        searchTerm, setSearchTerm,
+        statusFilter, setStatusFilter,
+        showDashboard, setShowDashboard,
+        showCompareModal, setShowCompareModal,
+        isLoading,
+        dashboardStats,
+        filteredRecords,
+        totalMateriales,
+        totalMO,
+        totalCostosFijos,
+        totalGeneral,
+        currentSolicitud,
+        selectedRecord,
+        costeoVersion,
+        costeoEstado,
+        motivoRechazo,
+        insumos,
+        handleOpenForm,
+        handleUpdateItem,
+        handleRemoveItem,
+        handleAddItem,
+        handleAddItemFromSCOS,
+        handleValidateCostos,
+        handleAprobarCosteo,
+        handleRechazarCosteo,
+        handleReabrirCosteo,
+        clientes,
+        showTelasSCOS, setShowTelasSCOS,
+        showAccesoriosSCOS, setShowAccesoriosSCOS,
+        moPrenda, setMoPrenda,
+        moCinta, setMoCinta,
+        moCosturaSellada, setMoCosturaSellada,
+        moAcolchado, setMoAcolchado,
+        observacionesManoObra, setObservacionesManoObra,
+        costoHilo, setCostoHilo,
+        costoMoPropia, setCostoMoPropia,
+        costoGratificacion, setCostoGratificacion,
+        costoEtiqueta, setCostoEtiqueta,
+        costoEmbalaje, setCostoEmbalaje,
+        costoFlete, setCostoFlete,
+        getHistorialVersionesCosteo
+    } = useCosteosOPState();
+
+    if (isLoading) {
+        return (
+            <div className="min-h-screen flex items-center justify-center bg-gray-50/30 backdrop-blur-sm">
+                <div className="flex flex-col items-center">
+                    <div className="w-16 h-16 border-4 border-green-500 border-t-transparent rounded-full animate-spin mb-4" />
+                    <p className="text-[10px] font-black text-gray-400 uppercase tracking-[0.3em] animate-pulse">Sincronizando Motor de Costos...</p>
+                </div>
+            </div>
+        );
+    }
+
+    return (
+        <div className="min-h-screen bg-gray-50/30">
+            {view === 'list' ? (
+                <ListaCosteos
+                    onOpenDashboard={() => setShowDashboard(true)}
+                    onOpenCompare={() => setShowCompareModal(true)}
+                    searchTerm={searchTerm}
+                    setSearchTerm={setSearchTerm}
+                    statusFilter={statusFilter}
+                    setStatusFilter={setStatusFilter}
+                    recordsToDisplay={filteredRecords}
+                    clientes={clientes}
+                    handleOpenForm={handleOpenForm}
+                    onAprobar={handleAprobarCosteo}
+                    onRechazar={handleRechazarCosteo}
+                    onReabrir={handleReabrirCosteo}
+                />
+            ) : (
+                <FormularioCosteo
+                    onBack={() => setView('list')}
+                    currentSolicitud={currentSolicitud}
+                    selectedRecord={selectedRecord}
+                    costeoVersion={costeoVersion}
+                    costeoEstado={costeoEstado}
+                    motivoRechazo={motivoRechazo}
+                    handleValidateCostos={handleValidateCostos}
+                    onReabrir={handleReabrirCosteo}
+                    totalMateriales={totalMateriales}
+                    totalMO={totalMO}
+                    totalCostosFijos={totalCostosFijos}
+                    totalGeneral={totalGeneral}
+                    clientes={clientes}
+                    activeTab={activeTab}
+                    setActiveTab={setActiveTab}
+                    insumos={insumos}
+                    handleUpdateItem={handleUpdateItem}
+                    handleRemoveItem={handleRemoveItem}
+                    handleAddItem={handleAddItem}
+                    handleAddItemFromSCOS={handleAddItemFromSCOS}
+                    showTelasSCOS={showTelasSCOS} setShowTelasSCOS={setShowTelasSCOS}
+                    showAccesoriosSCOS={showAccesoriosSCOS} setShowAccesoriosSCOS={setShowAccesoriosSCOS}
+                    moPrenda={moPrenda} setMoPrenda={setMoPrenda}
+                    moCinta={moCinta} setMoCinta={setMoCinta}
+                    moCosturaSellada={moCosturaSellada} setMoCosturaSellada={setMoCosturaSellada}
+                    moAcolchado={moAcolchado} setMoAcolchado={setMoAcolchado}
+                    observacionesManoObra={observacionesManoObra} setObservacionesManoObra={setObservacionesManoObra}
+                    costoHilo={costoHilo} setCostoHilo={setCostoHilo}
+                    costoMoPropia={costoMoPropia} setCostoMoPropia={setCostoMoPropia}
+                    costoGratificacion={costoGratificacion} setCostoGratificacion={setCostoGratificacion}
+                    costoEtiqueta={costoEtiqueta} setCostoEtiqueta={setCostoEtiqueta}
+                    costoEmbalaje={costoEmbalaje} setCostoEmbalaje={setCostoEmbalaje}
+                    costoFlete={costoFlete} setCostoFlete={setCostoFlete}
+                    getHistorialVersionesCosteo={getHistorialVersionesCosteo}
+                />
+            )}
+
+            <DashboardCosteos
+                show={showDashboard}
+                onClose={() => setShowDashboard(false)}
+                dashboardStats={dashboardStats}
+            />
+
+            <PriceComparisonModal
+                show={showCompareModal}
+                onClose={() => setShowCompareModal(false)}
+            />
+        </div>
+    );
+}

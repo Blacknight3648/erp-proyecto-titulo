@@ -1,5 +1,5 @@
 import { api } from "../remote/service/api";
-import { UserDTO } from "../remote/DTO/UserDTO";
+import { UserDTO } from "../DTO/UserDTO";
 
 export const colaboradoresService = {
 

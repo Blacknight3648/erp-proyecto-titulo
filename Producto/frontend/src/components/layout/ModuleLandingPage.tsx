@@ -258,13 +258,13 @@ export default function ModuleLandingPage({ moduleId }) {
             </div>
 
             <div>
-              <p className="text-[10px] font-black uppercase tracking-[0.15em] text-gray-400 mb-1.5">
+              <p className="text-[10px] font-black uppercase tracking-[0.15em] text-muted-foreground mb-1.5">
                 Módulo del sistema
               </p>
-              <h1 className="text-3xl font-black text-gray-900 tracking-tight leading-tight">
+              <h1 className="text-3xl font-black text-foreground tracking-tight leading-tight">
                 {label}
               </h1>
-              <p className="text-sm text-gray-500 mt-2 max-w-lg leading-relaxed">
+              <p className="text-sm text-muted-foreground mt-2 max-w-lg leading-relaxed">
                 {description}
               </p>
             </div>
@@ -286,7 +286,7 @@ export default function ModuleLandingPage({ moduleId }) {
       </div>
 
       {/* ── Grid de acceso rápido ─────────────────────────────── */}
-      <p className="text-[10px] font-black uppercase tracking-[0.15em] text-gray-400 mb-5">
+      <p className="text-[10px] font-black uppercase tracking-[0.15em] text-muted-foreground mb-5">
         Acceso rápido
       </p>
 
@@ -297,8 +297,8 @@ export default function ModuleLandingPage({ moduleId }) {
             <button
               key={tab.path}
               onClick={() => navigate(tab.path)}
-              className="group text-left bg-white border border-gray-100 rounded-2xl p-5 hover:border-gray-200 hover:shadow-xl hover:-translate-y-1.5 transition-all duration-200 relative overflow-hidden"
-              style={{ boxShadow: '0 1px 4px rgba(0,0,0,0.04)' }}
+              className="group text-left bg-card border border-border rounded-2xl p-5 hover:border-border hover:shadow-xl hover:-translate-y-1.5 transition-all duration-200 relative overflow-hidden"
+              style={{ boxShadow: 'var(--shadow-xs)' }}
             >
               {/* Barra de acento superior */}
               <div
@@ -321,10 +321,10 @@ export default function ModuleLandingPage({ moduleId }) {
               </div>
 
               {/* Texto */}
-              <h3 className="text-sm font-black text-gray-800 mb-1.5 leading-tight group-hover:text-gray-900 transition-colors">
+              <h3 className="text-sm font-black text-foreground mb-1.5 leading-tight group-hover:text-foreground transition-colors">
                 {tab.label}
               </h3>
-              <p className="text-[11px] text-gray-400 font-medium leading-relaxed">
+              <p className="text-[11px] text-muted-foreground font-medium leading-relaxed">
                 {tab.description}
               </p>
 

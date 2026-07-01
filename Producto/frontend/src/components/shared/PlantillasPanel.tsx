@@ -147,17 +147,17 @@ export default function PlantillasPanel({ title = "Especificaciones Técnicas", 
                 {/* Label + description */}
                 <div className="flex items-start justify-between gap-2">
                     <div className="flex-1 min-w-0">
-                        <span className="block text-[9px] font-black text-gray-500 uppercase tracking-widest">
+                        <span className="block text-[9px] font-black text-muted-foreground uppercase tracking-widest">
                             {isCustom ? `[Personalizado] ${label}` : label}
                         </span>
                         {description && (
-                            <span className="block text-[10px] text-gray-400 leading-snug mt-0.5">{description}</span>
+                            <span className="block text-[10px] text-muted-foreground leading-snug mt-0.5">{description}</span>
                         )}
                     </div>
 
                     <div className="flex items-center gap-1.5 flex-shrink-0 mt-0.5">
                         {fieldVinculos.length > 0 && (
-                            <span className="text-[8px] font-black text-blue-500 bg-blue-50 px-2 py-0.5 rounded border border-blue-100">
+                            <span className="text-[8px] font-black text-accent-foreground bg-accent px-2 py-0.5 rounded border border-accent">
                                 {fieldVinculos.length} VÍN.
                             </span>
                         )}
@@ -167,8 +167,8 @@ export default function PlantillasPanel({ title = "Especificaciones Técnicas", 
                                 onClick={() => setActiveLinkingField(activeLinkingField === fieldKey ? null : fieldKey)}
                                 className={`p-1 rounded border transition-all text-[8px] font-black uppercase tracking-wider flex items-center gap-1 ${
                                     activeLinkingField === fieldKey
-                                        ? 'bg-blue-600 text-white border-blue-700'
-                                        : 'bg-white text-blue-500 border-blue-200 hover:bg-blue-50'
+                                        ? 'bg-primary text-white border-primary'
+                                        : 'bg-card text-accent-foreground border-primary hover:bg-accent'
                                 }`}
                                 title="Vincular material"
                             >
@@ -195,21 +195,21 @@ export default function PlantillasPanel({ title = "Especificaciones Técnicas", 
                                 onClick={() => isOpen ? (setOpenCombo(null), setComboSearch('')) : openComboFor(fieldKey, value)}
                                 className={`w-full flex items-center justify-between gap-2 px-3 py-2.5 rounded-lg border text-left transition-all text-xs font-semibold uppercase ${
                                     value
-                                        ? 'bg-white border-gray-200 text-gray-800 hover:border-blue-300'
-                                        : 'bg-gray-50 border-gray-200 text-gray-400 hover:border-blue-300'
-                                } ${isOpen ? 'border-blue-400 ring-2 ring-blue-50' : ''}`}
+                                        ? 'bg-card border-border text-foreground hover:border-primary'
+                                        : 'bg-muted border-border text-muted-foreground hover:border-primary'
+                                } ${isOpen ? 'border-primary ring-2 ring-accent' : ''}`}
                             >
                                 <span className="truncate">{value || 'Seleccionar...'}</span>
-                                <ChevronDown className={`w-3.5 h-3.5 flex-shrink-0 text-gray-400 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+                                <ChevronDown className={`w-3.5 h-3.5 flex-shrink-0 text-muted-foreground transition-transform ${isOpen ? 'rotate-180' : ''}`} />
                             </button>
 
                             {/* Dropdown */}
                             {isOpen && (
-                                <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-[61] overflow-hidden">
+                                <div className="absolute top-full left-0 right-0 mt-1 bg-card border border-border rounded-lg shadow-lg z-[61] overflow-hidden">
                                     {/* Search */}
-                                    <div className="p-2 border-b border-gray-100">
-                                        <div className="flex items-center gap-2 px-2 py-1.5 bg-gray-50 rounded border border-gray-200">
-                                            <Search className="w-3 h-3 text-gray-400 flex-shrink-0" />
+                                    <div className="p-2 border-b border-border">
+                                        <div className="flex items-center gap-2 px-2 py-1.5 bg-muted rounded border border-border">
+                                            <Search className="w-3 h-3 text-muted-foreground flex-shrink-0" />
                                             <input
                                                 autoFocus
                                                 type="text"
@@ -221,10 +221,10 @@ export default function PlantillasPanel({ title = "Especificaciones Técnicas", 
                                                     if (e.key === 'Enter' && filteredOptions.length === 1) selectComboOption(fieldKey, filteredOptions[0]);
                                                 }}
                                                 placeholder="Buscar o escribir..."
-                                                className="flex-1 bg-transparent text-xs text-gray-700 outline-none"
+                                                className="flex-1 bg-transparent text-xs text-foreground outline-none"
                                             />
                                             {comboSearch && (
-                                                <button onClick={() => setComboSearch('')} className="text-gray-400 hover:text-gray-600">
+                                                <button onClick={() => setComboSearch('')} className="text-muted-foreground hover:text-muted-foreground">
                                                     <X className="w-3 h-3" />
                                                 </button>
                                             )}
@@ -239,8 +239,8 @@ export default function PlantillasPanel({ title = "Especificaciones Técnicas", 
                                                     key={opt}
                                                     type="button"
                                                     onClick={() => selectComboOption(fieldKey, opt)}
-                                                    className={`w-full text-left px-3 py-2 text-[11px] font-medium text-gray-700 hover:bg-blue-50 hover:text-blue-700 transition-colors ${
-                                                        value.toLowerCase() === opt.toLowerCase() ? 'bg-blue-50 text-blue-700 font-bold' : ''
+                                                    className={`w-full text-left px-3 py-2 text-[11px] font-medium text-foreground hover:bg-accent hover:text-accent-foreground transition-colors ${
+                                                        value.toLowerCase() === opt.toLowerCase() ? 'bg-accent text-accent-foreground font-bold' : ''
                                                     }`}
                                                 >
                                                     {opt}
@@ -248,7 +248,7 @@ export default function PlantillasPanel({ title = "Especificaciones Técnicas", 
                                             ))
                                         ) : (
                                             !showCreateOption && (
-                                                <p className="px-3 py-4 text-[10px] text-gray-400 text-center">Sin resultados</p>
+                                                <p className="px-3 py-4 text-[10px] text-muted-foreground text-center">Sin resultados</p>
                                             )
                                         )}
 
@@ -256,20 +256,20 @@ export default function PlantillasPanel({ title = "Especificaciones Técnicas", 
                                             <button
                                                 type="button"
                                                 onClick={() => createComboOption(fieldKey)}
-                                                className="w-full text-left px-3 py-2 text-[11px] font-bold text-gray-900 bg-gray-50 border-t border-gray-100 hover:bg-gray-100 transition-colors flex items-center gap-2"
+                                                className="w-full text-left px-3 py-2 text-[11px] font-bold text-foreground bg-muted border-t border-border hover:bg-muted transition-colors flex items-center gap-2"
                                             >
-                                                <Plus className="w-3 h-3 text-gray-500" />
-                                                Crear: <span className="text-blue-600 uppercase">{comboSearch.trim()}</span>
+                                                <Plus className="w-3 h-3 text-muted-foreground" />
+                                                Crear: <span className="text-accent-foreground uppercase">{comboSearch.trim()}</span>
                                             </button>
                                         )}
                                     </div>
 
                                     {value && (
-                                        <div className="border-t border-gray-100 p-1.5">
+                                        <div className="border-t border-border p-1.5">
                                             <button
                                                 type="button"
                                                 onClick={() => { handleChange(fieldKey, ''); setOpenCombo(null); setComboSearch(''); }}
-                                                className="w-full text-center text-[10px] text-gray-400 hover:text-red-500 py-1 rounded transition-colors"
+                                                className="w-full text-center text-[10px] text-muted-foreground hover:text-destructive py-1 rounded transition-colors"
                                             >
                                                 Limpiar selección
                                             </button>
@@ -282,7 +282,7 @@ export default function PlantillasPanel({ title = "Especificaciones Técnicas", 
                         <textarea
                             rows={2}
                             readOnly={readOnly}
-                            className={`w-full bg-white border border-gray-200 rounded-lg px-3 py-2.5 text-xs font-medium text-gray-700 uppercase outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-50 transition-all resize-none ${readOnly ? 'cursor-default bg-gray-50/50' : ''}`}
+                            className={`w-full bg-card border border-border rounded-lg px-3 py-2.5 text-xs font-medium text-foreground uppercase outline-none focus:border-primary focus:ring-2 focus:ring-accent transition-all resize-none ${readOnly ? 'cursor-default bg-muted/50' : ''}`}
                             value={value}
                             onChange={(e) => handleChange(fieldKey, e.target.value.toUpperCase())}
                             placeholder={readOnly ? '' : `Observaciones del modelo...`}
@@ -291,7 +291,7 @@ export default function PlantillasPanel({ title = "Especificaciones Técnicas", 
                         <input
                             type="text"
                             readOnly={readOnly}
-                            className={`w-full bg-white border border-gray-200 rounded-lg px-3 py-2.5 text-xs font-medium text-gray-700 uppercase outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-50 transition-all ${readOnly ? 'cursor-default bg-gray-50/50' : ''}`}
+                            className={`w-full bg-card border border-border rounded-lg px-3 py-2.5 text-xs font-medium text-foreground uppercase outline-none focus:border-primary focus:ring-2 focus:ring-accent transition-all ${readOnly ? 'cursor-default bg-muted/50' : ''}`}
                             value={value}
                             onChange={(e) => handleChange(fieldKey, e.target.value.toUpperCase())}
                             placeholder={readOnly ? '' : `Definir ${label.toLowerCase()}...`}
@@ -300,27 +300,27 @@ export default function PlantillasPanel({ title = "Especificaciones Técnicas", 
 
                     {/* Link selector */}
                     {activeLinkingField === fieldKey && (
-                        <div className="absolute top-full left-0 right-0 mt-1 p-4 bg-white rounded-lg border border-blue-300 shadow-xl z-50 animate-in fade-in zoom-in-95 duration-150">
+                        <div className="absolute top-full left-0 right-0 mt-1 p-4 bg-card rounded-lg border border-primary shadow-xl z-50 animate-in fade-in zoom-in-95 duration-150">
                             <div className="flex justify-between items-center mb-3">
-                                <span className="text-[9px] font-black uppercase text-gray-700 tracking-wider">Vincular material: {label}</span>
-                                <button onClick={() => setActiveLinkingField(null)}><X className="w-3.5 h-3.5 text-gray-400 hover:text-gray-600" /></button>
+                                <span className="text-[9px] font-black uppercase text-foreground tracking-wider">Vincular material: {label}</span>
+                                <button onClick={() => setActiveLinkingField(null)}><X className="w-3.5 h-3.5 text-muted-foreground hover:text-muted-foreground" /></button>
                             </div>
                             <div className="space-y-3">
                                 <div>
-                                    <p className="text-[8px] font-black text-gray-400 uppercase mb-1.5">Telas</p>
+                                    <p className="text-[8px] font-black text-muted-foreground uppercase mb-1.5">Telas</p>
                                     <div className="max-h-28 overflow-y-auto space-y-1 pr-1">
                                         {telas.map(t => (
                                             <button key={t.id} onClick={() => handleAddVinculo(fieldKey, 'TELA', t.id)}
-                                                className="w-full text-left px-2 py-1.5 rounded border border-transparent hover:border-blue-100 hover:bg-blue-50 transition-all flex justify-between items-center group">
-                                                <span className="text-[10px] font-medium text-gray-600 group-hover:text-blue-700 truncate max-w-[200px]">{t.nombre}</span>
-                                                <Plus className="w-2.5 h-2.5 opacity-0 group-hover:opacity-100 text-blue-500" />
+                                                className="w-full text-left px-2 py-1.5 rounded border border-transparent hover:border-accent hover:bg-accent transition-all flex justify-between items-center group">
+                                                <span className="text-[10px] font-medium text-muted-foreground group-hover:text-accent-foreground truncate max-w-[200px]">{t.nombre}</span>
+                                                <Plus className="w-2.5 h-2.5 opacity-0 group-hover:opacity-100 text-accent-foreground" />
                                             </button>
                                         ))}
-                                        {telas.length === 0 && <p className="text-[9px] text-gray-300 px-2">Sin telas registradas</p>}
+                                        {telas.length === 0 && <p className="text-[9px] text-muted-foreground px-2">Sin telas registradas</p>}
                                     </div>
                                 </div>
-                                <div className="border-t border-gray-100 pt-3">
-                                    <p className="text-[8px] font-black text-gray-400 uppercase mb-1.5">Accesorios y Avíos</p>
+                                <div className="border-t border-border pt-3">
+                                    <p className="text-[8px] font-black text-muted-foreground uppercase mb-1.5">Accesorios y Avíos</p>
                                     <div className="max-h-48 overflow-y-auto space-y-2 pr-1">
                                         {accesorios.map(a => {
                                             const totalInInventory = a.cantidad || 0;
@@ -328,13 +328,13 @@ export default function PlantillasPanel({ title = "Especificaciones Técnicas", 
                                             const currentInput = linkQuantities[a.id] || 0;
                                             const remaining = totalInInventory - alreadyLinked - currentInput;
                                             return (
-                                                <div key={a.id} className="bg-gray-50 p-2.5 rounded border border-gray-100 hover:border-gray-200 transition-all">
+                                                <div key={a.id} className="bg-muted p-2.5 rounded border border-border hover:border-border transition-all">
                                                     <div className="flex justify-between items-start mb-2">
                                                         <div>
-                                                            <span className="text-[10px] font-bold text-gray-700 block">{a.nombreAccesorio}</span>
-                                                            <span className="text-[8px] font-medium text-gray-400 uppercase">{a.tipo} · {totalInInventory} total</span>
+                                                            <span className="text-[10px] font-bold text-foreground block">{a.nombreAccesorio}</span>
+                                                            <span className="text-[8px] font-medium text-muted-foreground uppercase">{a.tipo} · {totalInInventory} total</span>
                                                         </div>
-                                                        <span className={`text-[8px] font-bold px-1.5 py-0.5 rounded ${remaining < 0 ? 'bg-red-50 text-red-500' : 'bg-green-50 text-green-600'}`}>
+                                                        <span className={`text-[8px] font-bold px-1.5 py-0.5 rounded ${remaining < 0 ? 'bg-destructive/10 text-destructive' : 'bg-success-bg text-success'}`}>
                                                             Quedan: {remaining}
                                                         </span>
                                                     </div>
@@ -343,12 +343,12 @@ export default function PlantillasPanel({ title = "Especificaciones Técnicas", 
                                                             type="number" min="1" placeholder="Cant."
                                                             value={linkQuantities[a.id] || ""}
                                                             onChange={(e) => setLinkQuantities(prev => ({ ...prev, [a.id]: parseInt(e.target.value) || 0 }))}
-                                                            className="flex-1 bg-white border border-gray-200 rounded px-2 py-1 text-[10px] font-bold text-blue-600 outline-none focus:border-blue-300"
+                                                            className="flex-1 bg-card border border-border rounded px-2 py-1 text-[10px] font-bold text-accent-foreground outline-none focus:border-primary"
                                                         />
                                                         <button
                                                             onClick={() => handleAddVinculo(fieldKey, 'ACCESORIO', a.id, linkQuantities[a.id] || 0)}
                                                             disabled={currentInput <= 0}
-                                                            className={`p-1.5 rounded transition-all ${currentInput > 0 ? 'bg-blue-600 text-white hover:bg-blue-700' : 'bg-gray-100 text-gray-300 cursor-not-allowed'}`}
+                                                            className={`p-1.5 rounded transition-all ${currentInput > 0 ? 'bg-primary text-white hover:bg-primary' : 'bg-muted text-muted-foreground cursor-not-allowed'}`}
                                                         >
                                                             <Plus className="w-3.5 h-3.5" />
                                                         </button>
@@ -356,7 +356,7 @@ export default function PlantillasPanel({ title = "Especificaciones Técnicas", 
                                                 </div>
                                             );
                                         })}
-                                        {accesorios.length === 0 && <p className="text-[9px] text-gray-300 px-2">Sin accesorios registrados</p>}
+                                        {accesorios.length === 0 && <p className="text-[9px] text-muted-foreground px-2">Sin accesorios registrados</p>}
                                     </div>
                                 </div>
                             </div>
@@ -374,12 +374,12 @@ export default function PlantillasPanel({ title = "Especificaciones Técnicas", 
                             const name = v.materialType === 'TELA' ? (material?.nombre || 'Tela') : (material?.nombreAccesorio || 'Acc.');
                             return (
                                 <div key={v.id} className={`flex items-center gap-1 px-2 py-0.5 rounded text-[8px] font-bold border ${
-                                    v.materialType === 'TELA' ? 'bg-blue-50 border-blue-100 text-blue-600' : 'bg-green-50 border-green-100 text-green-600'
+                                    v.materialType === 'TELA' ? 'bg-accent border-accent text-accent-foreground' : 'bg-success-bg border-success-bg text-success'
                                 }`}>
                                     <span className="truncate max-w-[80px]">{name}</span>
                                     {v.cantidad > 1 && <span className="opacity-60">x{v.cantidad}</span>}
                                     {!readOnly && (
-                                        <button onClick={() => handleRemoveVinculo(v.id)} className="hover:text-red-500 transition-colors ml-0.5">
+                                        <button onClick={() => handleRemoveVinculo(v.id)} className="hover:text-destructive transition-colors ml-0.5">
                                             <X className="w-2 h-2" />
                                         </button>
                                     )}
@@ -395,14 +395,14 @@ export default function PlantillasPanel({ title = "Especificaciones Técnicas", 
     return (
         <div className="space-y-5">
             {/* Header */}
-            <div className="flex justify-between items-center pb-4 border-b border-gray-100">
+            <div className="flex justify-between items-center pb-4 border-b border-border">
                 <div>
                     <div className="flex items-center gap-2.5">
-                        <div className="w-1 h-5 bg-gray-800 rounded-sm" />
-                        <h4 className="text-sm font-black text-gray-800 uppercase tracking-widest">{title}</h4>
-                        {loading && <span className="text-[9px] font-bold text-blue-500 animate-pulse bg-blue-50 px-2 py-0.5 rounded border border-blue-100">Cargando...</span>}
+                        <div className="w-1 h-5 bg-foreground rounded-sm" />
+                        <h4 className="text-sm font-black text-foreground uppercase tracking-widest">{title}</h4>
+                        {loading && <span className="text-[9px] font-bold text-accent-foreground animate-pulse bg-accent px-2 py-0.5 rounded border border-accent">Cargando...</span>}
                     </div>
-                    <p className="text-[10px] text-gray-400 mt-1 ml-3.5">
+                    <p className="text-[10px] text-muted-foreground mt-1 ml-3.5">
                         Defina las características constructivas de la prenda. Los campos marcados son obligatorios para la aprobación técnica.
                     </p>
                 </div>
@@ -414,8 +414,8 @@ export default function PlantillasPanel({ title = "Especificaciones Técnicas", 
                             onClick={() => setShowFieldSelector(!showFieldSelector)}
                             className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all border ${
                                 showFieldSelector
-                                    ? 'bg-gray-900 text-white border-gray-900'
-                                    : 'bg-white text-gray-500 border-gray-200 hover:border-gray-400 hover:text-gray-700'
+                                    ? 'bg-foreground text-white border-border-strong'
+                                    : 'bg-card text-muted-foreground border-border hover:border-border-strong hover:text-foreground'
                             }`}
                         >
                             <Settings2 className="w-3.5 h-3.5" />
@@ -425,7 +425,7 @@ export default function PlantillasPanel({ title = "Especificaciones Técnicas", 
                     <button
                         type="button"
                         onClick={() => setIsExpanded(!isExpanded)}
-                        className="p-2 text-gray-400 rounded-lg hover:text-gray-700 hover:bg-gray-50 transition-all border border-gray-200"
+                        className="p-2 text-muted-foreground rounded-lg hover:text-foreground hover:bg-muted transition-all border border-border"
                     >
                         {isExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
                     </button>
@@ -434,28 +434,28 @@ export default function PlantillasPanel({ title = "Especificaciones Técnicas", 
 
             {/* Field selector panel */}
             {showFieldSelector && !readOnly && (
-                <div className="bg-gray-50 p-5 rounded-lg border border-gray-200 animate-in fade-in duration-150">
+                <div className="bg-muted p-5 rounded-lg border border-border animate-in fade-in duration-150">
                     <div className="flex justify-between items-center mb-4">
-                        <span className="text-[9px] font-black text-gray-500 uppercase tracking-widest">Activar / Desactivar campos</span>
+                        <span className="text-[9px] font-black text-muted-foreground uppercase tracking-widest">Activar / Desactivar campos</span>
                         <div className="flex gap-2">
                             <button
                                 type="button"
                                 onClick={handleAddField}
-                                className="px-4 py-1.5 bg-gray-900 text-white rounded-lg text-[9px] font-black uppercase tracking-widest hover:bg-blue-700 transition-all flex items-center gap-1.5"
+                                className="px-4 py-1.5 bg-foreground text-white rounded-lg text-[9px] font-black uppercase tracking-widest hover:bg-primary transition-all flex items-center gap-1.5"
                             >
                                 <Plus className="w-3 h-3" /> Nuevo Campo
                             </button>
                             <button
                                 type="button"
                                 onClick={() => { const all = new Set(ALL_FIELDS); setActiveFields(all); handleChange('camposActivos', Array.from(all)); }}
-                                className="px-4 py-1.5 bg-white text-gray-500 border border-gray-200 rounded-lg text-[9px] font-black uppercase tracking-widest hover:bg-gray-100 transition-all"
+                                className="px-4 py-1.5 bg-card text-muted-foreground border border-border rounded-lg text-[9px] font-black uppercase tracking-widest hover:bg-muted transition-all"
                             >
                                 Seleccionar todo
                             </button>
                             <button
                                 type="button"
                                 onClick={() => { setActiveFields(new Set()); handleChange('camposActivos', []); }}
-                                className="px-4 py-1.5 bg-white text-gray-500 border border-gray-200 rounded-lg text-[9px] font-black uppercase tracking-widest hover:bg-gray-100 transition-all"
+                                className="px-4 py-1.5 bg-card text-muted-foreground border border-border rounded-lg text-[9px] font-black uppercase tracking-widest hover:bg-muted transition-all"
                             >
                                 Limpiar
                             </button>
@@ -468,8 +468,8 @@ export default function PlantillasPanel({ title = "Especificaciones Técnicas", 
                                 key={f} type="button" onClick={() => toggleField(f)}
                                 className={`px-3 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all border ${
                                     activeFields.has(f)
-                                        ? 'bg-gray-900 border-gray-900 text-white'
-                                        : 'bg-white border-gray-200 text-gray-400 hover:border-gray-400'
+                                        ? 'bg-foreground border-border-strong text-white'
+                                        : 'bg-card border-border text-muted-foreground hover:border-border-strong'
                                 }`}
                             >
                                 {FIELD_LABELS[f] || f}
@@ -481,8 +481,8 @@ export default function PlantillasPanel({ title = "Especificaciones Técnicas", 
                                     type="button" onClick={() => toggleField(key)}
                                     className={`px-3 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all border ${
                                         activeFields.has(key)
-                                            ? 'bg-orange-600 border-orange-600 text-white'
-                                            : 'bg-white border-gray-200 text-gray-400 hover:border-orange-300'
+                                            ? 'bg-warning border-warning text-white'
+                                            : 'bg-card border-border text-muted-foreground hover:border-warning'
                                     }`}
                                 >
                                     {customLabels[key]}
@@ -497,7 +497,7 @@ export default function PlantillasPanel({ title = "Especificaciones Técnicas", 
                                         setCustomLabels(nextLabels);
                                         handleChange('camposPersonalizados', nextLabels);
                                     }}
-                                    className="p-1 text-gray-300 hover:text-red-500 transition-colors"
+                                    className="p-1 text-muted-foreground hover:text-destructive transition-colors"
                                 >
                                     <X className="w-3.5 h-3.5" />
                                 </button>
@@ -513,19 +513,19 @@ export default function PlantillasPanel({ title = "Especificaciones Técnicas", 
                     {Object.entries(FIELD_LABELS).map(([key, label]) => {
                         if (key === 'obsModelo') return null;
                         return (
-                            <div key={key} className="border-b border-gray-100 pb-6 last:border-0">
+                            <div key={key} className="border-b border-border pb-6 last:border-0">
                                 {renderField(key, label)}
                             </div>
                         );
                     })}
                     {Object.entries(customLabels).map(([key, label]) => (
-                        <div key={key} className="border-b border-gray-100 pb-6">
+                        <div key={key} className="border-b border-border pb-6">
                             {renderField(key, label, true)}
                         </div>
                     ))}
                     {/* obsModelo spans full width */}
                     {activeFields.has('obsModelo') && (
-                        <div className="md:col-span-2 border-b border-gray-100 pb-6 last:border-0">
+                        <div className="md:col-span-2 border-b border-border pb-6 last:border-0">
                             {renderField('obsModelo', FIELD_LABELS.obsModelo)}
                         </div>
                     )}
@@ -533,7 +533,7 @@ export default function PlantillasPanel({ title = "Especificaciones Técnicas", 
             )}
 
             {!isExpanded && (
-                <div className="bg-gray-50 p-3 rounded-lg border border-dashed border-gray-200 text-center text-[9px] font-bold text-gray-400 uppercase tracking-widest">
+                <div className="bg-muted p-3 rounded-lg border border-dashed border-border text-center text-[9px] font-bold text-muted-foreground uppercase tracking-widest">
                     Especificaciones contraídas · {articuloDescripcion || 'Sin descripción de artículo'}
                 </div>
             )}
@@ -542,22 +542,22 @@ export default function PlantillasPanel({ title = "Especificaciones Técnicas", 
             {showNuevoCampoModal && (
                 <div className="fixed inset-0 z-[200] flex items-center justify-center">
                     <div
-                        className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+                        className="absolute inset-0 overlay-backdrop"
                         onClick={() => { setShowNuevoCampoModal(false); setNuevoCampoLabel(''); }}
                     />
-                    <div className="relative bg-white rounded-xl shadow-2xl border border-gray-200 w-full max-w-sm mx-4 p-7 animate-in fade-in zoom-in-95 duration-200">
+                    <div className="relative bg-card rounded-xl shadow-2xl border border-border w-full max-w-sm mx-4 p-7 animate-in fade-in zoom-in-95 duration-200">
                         <div className="mb-5">
                             <div className="flex items-center gap-2 mb-2">
-                                <div className="w-1 h-4 bg-gray-900 rounded-sm" />
-                                <h3 className="text-[11px] font-black text-gray-900 uppercase tracking-widest">Nuevo campo personalizado</h3>
+                                <div className="w-1 h-4 bg-foreground rounded-sm" />
+                                <h3 className="text-[11px] font-black text-foreground uppercase tracking-widest">Nuevo campo personalizado</h3>
                             </div>
-                            <p className="text-[11px] text-gray-400 leading-relaxed pl-3">
+                            <p className="text-[11px] text-muted-foreground leading-relaxed pl-3">
                                 Define el nombre del campo que se agregará a las especificaciones técnicas. Este valor no existe en el catálogo estándar.
                             </p>
                         </div>
 
                         <div className="mb-5">
-                            <label className="block text-[9px] font-black text-gray-400 uppercase tracking-widest mb-1.5">Nombre del campo</label>
+                            <label className="block text-[9px] font-black text-muted-foreground uppercase tracking-widest mb-1.5">Nombre del campo</label>
                             <input
                                 type="text"
                                 autoFocus
@@ -568,7 +568,7 @@ export default function PlantillasPanel({ title = "Especificaciones Técnicas", 
                                     if (e.key === 'Escape') { setShowNuevoCampoModal(false); setNuevoCampoLabel(''); }
                                 }}
                                 placeholder="Ej: Doble costura, Ribete, Bolsillo interior..."
-                                className="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-xs font-semibold text-gray-800 uppercase outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-50 transition-all placeholder:normal-case placeholder:font-normal placeholder:text-gray-300"
+                                className="w-full border border-border rounded-lg px-4 py-2.5 text-xs font-semibold text-foreground uppercase outline-none focus:border-primary focus:ring-2 focus:ring-accent transition-all placeholder:normal-case placeholder:font-normal placeholder:text-muted-foreground"
                             />
                         </div>
 
@@ -576,7 +576,7 @@ export default function PlantillasPanel({ title = "Especificaciones Técnicas", 
                             <button
                                 type="button"
                                 onClick={() => { setShowNuevoCampoModal(false); setNuevoCampoLabel(''); }}
-                                className="px-5 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest text-gray-500 bg-gray-50 hover:bg-gray-100 border border-gray-200 transition-all"
+                                className="px-5 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest text-muted-foreground bg-muted hover:bg-muted border border-border transition-all"
                             >
                                 Cancelar
                             </button>
@@ -584,7 +584,7 @@ export default function PlantillasPanel({ title = "Especificaciones Técnicas", 
                                 type="button"
                                 onClick={handleConfirmNuevoCampo}
                                 disabled={!nuevoCampoLabel.trim()}
-                                className="px-5 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest text-white bg-gray-900 hover:bg-blue-700 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+                                className="px-5 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest text-white bg-foreground hover:bg-primary disabled:opacity-40 disabled:cursor-not-allowed transition-all"
                             >
                                 Agregar campo
                             </button>

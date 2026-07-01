@@ -34,13 +34,13 @@ const RolModal = ({ isOpen, onClose, onSave, rol }) => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-300">
-      <div className="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden animate-in zoom-in-95 duration-300">
-        <div className="flex items-center justify-between p-6 border-b border-slate-100">
-          <h2 className="text-xl font-bold text-slate-800">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-foreground/60 backdrop-blur-sm animate-in fade-in duration-300">
+      <div className="bg-card rounded-3xl shadow-2xl w-full max-w-md overflow-hidden animate-in zoom-in-95 duration-300">
+        <div className="flex items-center justify-between p-6 border-b border-border">
+          <h2 className="text-xl font-bold text-foreground">
             {rol ? "Editar Rol" : "Registrar Nuevo Rol"}
           </h2>
-          <button onClick={onClose} className="p-2 hover:bg-slate-50 rounded-full transition-colors text-slate-400">
+          <button onClick={onClose} className="p-2 hover:bg-muted rounded-full transition-colors text-muted-foreground">
             <X size={20} />
           </button>
         </div>
@@ -48,8 +48,8 @@ const RolModal = ({ isOpen, onClose, onSave, rol }) => {
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
           {/* Nombre */}
           <div>
-            <label className="block text-sm font-semibold text-slate-700 mb-2">
-              Nombre del Rol <span className="text-red-500">*</span>
+            <label className="block text-sm font-semibold text-foreground mb-2">
+              Nombre del Rol <span className="text-destructive">*</span>
             </label>
             <input
               type="text"
@@ -58,13 +58,13 @@ const RolModal = ({ isOpen, onClose, onSave, rol }) => {
               onChange={(e) => setNombre(e.target.value.toUpperCase())}
               placeholder="Ej: Administrador, Vendedor, Operador..."
               style={{ textTransform: 'uppercase' }}
-              className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all"
+              className="w-full px-4 py-3 bg-muted border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-indigo/20 focus:border-brand-indigo transition-all"
             />
           </div>
 
           {/* Descripción */}
           <div>
-            <label className="block text-sm font-semibold text-slate-700 mb-2">
+            <label className="block text-sm font-semibold text-foreground mb-2">
               Descripción
             </label>
             <textarea
@@ -73,19 +73,19 @@ const RolModal = ({ isOpen, onClose, onSave, rol }) => {
               placeholder="Descripción del rol y sus responsabilidades..."
               style={{ textTransform: 'uppercase' }}
               rows={3}
-              className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all resize-none"
+              className="w-full px-4 py-3 bg-muted border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-indigo/20 focus:border-brand-indigo transition-all resize-none"
             />
           </div>
 
           {/* Área */}
           <div>
-            <label className="block text-sm font-semibold text-slate-700 mb-2">
+            <label className="block text-sm font-semibold text-foreground mb-2">
               Área
             </label>
             <select
               value={areaId}
               onChange={(e) => setAreaId(e.target.value)}
-              className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all"
+              className="w-full px-4 py-3 bg-muted border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-indigo/20 focus:border-brand-indigo transition-all"
             >
               <option value="">— Sin área asignada —</option>
               {areas.map((area) => (
@@ -100,13 +100,13 @@ const RolModal = ({ isOpen, onClose, onSave, rol }) => {
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 px-4 py-3 border border-slate-200 text-slate-600 font-semibold rounded-xl hover:bg-slate-50 transition-all"
+              className="flex-1 px-4 py-3 border border-border text-muted-foreground font-semibold rounded-xl hover:bg-muted transition-all"
             >
               Cancelar
             </button>
             <button
               type="submit"
-              className="flex-1 px-4 py-3 bg-indigo-600 text-white font-semibold rounded-xl hover:bg-indigo-700 shadow-lg shadow-indigo-500/30 transition-all"
+              className="flex-1 px-4 py-3 bg-brand-indigo text-white font-semibold rounded-xl hover:bg-brand-indigo shadow-lg shadow-brand-indigo/30 transition-all"
             >
               {rol ? "Guardar Cambios" : "Crear Rol"}
             </button>

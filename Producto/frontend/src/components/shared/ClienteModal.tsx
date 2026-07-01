@@ -146,7 +146,7 @@ export default function ClienteModal({ onClose, onSave, clienteToEdit = null }) 
 
   const ErrorMsg = ({ name }) =>
     errors[name] ? (
-      <div className="flex items-center gap-1 mt-2 ml-2 text-rose-500">
+      <div className="flex items-center gap-1 mt-2 ml-2 text-destructive">
         <AlertCircle size={12} />
         <span className="text-[10px] font-bold uppercase tracking-wider">
           {errors[name]}
@@ -155,28 +155,28 @@ export default function ClienteModal({ onClose, onSave, clienteToEdit = null }) 
     ) : null;
 
   const inputClass = (err) =>
-    `w-full pl-14 pr-6 py-5 bg-gray-50 rounded-[1.5rem] border-2 transition-all outline-none font-bold text-sm ${
+    `w-full pl-14 pr-6 py-5 bg-muted rounded-[1.5rem] border-2 transition-all outline-none font-bold text-sm ${
       err
-        ? "border-rose-500 bg-rose-50/30"
-        : "border-transparent focus:bg-white focus:border-indigo-500"
+        ? "border-destructive bg-destructive/10"
+        : "border-transparent focus:bg-card focus:border-brand-indigo"
     }`;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-md">
-      <div className="bg-white w-full max-w-2xl rounded-[3rem] p-10 shadow-2xl relative max-h-[90vh] overflow-y-auto">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-foreground/60 backdrop-blur-md">
+      <div className="bg-card w-full max-w-2xl rounded-[3rem] p-10 shadow-2xl relative max-h-[90vh] overflow-y-auto">
         <button
           onClick={onClose}
-          className="absolute top-8 right-8 p-3 bg-gray-50 rounded-2xl hover:bg-black hover:text-white transition"
+          className="absolute top-8 right-8 p-3 bg-muted rounded-2xl hover:bg-foreground hover:text-white transition"
         >
           <X size={20} />
         </button>
 
         <div className="mb-10">
-          <h2 className="text-4xl font-black text-gray-800 mb-3">
+          <h2 className="text-4xl font-black text-foreground mb-3">
             {clienteToEdit ? "Editar Cliente" : "Nuevo Cliente"}
           </h2>
-          <div className="text-[10px] font-black text-indigo-500 uppercase tracking-[0.2em] flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-indigo-500 animate-pulse"></span>
+          <div className="text-[10px] font-black text-brand-indigo uppercase tracking-[0.2em] flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full bg-brand-indigo animate-pulse"></span>
             Gestión de Registro de Clientes
           </div>
         </div>
@@ -185,11 +185,11 @@ export default function ClienteModal({ onClose, onSave, clienteToEdit = null }) 
           <div className="grid grid-cols-2 gap-6">
             {/* Razón Social */}
             <div className="col-span-2 space-y-2">
-              <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">
+              <label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest ml-1">
                 Razón Social *
               </label>
               <div className="relative">
-                <User className={`absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 ${errors.razonSocial ? "text-rose-500" : "text-gray-400"}`} />
+                <User className={`absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 ${errors.razonSocial ? "text-destructive" : "text-muted-foreground"}`} />
                 <input
                   name="razonSocial"
                   value={formData.razonSocial}
@@ -203,11 +203,11 @@ export default function ClienteModal({ onClose, onSave, clienteToEdit = null }) 
 
             {/* RUN */}
             <div className="space-y-2">
-              <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">
+              <label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest ml-1">
                 RUN *
               </label>
               <div className="relative">
-                <span className={`absolute left-5 top-1/2 -translate-y-1/2 text-sm font-black ${errors.runCliente ? "text-rose-500" : "text-gray-400"}`}>
+                <span className={`absolute left-5 top-1/2 -translate-y-1/2 text-sm font-black ${errors.runCliente ? "text-destructive" : "text-muted-foreground"}`}>
                   ID
                 </span>
                 <input
@@ -223,11 +223,11 @@ export default function ClienteModal({ onClose, onSave, clienteToEdit = null }) 
             </div>
 
             <div className="space-y-2">
-              <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">
+              <label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest ml-1">
                 Sigla *
               </label>
               <div className="relative">
-                <Tag className="absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                <Tag className="absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                 <input
                   name="sigla"
                   value={formData.sigla}
@@ -240,11 +240,11 @@ export default function ClienteModal({ onClose, onSave, clienteToEdit = null }) 
 
             {/* Giro (select) */}
             <div className="col-span-2 space-y-2">
-              <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">
+              <label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest ml-1">
                 Giro *
               </label>
               <div className="relative">
-                <Briefcase className="absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                <Briefcase className="absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                 <select
                   name="giroId"
                   value={formData.giroId}
@@ -263,11 +263,11 @@ export default function ClienteModal({ onClose, onSave, clienteToEdit = null }) 
 
             {/* Email */}
             <div className="space-y-2">
-              <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">
+              <label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest ml-1">
                 Email
               </label>
               <div className="relative">
-                <Mail className={`absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 ${errors.correoCliente ? "text-rose-500" : "text-gray-400"}`} />
+                <Mail className={`absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 ${errors.correoCliente ? "text-destructive" : "text-muted-foreground"}`} />
                 <input
                   name="correoCliente"
                   value={formData.correoCliente}
@@ -281,22 +281,22 @@ export default function ClienteModal({ onClose, onSave, clienteToEdit = null }) 
 
             {/* Teléfono */}
             <div className="space-y-2">
-              <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">
+              <label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest ml-1">
                 Teléfono
               </label>
               <div className="relative">
-                <Phone className={`absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 ${errors.telefonoCliente ? "text-rose-500" : "text-gray-400"}`} />
-                <span className="absolute left-12 top-1/2 -translate-y-1/2 text-sm font-black text-gray-400">
+                <Phone className={`absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 ${errors.telefonoCliente ? "text-destructive" : "text-muted-foreground"}`} />
+                <span className="absolute left-12 top-1/2 -translate-y-1/2 text-sm font-black text-muted-foreground">
                   +56
                 </span>
                 <input
                   name="telefonoCliente"
                   value={formData.telefonoCliente}
                   onChange={handleChange}
-                  className={`w-full pl-24 pr-6 py-5 bg-gray-50 rounded-[1.5rem] border-2 transition-all outline-none font-bold text-sm ${
+                  className={`w-full pl-24 pr-6 py-5 bg-muted rounded-[1.5rem] border-2 transition-all outline-none font-bold text-sm ${
                     errors.telefonoCliente
-                      ? "border-rose-500 bg-rose-50/30"
-                      : "border-transparent focus:bg-white focus:border-indigo-500"
+                      ? "border-destructive bg-destructive/10"
+                      : "border-transparent focus:bg-card focus:border-brand-indigo"
                   }`}
                   placeholder="9 1234 5678"
                 />
@@ -306,11 +306,11 @@ export default function ClienteModal({ onClose, onSave, clienteToEdit = null }) 
 
             {/* Contacto */}
             <div className="space-y-2">
-              <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">
+              <label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest ml-1">
                 Persona de Contacto
               </label>
               <div className="relative">
-                <Briefcase className="absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                <Briefcase className="absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                 <input
                   name="contactoCliente"
                   value={formData.contactoCliente}
@@ -323,11 +323,11 @@ export default function ClienteModal({ onClose, onSave, clienteToEdit = null }) 
 
             {/* Dirección */}
             <div className="space-y-2">
-              <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">
+              <label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest ml-1">
                 Dirección
               </label>
               <div className="relative">
-                <MapPin className="absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                <MapPin className="absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                 <input
                   name="direccionCliente"
                   value={formData.direccionCliente}
@@ -342,10 +342,10 @@ export default function ClienteModal({ onClose, onSave, clienteToEdit = null }) 
           <button
             type="submit"
             disabled={!isValid}
-            className={`w-full py-6 bg-slate-800 text-white rounded-[2rem] text-xs font-black uppercase tracking-[0.3em] flex items-center justify-center transition shadow-xl ${
+            className={`w-full py-6 bg-foreground text-white rounded-[2rem] text-xs font-black uppercase tracking-[0.3em] flex items-center justify-center transition shadow-xl ${
               !isValid
                 ? "opacity-30 cursor-not-allowed"
-                : "hover:bg-indigo-600 hover:-translate-y-1 active:scale-95"
+                : "hover:bg-brand-indigo hover:-translate-y-1 active:scale-95"
             }`}
           >
             <FileText className="w-5 h-5 mr-3" />

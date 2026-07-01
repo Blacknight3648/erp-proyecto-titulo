@@ -41,7 +41,7 @@ function UnidadSelect({ value = 'cm', onChange, readOnly }) {
     return (
       <div
         style={{ position: 'fixed', top: rect.bottom + 4, left: rect.left, zIndex: 10000, minWidth: 160 }}
-        className="bg-white border border-slate-200 rounded-xl shadow-xl overflow-hidden animate-in fade-in zoom-in-95 duration-150"
+        className="bg-card border border-border rounded-xl shadow-xl overflow-hidden animate-in fade-in zoom-in-95 duration-150"
       >
         {UNIDADES_MEDIDA.map(u => (
           <button
@@ -49,12 +49,12 @@ function UnidadSelect({ value = 'cm', onChange, readOnly }) {
             type="button"
             onClick={() => { onChange(u.value); setOpen(false); }}
             className={`w-full flex items-center justify-between gap-3 px-3.5 py-2 text-left text-xs transition-colors ${
-              u.value === value ? 'bg-slate-50 text-slate-900 font-bold' : 'text-slate-600 hover:bg-slate-50 font-medium'
+              u.value === value ? 'bg-muted text-foreground font-bold' : 'text-muted-foreground hover:bg-muted font-medium'
             }`}
           >
             <span className="font-semibold">{u.label}</span>
-            <span className="text-slate-400 text-[10px]">{u.titulo}</span>
-            {u.value === value && <Check className="w-3.5 h-3.5 text-slate-800 flex-shrink-0" />}
+            <span className="text-muted-foreground text-[10px]">{u.titulo}</span>
+            {u.value === value && <Check className="w-3.5 h-3.5 text-foreground flex-shrink-0" />}
           </button>
         ))}
       </div>
@@ -69,12 +69,12 @@ function UnidadSelect({ value = 'cm', onChange, readOnly }) {
         onClick={() => !readOnly && setOpen(o => !o)}
         className={`flex items-center gap-1.5 px-3 py-2.5 rounded-xl text-xs font-semibold border transition-all ${
           readOnly
-            ? 'bg-slate-50 border-slate-100 text-slate-400 cursor-not-allowed'
-            : 'bg-slate-100 border-slate-200 text-slate-700 hover:bg-slate-200/80 cursor-pointer'
-        } ${open ? 'ring-2 ring-slate-900/10 border-slate-400' : ''}`}
+            ? 'bg-muted border-border text-muted-foreground cursor-not-allowed'
+            : 'bg-muted border-border text-foreground hover:bg-secondary/80 cursor-pointer'
+        } ${open ? 'ring-2 ring-border-strong/10 border-border-strong' : ''}`}
       >
         {selected.label}
-        {!readOnly && <ChevronDown className={`w-3 h-3 text-slate-500 transition-transform ${open ? 'rotate-180' : ''}`} />}
+        {!readOnly && <ChevronDown className={`w-3 h-3 text-muted-foreground transition-transform ${open ? 'rotate-180' : ''}`} />}
       </button>
       {open && createPortal(dropdownContent(), document.body)}
     </div>
@@ -163,22 +163,22 @@ function ComboAutoField({
           onKeyDown={!readOnly ? handleKeyDown : undefined}
           className={`w-full px-4 py-2.5 rounded-xl border text-sm font-medium outline-none transition-all ${
             readOnly
-              ? 'bg-slate-50 border-slate-100 text-slate-500 cursor-not-allowed'
+              ? 'bg-muted border-border text-muted-foreground cursor-not-allowed'
               : isInvalid
-              ? 'bg-red-50/30 border-red-300 focus:border-red-400 focus:ring-4 focus:ring-red-100 text-slate-800'
-              : 'bg-slate-50 border-slate-200 text-slate-800 focus:bg-white focus:border-slate-900 focus:ring-2 focus:ring-slate-900/10'
+              ? 'bg-destructive/10 border-destructive focus:border-destructive focus:ring-4 focus:ring-destructive/10 text-foreground'
+              : 'bg-muted border-border text-foreground focus:bg-card focus:border-border-strong focus:ring-2 focus:ring-border-strong/10'
           }`}
         />
-        {loading && <Loader2 className="w-4 h-4 text-slate-400 animate-spin absolute right-3 shrink-0" />}
+        {loading && <Loader2 className="w-4 h-4 text-muted-foreground animate-spin absolute right-3 shrink-0" />}
       </div>
 
       {showDrop && !readOnly && dropPos && createPortal(
         <div
           style={{ position: 'fixed', top: dropPos.top, left: dropPos.left, width: dropPos.width, zIndex: 10000 }}
-          className="bg-white border border-slate-200 rounded-xl shadow-xl overflow-hidden animate-in fade-in zoom-in-95 duration-150"
+          className="bg-card border border-border rounded-xl shadow-xl overflow-hidden animate-in fade-in zoom-in-95 duration-150"
         >
           {filtered.length > 0 && (
-            <div className="max-h-48 overflow-y-auto divide-y divide-slate-50">
+            <div className="max-h-48 overflow-y-auto divide-y divide-border">
               {filtered.map((opt, idx) => (
                 <button
                   key={opt}
@@ -186,11 +186,11 @@ function ComboAutoField({
                   onMouseDown={(e) => { e.preventDefault(); selectVal(opt); }}
                   onMouseEnter={() => setHighlightIdx(idx)}
                   className={`w-full flex items-center gap-3 px-4 py-2.5 text-left text-xs font-medium transition-colors ${
-                    idx === highlightIdx ? 'bg-slate-50 text-slate-900' : 'text-slate-600'
+                    idx === highlightIdx ? 'bg-muted text-foreground' : 'text-muted-foreground'
                   }`}
                 >
                   <span className="flex-1">{opt}</span>
-                  {opt.toLowerCase() === (value || '').toLowerCase() && <Check className="w-3.5 h-3.5 text-slate-900" />}
+                  {opt.toLowerCase() === (value || '').toLowerCase() && <Check className="w-3.5 h-3.5 text-foreground" />}
                 </button>
               ))}
             </div>
@@ -200,18 +200,18 @@ function ComboAutoField({
             <button
               type="button"
               onMouseDown={(e) => { e.preventDefault(); handleCreate(); }}
-              className="w-full flex items-center gap-2 px-4 py-3 bg-slate-900 text-white transition-colors text-left"
+              className="w-full flex items-center gap-2 px-4 py-3 bg-foreground text-white transition-colors text-left"
             >
-              <Plus className="w-4 h-4 text-slate-400" />
+              <Plus className="w-4 h-4 text-muted-foreground" />
               <div className="text-xs min-w-0 flex-1">
-                <p className="text-[10px] text-slate-400 leading-none mb-0.5 font-semibold">Guardar nuevo en sistema:</p>
+                <p className="text-[10px] text-muted-foreground leading-none mb-0.5 font-semibold">Guardar nuevo en sistema:</p>
                 <p className="font-bold truncate text-white">{inputVal.trim()}</p>
               </div>
             </button>
           )}
 
           {filtered.length === 0 && !canCreate && !loading && (
-            <p className="text-center text-xs text-slate-400 py-4">Sin registros coincidentes</p>
+            <p className="text-center text-xs text-muted-foreground py-4">Sin registros coincidentes</p>
           )}
         </div>,
         document.body
@@ -239,23 +239,23 @@ function LogotipoCard({ item, index, onUpdate, onRemove, readOnly }) {
   };
 
   return (
-    <div className="bg-white border border-slate-200 rounded-xl shadow-sm hover:shadow-md transition-all duration-200 group overflow-hidden">
+    <div className="bg-card border border-border rounded-xl shadow-sm hover:shadow-md transition-all duration-200 group overflow-hidden">
       
       {/* Encabezado limpio de la Ficha */}
-      <div className="flex items-center justify-between px-5 py-3 bg-slate-50/80 border-b border-slate-100">
+      <div className="flex items-center justify-between px-5 py-3 bg-muted/80 border-b border-border">
         <div className="flex items-center gap-3">
-          <span className="px-2.5 py-0.5 rounded-md bg-slate-200 text-slate-700 text-xs font-bold font-mono">
+          <span className="px-2.5 py-0.5 rounded-md bg-secondary text-foreground text-xs font-bold font-mono">
             ID: {index + 1}
           </span>
-          <span className="text-xs font-bold text-slate-600 uppercase tracking-wide">
+          <span className="text-xs font-bold text-muted-foreground uppercase tracking-wide">
             Especificación de Logotipo
           </span>
         </div>
 
         <div className="flex items-center gap-4">
           <div className="text-right">
-            <span className="text-xs font-semibold text-slate-400 mr-1.5">Subtotal:</span>
-            <span className="text-sm font-bold text-slate-900">
+            <span className="text-xs font-semibold text-muted-foreground mr-1.5">Subtotal:</span>
+            <span className="text-sm font-bold text-foreground">
               ${subtotal.toLocaleString('es-CL', { minimumFractionDigits: 0 })}
             </span>
           </div>
@@ -263,7 +263,7 @@ function LogotipoCard({ item, index, onUpdate, onRemove, readOnly }) {
             <button
               type="button"
               onClick={() => onRemove(item.id)}
-              className="p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all md:opacity-0 md:group-hover:opacity-100"
+              className="p-1.5 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-lg transition-all md:opacity-0 md:group-hover:opacity-100"
               title="Eliminar registro"
             >
               <Trash2 className="w-4 h-4" />
@@ -277,7 +277,7 @@ function LogotipoCard({ item, index, onUpdate, onRemove, readOnly }) {
         
         {/* Fila 1: Técnica, Nombre y Ubicación */}
         <div className="space-y-1.5">
-          <label className="text-xs font-semibold text-slate-500">Técnica / Tipo de Bordado <span className="text-red-500">*</span></label>
+          <label className="text-xs font-semibold text-muted-foreground">Técnica / Tipo de Bordado <span className="text-destructive">*</span></label>
           <ComboAutoField
             value={item.tipo || ''}
             onChange={(val) => !readOnly && onUpdate(item.id, 'tipo', val)}
@@ -287,12 +287,12 @@ function LogotipoCard({ item, index, onUpdate, onRemove, readOnly }) {
             isInvalid={errors.tipo}
           />
           {errors.tipo && (
-            <p className="text-[11px] text-red-500 flex items-center gap-1"><AlertCircle className="w-3 h-3" /> Requerido</p>
+            <p className="text-[11px] text-destructive flex items-center gap-1"><AlertCircle className="w-3 h-3" /> Requerido</p>
           )}
         </div>
 
         <div className="space-y-1.5">
-          <label className="text-xs font-semibold text-slate-500">Nombre identificador <span className="text-red-500">*</span></label>
+          <label className="text-xs font-semibold text-muted-foreground">Nombre identificador <span className="text-destructive">*</span></label>
           <ComboAutoField
             value={item.nombre || ''}
             onChange={(val) => !readOnly && onUpdate(item.id, 'nombre', val)}
@@ -302,12 +302,12 @@ function LogotipoCard({ item, index, onUpdate, onRemove, readOnly }) {
             isInvalid={errors.nombre}
           />
           {errors.nombre && (
-            <p className="text-[11px] text-red-500 flex items-center gap-1"><AlertCircle className="w-3 h-3" /> Requerido</p>
+            <p className="text-[11px] text-destructive flex items-center gap-1"><AlertCircle className="w-3 h-3" /> Requerido</p>
           )}
         </div>
 
         <div className="space-y-1.5">
-          <label className="text-xs font-semibold text-slate-500">Ubicación física</label>
+          <label className="text-xs font-semibold text-muted-foreground">Ubicación física</label>
           <ComboAutoField
             value={item.ubicacion || ''}
             onChange={(val) => !readOnly && onUpdate(item.id, 'ubicacion', val)}
@@ -319,7 +319,7 @@ function LogotipoCard({ item, index, onUpdate, onRemove, readOnly }) {
 
         {/* Fila 2: Color, Dimensión y Cantidad/Precio */}
         <div className="space-y-1.5">
-          <label className="text-xs font-semibold text-slate-500">Color dominante</label>
+          <label className="text-xs font-semibold text-muted-foreground">Color dominante</label>
           <ComboAutoField
             value={item.color || ''}
             onChange={(val) => !readOnly && onUpdate(item.id, 'color', val)}
@@ -330,7 +330,7 @@ function LogotipoCard({ item, index, onUpdate, onRemove, readOnly }) {
         </div>
 
         <div className="space-y-1.5">
-          <label className="text-xs font-semibold text-slate-500">Dimensión / Tamaño</label>
+          <label className="text-xs font-semibold text-muted-foreground">Dimensión / Tamaño</label>
           <div className="flex items-center gap-2">
             <input
               type="number"
@@ -343,8 +343,8 @@ function LogotipoCard({ item, index, onUpdate, onRemove, readOnly }) {
                 onUpdate(item.id, 'tamanio', isNaN(val) || val < 0 ? '' : val);
               }}
               placeholder="0.0"
-              className={`w-full px-4 py-2.5 rounded-xl border text-sm font-medium text-slate-800 outline-none transition-all ${
-                readOnly ? 'bg-slate-50 border-slate-100 cursor-not-allowed' : 'bg-slate-50 border-slate-200 focus:bg-white focus:border-slate-900 focus:ring-2 focus:ring-slate-900/10'
+              className={`w-full px-4 py-2.5 rounded-xl border text-sm font-medium text-foreground outline-none transition-all ${
+                readOnly ? 'bg-muted border-border cursor-not-allowed' : 'bg-muted border-border focus:bg-card focus:border-border-strong focus:ring-2 focus:ring-border-strong/10'
               }`}
             />
             <UnidadSelect
@@ -356,7 +356,7 @@ function LogotipoCard({ item, index, onUpdate, onRemove, readOnly }) {
         </div>
 
         <div className="space-y-1.5">
-          <label className="text-xs font-semibold text-slate-500">Costos operativos</label>
+          <label className="text-xs font-semibold text-muted-foreground">Costos operativos</label>
           <div className="flex items-center gap-3">
             {/* Cantidad */}
             <div className="w-1/2">
@@ -372,17 +372,17 @@ function LogotipoCard({ item, index, onUpdate, onRemove, readOnly }) {
                 placeholder="Cant"
                 className={`w-full px-3 py-2.5 rounded-xl border text-sm font-bold text-center outline-none transition-all ${
                   readOnly 
-                    ? 'bg-slate-50 border-slate-100 text-slate-400' 
+                    ? 'bg-muted border-border text-muted-foreground' 
                     : errors.cantidad
-                    ? 'border-red-300 bg-red-50/20 focus:ring-4 focus:ring-red-100'
-                    : 'bg-blue-50/40 border-blue-100 text-blue-900 focus:bg-white focus:border-blue-500'
+                    ? 'border-destructive bg-destructive/10 focus:ring-4 focus:ring-destructive/10'
+                    : 'bg-accent/40 border-accent text-accent-foreground focus:bg-card focus:border-primary'
                 }`}
               />
             </div>
             
             {/* Precio Unitario */}
-            <div className="w-1/2 flex items-center bg-slate-50 border border-slate-200 rounded-xl px-3 focus-within:bg-white focus-within:border-slate-900 focus-within:ring-2 focus-within:ring-slate-900/10 transition-all">
-              <span className="text-xs font-semibold text-slate-400 mr-1">$</span>
+            <div className="w-1/2 flex items-center bg-muted border border-border rounded-xl px-3 focus-within:bg-card focus-within:border-border-strong focus-within:ring-2 focus-within:ring-border-strong/10 transition-all">
+              <span className="text-xs font-semibold text-muted-foreground mr-1">$</span>
               <input
                 type="number"
                 min="0"
@@ -394,12 +394,12 @@ function LogotipoCard({ item, index, onUpdate, onRemove, readOnly }) {
                   onUpdate(item.id, 'precio', isNaN(val) || val < 0 ? '' : val);
                 }}
                 placeholder="Precio"
-                className="w-full bg-transparent border-none outline-none py-2.5 text-sm font-medium text-slate-700"
+                className="w-full bg-transparent border-none outline-none py-2.5 text-sm font-medium text-foreground"
               />
             </div>
           </div>
           {errors.cantidad && (
-            <p className="text-[11px] text-red-500 flex items-center gap-1"><AlertCircle className="w-3 h-3" /> Mínimo 1 unidad</p>
+            <p className="text-[11px] text-destructive flex items-center gap-1"><AlertCircle className="w-3 h-3" /> Mínimo 1 unidad</p>
           )}
         </div>
 
@@ -419,13 +419,13 @@ export default function LogotipoPanel({ data, onAdd, onUpdate, onRemove, readOnl
     <div className={`space-y-4 ${readOnly ? 'opacity-95' : ''}`}>
       
       {/* Header Corporativo del Panel */}
-      <div className="flex justify-between items-center bg-slate-950 px-5 py-4 rounded-xl text-white shadow-sm">
+      <div className="flex justify-between items-center bg-foreground px-5 py-4 rounded-xl text-white shadow-sm">
         <div className="flex items-center gap-2.5">
-          <ClipboardList className="w-4 h-4 text-blue-400" />
+          <ClipboardList className="w-4 h-4 text-accent-foreground" />
           <h4 className="text-sm font-semibold tracking-wide text-white">
             {nombrePrenda ? `Módulo de Logotipos — ${nombrePrenda}` : "Módulo de Logotipos y Diseños de Marca"}
           </h4>
-          <span className="ml-2 bg-blue-500/20 text-blue-300 text-[11px] font-bold px-2.5 py-0.5 rounded-full border border-blue-500/30">
+          <span className="ml-2 bg-primary/20 text-accent-foreground text-[11px] font-bold px-2.5 py-0.5 rounded-full border border-primary/30">
             {items.length} {items.length === 1 ? 'Ítem asignado' : 'Ítems asignados'}
           </span>
         </div>
@@ -435,7 +435,7 @@ export default function LogotipoPanel({ data, onAdd, onUpdate, onRemove, readOnl
             <button
               type="button"
               onClick={onAdd}
-              className="flex items-center gap-1.5 px-4 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-bold transition-colors shadow-sm"
+              className="flex items-center gap-1.5 px-4 py-1.5 bg-primary hover:bg-primary text-white rounded-lg text-xs font-bold transition-colors shadow-sm"
             >
               <Plus className="w-4 h-4" />
               Agregar Logotipo
@@ -444,7 +444,7 @@ export default function LogotipoPanel({ data, onAdd, onUpdate, onRemove, readOnl
           <button
             type="button"
             onClick={() => setIsExpanded(e => !e)}
-            className="p-1.5 hover:bg-white/10 rounded-lg text-slate-400 hover:text-white transition-all"
+            className="p-1.5 hover:bg-white/10 rounded-lg text-muted-foreground hover:text-white transition-all"
           >
             {isExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
           </button>
@@ -455,15 +455,15 @@ export default function LogotipoPanel({ data, onAdd, onUpdate, onRemove, readOnl
       {isExpanded ? (
         <div className="space-y-4 animate-in slide-in-from-top-2 duration-200">
           {items.length === 0 ? (
-            <div className="bg-white py-12 rounded-xl border border-dashed border-slate-300 text-center space-y-3">
-              <p className="text-sm font-medium text-slate-400">
+            <div className="bg-card py-12 rounded-xl border border-dashed border-border-strong text-center space-y-3">
+              <p className="text-sm font-medium text-muted-foreground">
                 No existen logotipos o marcas registradas en esta ficha técnica.
               </p>
               {!readOnly && (
                 <button
                   type="button"
                   onClick={onAdd}
-                  className="inline-flex items-center gap-2 px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-lg text-xs font-bold transition-all"
+                  className="inline-flex items-center gap-2 px-4 py-2 bg-foreground hover:bg-foreground text-white rounded-lg text-xs font-bold transition-all"
                 >
                   <Plus className="w-4 h-4" />
                   Insertar primer registro
@@ -484,7 +484,7 @@ export default function LogotipoPanel({ data, onAdd, onUpdate, onRemove, readOnl
           )}
         </div>
       ) : (
-        <div className="bg-slate-100 p-3.5 rounded-xl text-center text-xs font-medium text-slate-500 border border-slate-200">
+        <div className="bg-muted p-3.5 rounded-xl text-center text-xs font-medium text-muted-foreground border border-border">
           Sección colapsada de logotipos • {items.length} registros vigentes.
         </div>
       )}

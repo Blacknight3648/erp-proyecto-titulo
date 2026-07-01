@@ -3,35 +3,35 @@ import { Check, Info, Box, Truck, AlertCircle, ShoppingCart } from 'lucide-react
 import { useNotifications } from '@contexts/NotificationContext';
 
 const ICON_MAP = {
-  OC:   <ShoppingCart className="w-5 h-5 text-blue-500"  />,
-  LOGO: <Info          className="w-5 h-5 text-orange-500"/>,
-  MP:   <Box           className="w-5 h-5 text-green-500" />,
+  OC:   <ShoppingCart className="w-5 h-5 text-accent-foreground"  />,
+  LOGO: <Info          className="w-5 h-5 text-warning"/>,
+  MP:   <Box           className="w-5 h-5 text-success" />,
 };
 
 function NotificationItem({ notification, onRead }) {
-  const icon = ICON_MAP[notification.type] ?? <AlertCircle className="w-5 h-5 text-gray-500" />;
+  const icon = ICON_MAP[notification.type] ?? <AlertCircle className="w-5 h-5 text-muted-foreground" />;
 
   return (
     <div
       onClick={() => onRead(notification.id)}
-      className={`p-4 border-b hover:bg-gray-50 cursor-pointer transition-colors ${!notification.read ? 'bg-blue-50/50' : ''}`}
+      className={`p-4 border-b hover:bg-muted cursor-pointer transition-colors ${!notification.read ? 'bg-accent/50' : ''}`}
     >
       <div className="flex gap-3">
         <div className="mt-1">{icon}</div>
         <div className="flex-1">
-          <p className={`text-sm ${!notification.read ? 'font-semibold text-gray-800' : 'text-gray-600'}`}>
+          <p className={`text-sm ${!notification.read ? 'font-semibold text-foreground' : 'text-muted-foreground'}`}>
             {notification.message}
           </p>
           <div className="flex justify-between items-center mt-1">
-            <span className="text-xs text-gray-400">{notification.timestamp}</span>
+            <span className="text-xs text-muted-foreground">{notification.timestamp}</span>
             {notification.category && (
-              <span className="text-[10px] font-bold px-2 py-0.5 bg-gray-100 text-gray-500 rounded-full">
+              <span className="text-[10px] font-bold px-2 py-0.5 bg-muted text-muted-foreground rounded-full">
                 {notification.category}
               </span>
             )}
           </div>
         </div>
-        {!notification.read && <div className="w-2 h-2 rounded-full bg-blue-500 mt-2" />}
+        {!notification.read && <div className="w-2 h-2 rounded-full bg-primary mt-2" />}
       </div>
     </div>
   );
@@ -43,13 +43,13 @@ export default function NotificationDropdown({ isOpen, onClose }) {
   if (!isOpen) return null;
 
   return (
-    <div className="absolute top-12 right-0 w-80 bg-white rounded-xl shadow-2xl border border-gray-100 z-50 overflow-hidden">
-      <div className="p-3 border-b bg-white flex justify-between items-center sticky top-0">
-        <h3 className="font-bold text-gray-700">Notificaciones</h3>
+    <div className="absolute top-12 right-0 w-80 bg-card rounded-xl shadow-2xl border border-border z-50 overflow-hidden">
+      <div className="p-3 border-b bg-card flex justify-between items-center sticky top-0">
+        <h3 className="font-bold text-foreground">Notificaciones</h3>
         {unreadCount > 0 && (
           <button
             onClick={markAllAsRead}
-            className="text-xs font-bold text-blue-600 hover:text-blue-700 flex items-center gap-1"
+            className="text-xs font-bold text-accent-foreground hover:text-accent-foreground flex items-center gap-1"
           >
             <Check className="w-3 h-3" /> Marcar leídas
           </button>
@@ -58,7 +58,7 @@ export default function NotificationDropdown({ isOpen, onClose }) {
 
       <div className="max-h-96 overflow-y-auto">
         {notifications.length === 0 ? (
-          <div className="p-8 text-center text-gray-400 text-sm">No tienes notificaciones</div>
+          <div className="p-8 text-center text-muted-foreground text-sm">No tienes notificaciones</div>
         ) : (
           notifications.map(notif => (
             <NotificationItem key={notif.id} notification={notif} onRead={markAsRead} />
@@ -66,8 +66,8 @@ export default function NotificationDropdown({ isOpen, onClose }) {
         )}
       </div>
 
-      <div className="p-2 bg-gray-50 text-center border-t">
-        <button className="text-xs font-bold text-gray-500 hover:text-gray-700">Ver todo</button>
+      <div className="p-2 bg-muted text-center border-t">
+        <button className="text-xs font-bold text-muted-foreground hover:text-foreground">Ver todo</button>
       </div>
     </div>
   );

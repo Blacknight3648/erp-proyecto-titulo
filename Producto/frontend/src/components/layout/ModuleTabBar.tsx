@@ -10,16 +10,16 @@ import {
    TOKENS DE COLOR (sincronizados con Sidebar)
 ───────────────────────────────────────── */
 const C = {
-  bg: '#090d16',
-  bgHover: 'rgba(255,255,255,0.04)',
-  bgActiveTab: 'rgba(56,189,248,0.07)',
-  border: 'rgba(255,255,255,0.05)',
-  borderDiv: 'rgba(255,255,255,0.04)',
-  textPrimary: '#ffffff',
-  textSub: '#94a3b8',
-  textMuted: '#475569',
-  iconActive: '#38bdf8',
-  accent: '#38bdf8',
+  bg: 'var(--sidebar)',
+  bgHover: 'var(--sidebar-hover-bg)',
+  bgActiveTab: 'var(--sidebar-active-bg)',
+  border: 'var(--sidebar-border)',
+  borderDiv: 'var(--sidebar-border)',
+  textPrimary: 'var(--sidebar-accent-foreground)',
+  textSub: 'var(--sidebar-foreground)',
+  textMuted: 'var(--sidebar-muted)',
+  iconActive: 'var(--sidebar-primary)',
+  accent: 'var(--sidebar-active-border)',
 };
 
 /* ─────────────────────────────────────────

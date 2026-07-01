@@ -258,25 +258,25 @@ export default function ColaboradorModal({ onClose, onSave, collaboratorToEdit =
   };
 
   const FieldError = ({ name }) => errors[name] && touched[name] ? (
-    <div className="flex items-center gap-1.5 mt-1.5 text-xs font-medium text-rose-600 transition-all">
+    <div className="flex items-center gap-1.5 mt-1.5 text-xs font-medium text-destructive transition-all">
       <AlertCircle className="w-3.5 h-3.5 shrink-0" />
       <span>{errors[name]}</span>
     </div>
   ) : null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm animate-in fade-in duration-200">
-      <div className="bg-white w-full max-w-2xl rounded-2xl p-6 md:p-8 shadow-xl border border-slate-100 relative max-h-[90vh] overflow-y-auto flex flex-col">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-foreground/40 backdrop-blur-sm animate-in fade-in duration-200">
+      <div className="bg-card w-full max-w-2xl rounded-2xl p-6 md:p-8 shadow-xl border border-border relative max-h-[90vh] overflow-y-auto flex flex-col">
         
-        <button onClick={onClose} className="absolute top-5 right-5 p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-50 rounded-xl transition-all">
+        <button onClick={onClose} className="absolute top-5 right-5 p-2 text-muted-foreground hover:text-muted-foreground hover:bg-muted rounded-xl transition-all">
           <X className="w-5 h-5" />
         </button>
 
         <div className="mb-6">
-          <h2 className="text-xl font-bold text-slate-900">
+          <h2 className="text-xl font-bold text-foreground">
             {collaboratorToEdit ? 'Editar Perfil del Colaborador' : 'Registrar Nuevo Colaborador'}
           </h2>
-          <p className="text-xs text-[#635bff] font-semibold mt-0.5 uppercase tracking-wider">
+          <p className="text-xs text-brand-indigo font-semibold mt-0.5 uppercase tracking-wider">
             Módulo de Personal e Identidad corporativa
           </p>
         </div>
@@ -286,22 +286,22 @@ export default function ColaboradorModal({ onClose, onSave, collaboratorToEdit =
           {/* SECCIÓN 1 */}
           <div className="space-y-4">
             <div className="flex items-center gap-3">
-              <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">Identidad y Contacto</span>
-              <div className="h-px flex-1 bg-slate-100"></div>
+              <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Identidad y Contacto</span>
+              <div className="h-px flex-1 bg-muted"></div>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-semibold text-slate-600 mb-1.5">Nombre *</label>
+                <label className="block text-xs font-semibold text-muted-foreground mb-1.5">Nombre *</label>
                 <div className="relative">
-                  <User className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                  <User className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                   <input
                     name="usuarioNombre"
                     value={formData.usuarioNombre}
                     onChange={handleChange}
                     onBlur={handleBlur}
-                    className={`w-full pl-10 pr-4 py-2.5 bg-slate-50 border rounded-xl text-sm transition-all focus:outline-none focus:ring-2 focus:ring-[#635bff]/20 ${
-                      errors.usuarioNombre && touched.usuarioNombre ? 'border-rose-400 focus:border-rose-500' : 'border-slate-200 focus:border-[#635bff]'
+                    className={`w-full pl-10 pr-4 py-2.5 bg-muted border rounded-xl text-sm transition-all focus:outline-none focus:ring-2 focus:ring-brand-indigo/20 ${
+                      errors.usuarioNombre && touched.usuarioNombre ? 'border-destructive focus:border-destructive' : 'border-border focus:border-brand-indigo'
                     }`}
                     placeholder="Ej: Juan"
                   />
@@ -310,16 +310,16 @@ export default function ColaboradorModal({ onClose, onSave, collaboratorToEdit =
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-600 mb-1.5">Apellidos *</label>
+                <label className="block text-xs font-semibold text-muted-foreground mb-1.5">Apellidos *</label>
                 <div className="relative">
-                  <User className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                  <User className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                   <input
                     name="usuarioApellidos"
                     value={formData.usuarioApellidos}
                     onChange={handleChange}
                     onBlur={handleBlur}
-                    className={`w-full pl-10 pr-4 py-2.5 bg-slate-50 border rounded-xl text-sm transition-all focus:outline-none focus:ring-2 focus:ring-[#635bff]/20 ${
-                      errors.usuarioApellidos && touched.usuarioApellidos ? 'border-rose-400 focus:border-rose-500' : 'border-slate-200 focus:border-[#635bff]'
+                    className={`w-full pl-10 pr-4 py-2.5 bg-muted border rounded-xl text-sm transition-all focus:outline-none focus:ring-2 focus:ring-brand-indigo/20 ${
+                      errors.usuarioApellidos && touched.usuarioApellidos ? 'border-destructive focus:border-destructive' : 'border-border focus:border-brand-indigo'
                     }`}
                     placeholder="Ej: Pérez González"
                   />
@@ -328,16 +328,16 @@ export default function ColaboradorModal({ onClose, onSave, collaboratorToEdit =
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-600 mb-1.5">RUN *</label>
+                <label className="block text-xs font-semibold text-muted-foreground mb-1.5">RUN *</label>
                 <div className="relative">
-                  <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-xs font-bold text-slate-400">ID</span>
+                  <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-xs font-bold text-muted-foreground">ID</span>
                   <input
                     name="usuarioRun"
                     value={formData.usuarioRun}
                     onChange={handleChange}
                     onBlur={handleBlur}
-                    className={`w-full pl-10 pr-4 py-2.5 bg-slate-50 border rounded-xl text-sm transition-all focus:outline-none focus:ring-2 focus:ring-[#635bff]/20 ${
-                      errors.usuarioRun && touched.usuarioRun ? 'border-rose-400 focus:border-rose-500' : 'border-slate-200 focus:border-[#635bff]'
+                    className={`w-full pl-10 pr-4 py-2.5 bg-muted border rounded-xl text-sm transition-all focus:outline-none focus:ring-2 focus:ring-brand-indigo/20 ${
+                      errors.usuarioRun && touched.usuarioRun ? 'border-destructive focus:border-destructive' : 'border-border focus:border-brand-indigo'
                     }`}
                     placeholder="12.345.678-9"
                   />
@@ -346,16 +346,16 @@ export default function ColaboradorModal({ onClose, onSave, collaboratorToEdit =
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-600 mb-1.5">Email Corporativo *</label>
+                <label className="block text-xs font-semibold text-muted-foreground mb-1.5">Email Corporativo *</label>
                 <div className="relative">
-                  <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                  <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                   <input
                     name="usuarioEmail"
                     value={formData.usuarioEmail}
                     onChange={handleChange}
                     onBlur={handleBlur}
-                    className={`w-full pl-10 pr-4 py-2.5 bg-slate-50 border rounded-xl text-sm transition-all focus:outline-none focus:ring-2 focus:ring-[#635bff]/20 ${
-                      errors.usuarioEmail && touched.usuarioEmail ? 'border-rose-400 focus:border-rose-500' : 'border-slate-200 focus:border-[#635bff]'
+                    className={`w-full pl-10 pr-4 py-2.5 bg-muted border rounded-xl text-sm transition-all focus:outline-none focus:ring-2 focus:ring-brand-indigo/20 ${
+                      errors.usuarioEmail && touched.usuarioEmail ? 'border-destructive focus:border-destructive' : 'border-border focus:border-brand-indigo'
                     }`}
                     placeholder="juan@empresa.cl"
                   />
@@ -364,17 +364,17 @@ export default function ColaboradorModal({ onClose, onSave, collaboratorToEdit =
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-600 mb-1.5">Teléfono Móvil</label>
+                <label className="block text-xs font-semibold text-muted-foreground mb-1.5">Teléfono Móvil</label>
                 <div className="relative">
-                  <Phone className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-                  <span className="absolute left-10 top-1/2 -translate-y-1/2 text-sm font-semibold text-slate-400 select-none">+56</span>
+                  <Phone className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                  <span className="absolute left-10 top-1/2 -translate-y-1/2 text-sm font-semibold text-muted-foreground select-none">+56</span>
                   <input
                     name="telefono"
                     value={formData.telefono}
                     onChange={handleChange}
                     onBlur={handleBlur}
-                    className={`w-full pl-18 pr-4 py-2.5 bg-slate-50 border rounded-xl text-sm transition-all focus:outline-none focus:ring-2 focus:ring-[#635bff]/20 ${
-                      errors.telefono && touched.telefono ? 'border-rose-400 focus:border-rose-500' : 'border-slate-200 focus:border-[#635bff]'
+                    className={`w-full pl-18 pr-4 py-2.5 bg-muted border rounded-xl text-sm transition-all focus:outline-none focus:ring-2 focus:ring-brand-indigo/20 ${
+                      errors.telefono && touched.telefono ? 'border-destructive focus:border-destructive' : 'border-border focus:border-brand-indigo'
                     }`}
                     placeholder="9 1234 5678"
                   />
@@ -384,17 +384,17 @@ export default function ColaboradorModal({ onClose, onSave, collaboratorToEdit =
 
               {/* Input de Fecha con Validador */}
               <div>
-                <label className="block text-xs font-semibold text-slate-600 mb-1.5">Fecha de Nacimiento</label>
+                <label className="block text-xs font-semibold text-muted-foreground mb-1.5">Fecha de Nacimiento</label>
                 <div className="relative">
-                  <Calendar className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
+                  <Calendar className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
                   <input
                     type="date"
                     name="fechaNacimiento"
                     value={formData.fechaNacimiento}
                     onChange={handleChange}
                     onBlur={handleBlur}
-                    className={`w-full pl-10 pr-4 py-2.5 bg-slate-50 border rounded-xl text-sm transition-all focus:outline-none focus:ring-2 focus:ring-[#635bff]/20 ${
-                      errors.fechaNacimiento && touched.fechaNacimiento ? 'border-rose-400 focus:border-rose-500' : 'border-slate-200 focus:border-[#635bff]'
+                    className={`w-full pl-10 pr-4 py-2.5 bg-muted border rounded-xl text-sm transition-all focus:outline-none focus:ring-2 focus:ring-brand-indigo/20 ${
+                      errors.fechaNacimiento && touched.fechaNacimiento ? 'border-destructive focus:border-destructive' : 'border-border focus:border-brand-indigo'
                     }`}
                   />
                 </div>
@@ -406,36 +406,36 @@ export default function ColaboradorModal({ onClose, onSave, collaboratorToEdit =
           {/* SECCIÓN 2 */}
           <div className="space-y-4">
             <div className="flex items-center gap-3">
-              <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">Ubicación</span>
-              <div className="h-px flex-1 bg-slate-100"></div>
+              <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Ubicación</span>
+              <div className="h-px flex-1 bg-muted"></div>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="sm:col-span-2">
-                <label className="block text-xs font-semibold text-slate-600 mb-1.5">Dirección</label>
+                <label className="block text-xs font-semibold text-muted-foreground mb-1.5">Dirección</label>
                 <div className="relative">
-                  <Home className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                  <Home className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                   <input
                     name="direccion"
                     value={formData.direccion}
                     onChange={handleChange}
-                    className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#635bff]/20 focus:border-[#635bff] transition-all"
+                    className="w-full pl-10 pr-4 py-2.5 bg-muted border border-border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-indigo/20 focus:border-brand-indigo transition-all"
                     placeholder="Ej: Las Rosas 458"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-600 mb-1.5">Región *</label>
+                <label className="block text-xs font-semibold text-muted-foreground mb-1.5">Región *</label>
                 <div className="relative">
-                  <MapPin className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
+                  <MapPin className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
                   <select
                     name="region"
                     value={formData.region}
                     onChange={handleChange}
                     onBlur={handleBlur}
-                    className={`w-full pl-10 pr-8 py-2.5 bg-slate-50 border rounded-xl text-sm transition-all focus:outline-none focus:ring-2 focus:ring-[#635bff]/20 appearance-none cursor-pointer ${
-                      errors.region && touched.region ? 'border-rose-400 focus:border-rose-500' : 'border-slate-200 focus:border-[#635bff]'
+                    className={`w-full pl-10 pr-8 py-2.5 bg-muted border rounded-xl text-sm transition-all focus:outline-none focus:ring-2 focus:ring-brand-indigo/20 appearance-none cursor-pointer ${
+                      errors.region && touched.region ? 'border-destructive focus:border-destructive' : 'border-border focus:border-brand-indigo'
                     }`}
                   >
                     <option value="">— Seleccionar región —</option>
@@ -448,17 +448,17 @@ export default function ColaboradorModal({ onClose, onSave, collaboratorToEdit =
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-600 mb-1.5">Comuna *</label>
+                <label className="block text-xs font-semibold text-muted-foreground mb-1.5">Comuna *</label>
                 <div className="relative">
-                  <MapPin className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
+                  <MapPin className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
                   <select
                     name="comuna"
                     value={formData.comuna}
                     onChange={handleChange}
                     onBlur={handleBlur}
                     disabled={!formData.region}
-                    className={`w-full pl-10 pr-8 py-2.5 bg-slate-50 border rounded-xl text-sm transition-all focus:outline-none focus:ring-2 focus:ring-[#635bff]/20 appearance-none cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed ${
-                      errors.comuna && touched.comuna ? 'border-rose-400 focus:border-rose-500' : 'border-slate-200 focus:border-[#635bff]'
+                    className={`w-full pl-10 pr-8 py-2.5 bg-muted border rounded-xl text-sm transition-all focus:outline-none focus:ring-2 focus:ring-brand-indigo/20 appearance-none cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed ${
+                      errors.comuna && touched.comuna ? 'border-destructive focus:border-destructive' : 'border-border focus:border-brand-indigo'
                     }`}
                   >
                     <option value="">— Seleccionar comuna —</option>
@@ -475,20 +475,20 @@ export default function ColaboradorModal({ onClose, onSave, collaboratorToEdit =
           {/* SECCIÓN 3 */}
           <div className="space-y-4">
             <div className="flex items-center gap-3">
-              <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">Cargo y Seguridad</span>
-              <div className="h-px flex-1 bg-slate-100"></div>
+              <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Cargo y Seguridad</span>
+              <div className="h-px flex-1 bg-muted"></div>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-semibold text-slate-600 mb-1.5">Área Asignada</label>
+                <label className="block text-xs font-semibold text-muted-foreground mb-1.5">Área Asignada</label>
                 <div className="relative">
-                  <MapPin className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
+                  <MapPin className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
                   <select
                     name="area"
                     value={formData.area}
                     onChange={handleChange}
-                    className="w-full pl-10 pr-8 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#635bff]/20 focus:border-[#635bff] transition-all cursor-pointer appearance-none"
+                    className="w-full pl-10 pr-8 py-2.5 bg-muted border border-border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-indigo/20 focus:border-brand-indigo transition-all cursor-pointer appearance-none"
                   >
                     <option value="">— Sin área —</option>
                     {areas.map(a => (
@@ -499,14 +499,14 @@ export default function ColaboradorModal({ onClose, onSave, collaboratorToEdit =
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-600 mb-1.5">Rol de Usuario</label>
+                <label className="block text-xs font-semibold text-muted-foreground mb-1.5">Rol de Usuario</label>
                 <div className="relative">
-                  <Shield className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
+                  <Shield className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
                   <select
                     name="rol"
                     value={formData.rol}
                     onChange={handleChange}
-                    className="w-full pl-10 pr-8 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#635bff]/20 focus:border-[#635bff] transition-all cursor-pointer appearance-none"
+                    className="w-full pl-10 pr-8 py-2.5 bg-muted border border-border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-indigo/20 focus:border-brand-indigo transition-all cursor-pointer appearance-none"
                   >
                     <option value="">— Sin rol —</option>
                     {(formData.area ? filteredRoles : roles).map(r => (
@@ -517,19 +517,19 @@ export default function ColaboradorModal({ onClose, onSave, collaboratorToEdit =
               </div>
 
               <div className="sm:col-span-2">
-                <label className="block text-xs font-semibold text-slate-600 mb-1.5">
+                <label className="block text-xs font-semibold text-muted-foreground mb-1.5">
                   {collaboratorToEdit ? 'Nueva Contraseña (Opcional)' : 'Contraseña de Acceso *'}
                 </label>
                 <div className="relative">
-                  <Hash className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                  <Hash className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                   <input
                     name="password"
                     type="password"
                     value={formData.password}
                     onChange={handleChange}
                     onBlur={handleBlur}
-                    className={`w-full pl-10 pr-4 py-2.5 bg-slate-50 border rounded-xl text-sm transition-all focus:outline-none focus:ring-2 focus:ring-[#635bff]/20 ${
-                      errors.password && touched.password ? 'border-rose-400 focus:border-rose-500' : 'border-slate-200 focus:border-[#635bff]'
+                    className={`w-full pl-10 pr-4 py-2.5 bg-muted border rounded-xl text-sm transition-all focus:outline-none focus:ring-2 focus:ring-brand-indigo/20 ${
+                      errors.password && touched.password ? 'border-destructive focus:border-destructive' : 'border-border focus:border-brand-indigo'
                     }`}
                     placeholder="••••••••"
                   />
@@ -540,26 +540,26 @@ export default function ColaboradorModal({ onClose, onSave, collaboratorToEdit =
           </div>
 
           {/* ESTADO */}
-          <div className="flex items-center justify-between p-4 bg-slate-50 rounded-xl border border-slate-100">
+          <div className="flex items-center justify-between p-4 bg-muted rounded-xl border border-border">
             <div className="flex items-center gap-3">
-              <div className={`w-9 h-9 rounded-lg flex items-center justify-center transition-all ${formData.activo ? 'bg-emerald-50 text-emerald-600' : 'bg-slate-200 text-slate-400'}`}>
+              <div className={`w-9 h-9 rounded-lg flex items-center justify-center transition-all ${formData.activo ? 'bg-success-bg text-success' : 'bg-secondary text-muted-foreground'}`}>
                 <CheckCircle className="w-5 h-5" />
               </div>
               <div>
-                <h4 className="text-xs font-semibold text-slate-800">Acceso al Sistema</h4>
-                <p className="text-[11px] text-slate-400">Permitir el inicio de sesión del usuario</p>
+                <h4 className="text-xs font-semibold text-foreground">Acceso al Sistema</h4>
+                <p className="text-[11px] text-muted-foreground">Permitir el inicio de sesión del usuario</p>
               </div>
             </div>
             <label className="relative inline-flex items-center cursor-pointer">
               <input type="checkbox" name="activo" checked={formData.activo} onChange={handleChange} className="sr-only peer" />
-              <div className="w-11 h-6 bg-slate-200 rounded-full peer peer-checked:bg-emerald-500 transition-all after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:after:translate-x-full"></div>
+              <div className="w-11 h-6 bg-secondary rounded-full peer peer-checked:bg-success transition-all after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-card after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:after:translate-x-full"></div>
             </label>
           </div>
 
           <button
             type="submit"
             disabled={!isFormValid}
-            className={`w-full py-3 bg-[#635bff] hover:bg-[#5249d3] text-white rounded-xl text-sm font-semibold flex items-center justify-center gap-2 transition-all shadow-sm ${
+            className={`w-full py-3 bg-brand-indigo hover:opacity-90 text-white rounded-xl text-sm font-semibold flex items-center justify-center gap-2 transition-all shadow-sm ${
               !isFormValid ? 'opacity-40 cursor-not-allowed' : 'hover:shadow-md active:scale-[0.98]'
             }`}
           >

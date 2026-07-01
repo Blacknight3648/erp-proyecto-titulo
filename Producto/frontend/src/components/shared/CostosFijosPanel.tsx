@@ -15,7 +15,7 @@ export default function CostosFijosPanel({ costos, onChange, readOnly = false })
     <div className={`grid grid-cols-1 md:grid-cols-2 gap-6 ${readOnly ? 'opacity-90' : ''}`}>
       {fields.map(field => (
         <div key={field.key} className="space-y-2">
-          <label className="text-[10px] font-black uppercase tracking-widest text-gray-400">
+          <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">
             {field.label}
           </label>
           <input
@@ -31,7 +31,7 @@ export default function CostosFijosPanel({ costos, onChange, readOnly = false })
               }
               onChange(field.key, parseFloat(e.target.value) || 0);
             }}
-            className={`w-full p-3 rounded-xl bg-gray-50 border border-gray-100 text-sm font-bold outline-none focus:ring-2 focus:ring-blue-500 ${readOnly ? 'cursor-default' : ''}`}
+            className={`w-full p-3 rounded-xl bg-muted border border-border text-sm font-bold outline-none focus:ring-2 focus:ring-primary ${readOnly ? 'cursor-default' : ''}`}
           />
         </div>
       ))}

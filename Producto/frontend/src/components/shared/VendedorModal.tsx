@@ -29,21 +29,21 @@ const VendedorModal = ({ isOpen, onClose, onSave, vendedorToEdit }) => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-300">
-      <div className="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden animate-in zoom-in-95 duration-300">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-foreground/60 backdrop-blur-sm animate-in fade-in duration-300">
+      <div className="bg-card rounded-3xl shadow-2xl w-full max-w-md overflow-hidden animate-in zoom-in-95 duration-300">
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-slate-100">
+        <div className="flex items-center justify-between p-6 border-b border-border">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-emerald-100 rounded-xl text-emerald-600">
+            <div className="p-2 bg-success-bg rounded-xl text-success">
               <UserCheck size={20} />
             </div>
-            <h2 className="text-xl font-bold text-slate-800">
+            <h2 className="text-xl font-bold text-foreground">
               {vendedorToEdit ? "Editar Vendedor" : "Registrar Nuevo Vendedor"}
             </h2>
           </div>
           <button
             onClick={onClose}
-            className="p-2 hover:bg-slate-50 rounded-full transition-colors text-slate-400"
+            className="p-2 hover:bg-muted rounded-full transition-colors text-muted-foreground"
           >
             <X size={20} />
           </button>
@@ -52,15 +52,15 @@ const VendedorModal = ({ isOpen, onClose, onSave, vendedorToEdit }) => {
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
           {/* Usuario */}
           <div>
-            <label className="block text-sm font-semibold text-slate-700 mb-2">
-              Colaborador <span className="text-red-500">*</span>
+            <label className="block text-sm font-semibold text-foreground mb-2">
+              Colaborador <span className="text-destructive">*</span>
             </label>
             <select
               required
               value={usuarioId}
               onChange={(e) => setUsuarioId(e.target.value)}
               disabled={loadingColaboradores}
-              className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all disabled:opacity-60"
+              className="w-full px-4 py-3 bg-muted border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-success/20 focus:border-success transition-all disabled:opacity-60"
             >
               <option value="">
                 {loadingColaboradores ? "Cargando colaboradores..." : "— Seleccionar colaborador —"}
@@ -75,8 +75,8 @@ const VendedorModal = ({ isOpen, onClose, onSave, vendedorToEdit }) => {
 
           {/* Código Vendedor */}
           <div>
-            <label className="block text-sm font-semibold text-slate-700 mb-2">
-              Código de Vendedor <span className="text-red-500">*</span>
+            <label className="block text-sm font-semibold text-foreground mb-2">
+              Código de Vendedor <span className="text-destructive">*</span>
             </label>
             <input
               type="text"
@@ -84,7 +84,7 @@ const VendedorModal = ({ isOpen, onClose, onSave, vendedorToEdit }) => {
               value={codigoVendedor}
               onChange={(e) => setCodigoVendedor(e.target.value)}
               placeholder="Ej: VND-001, V-100..."
-              className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all"
+              className="w-full px-4 py-3 bg-muted border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-success/20 focus:border-success transition-all"
             />
           </div>
 
@@ -93,13 +93,13 @@ const VendedorModal = ({ isOpen, onClose, onSave, vendedorToEdit }) => {
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 px-4 py-3 border border-slate-200 text-slate-600 font-semibold rounded-xl hover:bg-slate-50 transition-all"
+              className="flex-1 px-4 py-3 border border-border text-muted-foreground font-semibold rounded-xl hover:bg-muted transition-all"
             >
               Cancelar
             </button>
             <button
               type="submit"
-              className="flex-1 px-4 py-3 bg-emerald-600 text-white font-semibold rounded-xl hover:bg-emerald-700 shadow-lg shadow-emerald-500/30 transition-all"
+              className="flex-1 px-4 py-3 bg-success text-white font-semibold rounded-xl hover:bg-success shadow-lg shadow-success/30 transition-all"
             >
               {vendedorToEdit ? "Guardar Cambios" : "Registrar Vendedor"}
             </button>

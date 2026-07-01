@@ -102,8 +102,8 @@ export default function InlineComboField({
                 onChange={handleChange}
                 onKeyDown={handleKeyDown}
                 onBlur={handleBlur}
-                className={`w-full bg-gray-50/50 border border-gray-100/50 rounded-lg p-2 text-xs font-bold text-gray-700 uppercase outline-none transition-all
-                    ${readOnly ? 'cursor-default' : 'focus:bg-white focus:border-blue-300 focus:ring-2 focus:ring-blue-100'}`}
+                className={`w-full bg-muted/50 border border-border/50 rounded-lg p-2 text-xs font-bold text-foreground uppercase outline-none transition-all
+                    ${readOnly ? 'cursor-default' : 'focus:bg-card focus:border-primary focus:ring-2 focus:ring-accent'}`}
             />
 
             {showDropdown && dropdownPos && createPortal(
@@ -115,7 +115,7 @@ export default function InlineComboField({
                         width: Math.max(dropdownPos.width, 180),
                         zIndex: 9999,
                     }}
-                    className="bg-white border border-slate-200 rounded-xl shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-150"
+                    className="bg-card border border-border rounded-xl shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-150"
                 >
                     {filtered.map((opt) => (
                         <button
@@ -124,8 +124,8 @@ export default function InlineComboField({
                             onMouseDown={() => select(opt)}
                             className={`w-full text-left px-3 py-2 text-[11px] font-bold uppercase transition-colors
                                 ${opt.value === value
-                                    ? 'bg-blue-50 text-blue-700'
-                                    : 'text-slate-700 hover:bg-slate-50 hover:text-slate-900'
+                                    ? 'bg-accent text-accent-foreground'
+                                    : 'text-foreground hover:bg-muted hover:text-foreground'
                                 }`}
                         >
                             {opt.label}

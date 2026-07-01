@@ -64,17 +64,17 @@ export default function ComboSearchField({ value = '', onChange, tipo, placehold
                 className={[
                     'w-full flex items-center justify-between gap-2 px-3 py-2 rounded-lg border text-left text-[11px] font-semibold transition-all outline-none',
                     readOnly
-                        ? 'bg-gray-50 border-gray-100 text-gray-500 cursor-default'
-                        : 'bg-white border-gray-200 text-gray-800 hover:border-blue-300 cursor-pointer focus:border-blue-400 focus:ring-2 focus:ring-blue-50',
-                    isOpen ? 'border-blue-400 ring-2 ring-blue-50' : '',
+                        ? 'bg-muted border-border text-muted-foreground cursor-default'
+                        : 'bg-card border-border text-foreground hover:border-primary cursor-pointer focus:border-primary focus:ring-2 focus:ring-accent',
+                    isOpen ? 'border-primary ring-2 ring-accent' : '',
                 ].join(' ')}
             >
-                <span className={`truncate uppercase ${!value ? 'text-gray-400 font-normal' : ''}`}>
+                <span className={`truncate uppercase ${!value ? 'text-muted-foreground font-normal' : ''}`}>
                     {value || placeholder}
                 </span>
                 {loading
-                    ? <Loader2 className="w-3.5 h-3.5 text-gray-300 animate-spin flex-shrink-0" />
-                    : <ChevronDown className={`w-3.5 h-3.5 text-gray-400 flex-shrink-0 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
+                    ? <Loader2 className="w-3.5 h-3.5 text-muted-foreground animate-spin flex-shrink-0" />
+                    : <ChevronDown className={`w-3.5 h-3.5 text-muted-foreground flex-shrink-0 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
                 }
             </button>
 
@@ -87,11 +87,11 @@ export default function ComboSearchField({ value = '', onChange, tipo, placehold
                         width: dropdownPos.width,
                         zIndex: 9999,
                     }}
-                    className="bg-white border border-gray-200 rounded-xl shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-150"
+                    className="bg-card border border-border rounded-xl shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-150"
                 >
-                    <div className="px-3 py-2.5 border-b border-gray-100 bg-gray-50/80">
+                    <div className="px-3 py-2.5 border-b border-border bg-muted/80">
                         <div className="flex items-center gap-2">
-                            <Search className="w-3.5 h-3.5 text-gray-400 flex-shrink-0" />
+                            <Search className="w-3.5 h-3.5 text-muted-foreground flex-shrink-0" />
                             <input
                                 ref={inputRef}
                                 type="text"
@@ -105,7 +105,7 @@ export default function ComboSearchField({ value = '', onChange, tipo, placehold
                                     }
                                 }}
                                 placeholder="Escribir para buscar..."
-                                className="flex-1 bg-transparent text-[11px] text-gray-700 outline-none placeholder:text-gray-400"
+                                className="flex-1 bg-transparent text-[11px] text-foreground outline-none placeholder:text-muted-foreground"
                             />
                         </div>
                     </div>
@@ -113,13 +113,13 @@ export default function ComboSearchField({ value = '', onChange, tipo, placehold
                     <div className="max-h-52 overflow-y-auto">
                         {loading && (
                             <div className="flex items-center justify-center gap-2 py-5">
-                                <Loader2 className="w-3.5 h-3.5 text-gray-400 animate-spin" />
-                                <span className="text-[10px] text-gray-400">Cargando maestros...</span>
+                                <Loader2 className="w-3.5 h-3.5 text-muted-foreground animate-spin" />
+                                <span className="text-[10px] text-muted-foreground">Cargando maestros...</span>
                             </div>
                         )}
 
                         {!loading && filtered.length === 0 && !showCreate && (
-                            <p className="text-center text-[10px] text-gray-400 py-6">
+                            <p className="text-center text-[10px] text-muted-foreground py-6">
                                 {query ? 'Sin resultados. Escribe para crear.' : 'Sin registros en maestros.'}
                             </p>
                         )}
@@ -132,9 +132,9 @@ export default function ComboSearchField({ value = '', onChange, tipo, placehold
                                     type="button"
                                     onClick={() => select(a.nombreArticulo)}
                                     className={`w-full flex items-center gap-3 px-4 py-2.5 text-left transition-colors
-                                        ${isSelected ? 'bg-blue-50 text-blue-700' : 'text-gray-700 hover:bg-gray-50'}`}
+                                        ${isSelected ? 'bg-accent text-accent-foreground' : 'text-foreground hover:bg-muted'}`}
                                 >
-                                    <div className={`w-4 h-4 rounded-full flex-shrink-0 flex items-center justify-center border ${isSelected ? 'bg-blue-600 border-blue-600' : 'border-gray-300'}`}>
+                                    <div className={`w-4 h-4 rounded-full flex-shrink-0 flex items-center justify-center border ${isSelected ? 'bg-primary border-primary' : 'border-border-strong'}`}>
                                         {isSelected && <Check className="w-2.5 h-2.5 text-white stroke-[3]" />}
                                     </div>
                                     <span className="text-[11px] font-medium uppercase truncate">
@@ -146,11 +146,11 @@ export default function ComboSearchField({ value = '', onChange, tipo, placehold
                     </div>
 
                     {showCreate && !loading && (
-                        <div className="border-t border-gray-100 p-2">
+                        <div className="border-t border-border p-2">
                             <button
                                 type="button"
                                 onClick={handleCreate}
-                                className="w-full flex items-center gap-2.5 px-3 py-2.5 bg-gray-900 hover:bg-blue-700 text-white rounded-lg transition-colors text-left"
+                                className="w-full flex items-center gap-2.5 px-3 py-2.5 bg-foreground hover:bg-primary text-white rounded-lg transition-colors text-left"
                             >
                                 <div className="w-5 h-5 rounded bg-white/10 flex items-center justify-center flex-shrink-0">
                                     <Plus className="w-3 h-3" />
@@ -168,11 +168,11 @@ export default function ComboSearchField({ value = '', onChange, tipo, placehold
                     )}
 
                     {value && !query && (
-                        <div className="border-t border-gray-100 px-3 py-1.5">
+                        <div className="border-t border-border px-3 py-1.5">
                             <button
                                 type="button"
                                 onClick={() => { onChange(''); setIsOpen(false); }}
-                                className="w-full text-center text-[10px] text-gray-400 hover:text-red-500 transition-colors py-1"
+                                className="w-full text-center text-[10px] text-muted-foreground hover:text-destructive transition-colors py-1"
                             >
                                 Limpiar selección
                             </button>

@@ -47,7 +47,7 @@ export default function Navbar({ isSidebarOpen = true, setIsSidebarOpen }) {
 
     return (
         <header
-            className={`bg-[#0b1220]/95 backdrop-blur-xl border-b border-slate-800 h-[76px] px-5 md:px-7 flex items-center justify-between fixed top-0 right-0 z-40 transition-all duration-300 ease-in-out left-0 ${
+            className={`bg-sidebar/95 backdrop-blur-xl border-b border-border-strong h-[76px] px-5 md:px-7 flex items-center justify-between fixed top-0 right-0 z-40 transition-all duration-300 ease-in-out left-0 ${
                 isSidebarOpen ? 'md:left-[260px]' : 'md:left-[72px]'
             }`}
         >
@@ -58,7 +58,7 @@ export default function Navbar({ isSidebarOpen = true, setIsSidebarOpen }) {
                 {/* Botón menú móvil */}
                 <button
                     onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-                    className="p-2 text-slate-400 hover:text-white hover:bg-white/[0.04] rounded-lg transition-colors lg:hidden"
+                    className="p-2 text-muted-foreground hover:text-white hover:bg-white/[0.04] rounded-lg transition-colors lg:hidden"
                     aria-label="Alternar menú"
                 >
                     <Menu className="w-5 h-5" />
@@ -67,16 +67,16 @@ export default function Navbar({ isSidebarOpen = true, setIsSidebarOpen }) {
                 {/* Input de búsqueda */}
                 <div className="relative flex items-center w-full group">
                     <Search
-                        className="absolute left-3.5 z-10 w-4 h-4 text-slate-400 pointer-events-none transition-colors group-focus-within:text-sky-400"
+                        className="absolute left-3.5 z-10 w-4 h-4 text-muted-foreground pointer-events-none transition-colors group-focus-within:text-info"
                         strokeWidth={2}
                     />
                     <input
                         type="text"
                         placeholder="Buscar en el sistema..."
                         className="
-                            w-full rounded-xl border border-slate-700 bg-[#111827]
-                            py-2.5 pl-10 pr-4 text-sm text-slate-100 placeholder:text-slate-400
-                            transition-all focus:outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-500/10
+                            w-full rounded-xl border border-border-strong bg-sidebar
+                            py-2.5 pl-10 pr-4 text-sm text-muted-foreground placeholder:text-muted-foreground
+                            transition-all focus:outline-none focus:border-info focus:ring-2 focus:ring-info/10
                         "
                     />
                 </div>
@@ -85,12 +85,12 @@ export default function Navbar({ isSidebarOpen = true, setIsSidebarOpen }) {
             {/* ── CENTRO: Fecha y Hora (zona roja del diseño) ── */}
             <div className="hidden md:flex flex-col items-center justify-center px-5 flex-shrink-0 select-none">
                 <div className="flex items-center gap-1.5">
-                    <Clock className="w-3 h-3 text-sky-400/80 flex-shrink-0" strokeWidth={2} />
-                    <span className="text-[13.5px] font-semibold tabular-nums text-slate-100 tracking-wide">
+                    <Clock className="w-3 h-3 text-info/80 flex-shrink-0" strokeWidth={2} />
+                    <span className="text-[13.5px] font-semibold tabular-nums text-muted-foreground tracking-wide">
                         {formattedTime}
                     </span>
                 </div>
-                <span className="text-[10px] text-slate-500 capitalize tracking-wide mt-0.5">
+                <span className="text-[10px] text-muted-foreground capitalize tracking-wide mt-0.5">
                     {formattedDate}
                 </span>
             </div>
@@ -101,19 +101,19 @@ export default function Navbar({ isSidebarOpen = true, setIsSidebarOpen }) {
                 {/* Datos Maestros */}
                 <button
                     onClick={() => navigate('/admin/datos-maestros')}
-                    className="group flex items-center gap-2 text-[13px] font-medium text-slate-200 hover:text-white hover:bg-white/[0.03] border border-transparent hover:border-slate-700 px-3 py-2 rounded-lg transition-all whitespace-nowrap"
+                    className="group flex items-center gap-2 text-[13px] font-medium text-muted-foreground hover:text-white hover:bg-white/[0.03] border border-transparent hover:border-border-strong px-3 py-2 rounded-lg transition-all whitespace-nowrap"
                     title="Gestión de Datos Maestros"
                 >
-                    <Box className="w-4 h-4 text-slate-400 group-hover:text-sky-400 transition-colors" strokeWidth={1.8} />
+                    <Box className="w-4 h-4 text-muted-foreground group-hover:text-info transition-colors" strokeWidth={1.8} />
                     <span className="hidden sm:inline">Datos Maestros</span>
                 </button>
 
                 {/* Separador */}
-                <div className="h-5 w-px bg-slate-700/60 mx-2 hidden sm:block" />
+                <div className="h-5 w-px bg-muted-foreground/60 mx-2 hidden sm:block" />
 
                 {/* Configuración */}
                 <button
-                    className="p-2 text-slate-400 hover:text-white hover:bg-white/[0.03] rounded-lg transition-colors group"
+                    className="p-2 text-muted-foreground hover:text-white hover:bg-white/[0.03] rounded-lg transition-colors group"
                     title="Configuración general"
                 >
                     <Settings className="w-4 h-4 group-hover:rotate-45 transition-transform duration-300" strokeWidth={1.8} />
@@ -122,38 +122,38 @@ export default function Navbar({ isSidebarOpen = true, setIsSidebarOpen }) {
                 {/* Notificaciones */}
                 <div className="relative" ref={notifRef}>
                     <button
-                        className="relative p-2 text-slate-400 hover:text-white hover:bg-white/[0.03] rounded-lg transition-colors"
+                        className="relative p-2 text-muted-foreground hover:text-white hover:bg-white/[0.03] rounded-lg transition-colors"
                         onClick={() => setIsNotifOpen(!isNotifOpen)}
                         aria-label="Ver alertas"
                     >
                         <Bell className="w-4 h-4" strokeWidth={1.8} />
                         {unreadCount > 0 && (
-                            <span className="absolute top-2 right-2 w-1.5 h-1.5 bg-sky-400 rounded-full shadow-[0_0_6px_rgba(56,189,248,0.6)]" />
+                            <span className="absolute top-2 right-2 w-1.5 h-1.5 bg-info rounded-full shadow-[0_0_6px_var(--info)]" />
                         )}
                     </button>
                     <NotificationDropdown isOpen={isNotifOpen} onClose={() => setIsNotifOpen(false)} />
                 </div>
 
                 {/* Separador */}
-                <div className="h-5 w-px bg-slate-700/60 mx-2" />
+                <div className="h-5 w-px bg-muted-foreground/60 mx-2" />
 
                 {/* Perfil */}
                 <div className="flex items-center gap-1.5">
-                    <div className="flex items-center gap-2.5 p-1.5 rounded-lg transition-all cursor-pointer border border-transparent hover:border-slate-700 hover:bg-white/[0.02] group">
-                        <div className="w-[26px] h-[26px] bg-sky-500/10 border border-sky-500/15 text-sky-400 rounded-md flex items-center justify-center font-semibold text-[11px]">
+                    <div className="flex items-center gap-2.5 p-1.5 rounded-lg transition-all cursor-pointer border border-transparent hover:border-border-strong hover:bg-white/[0.02] group">
+                        <div className="w-[26px] h-[26px] bg-info/10 border border-info/15 text-info rounded-md flex items-center justify-center font-semibold text-[11px]">
                             <User className="w-3.5 h-3.5" strokeWidth={2} />
                         </div>
-                        <span className="hidden md:block text-[13px] font-medium text-slate-200 group-hover:text-white transition-colors">
+                        <span className="hidden md:block text-[13px] font-medium text-muted-foreground group-hover:text-white transition-colors">
                             {user?.name || 'Administrador'}
                         </span>
-                        <ChevronDown className="hidden sm:block w-3.5 h-3.5 text-slate-400 group-hover:text-slate-200 transition-colors" strokeWidth={1.5} />
+                        <ChevronDown className="hidden sm:block w-3.5 h-3.5 text-muted-foreground group-hover:text-muted-foreground transition-colors" strokeWidth={1.5} />
                     </div>
 
                     {/* Cerrar sesión */}
                     <button
                         onClick={logout}
                         title="Cerrar Sesión"
-                        className="p-2 text-slate-400 hover:text-rose-400 hover:bg-rose-500/[0.04] rounded-lg transition-colors"
+                        className="p-2 text-muted-foreground hover:text-destructive hover:bg-destructive/[0.04] rounded-lg transition-colors"
                     >
                         <LogOut className="w-4 h-4" strokeWidth={1.8} />
                     </button>

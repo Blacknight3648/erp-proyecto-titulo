@@ -4,8 +4,8 @@ export default function DetailTable({ title, data, onAdd, onUpdate, onRemove, re
     return (
         <div className={`space-y-4 ${readOnly ? 'opacity-95' : ''}`}>
             <div className="flex justify-between items-center mb-6">
-                <h4 className="text-sm font-black text-gray-800 uppercase tracking-widest flex items-center gap-2">
-                    <div className="w-1.5 h-6 bg-blue-600 rounded-full"></div>
+                <h4 className="text-sm font-black text-foreground uppercase tracking-widest flex items-center gap-2">
+                    <div className="w-1.5 h-6 bg-primary rounded-full"></div>
                     {title}
                 </h4>
 
@@ -13,7 +13,7 @@ export default function DetailTable({ title, data, onAdd, onUpdate, onRemove, re
                     <button
                         type="button"
                         onClick={onAdd}
-                        className="flex items-center px-4 py-2 bg-gray-900 text-white rounded-xl text-[9px] font-black uppercase tracking-widest hover:bg-blue-600 transition-all"
+                        className="flex items-center px-4 py-2 bg-foreground text-white rounded-xl text-[9px] font-black uppercase tracking-widest hover:bg-primary transition-all"
                     >
                         <Plus className="w-3.5 h-3.5 mr-2" />
                         Agregar Item
@@ -24,31 +24,31 @@ export default function DetailTable({ title, data, onAdd, onUpdate, onRemove, re
             <div className="overflow-x-auto">
                 <table className="w-full text-left">
                     <thead>
-                        <tr className="border-b border-gray-100">
-                            <th className="px-4 py-3 text-[9px] font-black text-gray-400 uppercase tracking-widest">
+                        <tr className="border-b border-border">
+                            <th className="px-4 py-3 text-[9px] font-black text-muted-foreground uppercase tracking-widest">
                                 Descripción Insumo
                             </th>
-                            <th className="px-4 py-3 text-[9px] font-black text-gray-400 uppercase tracking-widest">
+                            <th className="px-4 py-3 text-[9px] font-black text-muted-foreground uppercase tracking-widest">
                                 Proveedor ref.
                             </th>
-                            <th className="px-4 py-3 text-[9px] font-black text-gray-400 uppercase tracking-widest text-center">
+                            <th className="px-4 py-3 text-[9px] font-black text-muted-foreground uppercase tracking-widest text-center">
                                 Consumo
                             </th>
-                            <th className="px-4 py-3 text-[9px] font-black text-gray-400 uppercase tracking-widest text-center">
+                            <th className="px-4 py-3 text-[9px] font-black text-muted-foreground uppercase tracking-widest text-center">
                                 Unidad
                             </th>
                             {!readOnly && <th className="px-4 py-3"></th>}
                         </tr>
                     </thead>
 
-                    <tbody className="divide-y divide-gray-50">
+                    <tbody className="divide-y divide-border">
                         {(data || []).map((item, index) => (
-                            <tr key={item.id || index} className="group hover:bg-gray-50/50 transition-colors">
+                            <tr key={item.id || index} className="group hover:bg-muted/50 transition-colors">
                                 <td className="px-4 py-4">
                                     <input
                                         type="text"
                                         readOnly={readOnly}
-                                        className={`w-full bg-gray-50/50 p-2 rounded-lg font-bold text-xs text-gray-700 outline-none border border-transparent focus:border-blue-100 placeholder:text-gray-300 ${readOnly ? 'cursor-default' : ''}`}
+                                        className={`w-full bg-muted/50 p-2 rounded-lg font-bold text-xs text-foreground outline-none border border-transparent focus:border-accent placeholder:text-muted-foreground ${readOnly ? 'cursor-default' : ''}`}
                                         value={item.descripcion || ""}
                                         onChange={(e) => !readOnly && onUpdate(item.id, 'descripcion', e.target.value)}
                                         placeholder="Descripción Insumo..."
@@ -59,7 +59,7 @@ export default function DetailTable({ title, data, onAdd, onUpdate, onRemove, re
                                     <input
                                         type="text"
                                         readOnly={readOnly}
-                                        className={`w-full bg-blue-50/30 p-2 rounded-lg font-bold text-[10px] text-blue-600 outline-none border border-blue-50 focus:border-blue-100 placeholder:text-blue-300 ${readOnly ? 'cursor-default' : ''}`}
+                                        className={`w-full bg-accent/30 p-2 rounded-lg font-bold text-[10px] text-accent-foreground outline-none border border-accent focus:border-accent placeholder:text-accent-foreground ${readOnly ? 'cursor-default' : ''}`}
                                         value={item.proveedorReferencia || ""}
                                         onChange={(e) => !readOnly && onUpdate(item.id, 'proveedorReferencia', e.target.value)}
                                         placeholder="Proveedor ref..."
@@ -70,7 +70,7 @@ export default function DetailTable({ title, data, onAdd, onUpdate, onRemove, re
                                     <input
                                         type="number"
                                         readOnly={readOnly}
-                                        className="w-16 bg-blue-50/50 p-2 rounded-lg text-center font-black text-xs text-blue-600 outline-none border border-blue-100"
+                                        className="w-16 bg-accent/50 p-2 rounded-lg text-center font-black text-xs text-accent-foreground outline-none border border-accent"
                                         value={item.consumo}
                                         onChange={(e) => !readOnly && onUpdate(item.id, 'consumo', parseFloat(e.target.value) || 0)}
                                     />
@@ -79,7 +79,7 @@ export default function DetailTable({ title, data, onAdd, onUpdate, onRemove, re
                                 <td className="px-4 py-4 text-center">
                                     <select
                                         disabled={readOnly}
-                                        className={`bg-gray-50/50 p-2 rounded-lg font-bold text-[10px] text-gray-600 outline-none border border-transparent focus:border-blue-100 ${readOnly ? 'cursor-not-allowed' : ''}`}
+                                        className={`bg-muted/50 p-2 rounded-lg font-bold text-[10px] text-muted-foreground outline-none border border-transparent focus:border-accent ${readOnly ? 'cursor-not-allowed' : ''}`}
                                         value={item.unidadMedida || "un"}
                                         onChange={(e) => !readOnly && onUpdate(item.id, 'unidadMedida', e.target.value)}
                                     >
@@ -95,7 +95,7 @@ export default function DetailTable({ title, data, onAdd, onUpdate, onRemove, re
                                     <td className="px-4 py-4 text-right">
                                         <button
                                             onClick={() => onRemove(item.id)}
-                                            className="p-2 text-gray-200 hover:text-red-500 transition-colors"
+                                            className="p-2 text-muted-foreground hover:text-destructive transition-colors"
                                         >
                                             <Trash2 className="w-3.5 h-3.5" />
                                         </button>
@@ -106,7 +106,7 @@ export default function DetailTable({ title, data, onAdd, onUpdate, onRemove, re
 
                         {(!data || data.length === 0) && (
                             <tr key="empty-row">
-                                <td colSpan={5} className="py-12 text-center text-[10px] font-black text-gray-200 uppercase tracking-widest italic">
+                                <td colSpan={5} className="py-12 text-center text-[10px] font-black text-muted-foreground uppercase tracking-widest italic">
                                     No hay ítems registrados
                                 </td>
                             </tr>

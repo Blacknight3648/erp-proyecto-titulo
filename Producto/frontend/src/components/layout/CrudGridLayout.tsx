@@ -42,7 +42,7 @@ export default function CrudGridLayout({
           onClick={onCreateClick}
           className="flex items-center px-8 py-5 bg-primary text-white rounded-[2rem] text-[10px] font-black shadow-2xl shadow-accent hover:bg-foreground hover:-translate-y-1 transition-all uppercase tracking-[0.2em] group"
         >
-          <UserPlus className="w-5 h-5 mr-3 group-hover:scale-125 transition-transform" />
+          <Icon className="w-5 h-5 mr-3 group-hover:scale-125 transition-transform" />
           {createLabel}
         </button>
       </div>

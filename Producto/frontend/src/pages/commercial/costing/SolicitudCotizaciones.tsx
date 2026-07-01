@@ -1,5 +1,5 @@
-import SolicitudCotizacionesContainer from "./SCOT/SolicitudCotizacionesContainer";
+import SolicitudCostosContainer from "./SolicitudCostosContainer";
 
 export default function SolicitudCotizaciones() {
-  return <SolicitudCotizacionesContainer />;
+  return <SolicitudCostosContainer />;
 }

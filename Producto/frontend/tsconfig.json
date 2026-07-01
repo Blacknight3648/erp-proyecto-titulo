@@ -1,0 +1,36 @@
+{
+  "compilerOptions": {
+    "target": "ESNext",
+    "useDefineForClassFields": true,
+    "lib": ["DOM", "DOM.Iterable", "ESNext"],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "strict": false,
+    "noImplicitAny": false,
+    "forceConsistentCasingInFileNames": true,
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true,
+    "jsx": "react-jsx",
+    "paths": {
+      "@/*": ["./src/*"],
+      "@layouts/*": ["./src/components/layout/*"],
+      "@pages/*": ["./src/pages/*"],
+      "@components/*": ["./src/components/*"],
+      "@ui/*": ["./src/ui/*"],
+      "@hooks/*": ["./src/hooks/*"],
+      "@contexts/*": ["./src/contexts/*"],
+      "@services/*": ["./src/remote/service/*"],
+      "@remote/*": ["./src/remote/*"],
+      "@utils/*": ["./src/utils/*"],
+      "@types/*": ["./src/types/*"],
+      "@data/*": ["./src/data/*"]
+    }
+  },
+  "include": ["src"],
+  "exclude": ["node_modules", "dist"]
+}

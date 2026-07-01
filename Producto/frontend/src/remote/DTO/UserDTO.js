@@ -1,65 +1,30 @@
-import { api } from "../remote/service/api";
-import { UserDTO } from "./UserDTO";
-
-const buildPayload = (usuario) => ({
-    nombre: usuario.usuarioNombre,
-    apellidos: usuario.usuarioApellidos,
-    email: usuario.usuarioEmail,
-    run: usuario.usuarioRun,
-    telefono: usuario.telefono,
-    region: usuario.region,
-    comuna: usuario.comuna,
-    roles: usuario.rol ? [usuario.rol] : [],
-    areas: usuario.area ? [usuario.area] : [],
-    activo: usuario.activo
-});
-
-export const colaboradoresService = {
-
-    getAll: async () => {
-
-        const response = await api.get("/usuarios");
-        return UserDTO.listFromResponse(response);
-
-    },
-
-    create: async (usuario) => {
-
-        const payload = buildPayload(usuario);
-
-        const response = await api.post("/usuarios", payload);
-
-        return UserDTO.fromResponse(response);
-
-    },
-
-    update: async (usuario) => {
-
-        const payload = buildPayload(usuario);
-
-        const response = await api.put(`/usuarios/${usuario.id}`, payload);
-
-        return UserDTO.fromResponse(response);
-
-    },
-
-    delete: async (id) => {
-
-        await api.delete(`/usuarios/${id}`);
-
-    },
-
-    toggleStatus: async (usuario) => {
-
-        const payload = buildPayload({
-            ...usuario,
-            activo: !usuario.activo
-        });
-
-        const response = await api.put(`/usuarios/${usuario.id}`, payload);
-
-        return UserDTO.fromResponse(response);
-
+/**
+ * DTO para representar un Usuario/Colaborador.
+ * Basado en ColaboradorDTO del backend.
+ */
+export class UserDTO {
+    constructor(data = {}) {
+        this.id = data.usuarioId || data.id || null;
+        this.run = data.usuarioRun || '';
+        this.nombre = data.usuarioNombre || '';
+        this.apellidos = data.usuarioApellidos || '';
+        this.email = data.usuarioEmail || '';
+        this.fechaNacimiento = data.fechaNacimiento || null;
+        this.direccion = data.direccion || '';
+        this.region = data.region || '';
+        this.comuna = data.comuna || '';
+        this.activo = data.hasOwnProperty('enabled') ? data.enabled : (data.hasOwnProperty('activo') ? data.activo : true);
+        this.roles = data.roles || [];
+        this.areas = data.areas || [];
     }
 
-};
+    static fromResponse(response) {
+        if (!response || !response.data) return null;
+        return new UserDTO(response.data);
+    }
+
+    static listFromResponse(response) {
+        if (!response || !Array.isArray(response.data)) return [];
+        return response.data.map(item => new UserDTO(item));
+    }
+}

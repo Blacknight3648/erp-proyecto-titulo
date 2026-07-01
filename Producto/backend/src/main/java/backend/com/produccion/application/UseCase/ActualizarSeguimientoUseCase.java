@@ -1,13 +1,12 @@
 package backend.com.produccion.application.UseCase;
 
 import backend.com.produccion.application.dto.ActualizarSeguimientoCommand;
-import backend.com.produccion.application.dto.AvanceOPResponse;
+import backend.com.produccion.application.dto.SeguimientoOPDTO;
 import backend.com.produccion.domain.enums.CalidadTaller;
 import backend.com.produccion.domain.enums.EstadoIdaLogo;
 import backend.com.produccion.domain.enums.EstadoRecLogo;
 import backend.com.produccion.domain.model.SeguimientoOP;
 import backend.com.produccion.domain.repository.SeguimientoOPRepository;
-import backend.com.shared.exception.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,12 +16,11 @@ import org.springframework.transaction.annotation.Transactional;
 public class ActualizarSeguimientoUseCase {
 
     private final SeguimientoOPRepository seguimientoRepository;
-    private final CalcularAvanceUseCase calcularAvanceUseCase;
 
     @Transactional
-    public AvanceOPResponse actualizar(Long opId, ActualizarSeguimientoCommand cmd) {
+    public SeguimientoOPDTO actualizar(Long opId, ActualizarSeguimientoCommand cmd) {
         SeguimientoOP seg = seguimientoRepository.findByOrdenProduccionId(opId)
-                .orElseThrow(() -> new EntityNotFoundException("Seguimiento no encontrado para la OP: " + opId));
+                .orElseGet(() -> new SeguimientoOP(opId));
 
         seg.setFechaRecepcionOp(cmd.getFechaRecepcionOp());
         seg.setFinTizado(cmd.getFinTizado());
@@ -57,8 +55,8 @@ public class ActualizarSeguimientoUseCase {
         seg.setFinTerminacion(cmd.getFinTerminacion());
         seg.setFinPersonalizado(cmd.getFinPersonalizado());
 
-        seguimientoRepository.save(seg);
+        SeguimientoOP saved = seguimientoRepository.save(seg);
 
-        return calcularAvanceUseCase.calcular(opId);
+        return SeguimientoOPDTO.from(saved);
     }
 }

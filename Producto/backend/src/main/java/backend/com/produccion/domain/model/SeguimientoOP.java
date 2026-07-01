@@ -37,4 +37,24 @@ public class SeguimientoOP {
     public SeguimientoOP(Long ordenProduccionId) {
         this.ordenProduccionId = ordenProduccionId;
     }
+
+    public int getPorcentajeAvance() {
+        int llenos = 0;
+        if (fechaRecepcionOp != null) llenos++;
+        if (finTizado != null) llenos++;
+        if (fechaEstadoOcMp != null) llenos++;
+        if (recepcionCompras != null) llenos++;
+        if (inicioCorte != null) llenos++;
+        if (finCorte != null) llenos++;
+        if (inicioLogo != null) llenos++;
+        if (estadoIdaLogo != null) llenos++;
+        if (regresoLogo != null) llenos++;
+        if (estadoRecLogo != null) llenos++;
+        if (inicioTallerExterno != null) llenos++;
+        if (finTallerExterno != null) llenos++;
+        if (calidadTaller != null) llenos++;
+        if (finTerminacion != null) llenos++;
+        if (finPersonalizado != null) llenos++;
+        return Math.round((llenos / 15.0f) * 100);
+    }
 }

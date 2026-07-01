@@ -73,7 +73,10 @@ export default function HCModificacion({ hc, onBack, onConsolidarLote, formatCLP
 
     const totalSeleccionado = items
         .filter(i => selectedIds.has(i.id))
-        .reduce((acc, i) => acc + (parseFloat(i.cantidadRequerida || 0) * parseFloat(i.precioEstimado || 0)), 0);
+        .reduce((acc, i) => {
+            const cant = i.cantidadAComprar !== null && i.cantidadAComprar !== undefined ? i.cantidadAComprar : i.cantidadRequerida;
+            return acc + (parseFloat(cant || 0) * parseFloat(i.precioEstimado || 0));
+        }, 0);
 
     const puedeAgregarGrupo = hc.status === 'APROBADA' && proveedorId && selectedIds.size > 0 && !submitting;
     const puedeGenerarLote = hc.status === 'APROBADA' && draftGroups.length > 0 && !submitting;
@@ -83,7 +86,10 @@ export default function HCModificacion({ hc, onBack, onConsolidarLote, formatCLP
         const proveedor = proveedores.find(p => String(p.proveedorId) === String(proveedorId));
         const itemsGrupo = items
             .filter(i => selectedIds.has(i.id))
-            .map(i => ({ id: i.id, insumo: i.insumo, cantidadRequerida: i.cantidadRequerida, precioEstimado: i.precioEstimado }));
+            .map(i => {
+                const cant = i.cantidadAComprar !== null && i.cantidadAComprar !== undefined ? i.cantidadAComprar : i.cantidadRequerida;
+                return { id: i.id, insumo: i.insumo, cantidadRequerida: cant, precioEstimado: i.precioEstimado };
+            });
 
         setDraftGroups(prev => [...prev, {
             id: `grupo-${Date.now()}`,
@@ -200,12 +206,15 @@ export default function HCModificacion({ hc, onBack, onConsolidarLote, formatCLP
                                         <TableHead className="pl-10 w-[60px]"></TableHead>
                                         <TableHead className="font-black text-[9px] uppercase tracking-widest text-slate-400 py-5">Insumo</TableHead>
                                         <TableHead className="font-black text-[9px] uppercase tracking-widest text-slate-400">Tipo</TableHead>
-                                        <TableHead className="font-black text-[9px] uppercase tracking-widest text-slate-400 text-center">Cant. Requerida</TableHead>
+                                        <TableHead className="font-black text-[9px] uppercase tracking-widest text-slate-400 text-center">Cant. a Comprar</TableHead>
                                         <TableHead className="font-black text-[9px] uppercase tracking-widest text-slate-400 text-right pr-10">Precio Ref.</TableHead>
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
-                                    {itemsDisponibles.map((item) => (
+                                    {itemsDisponibles.map((item) => {
+                                        const cantComp = item.cantidadAComprar !== null && item.cantidadAComprar !== undefined ? item.cantidadAComprar : item.cantidadRequerida;
+                                        const isMod = item.modificado || cantComp !== item.cantidadRequerida;
+                                        return (
                                         <TableRow key={item.id} className="border-slate-50 hover:bg-white transition-all group">
                                             <TableCell className="pl-10 py-6">
                                                 <Checkbox
@@ -215,7 +224,12 @@ export default function HCModificacion({ hc, onBack, onConsolidarLote, formatCLP
                                                 />
                                             </TableCell>
                                             <TableCell className="py-6">
-                                                <span className="font-bold text-slate-700 text-xs uppercase tracking-tight group-hover:text-indigo-600 transition-colors">{item.insumo || '—'}</span>
+                                                <div className="flex items-center gap-2">
+                                                    <span className="font-bold text-slate-700 text-xs uppercase tracking-tight group-hover:text-indigo-600 transition-colors">{item.insumo || '—'}</span>
+                                                    {isMod && (
+                                                        <Badge className="bg-amber-500 text-white text-[8px] px-1.5 py-0">MOD</Badge>
+                                                    )}
+                                                </div>
                                             </TableCell>
                                             <TableCell>
                                                 <Badge variant="outline" className="rounded-lg font-black text-[8px] uppercase tracking-widest border-slate-100 bg-white/50 text-slate-500 py-1.5">
@@ -224,13 +238,14 @@ export default function HCModificacion({ hc, onBack, onConsolidarLote, formatCLP
                                                 </Badge>
                                             </TableCell>
                                             <TableCell className="text-center font-black text-xs text-slate-800 tabular-nums">
-                                                {item.cantidadRequerida ?? '—'}
+                                                <span className={isMod ? "text-amber-600 font-extrabold" : ""}>{cantComp ?? '—'}</span>
                                             </TableCell>
                                             <TableCell className="text-right pr-10 font-black text-xs text-indigo-600 tabular-nums">
                                                 {formatCLP ? formatCLP(item.precioEstimado || 0) : (item.precioEstimado ?? '—')}
                                             </TableCell>
                                         </TableRow>
-                                    ))}
+                                        );
+                                    })}
                                 </TableBody>
                             </Table>
                             {itemsDisponibles.length === 0 && (

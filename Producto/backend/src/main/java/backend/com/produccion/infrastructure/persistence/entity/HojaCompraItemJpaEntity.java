@@ -60,6 +60,24 @@ public class HojaCompraItemJpaEntity {
     @Column(name = "precio_unitario_ref", precision = 12, scale = 2)
     private BigDecimal precioUnitarioRef;
 
-    @OneToMany(mappedBy = "hcItem", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Column(name = "cantidad_stock", precision = 12, scale = 4, nullable = false)
+    private BigDecimal cantidadStock = BigDecimal.ZERO;
+
+    @Column(name = "cantidad_a_comprar", precision = 12, scale = 4)
+    private BigDecimal cantidadAComprar;
+
+    @Column(name = "modificado", nullable = false)
+    private Boolean modificado = false;
+
+    @Column(name = "justificacion_modificacion", length = 500)
+    private String justificacionModificacion;
+
+    @Column(name = "oc_id")
+    private Long ocId;
+
+    @Column(name = "numero_oc", length = 100)
+    private String numeroOC;
+
+    @OneToMany(mappedBy = "hcItem", cascade = CascadeType.ALL)
     private List<HCItemOCItemLinkJpaEntity> ocLinks = new ArrayList<>();
 }

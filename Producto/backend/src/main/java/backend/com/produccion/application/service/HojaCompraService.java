@@ -14,6 +14,8 @@ public interface HojaCompraService {
 
     HojaCompraDTO cerrar(Long idHC);
 
+    HojaCompraDTO reabrir(Long idHC);
+
     Optional<HojaCompraDTO> obtenerPorId(Long idHC);
 
     Optional<HojaCompraDTO> obtenerPorOpId(Long opId);
@@ -21,4 +23,6 @@ public interface HojaCompraService {
     List<HojaCompraDTO> listarTodas();
 
     List<HojaCompraDTO> listarPorEstado(EstadoHC estado);
+
+    HojaCompraDTO modificarItem(Long idHC, Long idHCItem, backend.com.produccion.application.dto.ActualizarHojaCompraItemRequest request);
 }

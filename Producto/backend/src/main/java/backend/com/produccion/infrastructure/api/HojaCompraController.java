@@ -54,4 +54,17 @@ public class HojaCompraController {
     public ResponseEntity<HojaCompraDTO> cerrar(@PathVariable Long idHC) {
         return ResponseEntity.ok(hojaCompraService.cerrar(idHC));
     }
+
+    @PatchMapping("/{idHC}/reabrir")
+    public ResponseEntity<HojaCompraDTO> reabrir(@PathVariable Long idHC) {
+        return ResponseEntity.ok(hojaCompraService.reabrir(idHC));
+    }
+
+    @PutMapping("/{idHC}/items/{idHCItem}/modificar")
+    public ResponseEntity<HojaCompraDTO> modificarItem(
+            @PathVariable Long idHC,
+            @PathVariable Long idHCItem,
+            @jakarta.validation.Valid @RequestBody backend.com.produccion.application.dto.ActualizarHojaCompraItemRequest request) {
+        return ResponseEntity.ok(hojaCompraService.modificarItem(idHC, idHCItem, request));
+    }
 }

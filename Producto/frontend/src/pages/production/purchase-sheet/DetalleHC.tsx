@@ -10,6 +10,7 @@ export default function DetalleHC({
     aprobar,
     cerrar,
     onModificar,
+    modificarItemHC,
 }) {
     const hcActual = registros?.find(r => r.id === selectedHC);
 
@@ -36,6 +37,7 @@ export default function DetalleHC({
             onCerrar={cerrar ? handleCerrar : undefined}
             onModificar={onModificar}
             formatCLP={formatCLP}
+            modificarItemHC={modificarItemHC}
         />
     );
 }

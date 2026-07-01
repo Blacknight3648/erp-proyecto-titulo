@@ -24,6 +24,7 @@ export default function HojaCompra() {
         handleSave,
         aprobar,
         cerrar,
+        modificarItemHC,
         handleOpenModificacion,
         consolidarOCLote,
         formatCLP,
@@ -76,6 +77,7 @@ export default function HojaCompra() {
                     aprobar={aprobar}
                     cerrar={cerrar}
                     onModificar={handleOpenModificacion}
+                    modificarItemHC={modificarItemHC}
                 />
             )}
 

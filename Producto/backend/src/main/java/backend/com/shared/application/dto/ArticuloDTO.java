@@ -32,6 +32,7 @@ public class ArticuloDTO {
     private TipoArticulo tipoArticulo;
 
     private Boolean activo;
+    private java.math.BigDecimal stockActual;
 
     @NotNull(message = "La categoría es obligatoria")
     private Integer idCategoriaTela;

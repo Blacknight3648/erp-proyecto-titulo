@@ -23,6 +23,10 @@ function toRegistro(hc) {
             cantidadOP: i.cantidadOP,
             consumoUnitario: i.consumoUnitario,
             precioEstimado: i.precioUnitarioRef,
+            cantidadStock: i.cantidadStock,
+            cantidadAComprar: i.cantidadAComprar,
+            modificado: i.modificado,
+            justificacionModificacion: i.justificacionModificacion,
             proveedorId: i.proveedorId,
             proveedorNombre: i.proveedorNombre,
             ocId: i.ocId,
@@ -121,6 +125,21 @@ export function useHCState(initialView = 'list') {
         }
     }, [refresh]);
 
+    const modificarItemHC = useCallback(async (idHC, idHCItem, payload) => {
+        try {
+            const updatedHC = await HojaCompraService.modificarItem(idHC, idHCItem, payload);
+            await refresh();
+            if (selectedHC === idHC && updatedHC) {
+                setFormData(toRegistro(updatedHC));
+            }
+            return updatedHC;
+        } catch (e) {
+            const msg = e?.response?.data?.message || e?.message || 'Error al modificar ítem de la Hoja de Compra';
+            setError(msg);
+            throw e;
+        }
+    }, [refresh, selectedHC]);
+
     /** Abre la vista de gestión de compras (consolidación en OC) para una HC aprobada */
     const handleOpenModificacion = useCallback((idHC) => {
         setSelectedHC(idHC);
@@ -164,10 +183,10 @@ export function useHCState(initialView = 'list') {
         return {
             totalItems: items.length,
             totalBudget: items.reduce(
-                (acc, curr) => acc + (parseFloat(curr.cantidadRequerida || 0) * parseFloat(curr.precioEstimado || 0)),
+                (acc, curr) => acc + (parseFloat((curr.cantidadAComprar ?? curr.cantidadRequerida) || 0) * parseFloat(curr.precioEstimado || 0)),
                 0
             ),
-            totalUnits: items.reduce((acc, curr) => acc + parseFloat(curr.cantidadRequerida || 0), 0),
+            totalUnits: Number(items.reduce((acc, curr) => acc + parseFloat((curr.cantidadAComprar ?? curr.cantidadRequerida) || 0), 0).toFixed(2)),
         };
     }, [formData]);
 
@@ -190,6 +209,7 @@ export function useHCState(initialView = 'list') {
         handleSave,
         aprobar,
         cerrar,
+        modificarItemHC,
         handleOpenModificacion,
         consolidarOCLote,
         formatCLP,

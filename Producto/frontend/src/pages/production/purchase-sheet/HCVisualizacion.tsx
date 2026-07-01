@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
     Card,
     CardContent,
@@ -30,8 +30,13 @@ import {
     ShoppingCart,
     Lock,
     Tag,
-    GitBranch
+    GitBranch,
+    Edit3,
+    Box,
+    AlertTriangle,
+    FileText
 } from 'lucide-react';
+import { ModificarItemModal } from './ModificarItemModal';
 
 const STATUS_BADGE = {
     BORRADOR: 'bg-amber-50 text-amber-600 border-amber-100',
@@ -39,7 +44,9 @@ const STATUS_BADGE = {
     CERRADA:  'bg-slate-100 text-slate-500 border-slate-200',
 };
 
-export default function HCVisualizacion({ hc, onBack, onAprobar, onCerrar, onModificar, formatCLP }) {
+export default function HCVisualizacion({ hc, onBack, onAprobar, onCerrar, onModificar, formatCLP, modificarItemHC }) {
+    const [itemToModify, setItemToModify] = useState<any>(null);
+
     if (!hc) return (
         <div className="p-10 text-center bg-white/50 backdrop-blur-md rounded-3xl border border-dashed border-slate-200">
             <p className="text-slate-400 font-bold uppercase tracking-widest text-xs">Cargando datos de la hoja de compra...</p>
@@ -156,43 +163,96 @@ export default function HCVisualizacion({ hc, onBack, onAprobar, onCerrar, onMod
                             <Table>
                                 <TableHeader className="bg-slate-50/50">
                                     <TableRow className="border-slate-100 hover:bg-transparent">
-                                        <TableHead className="pl-10 font-black text-[9px] uppercase tracking-widest text-slate-400 py-5">Insumo</TableHead>
+                                        <TableHead className="pl-8 font-black text-[9px] uppercase tracking-widest text-slate-400 py-5">Insumo</TableHead>
                                         <TableHead className="font-black text-[9px] uppercase tracking-widest text-slate-400">Tipo</TableHead>
-                                        <TableHead className="font-black text-[9px] uppercase tracking-widest text-slate-400 text-center">Consumo Unit.</TableHead>
-                                        <TableHead className="font-black text-[9px] uppercase tracking-widest text-slate-400 text-center">Cant. OP</TableHead>
+                                        <TableHead className="font-black text-[9px] uppercase tracking-widest text-slate-400 text-center">Stock Bodega</TableHead>
                                         <TableHead className="font-black text-[9px] uppercase tracking-widest text-slate-400 text-center">Cant. Requerida</TableHead>
-                                        <TableHead className="font-black text-[9px] uppercase tracking-widest text-slate-400 text-right pr-10">Precio Ref.</TableHead>
+                                        <TableHead className="font-black text-[9px] uppercase tracking-widest text-slate-400 text-center">Cant. a Comprar</TableHead>
+                                        <TableHead className="font-black text-[9px] uppercase tracking-widest text-slate-400 text-right pr-6">Precio Ref.</TableHead>
+                                        <TableHead className="font-black text-[9px] uppercase tracking-widest text-slate-400 text-center">Estado</TableHead>
+                                        {(hc.status === 'BORRADOR' || hc.status === 'APROBADA') && (
+                                            <TableHead className="font-black text-[9px] uppercase tracking-widest text-slate-400 text-right pr-8">Acción</TableHead>
+                                        )}
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
-                                    {(hc.items || []).map((item, idx) => (
-                                        <TableRow key={item.id ?? idx} className="border-slate-50 hover:bg-white transition-all group">
-                                            <TableCell className="pl-10 py-6">
-                                                <div className="flex items-center gap-3">
-                                                    <div className="w-1.5 h-1.5 rounded-full bg-slate-200 group-hover:bg-indigo-500 transition-colors" />
-                                                    <span className="font-bold text-slate-700 text-xs uppercase tracking-tight group-hover:text-indigo-600 transition-colors">{item.insumo || '—'}</span>
-                                                </div>
-                                            </TableCell>
-                                            <TableCell>
-                                                <Badge variant="outline" className="rounded-lg font-black text-[8px] uppercase tracking-widest border-slate-100 bg-white/50 text-slate-500 py-1.5">
-                                                    <Tag className="w-2.5 h-2.5 mr-1" />
-                                                    {item.tipoInsumo || '—'}
-                                                </Badge>
-                                            </TableCell>
-                                            <TableCell className="text-center font-bold text-xs text-slate-500 tabular-nums">
-                                                {item.consumoUnitario ?? '—'}
-                                            </TableCell>
-                                            <TableCell className="text-center font-bold text-xs text-slate-500 tabular-nums">
-                                                {item.cantidadOP ?? '—'}
-                                            </TableCell>
-                                            <TableCell className="text-center font-black text-xs text-slate-800 tabular-nums">
-                                                {item.cantidadRequerida ?? '—'}
-                                            </TableCell>
-                                            <TableCell className="text-right pr-10 font-black text-xs text-indigo-600 tabular-nums">
-                                                {formatCLP ? formatCLP(item.precioEstimado || 0) : (item.precioEstimado ?? '—')}
-                                            </TableCell>
-                                        </TableRow>
-                                    ))}
+                                    {(hc.items || []).map((item, idx) => {
+                                        const cantReq = Number(Number(item.cantidadRequerida || 0).toFixed(2));
+                                        const cantComp = item.cantidadAComprar !== null && item.cantidadAComprar !== undefined ? Number(Number(item.cantidadAComprar).toFixed(2)) : cantReq;
+                                        const isMod = item.modificado || cantComp !== cantReq;
+
+                                        return (
+                                            <TableRow key={item.id ?? idx} className="border-slate-50 hover:bg-white transition-all group">
+                                                <TableCell className="pl-8 py-5">
+                                                    <div className="flex items-center gap-3">
+                                                        <div className="w-1.5 h-1.5 rounded-full bg-slate-200 group-hover:bg-indigo-500 transition-colors" />
+                                                        <span className="font-bold text-slate-700 text-xs uppercase tracking-tight group-hover:text-indigo-600 transition-colors">{item.insumo || '—'}</span>
+                                                    </div>
+                                                </TableCell>
+                                                <TableCell>
+                                                    <Badge variant="outline" className="rounded-lg font-black text-[8px] uppercase tracking-widest border-slate-100 bg-white/50 text-slate-500 py-1.5">
+                                                        <Tag className="w-2.5 h-2.5 mr-1" />
+                                                        {item.tipoInsumo || '—'}
+                                                    </Badge>
+                                                </TableCell>
+                                                <TableCell className="text-center font-bold text-xs tabular-nums">
+                                                    {Number(item.cantidadStock || 0) > 0 ? (
+                                                        <Badge className="bg-emerald-50 text-emerald-700 border-emerald-200 text-[10px] font-mono font-bold px-2 py-0.5 shadow-sm">
+                                                            {Number(Number(item.cantidadStock).toFixed(2))} unid.
+                                                        </Badge>
+                                                    ) : (
+                                                        <span className="text-slate-400 font-mono text-[11px]">0.00</span>
+                                                    )}
+                                                </TableCell>
+                                                <TableCell className="text-center font-bold text-xs text-slate-600 tabular-nums">
+                                                    {cantReq}
+                                                </TableCell>
+                                                <TableCell className="text-center font-black text-xs tabular-nums">
+                                                    <span className={isMod ? "text-amber-600 font-extrabold bg-amber-50 px-2 py-1 rounded-md border border-amber-200/60" : "text-slate-800"}>
+                                                        {cantComp}
+                                                    </span>
+                                                </TableCell>
+                                                <TableCell className="text-right pr-6 font-black text-xs text-indigo-600 tabular-nums">
+                                                    {formatCLP ? formatCLP(item.precioEstimado || 0) : (item.precioEstimado ?? '—')}
+                                                </TableCell>
+                                                <TableCell className="text-center">
+                                                    {isMod ? (
+                                                        <div className="inline-flex flex-col items-center group/tip relative">
+                                                            <Badge className="bg-gradient-to-r from-amber-500 to-rose-500 text-white border-0 font-black text-[9px] uppercase tracking-widest px-2 py-0.5 shadow-md cursor-help flex items-center gap-1">
+                                                                <AlertTriangle className="w-2.5 h-2.5" />
+                                                                MODIFICADO
+                                                            </Badge>
+                                                            {item.justificacionModificacion && (
+                                                                <div className="absolute bottom-full mb-2 hidden group-hover/tip:block z-50 w-64 p-3 bg-slate-900 text-white text-[11px] rounded-xl shadow-2xl border border-slate-700 leading-relaxed text-left pointer-events-none">
+                                                                    <div className="font-bold text-amber-400 mb-1 flex items-center gap-1.5 text-[10px] uppercase tracking-wider">
+                                                                        <FileText className="w-3 h-3" /> Justificación:
+                                                                    </div>
+                                                                    {item.justificacionModificacion}
+                                                                </div>
+                                                            )}
+                                                        </div>
+                                                    ) : (
+                                                        <Badge variant="outline" className="bg-slate-50 text-slate-400 border-slate-200 text-[9px] font-bold">
+                                                            Original
+                                                        </Badge>
+                                                    )}
+                                                </TableCell>
+                                                {(hc.status === 'BORRADOR' || hc.status === 'APROBADA') && (
+                                                    <TableCell className="text-right pr-8">
+                                                        <Button
+                                                            size="sm"
+                                                            variant="outline"
+                                                            onClick={() => setItemToModify(item)}
+                                                            className="h-8 text-xs font-bold border-slate-200 hover:border-indigo-500 hover:bg-indigo-50 hover:text-indigo-600 transition-all rounded-xl px-3"
+                                                        >
+                                                            <Edit3 className="w-3.5 h-3.5 mr-1.5" />
+                                                            Modificar
+                                                        </Button>
+                                                    </TableCell>
+                                                )}
+                                            </TableRow>
+                                        );
+                                    })}
                                 </TableBody>
                             </Table>
                             {(!hc.items || hc.items.length === 0) && (
@@ -224,27 +284,27 @@ export default function HCVisualizacion({ hc, onBack, onAprobar, onCerrar, onMod
                     )}
                 </div>
 
-                {/* Sidebar Summary */}
+                {/* Left Action Column */}
                 <div className="space-y-8">
-                    <Card className="rounded-[2.5rem] bg-slate-900 border-none shadow-2xl p-4 overflow-hidden">
-                        <CardHeader className="p-8 pb-4">
-                            <CardTitle className="text-[10px] font-black text-slate-400 uppercase tracking-[0.25em] mb-4">Resumen</CardTitle>
-                        </CardHeader>
-                        <CardContent className="p-8 pt-0 space-y-8">
+                    {/* Summary Panel */}
+                    <div className="p-8 bg-slate-900 rounded-[2.5rem] text-white shadow-2xl shadow-indigo-950/20 space-y-8 border border-slate-800">
+                        <div className="flex items-center justify-between border-b border-slate-800 pb-6">
+                            <h3 className="text-xs font-black uppercase tracking-[0.2em] text-indigo-400">Resumen</h3>
+                            <div className="w-2 h-2 rounded-full bg-indigo-500 animate-pulse" />
+                        </div>
+
+                        <div className="space-y-4">
                             <div className="flex flex-col gap-1">
                                 <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Inversión Estimada</span>
                                 <span className="text-3xl font-black text-white tracking-tighter tabular-nums">{formatCLP ? formatCLP(totalEstimado) : totalEstimado}</span>
-                                <Badge variant="outline" className="w-fit mt-2 border-emerald-500/30 text-emerald-400 bg-emerald-500/5 font-black text-[9px] uppercase tracking-widest px-3">Base Imponible Est.</Badge>
                             </div>
-
-                            <div className="space-y-4 pt-8 border-t border-slate-800">
-                                <StatItem icon={Calendar} label="Fecha Emisión" value={hc.fechaCreacion || '—'} />
+                            <div className="pt-4 border-t border-slate-800 space-y-3">
                                 <StatItem icon={Package} label="Items" value={hc.items?.length ?? 0} />
                                 <StatItem icon={ShoppingBag} label="Unidades Totales" value={totalUnidades} />
                                 <StatItem icon={CheckCircle2} label="Estado" value={hc.status || '—'} />
                             </div>
-                        </CardContent>
-                    </Card>
+                        </div>
+                    </div>
 
                     <div className="bg-indigo-50/50 border border-indigo-100 rounded-[2rem] p-8 space-y-4">
                         <div className="flex items-center gap-3">
@@ -259,6 +319,19 @@ export default function HCVisualizacion({ hc, onBack, onAprobar, onCerrar, onMod
                     </div>
                 </div>
             </div>
+
+            <ModificarItemModal
+                isOpen={!!itemToModify}
+                onClose={() => setItemToModify(null)}
+                item={itemToModify}
+                idHC={hc.id}
+                onSave={async (idHC, idHCItem, payload) => {
+                    if (modificarItemHC) {
+                        await modificarItemHC(idHC, idHCItem, payload);
+                    }
+                }}
+                formatCLP={formatCLP || ((v) => `$${v}`)}
+            />
         </motion.div>
     );
 }

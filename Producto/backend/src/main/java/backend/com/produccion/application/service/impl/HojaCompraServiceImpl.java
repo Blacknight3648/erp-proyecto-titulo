@@ -24,10 +24,16 @@ public class HojaCompraServiceImpl implements HojaCompraService {
 
     private final HojaCompraRepository hojaCompraRepository;
     private final GenerarHCDesdeOPUseCase generarHCDesdeOPUseCase;
+    private final backend.com.produccion.application.UseCase.ModificarHojaCompraItemUseCase modificarHojaCompraItemUseCase;
 
     @Override
     public HojaCompraDTO generarDesdeOP(Long opId) {
         return toDTO(generarHCDesdeOPUseCase.ejecutar(opId));
+    }
+
+    @Override
+    public HojaCompraDTO modificarItem(Long idHC, Long idHCItem, backend.com.produccion.application.dto.ActualizarHojaCompraItemRequest request) {
+        return toDTO(modificarHojaCompraItemUseCase.ejecutar(idHC, idHCItem, request));
     }
 
     @Override
@@ -43,6 +49,15 @@ public class HojaCompraServiceImpl implements HojaCompraService {
         HojaCompra hc = hojaCompraRepository.findById(idHC)
                 .orElseThrow(() -> new EntityNotFoundException("Hoja de Compra no encontrada: " + idHC));
         hc.cerrar();
+        return toDTO(hojaCompraRepository.save(hc));
+    }
+
+    @Override
+    @Transactional
+    public HojaCompraDTO reabrir(Long idHC) {
+        HojaCompra hc = hojaCompraRepository.findById(idHC)
+                .orElseThrow(() -> new EntityNotFoundException("Hoja de Compra no encontrada: " + idHC));
+        hc.reabrir();
         return toDTO(hojaCompraRepository.save(hc));
     }
 
@@ -98,6 +113,10 @@ public class HojaCompraServiceImpl implements HojaCompraService {
                 .cantidadOP(item.getCantidadOP())
                 .cantidadRequerida(item.getCantidadRequerida())
                 .precioUnitarioRef(item.getPrecioUnitarioRef())
+                .cantidadStock(item.getCantidadStock())
+                .cantidadAComprar(item.getCantidadAComprar())
+                .modificado(item.getModificado())
+                .justificacionModificacion(item.getJustificacionModificacion())
                 .proveedorId(item.getProveedorId())
                 .proveedorNombre(item.getProveedorNombre())
                 .ocId(item.getOcId())

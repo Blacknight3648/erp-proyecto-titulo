@@ -11,6 +11,7 @@ export class HojaCompraDTO {
         this.opId = data.opId ?? null;
         this.costeoVersionId = data.costeoVersionId ?? null;
         this.estado = data.estado ?? 'BORRADOR'; // BORRADOR | APROBADA | CERRADA
+        this.status = this.estado;
         this.fechaGeneracion = data.fechaGeneracion ?? null;
         this.observaciones = data.observaciones ?? '';
         this.items = Array.isArray(data.items)
@@ -34,13 +35,13 @@ export class HojaCompraDTO {
     }
 
     get totalUnidades() {
-        return this.items.reduce((acc, i) => acc + Number(i.cantidadRequerida || 0), 0);
+        return Number(this.items.reduce((acc, i) => acc + Number(i.cantidadAComprar ?? i.cantidadRequerida ?? 0), 0).toFixed(2));
     }
 
     get totalEstimado() {
-        return this.items.reduce(
-            (acc, i) => acc + Number(i.cantidadRequerida || 0) * Number(i.precioUnitarioRef || 0),
+        return Math.round(this.items.reduce(
+            (acc, i) => acc + Number(i.cantidadAComprar ?? i.cantidadRequerida ?? 0) * Number(i.precioUnitarioRef || 0),
             0
-        );
+        ));
     }
 }

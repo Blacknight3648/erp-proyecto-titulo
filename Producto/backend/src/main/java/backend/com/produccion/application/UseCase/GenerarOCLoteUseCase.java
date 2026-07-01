@@ -29,7 +29,9 @@ public class GenerarOCLoteUseCase {
         List<OrdenCompra> ocs = new ArrayList<>();
         for (GenerarOCConsolidadaRequest grupo : request.getGrupos()) {
             OrdenCompra oc = generarOCConsolidadaUseCase.construirOC(grupo);
-            ocs.add(ordenCompraRepository.save(oc));
+            oc = ordenCompraRepository.save(oc);
+            generarOCConsolidadaUseCase.vincularItemsAOrdenCompra(oc, grupo.getHcItemIds());
+            ocs.add(oc);
         }
         return ocs;
     }

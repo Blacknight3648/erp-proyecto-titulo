@@ -33,7 +33,31 @@ public class GenerarOCConsolidadaUseCase {
 
     @Transactional
     public OrdenCompra ejecutar(GenerarOCConsolidadaRequest request) {
-        return ordenCompraRepository.save(construirOC(request));
+        OrdenCompra oc = ordenCompraRepository.save(construirOC(request));
+        vincularItemsAOrdenCompra(oc, request.getHcItemIds());
+        return oc;
+    }
+
+    public void vincularItemsAOrdenCompra(OrdenCompra oc, List<Long> hcItemIds) {
+        if (oc == null || oc.getIdOC() == null || hcItemIds == null || hcItemIds.isEmpty()) {
+            return;
+        }
+        Set<Long> idsSet = new HashSet<>(hcItemIds);
+        List<HojaCompra> hcs = hojaCompraRepository.findAllByItemIds(hcItemIds);
+        String numOC = oc.getNumeroOC() != null ? oc.getNumeroOC().getValue() : String.valueOf(oc.getIdOC());
+
+        for (HojaCompra hc : hcs) {
+            boolean modificado = false;
+            for (HojaCompraItem item : hc.getItems()) {
+                if (idsSet.contains(item.getIdHCItem())) {
+                    item.vincularOC(oc.getIdOC(), numOC);
+                    modificado = true;
+                }
+            }
+            if (modificado) {
+                hojaCompraRepository.save(hc);
+            }
+        }
     }
 
     /**
@@ -65,6 +89,10 @@ public class GenerarOCConsolidadaUseCase {
         for (HojaCompra hc : hcs) {
             for (HojaCompraItem item : hc.getItems()) {
                 if (hcItemIdsSet.contains(item.getIdHCItem())) {
+                    if (item.getOcId() != null) {
+                        throw new BusinessRuleException(
+                                "El ítem '" + item.getNombreInsumo() + "' ya está vinculado a la OC #" + item.getOcId() + " (" + item.getNumeroOC() + ")");
+                    }
                     itemsSeleccionados.add(item);
                 }
             }

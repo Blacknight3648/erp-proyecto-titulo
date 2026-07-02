@@ -206,6 +206,7 @@ export default function HCModificacion({ hc, onBack, onConsolidarLote, formatCLP
                                         <TableHead className="pl-10 w-[60px]"></TableHead>
                                         <TableHead className="font-black text-[9px] uppercase tracking-widest text-muted-foreground py-5">Insumo</TableHead>
                                         <TableHead className="font-black text-[9px] uppercase tracking-widest text-muted-foreground">Tipo</TableHead>
+                                        <TableHead className="font-black text-[9px] uppercase tracking-widest text-muted-foreground">Proveedor Ref.</TableHead>
                                         <TableHead className="font-black text-[9px] uppercase tracking-widest text-muted-foreground text-center">Cant. a Comprar</TableHead>
                                         <TableHead className="font-black text-[9px] uppercase tracking-widest text-muted-foreground text-right pr-10">Precio Ref.</TableHead>
                                     </TableRow>
@@ -236,6 +237,16 @@ export default function HCModificacion({ hc, onBack, onConsolidarLote, formatCLP
                                                     <Tag className="w-2.5 h-2.5 mr-1" />
                                                     {item.tipoInsumo || '—'}
                                                 </Badge>
+                                            </TableCell>
+                                            <TableCell>
+                                                {item.proveedorNombre ? (
+                                                    <span className="inline-flex items-center gap-1.5 text-[10px] font-bold text-muted-foreground uppercase tracking-wide">
+                                                        <Truck className="w-3 h-3 text-muted-foreground/60 shrink-0" />
+                                                        {item.proveedorNombre}
+                                                    </span>
+                                                ) : (
+                                                    <span className="text-[10px] font-bold text-muted-foreground/40 uppercase tracking-wide">—</span>
+                                                )}
                                             </TableCell>
                                             <TableCell className="text-center font-black text-xs text-foreground tabular-nums">
                                                 <span className={isMod ? "text-warning font-extrabold" : ""}>{cantComp ?? '—'}</span>

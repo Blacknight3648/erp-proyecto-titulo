@@ -92,15 +92,23 @@ export default function DetalleNV({
         total: nv.montoTotal || nv.total,
         status: nv.estado || 'En Proceso',
         items: (nv.items || []).map((item, idx) => ({
-            id: item.idItem || item.id || idx,
-            garment: item.articuloDescripcion || item.garment || item.nombreProducto || 'Prenda',
-            fabric: item.tela || 'Algodón 100%',
+            id: item.idItemNV || item.idItem || item.id || idx,
+            garment: `${item.nombreProducto || item.articuloDescripcion || 'Prenda'}`.trim(),
+            modelo: item.modelo || 'N/A',
+            tela: item.tela || 'N/A',
+            composicion: item.composicion || 'N/A',
             color: item.color || 'N/A',
+            genero: item.genero || 'N/A',
             size: item.size || item.talla || 'M',
             quantity: item.cantidad || item.qty || 0,
             price: item.precioUnitario || 0,
-            supplier: item.nombreProveedor || item.supplier || 'PEDIENTE',
-            tipoItem: item.tipoItem || item.tipo || '-'
+            supplier: item.nombreProveedor || item.supplier || 'PENDIENTE',
+            tipoItem: item.tipoItem || item.tipo || '-',
+            llevaLogo: item.llevaLogo || 'NO',
+            logoDetalle: item.logoDetalle || null,
+            requiereOt: item.requiereOt || false,
+            detalleOt: item.detalleOt || null,
+            tallas: item.tallas || []
         })),
     };
 
@@ -209,7 +217,9 @@ export default function DetalleNV({
                                 <th className="p-5 text-[9px] font-black text-brand-indigo uppercase tracking-widest text-center">Origen</th>
                                 <th className="p-5 text-[9px] font-black text-brand-indigo uppercase tracking-widest">Especificaciones</th>
                                 <th className="p-5 text-[9px] font-black text-brand-indigo uppercase tracking-widest text-center">Talla</th>
+                                <th className="p-5 text-[9px] font-black text-brand-indigo uppercase tracking-widest text-center">Género</th>
                                 <th className="p-5 text-[9px] font-black text-brand-indigo uppercase tracking-widest text-center">Cant.</th>
+                                <th className="p-5 text-[9px] font-black text-brand-indigo uppercase tracking-widest text-center">Precio U.</th>
                                 <th className="p-5 text-[9px] font-black text-brand-indigo uppercase tracking-widest">Proveedor</th>
                             </tr>
                         </thead>
@@ -230,12 +240,58 @@ export default function DetalleNV({
                                         </span>
                                     </td>
                                     <td className="p-5">
-                                        <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wide bg-card px-3 py-1 rounded-full border border-border">{item.fabric} - {item.color}</span>
+                                        <div className="flex flex-col space-y-2 items-start">
+                                            <div className="grid grid-cols-[min-content_1fr] gap-x-3 gap-y-1 text-[10px] uppercase">
+                                                <span className="font-black text-muted-foreground text-right">Modelo:</span>
+                                                <span className="font-bold text-foreground">{item.modelo}</span>
+                                                <span className="font-black text-muted-foreground text-right">Tela:</span>
+                                                <span className="font-bold text-foreground">{item.tela}</span>
+                                                <span className="font-black text-muted-foreground text-right">Comp:</span>
+                                                <span className="font-bold text-foreground">{item.composicion}</span>
+                                                <span className="font-black text-muted-foreground text-right">Color:</span>
+                                                <span className="font-bold text-foreground">{item.color}</span>
+                                            </div>
+
+                                            {(item.llevaLogo !== 'NO' || item.requiereOt) && (
+                                                <div className="flex flex-wrap gap-2 mt-1">
+                                                    {item.llevaLogo !== 'NO' && (
+                                                        <div className="flex flex-col max-w-[150px]">
+                                                            <span className="text-[9px] font-black text-brand-indigo bg-brand-indigo/10 px-2 py-0.5 rounded border border-brand-indigo/20 uppercase">Logo: {item.llevaLogo}</span>
+                                                            {item.logoDetalle && <span className="text-[8px] text-muted-foreground mt-0.5 leading-tight truncate" title={item.logoDetalle}>{item.logoDetalle}</span>}
+                                                        </div>
+                                                    )}
+                                                    {item.requiereOt && (
+                                                        <div className="flex flex-col max-w-[150px]">
+                                                            <span className="text-[9px] font-black text-warning bg-warning/10 px-2 py-0.5 rounded border border-warning/20 uppercase">Req. OT</span>
+                                                            {item.detalleOt && <span className="text-[8px] text-muted-foreground mt-0.5 leading-tight truncate" title={item.detalleOt}>{item.detalleOt}</span>}
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            )}
+                                        </div>
                                     </td>
                                     <td className="p-5 text-center">
-                                        <span className="text-[11px] font-black text-foreground bg-muted px-3 py-1 rounded-lg">{item.size}</span>
+                                        <div className="flex flex-wrap gap-2 justify-center max-w-[120px] mx-auto">
+                                            {item.tallas && item.tallas.length > 0 ? (
+                                                item.tallas.map((t, i) => (
+                                                    <span key={i} className="text-[10px] font-black text-foreground bg-muted px-2 py-1 rounded-md whitespace-nowrap">
+                                                        {t.talla}: <span className="text-brand-indigo">{t.cantidad}</span>
+                                                    </span>
+                                                ))
+                                            ) : (
+                                                <span className="text-[11px] font-black text-foreground bg-muted px-3 py-1 rounded-lg">
+                                                    {item.size}
+                                                </span>
+                                            )}
+                                        </div>
+                                    </td>
+                                    <td className="p-5 text-center">
+                                        <span className="text-[10px] font-bold text-muted-foreground uppercase">{item.genero}</span>
                                     </td>
                                     <td className="p-5 text-center text-[11px] font-black text-brand-indigo">{item.quantity}</td>
+                                    <td className="p-5 text-center">
+                                        <span className="text-[11px] font-bold text-foreground">${Number(item.price).toLocaleString()}</span>
+                                    </td>
                                     <td className="p-5">
                                         <span className="text-[10px] font-black text-muted-foreground uppercase">{item.supplier}</span>
                                     </td>

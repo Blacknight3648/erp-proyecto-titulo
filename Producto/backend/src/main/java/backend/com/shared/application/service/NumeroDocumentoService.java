@@ -41,7 +41,7 @@ public class NumeroDocumentoService {
      * para garantizar que, si la creación del documento falla y se revierte, el
      * incremento del contador también se revierte — sin huecos en la numeración.
      */
-    @Transactional
+    @Transactional(propagation = org.springframework.transaction.annotation.Propagation.REQUIRES_NEW)
     public Long siguiente(String tipo) {
         if (tipo == null || tipo.isBlank()) {
             throw new IllegalArgumentException("El tipo de documento es obligatorio");

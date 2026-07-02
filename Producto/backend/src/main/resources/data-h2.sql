@@ -278,11 +278,11 @@ MERGE INTO evaluaciones_negocio (idevn, numero, referencia, cliente_nombre, clie
 -- ============================================================
 -- 7.6. NOTAS DE VENTA (NV)
 -- ============================================================
-MERGE INTO notas_venta (idnv, numeronv, evaluacion_negocio_id, cliente_id, vendedor_id, estado, es_kit, fecha_emision, fecha_entrega_estimada, monto_subtotal, moneda_subtotal, monto_iva, moneda_iva, monto_total, moneda_total, created_at, updated_at)
-    KEY (idnv)
+MERGE INTO notas_venta (id_nv, numero_nv, evaluacion_negocio_id, cliente_id, vendedor_id, estado, es_kit, fecha_emision, fecha_entrega_estimada, monto_subtotal, moneda_subtotal, monto_iva, moneda_iva, monto_total, moneda_total, created_at, updated_at)
+    KEY (id_nv)
     VALUES
-    (1, 'NV-00001', 2, 2, 2, 'BORRADOR', false, CURRENT_DATE, DATEADD('DAY', 30, CURRENT_DATE), 300000.00, 'CLP', 57000.00, 'CLP', 357000.00, 'CLP', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-    (2, 'NV-00002', 1, 1, 1, 'EN_PRODUCCION', false, CURRENT_DATE, DATEADD('DAY', 45, CURRENT_DATE), 850000.00, 'CLP', 161500.00, 'CLP', 1011500.00, 'CLP', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+    (1, 'NV-0000001', 2, 2, 2, 'BORRADOR', false, CURRENT_DATE, DATEADD('DAY', 30, CURRENT_DATE), 300000.00, 'CLP', 57000.00, 'CLP', 357000.00, 'CLP', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+    (2, 'NV-0000002', 1, 1, 1, 'EN_PRODUCCION', false, CURRENT_DATE, DATEADD('DAY', 45, CURRENT_DATE), 850000.00, 'CLP', 161500.00, 'CLP', 1011500.00, 'CLP', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
 -- ============================================================
 -- 7.7. PLANIFICACIÓN DE PRODUCCIÓN Y HOJAS DE COMPRA
@@ -323,12 +323,6 @@ MERGE INTO produccion_hoja_compra_items (id_hc_item, hc_id, tipo_insumo, articul
 -- ============================================================
 -- 7.8. CONTADORES DE DOCUMENTOS (document_counter)
 -- ============================================================
--- Cada documento genera su propio correlativo vía NumeroDocumentoService.siguiente(tipo).
--- El contador parte en 0 (se crea on-demand), por lo que el primer documento sería
--- el número 1 y CHOCARÍA con los registros ya sembrados arriba. Por eso inicializamos
--- 'ultimo_numero' por ENCIMA del máximo existente por tipo: el próximo correlativo
--- continúa la secuencia (NV-0000003, OP-0000002, ...) sin colisionar ni reiniciar.
--- 'ultimo_numero' = cantidad de documentos ya existentes de ese tipo en este seed.
 MERGE INTO document_counter (tipo, ultimo_numero)
     KEY (tipo)
     VALUES

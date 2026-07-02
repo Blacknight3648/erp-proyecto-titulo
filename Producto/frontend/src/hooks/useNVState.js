@@ -112,6 +112,43 @@ export const useNVState = (initialView = 'list') => {
             });
             setIsReadOnly(true);
             setView('form');
+        } else if (mode === 'edit') {
+            const tallasToSizes = (tallas) => {
+                const base = { XS: 0, S: 0, M: 0, L: 0, XL: 0 };
+                (tallas || []).forEach(t => { if (t.talla in base) base[t.talla] = t.cantidad; });
+                return base;
+            };
+            setFormData({
+                idNV: data.idNV,
+                numeroNV: data.numeroNV || '',
+                clienteId: data.clienteId || '',
+                clienteNombre: data.clienteNombre || '',
+                vendedorId: data.vendedorId || '',
+                fechaEntregaEstimada: data.fechaEntregaEstimada || '',
+                esKit: data.esKit || false,
+                detalleKit: data.detalleKit || '',
+                items: (data.items || []).map((item, i) => ({
+                    id: Date.now() + i,
+                    productoId: item.articuloId || '',
+                    nombreProducto: item.nombreProducto || item.modelo || '',
+                    modelo: item.modelo || '',
+                    tela: item.tela || '',
+                    composicion: item.composicion || '',
+                    color: item.color || '',
+                    genero: item.genero || 'Unisex',
+                    talla: item.talla || '',
+                    sizes: tallasToSizes(item.tallas),
+                    quantity: item.cantidad || 0,
+                    unitPrice: item.precioUnitario || 0,
+                    tipoItem: item.tipoItem || 'OP',
+                    logo: item.llevaLogo || 'N/A',
+                    proveedorId: item.proveedorId || '',
+                    requiereOt: item.requiereOt || false,
+                    detalleOt: item.detalleOt || '',
+                }))
+            });
+            setIsReadOnly(false);
+            setView('form');
         } else if (mode === 'template') {
             setFormData({
                 clienteId: data.clienteId,
@@ -256,7 +293,7 @@ export const useNVState = (initialView = 'list') => {
         });
     };
 
-    const handleConfirmNV = async () => {
+    const handleConfirmNV = async (isDraft = false) => {
         if (!formData.clienteId) {
             toast.error('Debe seleccionar un cliente');
             return;
@@ -270,6 +307,7 @@ export const useNVState = (initialView = 'list') => {
         setSubmitStatus(null);
         try {
             const payload = {
+                emitir: !isDraft,
                 clienteId: parseInt(formData.clienteId),
                 vendedorId: parseInt(formData.vendedorId) || 1,
                 esKit: formData.esKit,
@@ -277,7 +315,7 @@ export const useNVState = (initialView = 'list') => {
                 fechaEntregaEstimada: formData.fechaEntregaEstimada,
                 evaluacionNegocioId: sourceEVN || null,
                 items: formData.items.map(item => ({
-                    productoId: item.productoId ? parseInt(item.productoId) : null,
+                    articuloId: item.productoId ? parseInt(item.productoId) : null,
                     cantidad: item.quantity,
                     precioUnitario: item.unitPrice,
                     modelo: item.modelo,
@@ -288,13 +326,13 @@ export const useNVState = (initialView = 'list') => {
                     genero: item.genero,
                     proveedorId: item.proveedorId ? parseInt(item.proveedorId) : null,
                     llevaLogo: item.logo || 'N/A',
-                    tipoItem: item.tipoItem,
+                    itemType: item.tipoItem,
                     requiereOt: item.requiereOt,
                     detalleOt: item.detalleOt,
                     logoDetalle: item.logo || 'N/A'
                 }))
             };
-            if (isReadOnly && formData.idNV) {
+            if (formData.idNV) {
                 await api.put(`/comercial/notas-venta/${formData.idNV}`, payload);
             } else {
                 await api.post('/comercial/notas-venta', payload);

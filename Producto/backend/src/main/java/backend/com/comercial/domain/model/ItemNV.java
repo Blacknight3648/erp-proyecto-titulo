@@ -14,6 +14,7 @@ public class ItemNV {
     private Long idItemNV;
     private Integer nroItem;
     private Integer articuloId;
+    private String nombreProducto;
     private String modelo;
     private String tela;
     private String composicion;
@@ -22,6 +23,7 @@ public class ItemNV {
     private String genero;
     private String codigo;
     private Long proveedorId;
+    private String nombreProveedor;
     private String llevaLogo;
     private TipoItem tipoItem;
     private Boolean requiereOt;
@@ -43,13 +45,14 @@ public class ItemNV {
         this.opId = opId;
     }
 
-    public ItemNV(Long idItemNV, Integer nroItem, Integer articuloId, String modelo, String tela, String composicion,
-            String color, String talla, String genero, String codigo, Long proveedorId,
+    public ItemNV(Long idItemNV, Integer nroItem, Integer articuloId, String nombreProducto, String modelo, String tela, String composicion,
+            String color, String talla, String genero, String codigo, Long proveedorId, String nombreProveedor,
             String llevaLogo, TipoItem tipoItem, Boolean requiereOt, String detalleOt,
             String logoDetalle, Integer cantidad, Money precioUnitario, List<ItemNVTalla> tallas) {
         this.idItemNV = idItemNV;
         this.nroItem = nroItem;
         this.articuloId = articuloId;
+        this.nombreProducto = nombreProducto;
         this.modelo = modelo;
         this.tela = tela;
         this.composicion = composicion;
@@ -58,6 +61,7 @@ public class ItemNV {
         this.genero = genero;
         this.codigo = codigo;
         this.proveedorId = proveedorId;
+        this.nombreProveedor = nombreProveedor;
         this.llevaLogo = llevaLogo != null ? llevaLogo : "N/A";
         this.tipoItem = tipoItem;
         this.requiereOt = requiereOt != null ? requiereOt : false;

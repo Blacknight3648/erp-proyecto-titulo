@@ -105,6 +105,22 @@ public class NotaVenta {
         this.montoTotal = this.montoSubtotal.add(this.montoIva);
     }
 
+    public void actualizar(Long clienteId, Long vendedorId, Boolean esKit, String detalleKit,
+            LocalDate fechaEntregaEstimada) {
+        this.clienteId = clienteId;
+        this.vendedorId = vendedorId;
+        this.esKit = esKit != null ? esKit : false;
+        this.detalleKit = detalleKit;
+        this.fechaEntregaEstimada = fechaEntregaEstimada;
+    }
+
+    public void clearItems() {
+        this.items.clear();
+        this.montoSubtotal = new Money(BigDecimal.ZERO, "CLP");
+        this.montoIva = new Money(BigDecimal.ZERO, "CLP");
+        this.montoTotal = new Money(BigDecimal.ZERO, "CLP");
+    }
+
     public void emitir() {
         if (this.estado != EstadoNV.BORRADOR) {
             throw new IllegalStateException("Solo las Notas de Venta en Borrador pueden ser emitidas");

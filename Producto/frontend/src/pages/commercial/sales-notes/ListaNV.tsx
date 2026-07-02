@@ -71,7 +71,7 @@ export default function ListaNV({
                         .map((record) => (
                         <div
                             key={record.idNV || record.id}
-                            onClick={() => handleOpenForm(record, 'view')}
+                            onClick={() => handleOpenForm(record, record.estado === 'BORRADOR' ? 'edit' : 'view')}
                             className="group bg-card p-6 rounded-[2.5rem] border-2 border-border hover:border-primary hover:shadow-2xl transition-all cursor-pointer relative overflow-hidden"
                         >
                             <div className="flex justify-between items-start mb-4">
@@ -79,7 +79,10 @@ export default function ListaNV({
                                     <span className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">{record.numeroNV || `NV-${record.idNV || record.id}`}</span>
                                     <h3 className="text-md font-black text-foreground group-hover:text-primary uppercase mt-1">{record.clienteNombre}</h3>
                                 </div>
-                                <span className="px-3 py-1 bg-success/10 text-success rounded-full text-[9px] font-black uppercase">Emitida</span>
+                                {record.estado === 'BORRADOR'
+                                    ? <span className="px-3 py-1 bg-warning/10 text-warning rounded-full text-[9px] font-black uppercase">Borrador</span>
+                                    : <span className="px-3 py-1 bg-success/10 text-success rounded-full text-[9px] font-black uppercase">Emitida</span>
+                                }
                             </div>
                             <div className="space-y-3 mb-6">
                                 <div className="flex items-center gap-2">
@@ -91,7 +94,7 @@ export default function ListaNV({
                                 </div>
                             </div>
                             <div className="flex items-center justify-between text-[10px] font-black uppercase text-primary opacity-0 group-hover:opacity-100 transition-all">
-                                <span>Ver Detalle</span>
+                                <span>{record.estado === 'BORRADOR' ? 'Editar Borrador' : 'Ver Detalle'}</span>
                                 <ChevronRight className="w-4 h-4" />
                             </div>
                         </div>

@@ -274,30 +274,30 @@ INSERT IGNORE INTO evaluacion_negocio_items (idevni, evaluacion_negocio_id, prov
 -- ============================================================
 -- 7.6. NOTAS DE VENTA (NV)
 -- ============================================================
--- NV-00001: MEDCELL, 50 pantalones → EN_PRODUCCION (tiene OP activa)
--- NV-00002: HITES, 100 poleras    → EMITIDA (sin OP aún, comercial adjudicada)
+-- NV-0000001: MEDCELL, 50 pantalones → EN_PRODUCCION (tiene OP activa)
+-- NV-0000002: HITES, 100 poleras    → EMITIDA (sin OP aún, comercial adjudicada)
 INSERT IGNORE INTO notas_venta (id_nv, numeronv, evaluacion_negocio_id, cliente_id, vendedor_id, estado, es_kit, fecha_emision, fecha_entrega_estimada, monto_subtotal, moneda_subtotal, monto_iva, moneda_iva, monto_total, moneda_total, created_at, updated_at) VALUES
-    (1, 'NV-00001', 2, 2, 2, 'EN_PRODUCCION', false, CURRENT_DATE, DATE_ADD(CURRENT_DATE, INTERVAL 45 DAY),  858550.00, 'CLP', 163124.50, 'CLP', 1021674.50, 'CLP', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-    (2, 'NV-00002', 1, 1, 1, 'EMITIDA',        false, CURRENT_DATE, DATE_ADD(CURRENT_DATE, INTERVAL 30 DAY), 1060000.00, 'CLP', 201400.00, 'CLP', 1261400.00, 'CLP', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+    (1, 'NV-0000001', 2, 2, 2, 'EN_PRODUCCION', false, CURRENT_DATE, DATE_ADD(CURRENT_DATE, INTERVAL 45 DAY),  858550.00, 'CLP', 163124.50, 'CLP', 1021674.50, 'CLP', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+    (2, 'NV-0000002', 1, 1, 1, 'EMITIDA',        false, CURRENT_DATE, DATE_ADD(CURRENT_DATE, INTERVAL 30 DAY), 1060000.00, 'CLP', 201400.00, 'CLP', 1261400.00, 'CLP', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
--- Items de NV-00001 (50 Pantalones Cargo para MEDCELL — 2 tallas) — articulo_id=2: Ripstop
+-- Items de NV-0000001 (50 Pantalones Cargo para MEDCELL — 2 tallas) — articulo_id=2: Ripstop
 INSERT IGNORE INTO notas_venta_items (id_item_nv, nota_venta_id, nro_item, modelo, tela, composicion, color, talla, genero, codigo, proveedor_id, lleva_logo, tipo_item, requiere_ot, cantidad, precio_unitario, moneda_precio_unitario, total, moneda_total, articulo_id) VALUES
     (1, 1, 1, 'CARGO 6 BOLSILLOS', 'RIPSTOP IMPERMEABLE 150G', '100% POLIÉSTER DWR', 'VERDE OLIVA', 'M', 'MASCULINO', 'PAN-CARGO-M', 1, 'NO', 'OP', false, 25, 17171.00, 'CLP', 429275.00, 'CLP', 2),
     (2, 1, 2, 'CARGO 6 BOLSILLOS', 'RIPSTOP IMPERMEABLE 150G', '100% POLIÉSTER DWR', 'VERDE OLIVA', 'L', 'MASCULINO', 'PAN-CARGO-L', 1, 'NO', 'OP', false, 25, 17171.00, 'CLP', 429275.00, 'CLP', 2);
 
--- Tallas NV-00001
+-- Tallas NV-0000001
 INSERT IGNORE INTO notas_venta_item_tallas (id_item_talla, item_id, talla, cantidad) VALUES
     (1, 1, 'M', 25),
     (2, 2, 'L', 25);
 
--- Items de NV-00002 (100 Poleras Piqué para HITES — distribución de tallas) — articulo_id=3: Jersey Piqué
+-- Items de NV-0000002 (100 Poleras Piqué para HITES — distribución de tallas) — articulo_id=3: Jersey Piqué
 INSERT IGNORE INTO notas_venta_items (id_item_nv, nota_venta_id, nro_item, modelo, tela, composicion, color, talla, genero, codigo, proveedor_id, lleva_logo, tipo_item, requiere_ot, cantidad, precio_unitario, moneda_precio_unitario, total, moneda_total, articulo_id) VALUES
     (3, 2, 1, 'SLIM FIT MANGA CORTA', 'JERSEY PIQUÉ 180G', '100% ALGODÓN PEINADO', 'AZUL NAVY', 'S',  'UNISEX', 'POL-PIQUE-S',  1, 'SI', 'OP', false, 20, 10600.00, 'CLP', 212000.00, 'CLP', 3),
     (4, 2, 2, 'SLIM FIT MANGA CORTA', 'JERSEY PIQUÉ 180G', '100% ALGODÓN PEINADO', 'AZUL NAVY', 'M',  'UNISEX', 'POL-PIQUE-M',  1, 'SI', 'OP', false, 40, 10600.00, 'CLP', 424000.00, 'CLP', 3),
     (5, 2, 3, 'SLIM FIT MANGA CORTA', 'JERSEY PIQUÉ 180G', '100% ALGODÓN PEINADO', 'AZUL NAVY', 'L',  'UNISEX', 'POL-PIQUE-L',  1, 'SI', 'OP', false, 30, 10600.00, 'CLP', 318000.00, 'CLP', 3),
     (6, 2, 4, 'SLIM FIT MANGA CORTA', 'JERSEY PIQUÉ 180G', '100% ALGODÓN PEINADO', 'AZUL NAVY', 'XL', 'UNISEX', 'POL-PIQUE-XL', 1, 'SI', 'OP', false, 10, 10600.00, 'CLP', 106000.00, 'CLP', 3);
 
--- Tallas NV-00002
+-- Tallas NV-0000002
 INSERT IGNORE INTO notas_venta_item_tallas (id_item_talla, item_id, talla, cantidad) VALUES
     (3, 3, 'S',  20),
     (4, 4, 'M',  40),
@@ -388,7 +388,7 @@ ON DUPLICATE KEY UPDATE
 -- ============================================================
 -- 7.8. ORDEN DE PRODUCCIÓN (OP)
 -- ============================================================
--- OP-00001: Pantalón Cargo MEDCELL → referencia NV-00001 (cliente MEDCELL, EN_PRODUCCION)
+-- OP-00001: Pantalón Cargo MEDCELL → referencia NV-0000001 (cliente MEDCELL, EN_PRODUCCION)
 INSERT IGNORE INTO orden_produccion (id_op, costeo_version_id, numero_op, nota_venta_id, estado, fecha_inicio, fecha_entrega_programada, observaciones, created_at, updated_at) VALUES
     (1, 1, 'OP-00001', 1, 'EN_PROCESO', CURRENT_DATE, DATE_ADD(CURRENT_DATE, INTERVAL 30 DAY),
      'PANTALÓN CARGO OPERARIO — LABORATORIO MEDCELL — 50 UNIDADES TALLAS M/L', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
@@ -501,31 +501,31 @@ INSERT IGNORE INTO notas_venta
      created_at, updated_at)
 VALUES
     -- Enero 2026 — GEODIS, 80 poleras basic
-    (3, 'NV-00003', 3, 3, 1,
+    (3, 'NV-0000003', 3, 3, 1,
      'ENTREGADA', false,
      '2026-01-20', '2026-02-10',
      730000.00, 'CLP', 138700.00, 'CLP', 868700.00, 'CLP',
      '2026-01-20 09:00:00', '2026-01-20 09:00:00'),
     -- Febrero 2026 — HITES, 120 poleras
-    (4, 'NV-00004', 1, 1, 1,
+    (4, 'NV-0000004', 1, 1, 1,
      'ENTREGADA', false,
      '2026-02-14', '2026-03-05',
      1272000.00, 'CLP', 241680.00, 'CLP', 1513680.00, 'CLP',
      '2026-02-14 10:00:00', '2026-02-14 10:00:00'),
     -- Marzo 2026 — MEDCELL, 30 pantalones cargo
-    (5, 'NV-00005', 2, 2, 2,
+    (5, 'NV-0000005', 2, 2, 2,
      'ENTREGADA', false,
      '2026-03-08', '2026-04-01',
      515130.00, 'CLP', 97874.70, 'CLP', 613004.70, 'CLP',
      '2026-03-08 11:00:00', '2026-03-08 11:00:00'),
     -- Abril 2026 — GEODIS, 150 poleras corporativas
-    (6, 'NV-00006', 3, 3, 2,
+    (6, 'NV-0000006', 3, 3, 2,
      'ENTREGADA', false,
      '2026-04-22', '2026-05-15',
      1590000.00, 'CLP', 302100.00, 'CLP', 1892100.00, 'CLP',
      '2026-04-22 08:30:00', '2026-04-22 08:30:00'),
     -- Mayo 2026 — HITES, 60 chalecos acolchados
-    (7, 'NV-00007', 4, 1, 1,
+    (7, 'NV-0000007', 4, 1, 1,
      'ENTREGADA', false,
      '2026-05-10', '2026-06-01',
      1920000.00, 'CLP', 364800.00, 'CLP', 2284800.00, 'CLP',
@@ -610,10 +610,10 @@ ON DUPLICATE KEY UPDATE
 -- ── 8.5. ACTUALIZAR CONTADORES ─────────────────────────────
 INSERT INTO document_counter (tipo, ultimo_numero) VALUES
     ('NV',   7),
-    ('EVN',  4),
-    ('SCOS', 4),
-    ('OP',   2)
-ON DUPLICATE KEY UPDATE ultimo_numero = VALUES(ultimo_numero);
+    ('EVN',  10),
+    ('SCOS', 10),
+    ('OP',   10)
+ON DUPLICATE KEY UPDATE ultimo_numero = GREATEST(ultimo_numero, VALUES(ultimo_numero));
 
 -- ============================================================
 -- 7.11. MAESTROS GLOBALES (Moneda, Unidad de Medida)

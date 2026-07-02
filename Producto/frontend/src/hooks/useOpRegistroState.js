@@ -24,6 +24,30 @@ const FIELD_KEY_TO_BACKEND = {
     // cantidadCortes, entregaBodega — sin equivalente en backend, se omiten
 };
 
+// Campos de ActualizarSeguimientoCommand que el backend espera como LocalDate (ISO yyyy-MM-dd).
+const DATE_FIELDS = new Set([
+    'fechaRecepcionOp', 'finTizado', 'recepcionCompras', 'inicioCorte', 'finCorte',
+    'inicioLogo', 'regresoLogo', 'inicioTallerExterno', 'finTallerExterno',
+    'finTerminacion', 'finPersonalizado'
+]);
+
+// Normaliza cualquier formato de fecha común (ISO yyyy-MM-dd, DD-MM-YYYY, DD/MM/YYYY)
+// al formato ISO que espera el backend (java.time.LocalDate). El <input type="date">
+// nativo siempre entrega ISO, pero se normaliza igual por robustez ante datos que
+// hayan quedado guardados o pre-cargados en otro formato.
+const normalizeDateToISO = (value) => {
+    if (!value) return null;
+    const iso = /^\d{4}-\d{2}-\d{2}$/;
+    if (iso.test(value)) return value;
+    const dmy = /^(\d{1,2})[/-](\d{1,2})[/-](\d{4})$/;
+    const match = dmy.exec(value);
+    if (match) {
+        const [, day, month, year] = match;
+        return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+    }
+    return value;
+};
+
 const mapEnumToBackend = (key, value) => {
     if (!value) return null;
     if (key === 'estadoRecLogo') {
@@ -50,24 +74,24 @@ const mapEnumToBackend = (key, value) => {
 // aplicando el nuevo valor para el campo editado.
 const buildPayload = (seguimientoDTO, fieldKey, value) => {
     const backendKey = FIELD_KEY_TO_BACKEND[fieldKey];
-    const mappedValue = mapEnumToBackend(fieldKey, value);
+    const mappedValue = DATE_FIELDS.has(backendKey) ? normalizeDateToISO(value) : mapEnumToBackend(fieldKey, value);
     const base = {
-        fechaRecepcionOp:  seguimientoDTO?.fechaRecepcionOp  ?? null,
-        finTizado:         seguimientoDTO?.finTizado          ?? null,
+        fechaRecepcionOp:  normalizeDateToISO(seguimientoDTO?.fechaRecepcionOp),
+        finTizado:         normalizeDateToISO(seguimientoDTO?.finTizado),
         estadoOcMp:        seguimientoDTO?.estadoOcMp         ?? null,
-        recepcionCompras:  seguimientoDTO?.recepcionCompras   ?? null,
-        inicioCorte:       seguimientoDTO?.inicioCorte        ?? null,
-        finCorte:          seguimientoDTO?.finCorte           ?? null,
-        inicioLogo:        seguimientoDTO?.inicioLogo         ?? null,
+        recepcionCompras:  normalizeDateToISO(seguimientoDTO?.recepcionCompras),
+        inicioCorte:       normalizeDateToISO(seguimientoDTO?.inicioCorte),
+        finCorte:          normalizeDateToISO(seguimientoDTO?.finCorte),
+        inicioLogo:        normalizeDateToISO(seguimientoDTO?.inicioLogo),
         estadoIdaLogo:     seguimientoDTO?.estadoIdaLogo      ?? null,
-        regresoLogo:       seguimientoDTO?.regresoLogo        ?? null,
+        regresoLogo:       normalizeDateToISO(seguimientoDTO?.regresoLogo),
         estadoRecLogo:     seguimientoDTO?.estadoRecLogo      ?? null,
-        inicioTallerExterno: seguimientoDTO?.inicioTallerExterno ?? null,
-        finTallerExterno:  seguimientoDTO?.finTallerExterno   ?? null,
+        inicioTallerExterno: normalizeDateToISO(seguimientoDTO?.inicioTallerExterno),
+        finTallerExterno:  normalizeDateToISO(seguimientoDTO?.finTallerExterno),
         calidadTaller:     seguimientoDTO?.calidadTaller      ?? null,
         obsTaller:         seguimientoDTO?.obsTaller          ?? null,
-        finTerminacion:    seguimientoDTO?.finTerminacion     ?? null,
-        finPersonalizado:  seguimientoDTO?.finPersonalizado   ?? null,
+        finTerminacion:    normalizeDateToISO(seguimientoDTO?.finTerminacion),
+        finPersonalizado:  normalizeDateToISO(seguimientoDTO?.finPersonalizado),
     };
     if (backendKey) {
         base[backendKey] = mappedValue;
@@ -147,12 +171,9 @@ export const useOpRegistroState = () => {
         { key: 'entregaBodega', title: 'Entrega a Bodega', type: 'date' },
     ];
 
-    const formatDateToBackend = (dateStr) => {
-        if (!dateStr) return null;
-        // The backend expects YYYY-MM-DD for LocalDate by default (ISO 8601).
-        // Since the input type="date" value is already YYYY-MM-DD, we can just return it.
-        return dateStr;
-    };
+    // El backend espera YYYY-MM-DD (java.time.LocalDate, ISO 8601). El <input type="date">
+    // nativo ya entrega ese formato, pero se normaliza por si el valor viene de otra fuente.
+    const formatDateToBackend = (dateStr) => normalizeDateToISO(dateStr);
 
     const calculateTotalQty = useCallback((opId) => {
         const op = ordenes.find(o => o.id === opId);

@@ -9,8 +9,8 @@ const generateId = () => {
     catch (e) { return Math.random().toString(36).substring(2, 15); }
 };
 
-const inputStyles = `w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium text-slate-700 outline-none focus:bg-white focus:ring-2 focus:ring-blue-500/10 focus:border-blue-500 transition-all placeholder:text-slate-400/80`;
-const labelStyles = `block text-xs font-semibold text-slate-500 mb-1.5 tracking-wide`;
+const inputStyles = `w-full px-4 py-2.5 bg-muted border border-border rounded-xl text-sm font-medium text-foreground outline-none focus:bg-card focus:ring-2 focus:ring-primary/10 focus:border-primary transition-all placeholder:text-muted-foreground/70`;
+const labelStyles = `block text-xs font-semibold text-muted-foreground mb-1.5 tracking-wide`;
 
 export default function InformacionSolicitudPanel({ formData, setFormData, readOnly }) {
     const { clientes } = useClientes();
@@ -93,9 +93,9 @@ export default function InformacionSolicitudPanel({ formData, setFormData, readO
     };
 
     return (
-        <div className={`bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden ${readOnly ? "opacity-90" : ""}`}>
-            <div className="bg-slate-950 px-6 py-4 flex items-center gap-2.5">
-                <ClipboardList className="w-4 h-4 text-blue-400" />
+        <div className={`bg-card rounded-2xl border border-border shadow-sm overflow-hidden ${readOnly ? "opacity-90" : ""}`}>
+            <div className="bg-sidebar px-6 py-4 flex items-center gap-2.5">
+                <ClipboardList className="w-4 h-4 text-sidebar-primary" />
                 <h3 className="text-sm font-semibold tracking-wide text-white">
                     Información de Solicitud
                 </h3>
@@ -197,31 +197,31 @@ export default function InformacionSolicitudPanel({ formData, setFormData, readO
                     </div>
                 </div>
 
-                <div className="flex gap-8 pt-5 border-t border-slate-100">
+                <div className="flex gap-8 pt-5 border-t border-border">
                     <div className="flex items-center gap-3">
-                        <span className="text-xs font-semibold text-slate-500">Muestra física</span>
+                        <span className="text-xs font-semibold text-muted-foreground">Muestra física</span>
                         <button
                             type="button"
                             disabled={readOnly}
                             onClick={() => !readOnly && setFormData(prev => ({ ...prev, esMuestra: !prev.esMuestra }))}
-                            className={`relative w-9 h-5 rounded-full flex items-center transition-colors duration-200 ${formData.esMuestra ? "bg-amber-500" : "bg-slate-200"}`}
+                            className={`relative w-9 h-5 rounded-full flex items-center transition-colors duration-200 ${formData.esMuestra ? "bg-warning" : "bg-muted"}`}
                         >
-                            <div className={`w-3.5 h-3.5 rounded-full bg-white shadow transform transition-transform duration-200 ${formData.esMuestra ? "translate-x-4.5" : "translate-x-1"}`} />
+                            <div className={`w-3.5 h-3.5 rounded-full bg-card shadow transform transition-transform duration-200 ${formData.esMuestra ? "translate-x-4.5" : "translate-x-1"}`} />
                         </button>
-                        <span className="text-xs font-medium text-slate-600">{formData.esMuestra ? "Sí" : "No"}</span>
+                        <span className="text-xs font-medium text-muted-foreground">{formData.esMuestra ? "Sí" : "No"}</span>
                     </div>
 
                     <div className="flex items-center gap-3">
-                        <span className="text-xs font-semibold text-slate-500">Lleva logotipo</span>
+                        <span className="text-xs font-semibold text-muted-foreground">Lleva logotipo</span>
                         <button
                             type="button"
                             disabled={readOnly}
                             onClick={() => !readOnly && setFormData(prev => ({ ...prev, hasLogo: !prev.hasLogo }))}
-                            className={`relative w-9 h-5 rounded-full flex items-center transition-colors duration-200 ${formData.hasLogo ? "bg-emerald-600" : "bg-slate-200"}`}
+                            className={`relative w-9 h-5 rounded-full flex items-center transition-colors duration-200 ${formData.hasLogo ? "bg-success" : "bg-muted"}`}
                         >
-                            <div className={`w-3.5 h-3.5 rounded-full bg-white shadow transform transition-transform duration-200 ${formData.hasLogo ? "translate-x-4.5" : "translate-x-1"}`} />
+                            <div className={`w-3.5 h-3.5 rounded-full bg-card shadow transform transition-transform duration-200 ${formData.hasLogo ? "translate-x-4.5" : "translate-x-1"}`} />
                         </button>
-                        <span className="text-xs font-medium text-slate-600">{formData.hasLogo ? "Sí" : "No"}</span>
+                        <span className="text-xs font-medium text-muted-foreground">{formData.hasLogo ? "Sí" : "No"}</span>
                     </div>
                 </div>
             </div>

@@ -54,17 +54,17 @@ export default function CosteosOP() {
 
     if (isLoading) {
         return (
-            <div className="min-h-screen flex items-center justify-center bg-gray-50/30 backdrop-blur-sm">
+            <div className="min-h-screen flex items-center justify-center bg-background backdrop-blur-sm">
                 <div className="flex flex-col items-center">
-                    <div className="w-16 h-16 border-4 border-green-500 border-t-transparent rounded-full animate-spin mb-4" />
-                    <p className="text-[10px] font-black text-gray-400 uppercase tracking-[0.3em] animate-pulse">Sincronizando Motor de Costos...</p>
+                    <div className="w-16 h-16 border-4 border-success border-t-transparent rounded-full animate-spin mb-4" />
+                    <p className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.3em] animate-pulse">Sincronizando Motor de Costos...</p>
                 </div>
             </div>
         );
     }
 
     return (
-        <div className="min-h-screen bg-gray-50/30">
+        <div className="min-h-screen bg-background">
             {view === 'list' ? (
                 <ListaCosteos
                     onOpenDashboard={() => setShowDashboard(true)}

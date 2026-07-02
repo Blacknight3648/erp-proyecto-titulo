@@ -13,7 +13,7 @@ import ModuleLandingPage from "./components/layout/ModuleLandingPage";
 import Login from "./pages/auth/Login";
 
 /* HOME */
-import Welcome from "./pages/welcome/Welcome";
+import Welcome from "./pages/home/Welcome";
 
 /* COMERCIAL */
 import NotaDeVenta from "./pages/commercial/sales-notes/NotaDeVenta";

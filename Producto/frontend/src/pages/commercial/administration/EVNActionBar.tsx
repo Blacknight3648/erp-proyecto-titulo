@@ -6,21 +6,21 @@ import { exportToPDF, exportToExcel } from '../../../utils/exportUtils';
 const MODE_CONFIG = {
     create: {
         badgeText: 'Nueva EVN',
-        badgeClass: 'bg-indigo-100 text-indigo-700 border border-indigo-200',
+        badgeClass: 'bg-brand-indigo/10 text-brand-indigo border border-brand-indigo/20',
         icon: Plus,
         actionLabel: 'Crear Propuesta',
-        actionClass: 'bg-indigo-600 hover:bg-indigo-700 shadow-indigo-200',
+        actionClass: 'bg-brand-indigo hover:bg-brand-indigo/90 shadow-brand-indigo/20',
     },
     edit: {
         badgeText: 'Editando',
-        badgeClass: 'bg-amber-100 text-amber-700 border border-amber-200',
+        badgeClass: 'bg-warning/10 text-warning border border-warning/20',
         icon: Edit3,
         actionLabel: 'Actualizar EVN',
-        actionClass: 'bg-amber-600 hover:bg-amber-700 shadow-amber-200',
+        actionClass: 'bg-warning hover:bg-warning/90 shadow-warning/20',
     },
     view: {
         badgeText: 'Solo Lectura',
-        badgeClass: 'bg-slate-100 text-slate-600 border border-slate-200',
+        badgeClass: 'bg-muted text-muted-foreground border border-border',
         icon: Eye,
         actionLabel: null, // no save button in view mode
         actionClass: '',
@@ -79,29 +79,29 @@ export default function EVNActionBar({
     };
 
     const margenNum = parseFloat(totals.margenPorc || 0);
-    const margenColor = margenNum >= 25 ? 'text-emerald-600' : margenNum >= 15 ? 'text-amber-500' : 'text-red-500';
+    const margenColor = margenNum >= 25 ? 'text-success' : margenNum >= 15 ? 'text-warning' : 'text-destructive';
 
     const evnNumero = initialEval?.numeroEvn || initialEval?.numero || initialEval?.evaluacionNegocioId;
 
     return (
-        <div className="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-gray-100 px-8 py-4 mb-8">
+        <div className="sticky top-0 z-50 bg-card/90 backdrop-blur-md border-b border-border px-8 py-4 mb-8">
             <div className="max-w-[1700px] mx-auto flex items-center justify-between">
                 {/* Left: back + title */}
                 <div className="flex items-center space-x-4">
                     <button
                         onClick={() => onBack(mode === 'edit')}
-                        className="w-10 h-10 bg-white rounded-xl shadow-sm border border-gray-100 flex items-center justify-center hover:bg-gray-50 transition-all group"
+                        className="w-10 h-10 bg-card rounded-xl shadow-sm border border-border flex items-center justify-center hover:bg-muted transition-all group"
                     >
-                        <ChevronLeft className="w-5 h-5 text-gray-400 group-hover:text-indigo-600 group-hover:-translate-x-0.5 transition-all" />
+                        <ChevronLeft className="w-5 h-5 text-muted-foreground group-hover:text-brand-indigo group-hover:-translate-x-0.5 transition-all" />
                     </button>
 
                     <div className="flex items-center gap-3">
                         <div className="flex items-center space-x-2">
-                            <h1 className="text-xl font-black text-gray-800 tracking-tight uppercase italic">
+                            <h1 className="text-xl font-black text-foreground tracking-tight uppercase italic">
                                 Evaluación de Negocio
                             </h1>
                             {evnNumero && (
-                                <span className="px-2.5 py-1 bg-gray-100 text-gray-600 text-[10px] font-black rounded-full uppercase tracking-widest">
+                                <span className="px-2.5 py-1 bg-muted text-muted-foreground text-[10px] font-black rounded-full uppercase tracking-widest">
                                     {String(evnNumero).replace(/^EVN-?/i, '') ? `EVN-${String(evnNumero).replace(/^EVN-?/i, '')}` : evnNumero}
                                 </span>
                             )}
@@ -118,24 +118,24 @@ export default function EVNActionBar({
                     {/* Key metrics */}
                     <div className="flex items-center space-x-2 mr-4 text-right">
                         <div>
-                            <p className="text-[9px] font-black text-gray-400 uppercase leading-none mb-1">Margen</p>
+                            <p className="text-[9px] font-black text-muted-foreground uppercase leading-none mb-1">Margen</p>
                             <p className={`text-xl font-black ${margenColor}`}>
                                 {totals.margenPorc}%
                             </p>
                         </div>
-                        <div className="w-px h-10 bg-gray-100 rounded-full mx-3" />
+                        <div className="w-px h-10 bg-border rounded-full mx-3" />
                         <div>
-                            <p className="text-[9px] font-black text-gray-400 uppercase leading-none mb-1">Total Venta</p>
-                            <p className="text-xl font-black text-gray-800 tracking-tight tabular-nums">
+                            <p className="text-[9px] font-black text-muted-foreground uppercase leading-none mb-1">Total Venta</p>
+                            <p className="text-xl font-black text-foreground tracking-tight tabular-nums">
                                 ${(totals.totalNeto || 0).toLocaleString('es-CL')}
                             </p>
                         </div>
                         {mode !== 'view' && (
                             <>
-                                <div className="w-px h-10 bg-gray-100 rounded-full mx-3" />
+                                <div className="w-px h-10 bg-border rounded-full mx-3" />
                                 <div>
-                                    <p className="text-[9px] font-black text-gray-400 uppercase leading-none mb-1">Costo Total</p>
-                                    <p className="text-xl font-black text-slate-700 tracking-tight tabular-nums">
+                                    <p className="text-[9px] font-black text-muted-foreground uppercase leading-none mb-1">Costo Total</p>
+                                    <p className="text-xl font-black text-foreground tracking-tight tabular-nums">
                                         ${(totals.totalCostoGeneral || 0).toLocaleString('es-CL')}
                                     </p>
                                 </div>
@@ -147,24 +147,24 @@ export default function EVNActionBar({
                     <div className="relative">
                         <button
                             onClick={() => setShowExportMenu(!showExportMenu)}
-                            className="px-5 py-2.5 bg-white border border-gray-200 text-gray-700 rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-gray-50 transition-all flex items-center gap-2"
+                            className="px-5 py-2.5 bg-card border border-border text-foreground rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-muted transition-all flex items-center gap-2"
                         >
-                            <Download className="w-3.5 h-3.5 text-indigo-600" />
+                            <Download className="w-3.5 h-3.5 text-brand-indigo" />
                             Exportar
                         </button>
 
                         {showExportMenu && (
-                            <div className="absolute top-full mt-2 right-0 w-48 bg-white rounded-2xl shadow-2xl border border-gray-100 py-2 z-[60] animate-in fade-in slide-in-from-top-2 duration-200">
+                            <div className="absolute top-full mt-2 right-0 w-48 bg-card rounded-2xl shadow-2xl border border-border py-2 z-[60] animate-in fade-in slide-in-from-top-2 duration-200">
                                 <button
                                     onClick={handleExportPDF}
-                                    className="w-full text-left px-4 py-3 text-[10px] font-black uppercase tracking-widest text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 flex items-center transition-colors"
+                                    className="w-full text-left px-4 py-3 text-[10px] font-black uppercase tracking-widest text-muted-foreground hover:bg-brand-indigo/10 hover:text-brand-indigo flex items-center transition-colors"
                                 >
                                     <FileText className="w-4 h-4 mr-3" />
                                     Exportar a PDF
                                 </button>
                                 <button
                                     onClick={handleExportExcel}
-                                    className="w-full text-left px-4 py-3 text-[10px] font-black uppercase tracking-widest text-gray-600 hover:bg-green-50 hover:text-green-600 flex items-center transition-colors border-t border-gray-50"
+                                    className="w-full text-left px-4 py-3 text-[10px] font-black uppercase tracking-widest text-muted-foreground hover:bg-success/10 hover:text-success flex items-center transition-colors border-t border-border"
                                 >
                                     <FileSpreadsheet className="w-4 h-4 mr-3" />
                                     Exportar a Excel
@@ -177,7 +177,7 @@ export default function EVNActionBar({
                     {puedeGenerarNV && (
                         <button
                             onClick={handleGenerarNV}
-                            className="px-7 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-black text-[10px] uppercase tracking-widest shadow-lg shadow-emerald-200 hover:-translate-y-0.5 transition-all flex items-center gap-2 group"
+                            className="px-7 py-2.5 bg-success hover:bg-success/90 text-white rounded-xl font-black text-[10px] uppercase tracking-widest shadow-lg shadow-success/20 hover:-translate-y-0.5 transition-all flex items-center gap-2 group"
                         >
                             <ShoppingCart className="w-3.5 h-3.5 group-hover:rotate-12 transition-transform" />
                             Generar Nota de Venta
@@ -188,7 +188,7 @@ export default function EVNActionBar({
                     {puedeCerrar && (
                         <button
                             onClick={() => onCerrarEVN(initialEval)}
-                            className="px-7 py-2.5 bg-slate-800 hover:bg-slate-900 text-white rounded-xl font-black text-[10px] uppercase tracking-widest shadow-lg shadow-slate-200 hover:-translate-y-0.5 transition-all flex items-center gap-2 group"
+                            className="px-7 py-2.5 bg-foreground hover:bg-foreground/90 text-background rounded-xl font-black text-[10px] uppercase tracking-widest shadow-lg shadow-foreground/10 hover:-translate-y-0.5 transition-all flex items-center gap-2 group"
                         >
                             <Lock className="w-3.5 h-3.5 group-hover:rotate-12 transition-transform" />
                             Cerrar EVN

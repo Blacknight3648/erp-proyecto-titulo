@@ -53,7 +53,6 @@ class CamposPlantillaServiceImplTest {
                 .nombreCampo("Forro")
                 .build();
 
-        CamposPlantilla nueva = plantilla(null, "Forro");
         CamposPlantilla guardada = plantilla(1L, "Forro");
         CamposPlantillaDTO esperado = CamposPlantillaDTO.builder()
                 .idPlantilla(1L)

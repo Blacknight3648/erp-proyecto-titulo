@@ -5,7 +5,6 @@ import backend.com.gestionUsuarios.application.service.impl.ProveedorServiceImpl
 import backend.com.gestionUsuarios.domain.model.Proveedor;
 import backend.com.gestionUsuarios.infrastructure.exception.ProveedorNotFoundException;
 import backend.com.gestionUsuarios.infrastructure.persistence.repository.ProveedorRepository;
-import backend.com.shared.domain.model.Giro;
 import backend.com.shared.infrastructure.mapper.GiroMapper;
 import backend.com.shared.infrastructure.persistence.repository.GiroRepository;
 import org.junit.jupiter.api.DisplayName;

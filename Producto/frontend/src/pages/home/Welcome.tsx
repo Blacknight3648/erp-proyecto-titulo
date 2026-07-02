@@ -8,14 +8,14 @@ import {
     BarChart3,
     Settings,
 } from 'lucide-react';
-import { WelcomeHero } from '../home/WelcomeHero';
-import AdminDashboard from '../home/AdminDashboard';
-import { AdminFastReports } from '../home/AdminFastReports';
-import ModuleCard from '../home/ModuleCard';
+import { useAuth } from '../../contexts/AuthContext';
+import AdminDashboard from './AdminDashboard';
+import { AdminFastReports } from './AdminFastReports';
+import ModuleCard from './ModuleCard';
 import { api } from '../../remote/service/api';
 
 /* ─────────────────────────────────────────
-   MÓDULOS — apuntan a los landing pages
+    MÓDULOS — apuntan a los landing pages
 ───────────────────────────────────────── */
 const MODULES = [
     {
@@ -70,10 +70,11 @@ const QUICK_NAV = {
 };
 
 /* ─────────────────────────────────────────
-   COMPONENTE
+    COMPONENTE PRINCIPAL
 ───────────────────────────────────────── */
 export default function Welcome() {
     const navigate = useNavigate();
+    const { user } = useAuth();
     const [stats, setStats] = useState({
         ventas: '$0',
         scos: 0,
@@ -99,10 +100,10 @@ export default function Welcome() {
 
                 if (!isMounted) return;
 
-                const scosList = scosRes.data || [];
-                const evnList = evnRes.data || [];
-                const nvList = nvRes.data || [];
-                const opsList = opsRes.data || [];
+                const scosList = (scosRes.data as any) || [];
+                const evnList = (evnRes.data as any) || [];
+                const nvList = (nvRes.data as any) || [];
+                const opsList = (opsRes.data as any) || [];
 
                 // 1. SCOS Pendientes
                 const pendingScos = scosList.filter(sc => sc.estado === 'PENDIENTE').length;
@@ -153,7 +154,7 @@ export default function Welcome() {
                         const monthIndex = m - 1;
                         if (monthIndex >= 0 && monthIndex < 12) {
                             groupedByMonth[monthIndex].ventas += nv.montoTotal || 0;
-                            const evn = evnMap.get(nv.evaluacionNegocioId);
+                            const evn = evnMap.get(nv.evaluacionNegocioId) as any;
                             const nvUtilidad = evn ? (evn.margenGanancia || 0) : ((nv.montoTotal || 0) * 0.25);
                             groupedByMonth[monthIndex].utilidad += nvUtilidad;
                         }
@@ -179,35 +180,45 @@ export default function Welcome() {
     }, []);
 
     return (
-        <div className="mx-auto max-w-7xl space-y-6 px-4 py-6 animate-in fade-in slide-in-from-bottom-4 duration-700">
+        <div className="mx-auto max-w-7xl px-4 py-8 space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
+            
+            {/* ── Identidad y Saludo Directo (Estilo Azia) ── */}
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-border pb-5">
+                <div className="space-y-1">
+                    <h1 className="text-2xl font-extrabold tracking-tight text-foreground">
+                        Panel de Administración
+                    </h1>
+                    <p className="text-sm text-muted-foreground">
+                        Bienvenido de vuelta, <span className="font-semibold text-foreground">{user?.name || 'Administrador'}</span>. Estado general de la planta y rendimiento comercial.
+                    </p>
+                </div>
+            </div>
 
-            {/* Identidad del usuario (sin saludo, sin fecha/hora) */}
-            <WelcomeHero />
+            {/* ── Panel de KPIs y Análisis Estadístico (Ancho Completo) ── */}
+            <div className="pt-2">
+                <AdminDashboard
+                    user={user}
+                    stats={stats}
+                    salesData={salesData}
+                    profitabilityData={profitabilityData}
+                />
+            </div>
 
-            {/* KPIs del sistema */}
-            <AdminDashboard
-                stats={stats}
-                salesData={salesData}
-                profitabilityData={profitabilityData}
-            />
-
-            {/* Cuerpo: módulos + acceso rápido */}
-            <div className="grid grid-cols-1 gap-6 lg:grid-cols-[1fr_280px]">
-
-                {/* Izquierda: grid de módulos */}
-                <div>
-                    <div className="mb-4 flex items-center justify-between">
-                        <div>
-                            <h2 className="text-base font-bold tracking-tight text-foreground">
-                                Módulos del Sistema
-                            </h2>
-                            <p className="mt-0.5 text-xs text-muted-foreground">
-                                Seleccione un módulo para comenzar a operar
-                            </p>
-                        </div>
+            {/* ── Distribución de Módulos y Accesos Rápido ── */}
+            <div className="grid grid-cols-1 gap-8 lg:grid-cols-[1fr_340px] pt-6 border-t border-border">
+                
+                {/* Módulos del Sistema (Grid de 3 columnas en pantallas grandes) */}
+                <div className="space-y-6">
+                    <div>
+                        <h2 className="text-xl font-bold tracking-tight text-foreground">
+                            Módulos del Sistema
+                        </h2>
+                        <p className="mt-1 text-sm text-muted-foreground">
+                            Seleccione un área operativa para comenzar la gestión en tiempo real.
+                        </p>
                     </div>
 
-                    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
+                    <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-3">
                         {MODULES.map((module, idx) => (
                             <ModuleCard
                                 key={idx}
@@ -218,12 +229,13 @@ export default function Welcome() {
                     </div>
                 </div>
 
-                {/* Derecha: acceso rápido */}
-                <div className="lg:pt-[52px]">
+                {/* Accesos rápidos de administración */}
+                <div className="space-y-6">
                     <AdminFastReports
                         onNavigate={(id) => navigate(QUICK_NAV[id] ?? '/')}
                     />
                 </div>
+
             </div>
         </div>
     );

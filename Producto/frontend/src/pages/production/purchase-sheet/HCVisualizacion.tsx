@@ -33,23 +33,24 @@ import {
     GitBranch,
     Edit3,
     Box,
-    AlertTriangle,
-    FileText
+    AlertTriangle
 } from 'lucide-react';
 import { ModificarItemModal } from './ModificarItemModal';
+import { JustificacionModal } from './JustificacionModal';
 
 const STATUS_BADGE = {
-    BORRADOR: 'bg-amber-50 text-amber-600 border-amber-100',
-    APROBADA: 'bg-emerald-50 text-emerald-600 border-emerald-100',
-    CERRADA:  'bg-slate-100 text-slate-500 border-slate-200',
+    BORRADOR: 'bg-warning/10 text-warning border-warning/20',
+    APROBADA: 'bg-success/10 text-success border-success/20',
+    CERRADA:  'bg-muted text-muted-foreground border-border',
 };
 
 export default function HCVisualizacion({ hc, onBack, onAprobar, onCerrar, onModificar, formatCLP, modificarItemHC }) {
     const [itemToModify, setItemToModify] = useState<any>(null);
+    const [itemToShowJustificacion, setItemToShowJustificacion] = useState<any>(null);
 
     if (!hc) return (
-        <div className="p-10 text-center bg-white/50 backdrop-blur-md rounded-3xl border border-dashed border-slate-200">
-            <p className="text-slate-400 font-bold uppercase tracking-widest text-xs">Cargando datos de la hoja de compra...</p>
+        <div className="p-10 text-center bg-card/50 backdrop-blur-md rounded-3xl border border-dashed border-border">
+            <p className="text-muted-foreground font-bold uppercase tracking-widest text-xs">Cargando datos de la hoja de compra...</p>
         </div>
     );
 
@@ -75,18 +76,18 @@ export default function HCVisualizacion({ hc, onBack, onAprobar, onCerrar, onMod
                         variant="ghost"
                         size="icon"
                         onClick={onBack}
-                        className="rounded-2xl h-12 w-12 bg-white/50 backdrop-blur-md border border-white hover:bg-white hover:rotate-[-10deg] transition-all shadow-xl shadow-slate-200/50"
+                        className="rounded-2xl h-12 w-12 bg-card/50 backdrop-blur-md border border-border hover:bg-card hover:rotate-[-10deg] transition-all shadow-xl shadow-foreground/5"
                     >
-                        <ChevronLeft className="w-6 h-6 text-slate-600" />
+                        <ChevronLeft className="w-6 h-6 text-muted-foreground" />
                     </Button>
                     <div>
                         <div className="flex items-center gap-3">
-                            <h2 className="text-4xl font-black text-slate-900 tracking-tighter uppercase">HC #{hc.id}</h2>
+                            <h2 className="text-4xl font-black text-foreground tracking-tighter uppercase">HC #{hc.id}</h2>
                             <Badge className={`px-4 h-7 rounded-full font-black text-[9px] uppercase tracking-widest border-2 ${STATUS_BADGE[hc.status] || ''}`}>
                                 {hc.status || '—'}
                             </Badge>
                         </div>
-                        <p className="text-[10px] text-slate-400 font-black uppercase tracking-[0.2em] mt-2 italic">
+                        <p className="text-[10px] text-muted-foreground font-black uppercase tracking-[0.2em] mt-2 italic">
                             {hc.numero || 'Sin número asignado'} · Generada {hc.fechaCreacion || '—'}
                         </p>
                     </div>
@@ -96,7 +97,7 @@ export default function HCVisualizacion({ hc, onBack, onAprobar, onCerrar, onMod
                     {hc.status === 'BORRADOR' && onAprobar && (
                         <Button
                             onClick={() => onAprobar(hc.id)}
-                            className="bg-emerald-600 hover:bg-emerald-700 text-white rounded-2xl px-8 h-12 font-black text-xs uppercase tracking-widest shadow-2xl shadow-emerald-100 transition-all active:scale-95 flex items-center gap-2"
+                            className="bg-success hover:bg-success/90 text-white rounded-2xl px-8 h-12 font-black text-xs uppercase tracking-widest shadow-2xl shadow-success/20 transition-all active:scale-95 flex items-center gap-2"
                         >
                             <CheckCircle2 className="w-4 h-4" />
                             Aprobar HC
@@ -105,7 +106,7 @@ export default function HCVisualizacion({ hc, onBack, onAprobar, onCerrar, onMod
                     {hc.status === 'APROBADA' && onModificar && (
                         <Button
                             onClick={() => onModificar(hc.id)}
-                            className="bg-indigo-600 hover:bg-indigo-700 text-white rounded-2xl px-8 h-12 font-black text-xs uppercase tracking-widest shadow-2xl shadow-indigo-100 transition-all active:scale-95 flex items-center gap-2"
+                            className="bg-brand-indigo hover:bg-brand-indigo/90 text-white rounded-2xl px-8 h-12 font-black text-xs uppercase tracking-widest shadow-2xl shadow-brand-indigo/20 transition-all active:scale-95 flex items-center gap-2"
                         >
                             <ShoppingCart className="w-4 h-4" />
                             Gestionar Compra
@@ -114,7 +115,7 @@ export default function HCVisualizacion({ hc, onBack, onAprobar, onCerrar, onMod
                     {hc.status === 'APROBADA' && onCerrar && (
                         <Button
                             onClick={() => onCerrar(hc.id)}
-                            className="bg-slate-900 hover:bg-black text-white rounded-2xl px-8 h-12 font-black text-xs uppercase tracking-widest shadow-2xl shadow-slate-200 transition-all active:scale-95 flex items-center gap-2"
+                            className="bg-foreground hover:bg-foreground/90 text-background rounded-2xl px-8 h-12 font-black text-xs uppercase tracking-widest shadow-2xl shadow-foreground/10 transition-all active:scale-95 flex items-center gap-2"
                         >
                             <Lock className="w-4 h-4" />
                             Cerrar HC
@@ -127,15 +128,15 @@ export default function HCVisualizacion({ hc, onBack, onAprobar, onCerrar, onMod
                 {/* Main Content */}
                 <div className="lg:col-span-2 space-y-8">
                     {/* Identification Card */}
-                    <Card className="rounded-[2.5rem] border-white/40 bg-white/60 backdrop-blur-md shadow-2xl shadow-slate-200/50 overflow-hidden border">
-                        <CardHeader className="p-10 pb-4 border-b border-slate-50">
+                    <Card className="rounded-[2.5rem] border-border bg-card/60 backdrop-blur-md shadow-2xl shadow-foreground/5 overflow-hidden border">
+                        <CardHeader className="p-10 pb-4 border-b border-border">
                             <div className="flex items-center gap-4">
-                                <div className="bg-indigo-50 p-2 rounded-xl">
-                                    <Layers className="w-5 h-5 text-indigo-600" />
+                                <div className="bg-brand-indigo/10 p-2 rounded-xl">
+                                    <Layers className="w-5 h-5 text-brand-indigo" />
                                 </div>
                                 <div>
-                                    <CardTitle className="text-sm font-black text-slate-800 uppercase tracking-widest">Trazabilidad</CardTitle>
-                                    <CardDescription className="text-[9px] font-bold uppercase tracking-widest text-slate-400 mt-1">Vinculación con OP y versión del Costeo</CardDescription>
+                                    <CardTitle className="text-sm font-black text-foreground uppercase tracking-widest">Trazabilidad</CardTitle>
+                                    <CardDescription className="text-[9px] font-bold uppercase tracking-widest text-muted-foreground mt-1">Vinculación con OP y versión del Costeo</CardDescription>
                                 </div>
                             </div>
                         </CardHeader>
@@ -147,31 +148,31 @@ export default function HCVisualizacion({ hc, onBack, onAprobar, onCerrar, onMod
                     </Card>
 
                     {/* Supplies Table */}
-                    <Card className="rounded-[2.5rem] border-white/40 bg-white/60 backdrop-blur-md shadow-2xl shadow-slate-200/50 overflow-hidden border">
-                        <CardHeader className="p-10 pb-4 border-b border-slate-50">
+                    <Card className="rounded-[2.5rem] border-border bg-card/60 backdrop-blur-md shadow-2xl shadow-foreground/5 overflow-hidden border">
+                        <CardHeader className="p-10 pb-4 border-b border-border">
                             <div className="flex items-center gap-4">
-                                <div className="bg-emerald-50 p-2 rounded-xl">
-                                    <ShoppingBag className="w-5 h-5 text-emerald-600" />
+                                <div className="bg-success/10 p-2 rounded-xl">
+                                    <ShoppingBag className="w-5 h-5 text-success" />
                                 </div>
                                 <div>
-                                    <CardTitle className="text-sm font-black text-slate-800 uppercase tracking-widest">Insumos Requeridos</CardTitle>
-                                    <CardDescription className="text-[9px] font-bold uppercase tracking-widest text-slate-400 mt-1">Calculados desde Costeo × Cantidad OP</CardDescription>
+                                    <CardTitle className="text-sm font-black text-foreground uppercase tracking-widest">Insumos Requeridos</CardTitle>
+                                    <CardDescription className="text-[9px] font-bold uppercase tracking-widest text-muted-foreground mt-1">Calculados desde Costeo × Cantidad OP</CardDescription>
                                 </div>
                             </div>
                         </CardHeader>
                         <CardContent className="p-0">
                             <Table>
-                                <TableHeader className="bg-slate-50/50">
-                                    <TableRow className="border-slate-100 hover:bg-transparent">
-                                        <TableHead className="pl-8 font-black text-[9px] uppercase tracking-widest text-slate-400 py-5">Insumo</TableHead>
-                                        <TableHead className="font-black text-[9px] uppercase tracking-widest text-slate-400">Tipo</TableHead>
-                                        <TableHead className="font-black text-[9px] uppercase tracking-widest text-slate-400 text-center">Stock Bodega</TableHead>
-                                        <TableHead className="font-black text-[9px] uppercase tracking-widest text-slate-400 text-center">Cant. Requerida</TableHead>
-                                        <TableHead className="font-black text-[9px] uppercase tracking-widest text-slate-400 text-center">Cant. a Comprar</TableHead>
-                                        <TableHead className="font-black text-[9px] uppercase tracking-widest text-slate-400 text-right pr-6">Precio Ref.</TableHead>
-                                        <TableHead className="font-black text-[9px] uppercase tracking-widest text-slate-400 text-center">Estado</TableHead>
+                                <TableHeader className="bg-muted/50">
+                                    <TableRow className="border-border hover:bg-transparent">
+                                        <TableHead className="pl-8 font-black text-[9px] uppercase tracking-widest text-muted-foreground py-5">Insumo</TableHead>
+                                        <TableHead className="font-black text-[9px] uppercase tracking-widest text-muted-foreground">Tipo</TableHead>
+                                        <TableHead className="font-black text-[9px] uppercase tracking-widest text-muted-foreground text-center">Stock Bodega</TableHead>
+                                        <TableHead className="font-black text-[9px] uppercase tracking-widest text-muted-foreground text-center">Cant. Requerida</TableHead>
+                                        <TableHead className="font-black text-[9px] uppercase tracking-widest text-muted-foreground text-center">Cant. a Comprar</TableHead>
+                                        <TableHead className="font-black text-[9px] uppercase tracking-widest text-muted-foreground text-right pr-6">Precio Ref.</TableHead>
+                                        <TableHead className="font-black text-[9px] uppercase tracking-widest text-muted-foreground text-center">Estado</TableHead>
                                         {(hc.status === 'BORRADOR' || hc.status === 'APROBADA') && (
-                                            <TableHead className="font-black text-[9px] uppercase tracking-widest text-slate-400 text-right pr-8">Acción</TableHead>
+                                            <TableHead className="font-black text-[9px] uppercase tracking-widest text-muted-foreground text-right pr-8">Acción</TableHead>
                                         )}
                                     </TableRow>
                                 </TableHeader>
@@ -182,57 +183,54 @@ export default function HCVisualizacion({ hc, onBack, onAprobar, onCerrar, onMod
                                         const isMod = item.modificado || cantComp !== cantReq;
 
                                         return (
-                                            <TableRow key={item.id ?? idx} className="border-slate-50 hover:bg-white transition-all group">
+                                            <TableRow key={item.id ?? idx} className="border-border hover:bg-card transition-all group">
                                                 <TableCell className="pl-8 py-5">
                                                     <div className="flex items-center gap-3">
-                                                        <div className="w-1.5 h-1.5 rounded-full bg-slate-200 group-hover:bg-indigo-500 transition-colors" />
-                                                        <span className="font-bold text-slate-700 text-xs uppercase tracking-tight group-hover:text-indigo-600 transition-colors">{item.insumo || '—'}</span>
+                                                        <div className="w-1.5 h-1.5 rounded-full bg-border group-hover:bg-brand-indigo transition-colors" />
+                                                        <span className="font-bold text-foreground text-xs uppercase tracking-tight group-hover:text-brand-indigo transition-colors">{item.insumo || '—'}</span>
                                                     </div>
                                                 </TableCell>
                                                 <TableCell>
-                                                    <Badge variant="outline" className="rounded-lg font-black text-[8px] uppercase tracking-widest border-slate-100 bg-white/50 text-slate-500 py-1.5">
+                                                    <Badge variant="outline" className="rounded-lg font-black text-[8px] uppercase tracking-widest border-border bg-card/50 text-muted-foreground py-1.5">
                                                         <Tag className="w-2.5 h-2.5 mr-1" />
                                                         {item.tipoInsumo || '—'}
                                                     </Badge>
                                                 </TableCell>
                                                 <TableCell className="text-center font-bold text-xs tabular-nums">
                                                     {Number(item.cantidadStock || 0) > 0 ? (
-                                                        <Badge className="bg-emerald-50 text-emerald-700 border-emerald-200 text-[10px] font-mono font-bold px-2 py-0.5 shadow-sm">
+                                                        <Badge className="bg-success/10 text-success border-success/20 text-[10px] font-mono font-bold px-2 py-0.5 shadow-sm">
                                                             {Number(Number(item.cantidadStock).toFixed(2))} unid.
                                                         </Badge>
                                                     ) : (
-                                                        <span className="text-slate-400 font-mono text-[11px]">0.00</span>
+                                                        <span className="text-muted-foreground font-mono text-[11px]">0.00</span>
                                                     )}
                                                 </TableCell>
-                                                <TableCell className="text-center font-bold text-xs text-slate-600 tabular-nums">
+                                                <TableCell className="text-center font-bold text-xs text-muted-foreground tabular-nums">
                                                     {cantReq}
                                                 </TableCell>
                                                 <TableCell className="text-center font-black text-xs tabular-nums">
-                                                    <span className={isMod ? "text-amber-600 font-extrabold bg-amber-50 px-2 py-1 rounded-md border border-amber-200/60" : "text-slate-800"}>
+                                                    <span className={isMod ? "text-warning font-extrabold bg-warning/10 px-2 py-1 rounded-md border border-warning/20" : "text-foreground"}>
                                                         {cantComp}
                                                     </span>
                                                 </TableCell>
-                                                <TableCell className="text-right pr-6 font-black text-xs text-indigo-600 tabular-nums">
+                                                <TableCell className="text-right pr-6 font-black text-xs text-brand-indigo tabular-nums">
                                                     {formatCLP ? formatCLP(item.precioEstimado || 0) : (item.precioEstimado ?? '—')}
                                                 </TableCell>
                                                 <TableCell className="text-center">
                                                     {isMod ? (
-                                                        <div className="inline-flex flex-col items-center group/tip relative">
-                                                            <Badge className="bg-gradient-to-r from-amber-500 to-rose-500 text-white border-0 font-black text-[9px] uppercase tracking-widest px-2 py-0.5 shadow-md cursor-help flex items-center gap-1">
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => setItemToShowJustificacion(item)}
+                                                            aria-label={`Ver justificación de modificación de ${item.insumo || 'insumo'}`}
+                                                            className="inline-block"
+                                                        >
+                                                            <Badge className="bg-gradient-to-r from-warning to-destructive text-white border-0 font-black text-[9px] uppercase tracking-widest px-2 py-0.5 shadow-md cursor-pointer hover:brightness-110 focus-visible:ring-2 focus-visible:ring-warning focus-visible:ring-offset-2 transition-all flex items-center gap-1">
                                                                 <AlertTriangle className="w-2.5 h-2.5" />
                                                                 MODIFICADO
                                                             </Badge>
-                                                            {item.justificacionModificacion && (
-                                                                <div className="absolute bottom-full mb-2 hidden group-hover/tip:block z-50 w-64 p-3 bg-slate-900 text-white text-[11px] rounded-xl shadow-2xl border border-slate-700 leading-relaxed text-left pointer-events-none">
-                                                                    <div className="font-bold text-amber-400 mb-1 flex items-center gap-1.5 text-[10px] uppercase tracking-wider">
-                                                                        <FileText className="w-3 h-3" /> Justificación:
-                                                                    </div>
-                                                                    {item.justificacionModificacion}
-                                                                </div>
-                                                            )}
-                                                        </div>
+                                                        </button>
                                                     ) : (
-                                                        <Badge variant="outline" className="bg-slate-50 text-slate-400 border-slate-200 text-[9px] font-bold">
+                                                        <Badge variant="outline" className="bg-muted text-muted-foreground border-border text-[9px] font-bold">
                                                             Original
                                                         </Badge>
                                                     )}
@@ -243,7 +241,7 @@ export default function HCVisualizacion({ hc, onBack, onAprobar, onCerrar, onMod
                                                             size="sm"
                                                             variant="outline"
                                                             onClick={() => setItemToModify(item)}
-                                                            className="h-8 text-xs font-bold border-slate-200 hover:border-indigo-500 hover:bg-indigo-50 hover:text-indigo-600 transition-all rounded-xl px-3"
+                                                            className="h-8 text-xs font-bold border-border hover:border-brand-indigo hover:bg-brand-indigo/10 hover:text-brand-indigo transition-all rounded-xl px-3"
                                                         >
                                                             <Edit3 className="w-3.5 h-3.5 mr-1.5" />
                                                             Modificar
@@ -257,10 +255,10 @@ export default function HCVisualizacion({ hc, onBack, onAprobar, onCerrar, onMod
                             </Table>
                             {(!hc.items || hc.items.length === 0) && (
                                 <div className="py-20 text-center space-y-4">
-                                    <div className="bg-slate-50 p-6 rounded-full inline-block">
-                                        <ShoppingBag className="w-10 h-10 text-slate-200" />
+                                    <div className="bg-muted p-6 rounded-full inline-block">
+                                        <ShoppingBag className="w-10 h-10 text-muted-foreground/40" />
                                     </div>
-                                    <p className="text-[10px] font-black text-slate-300 uppercase tracking-widest italic">Esta HC no tiene insumos</p>
+                                    <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest italic">Esta HC no tiene insumos</p>
                                 </div>
                             )}
                         </CardContent>
@@ -268,15 +266,15 @@ export default function HCVisualizacion({ hc, onBack, onAprobar, onCerrar, onMod
 
                     {/* Observations */}
                     {hc.raw?.observaciones && (
-                        <Card className="rounded-[2.5rem] border-white/40 bg-white/60 backdrop-blur-md shadow-2xl shadow-slate-200/50 overflow-hidden border">
-                            <CardHeader className="p-8 pb-4 border-b border-slate-50">
+                        <Card className="rounded-[2.5rem] border-border bg-card/60 backdrop-blur-md shadow-2xl shadow-foreground/5 overflow-hidden border">
+                            <CardHeader className="p-8 pb-4 border-b border-border">
                                 <div className="flex items-center gap-3">
-                                    <MessageSquareQuote className="w-5 h-5 text-indigo-500" />
-                                    <h4 className="text-[10px] font-black text-slate-800 uppercase tracking-widest">Observaciones</h4>
+                                    <MessageSquareQuote className="w-5 h-5 text-brand-indigo" />
+                                    <h4 className="text-[10px] font-black text-foreground uppercase tracking-widest">Observaciones</h4>
                                 </div>
                             </CardHeader>
                             <CardContent className="p-8 pt-6">
-                                <p className="text-[11px] text-slate-500 font-medium italic leading-relaxed">
+                                <p className="text-[11px] text-muted-foreground font-medium italic leading-relaxed">
                                     {hc.raw.observaciones}
                                 </p>
                             </CardContent>
@@ -287,18 +285,18 @@ export default function HCVisualizacion({ hc, onBack, onAprobar, onCerrar, onMod
                 {/* Left Action Column */}
                 <div className="space-y-8">
                     {/* Summary Panel */}
-                    <div className="p-8 bg-slate-900 rounded-[2.5rem] text-white shadow-2xl shadow-indigo-950/20 space-y-8 border border-slate-800">
-                        <div className="flex items-center justify-between border-b border-slate-800 pb-6">
-                            <h3 className="text-xs font-black uppercase tracking-[0.2em] text-indigo-400">Resumen</h3>
-                            <div className="w-2 h-2 rounded-full bg-indigo-500 animate-pulse" />
+                    <div className="p-8 bg-sidebar rounded-[2.5rem] text-white shadow-2xl shadow-brand-indigo/10 space-y-8 border border-sidebar-border">
+                        <div className="flex items-center justify-between border-b border-sidebar-border pb-6">
+                            <h3 className="text-xs font-black uppercase tracking-[0.2em] text-brand-indigo">Resumen</h3>
+                            <div className="w-2 h-2 rounded-full bg-brand-indigo animate-pulse" />
                         </div>
 
                         <div className="space-y-4">
                             <div className="flex flex-col gap-1">
-                                <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Inversión Estimada</span>
+                                <span className="text-[10px] font-black text-sidebar-muted uppercase tracking-widest">Inversión Estimada</span>
                                 <span className="text-3xl font-black text-white tracking-tighter tabular-nums">{formatCLP ? formatCLP(totalEstimado) : totalEstimado}</span>
                             </div>
-                            <div className="pt-4 border-t border-slate-800 space-y-3">
+                            <div className="pt-4 border-t border-sidebar-border space-y-3">
                                 <StatItem icon={Package} label="Items" value={hc.items?.length ?? 0} />
                                 <StatItem icon={ShoppingBag} label="Unidades Totales" value={totalUnidades} />
                                 <StatItem icon={CheckCircle2} label="Estado" value={hc.status || '—'} />
@@ -306,12 +304,12 @@ export default function HCVisualizacion({ hc, onBack, onAprobar, onCerrar, onMod
                         </div>
                     </div>
 
-                    <div className="bg-indigo-50/50 border border-indigo-100 rounded-[2rem] p-8 space-y-4">
+                    <div className="bg-brand-indigo/10 border border-brand-indigo/20 rounded-[2rem] p-8 space-y-4">
                         <div className="flex items-center gap-3">
-                            <Info className="w-4 h-4 text-indigo-500" />
-                            <h4 className="text-[9px] font-black text-indigo-600 uppercase tracking-[0.15em]">Próximo Paso</h4>
+                            <Info className="w-4 h-4 text-brand-indigo" />
+                            <h4 className="text-[9px] font-black text-brand-indigo uppercase tracking-[0.15em]">Próximo Paso</h4>
                         </div>
-                        <p className="text-[10px] text-indigo-500/70 font-bold uppercase tracking-tight leading-relaxed">
+                        <p className="text-[10px] text-brand-indigo/70 font-bold uppercase tracking-tight leading-relaxed">
                             {hc.status === 'BORRADOR' && 'Revisa los insumos y aprueba para habilitar consolidación en OCs.'}
                             {hc.status === 'APROBADA' && 'Esta HC ya puede consolidarse en una Orden de Compra por proveedor.'}
                             {hc.status === 'CERRADA' && 'Esta HC está cerrada. Ya no admite cambios.'}
@@ -332,18 +330,24 @@ export default function HCVisualizacion({ hc, onBack, onAprobar, onCerrar, onMod
                 }}
                 formatCLP={formatCLP || ((v) => `$${v}`)}
             />
+
+            <JustificacionModal
+                isOpen={!!itemToShowJustificacion}
+                onClose={() => setItemToShowJustificacion(null)}
+                item={itemToShowJustificacion}
+            />
         </motion.div>
     );
 }
 
 function ReadOnlyField({ icon: Icon, label, value }) {
     return (
-        <div className="space-y-3 group px-4 py-2 border-l-2 border-slate-100 hover:border-indigo-500 transition-colors">
+        <div className="space-y-3 group px-4 py-2 border-l-2 border-border hover:border-brand-indigo transition-colors">
             <div className="flex items-center gap-2">
-                <Icon className="w-3.5 h-3.5 text-slate-400 group-hover:text-indigo-600 transition-colors" />
-                <label className="text-[8px] font-black text-slate-400 uppercase tracking-[0.15em]">{label}</label>
+                <Icon className="w-3.5 h-3.5 text-muted-foreground group-hover:text-brand-indigo transition-colors" />
+                <label className="text-[8px] font-black text-muted-foreground uppercase tracking-[0.15em]">{label}</label>
             </div>
-            <p className="text-xs font-black text-slate-700 uppercase tracking-tight">{value || "---"}</p>
+            <p className="text-xs font-black text-foreground uppercase tracking-tight">{value || "---"}</p>
         </div>
     );
 }
@@ -352,12 +356,12 @@ function StatItem({ icon: Icon, label, value }) {
     return (
         <div className="flex items-center justify-between group">
             <div className="flex items-center gap-3">
-                <div className="p-2 bg-slate-800 rounded-xl group-hover:bg-slate-700 transition-colors">
-                    <Icon className="w-3.5 h-3.5 text-slate-500" />
+                <div className="p-2 bg-sidebar-popup rounded-xl group-hover:bg-sidebar-active-bg transition-colors">
+                    <Icon className="w-3.5 h-3.5 text-sidebar-muted" />
                 </div>
-                <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest">{label}</span>
+                <span className="text-[9px] font-black text-sidebar-muted uppercase tracking-widest">{label}</span>
             </div>
-            <span className="text-[10px] font-black text-slate-300 uppercase italic">{value}</span>
+            <span className="text-[10px] font-black text-white uppercase italic">{value}</span>
         </div>
     );
 }

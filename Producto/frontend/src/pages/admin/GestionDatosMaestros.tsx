@@ -172,13 +172,13 @@ export default function GestionDatosMaestros() {
 
       {/* Sidebar for Entities */}
       <Card className="w-72 overflow-hidden flex flex-col rounded-3xl">
-        <CardHeader className="p-6 border-b border-border bg-slate-50/50">
+        <CardHeader className="p-6 border-b border-border bg-muted/50">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-blue-100 dark:bg-blue-900/50 flex items-center justify-center text-blue-600 dark:text-blue-400">
+            <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
               <Database size={20} />
             </div>
             <div>
-              <CardTitle className="font-bold text-slate-800 dark:text-slate-200 tracking-tight">Datos Maestros</CardTitle>
+              <CardTitle className="font-bold text-foreground tracking-tight">Datos Maestros</CardTitle>
               <p className="text-xs text-muted-foreground font-medium">Configuración base</p>
             </div>
           </div>
@@ -194,8 +194,8 @@ export default function GestionDatosMaestros() {
                 variant={isActive ? "secondary" : "ghost"}
                 onClick={() => setActiveEntity(entity)}
                 className={`w-full flex items-center justify-start gap-3 px-4 py-3 text-sm font-semibold rounded-xl uppercase ${
-                  isActive 
-                    ? 'bg-blue-50 text-blue-700 hover:bg-blue-100 border-none' 
+                  isActive
+                    ? 'bg-primary/10 text-primary hover:bg-primary/15 border-none'
                     : 'text-muted-foreground hover:text-foreground'
                 }`}
               >
@@ -210,7 +210,7 @@ export default function GestionDatosMaestros() {
       {/* Main Content Area */}
       <Card className="flex-1 overflow-hidden flex flex-col relative rounded-3xl">
         {/* Header */}
-        <CardHeader className="p-6 border-b border-border flex flex-row items-center justify-between bg-white dark:bg-slate-900 z-10">
+        <CardHeader className="p-6 border-b border-border flex flex-row items-center justify-between bg-card z-10">
           <div>
             <CardTitle className="text-2xl font-black tracking-tight">Gestión de {activeEntity.name}</CardTitle>
             <p className="text-sm text-muted-foreground mt-1 font-medium">
@@ -243,7 +243,7 @@ export default function GestionDatosMaestros() {
             variant="ghost"
             size="sm"
             onClick={loadData}
-            className="p-2.5 text-muted-foreground hover:text-primary hover:bg-blue-50 dark:hover:bg-blue-950/20 border border-transparent rounded-xl"
+            className="p-2.5 text-muted-foreground hover:text-primary hover:bg-primary/10 border border-transparent rounded-xl"
             title="Recargar datos"
           >
             <RefreshCw size={18} className={loading ? "animate-spin" : ""} />
@@ -258,17 +258,17 @@ export default function GestionDatosMaestros() {
               <span className="font-medium">Cargando {activeEntity.name}...</span>
             </div>
           ) : filteredData.length === 0 ? (
-            <div className="flex flex-col items-center justify-center h-64 bg-slate-50 dark:bg-slate-950/20 rounded-2xl border border-dashed border-border">
-              <div className="w-16 h-16 bg-white dark:bg-slate-900 rounded-full flex items-center justify-center shadow-sm mb-4">
-                <Database className="text-slate-350" size={24} />
+            <div className="flex flex-col items-center justify-center h-64 bg-muted rounded-2xl border border-dashed border-border">
+              <div className="w-16 h-16 bg-card rounded-full flex items-center justify-center shadow-sm mb-4">
+                <Database className="text-muted-foreground" size={24} />
               </div>
               <h3 className="text-foreground font-bold">No hay registros</h3>
               <p className="text-muted-foreground text-sm mt-1">Crea el primer registro haciendo clic en "Nuevo Registro"</p>
             </div>
           ) : (
-            <div className="border border-border rounded-2xl overflow-hidden bg-white dark:bg-slate-950">
+            <div className="border border-border rounded-2xl overflow-hidden bg-card">
               <table className="w-full text-left text-sm whitespace-nowrap">
-                <thead className="bg-slate-50 dark:bg-slate-900 border-b border-border text-muted-foreground font-bold uppercase tracking-wider text-[11px]">
+                <thead className="bg-muted border-b border-border text-muted-foreground font-bold uppercase tracking-wider text-[11px]">
                   <tr>
                     <th className="px-6 py-4 w-20 text-center">ID</th>
                     <th className="px-6 py-4">Nombre / Descripción</th>
@@ -277,9 +277,9 @@ export default function GestionDatosMaestros() {
                 </thead>
                 <tbody className="divide-y divide-border font-medium text-foreground">
                   {filteredData.map((item, index) => (
-                    <tr key={item.id || item.codigo || index} className="hover:bg-slate-50/80 dark:hover:bg-slate-900/50 transition-colors group">
+                    <tr key={item.id || item.codigo || index} className="hover:bg-muted/80 transition-colors group">
                       <td className="px-6 py-4 text-center">
-                        <span className="bg-slate-100 dark:bg-slate-900 text-muted-foreground px-2 py-1 rounded-md text-xs font-bold">
+                        <span className="bg-muted text-muted-foreground px-2 py-1 rounded-md text-xs font-bold">
                           {item.id || item.codigo || (index + 1)}
                         </span>
                       </td>
@@ -292,15 +292,15 @@ export default function GestionDatosMaestros() {
                             variant="ghost"
                             size="sm"
                             onClick={() => handleOpenEdit(item)}
-                            className="p-2 text-muted-foreground hover:text-primary hover:bg-blue-50 dark:hover:bg-blue-950/20 rounded-lg transition-colors"
+                            className="p-2 text-muted-foreground hover:text-primary hover:bg-primary/10 rounded-lg transition-colors"
                           >
                             <Edit size={16} />
                           </Button>
-                          <Button 
+                          <Button
                             variant="ghost"
                             size="sm"
                             onClick={() => handleDelete(item)}
-                            className="p-2 text-muted-foreground hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/20 rounded-lg transition-colors"
+                            className="p-2 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-lg transition-colors"
                           >
                             <Trash2 size={16} />
                           </Button>
@@ -316,7 +316,7 @@ export default function GestionDatosMaestros() {
 
         {/* Create / Edit Modal */}
         {isModalOpen && (
-          <div className="absolute inset-0 z-50 flex items-center justify-center bg-slate-900/40 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="absolute inset-0 z-50 flex items-center justify-center bg-foreground/40 backdrop-blur-sm animate-in fade-in duration-200">
             <Card className="p-8 max-w-md w-full mx-4 shadow-2xl animate-in zoom-in-95 duration-200 rounded-[2rem]">
               <CardHeader className="flex flex-row items-center justify-between mb-6 p-0">
                 <CardTitle className="text-xl font-black tracking-tight">
@@ -326,7 +326,7 @@ export default function GestionDatosMaestros() {
                   variant="ghost"
                   size="sm"
                   onClick={() => setIsModalOpen(false)}
-                  className="p-2 bg-slate-50 dark:bg-slate-900 text-muted-foreground rounded-full hover:bg-slate-100 transition-colors h-9 w-9 flex items-center justify-center"
+                  className="p-2 bg-muted text-muted-foreground rounded-full hover:bg-muted/70 transition-colors h-9 w-9 flex items-center justify-center"
                 >
                   <X size={18} />
                 </Button>

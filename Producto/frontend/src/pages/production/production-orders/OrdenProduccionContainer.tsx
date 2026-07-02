@@ -20,8 +20,8 @@ export default function OrdenProduccionContainer() {
         <div className="space-y-6">
             <div className="flex justify-between items-center">
                 <div>
-                    <h1 className="text-3xl font-black text-gray-800 tracking-tight italic uppercase">Ordenes de Producción</h1>
-                    <p className="text-sm text-gray-500 font-medium">Visualización 360° de la Orden de Producción (NV + EVN + Costeo)</p>
+                    <h1 className="text-3xl font-black text-foreground tracking-tight italic uppercase">Ordenes de Producción</h1>
+                    <p className="text-sm text-muted-foreground font-medium">Visualización 360° de la Orden de Producción (NV + EVN + Costeo)</p>
                 </div>
             </div>
 

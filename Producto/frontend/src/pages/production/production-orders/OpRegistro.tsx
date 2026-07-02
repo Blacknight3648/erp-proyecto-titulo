@@ -2,13 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
-import { useOpRegistroState } from '../../../../hooks/useOpRegistroState';
-import { validateNumericInput } from '../../../../utils/validations';
-import ListaOPs from './Views/ListaOPs';
-import DetalleOP from './Views/DetalleOP';
-import BulkEditOP from './Views/BulkEditOP';
-import SelectionModal from './Views/Modals/SelectionModal';
-import ConfirmModal from './Views/Modals/ConfirmModal';
+import ConfirmModal from './ConfirmModal';
 import { useOpRegistroState } from '../../../hooks/useOpRegistroState';
 import { validateNumericInput } from '../../../utils/validations';
 import ListaOPs from './ListaOPs';
@@ -54,10 +48,10 @@ export default function OpRegistro() {
     if (view === 'list' && isLoadingOrdenes) {
         return (
             <div className="flex flex-col items-center justify-center min-h-[calc(100vh-120px)] p-4">
-                <div className="bg-white p-12 rounded-[3rem] shadow-xl border border-gray-100 flex flex-col items-center animate-in fade-in zoom-in-95 duration-500">
-                    <Loader2 className="w-16 h-16 text-blue-600 animate-spin mb-6" />
-                    <h2 className="text-xl font-black text-gray-800 mb-2">Consultando Servidor</h2>
-                    <p className="text-gray-400 font-medium text-sm animate-pulse tracking-wide italic">Cargando Ordenes de Producción...</p>
+                <div className="bg-card p-12 rounded-[3rem] shadow-xl border border-border flex flex-col items-center animate-in fade-in zoom-in-95 duration-500">
+                    <Loader2 className="w-16 h-16 text-primary animate-spin mb-6" />
+                    <h2 className="text-xl font-black text-foreground mb-2">Consultando Servidor</h2>
+                    <p className="text-muted-foreground font-medium text-sm animate-pulse tracking-wide italic">Cargando Ordenes de Producción...</p>
                 </div>
             </div>
         );
@@ -66,17 +60,17 @@ export default function OpRegistro() {
     if (view === 'loading') {
         return (
             <div className="flex flex-col items-center justify-center min-h-[calc(100vh-120px)] p-4">
-                <div className="bg-white p-12 rounded-[3rem] shadow-xl border border-gray-100 flex flex-col items-center animate-in fade-in zoom-in-95 duration-500">
-                    <Loader2 className="w-16 h-16 text-blue-600 animate-spin mb-6" />
-                    <h2 className="text-xl font-black text-gray-800 mb-2">Consultando Servidor</h2>
-                    <p className="text-gray-400 font-medium text-sm animate-pulse tracking-wide italic">Sincronizando base de datos...</p>
+                <div className="bg-card p-12 rounded-[3rem] shadow-xl border border-border flex flex-col items-center animate-in fade-in zoom-in-95 duration-500">
+                    <Loader2 className="w-16 h-16 text-primary animate-spin mb-6" />
+                    <h2 className="text-xl font-black text-foreground mb-2">Consultando Servidor</h2>
+                    <p className="text-muted-foreground font-medium text-sm animate-pulse tracking-wide italic">Sincronizando base de datos...</p>
                 </div>
             </div>
         );
     }
 
     return (
-        <div className="min-h-screen bg-gray-50/10">
+        <div className="min-h-screen bg-background">
             {view === 'list' && (
                 <ListaOPs
                     ordenes={ordenes}

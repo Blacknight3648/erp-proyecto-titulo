@@ -8,23 +8,37 @@ export default function ModuleCard({ module, onClick }) {
     const colorMatch = module.color?.match(/from-(\w+)-/);
     const baseColor = colorMatch ? colorMatch[1] : 'blue';
 
-    // Mapeo dinámico de estilos de borde y texto basados en el color del módulo
+    // Mapeo dinámico de estilos de borde y texto basados en el color del módulo (tokens de marca)
     const hoverBorderStyles = {
-        blue: 'hover:border-blue-500/50 focus-visible:border-blue-500',
-        emerald: 'hover:border-emerald-500/50 focus-visible:border-emerald-500',
-        purple: 'hover:border-purple-500/50 focus-visible:border-purple-500',
-        indigo: 'hover:border-indigo-500/50 focus-visible:border-indigo-500',
-        amber: 'hover:border-amber-500/50 focus-visible:border-amber-500',
-        rose: 'hover:border-rose-500/50 focus-visible:border-rose-500',
+        blue: 'hover:border-primary/50 focus-visible:border-primary',
+        sky: 'hover:border-primary/50 focus-visible:border-primary',
+        cyan: 'hover:border-brand-teal/50 focus-visible:border-brand-teal',
+        emerald: 'hover:border-success/50 focus-visible:border-success',
+        teal: 'hover:border-brand-teal/50 focus-visible:border-brand-teal',
+        purple: 'hover:border-brand-violet/50 focus-visible:border-brand-violet',
+        violet: 'hover:border-brand-violet/50 focus-visible:border-brand-violet',
+        indigo: 'hover:border-brand-indigo/50 focus-visible:border-brand-indigo',
+        amber: 'hover:border-warning/50 focus-visible:border-warning',
+        orange: 'hover:border-warning/50 focus-visible:border-warning',
+        rose: 'hover:border-destructive/50 focus-visible:border-destructive',
+        slate: 'hover:border-border-strong focus-visible:border-border-strong',
+        gray: 'hover:border-border-strong focus-visible:border-border-strong',
     }[baseColor] || 'hover:border-primary/50 focus-visible:border-primary';
 
     const hoverTextStyles = {
-        blue: 'group-hover:text-blue-600 dark:group-hover:text-blue-400',
-        emerald: 'group-hover:text-emerald-600 dark:group-hover:text-emerald-400',
-        purple: 'group-hover:text-purple-600 dark:group-hover:text-purple-400',
-        indigo: 'group-hover:text-indigo-600 dark:group-hover:text-indigo-400',
-        amber: 'group-hover:text-amber-600 dark:group-hover:text-amber-400',
-        rose: 'group-hover:text-rose-600 dark:group-hover:text-rose-400',
+        blue: 'group-hover:text-primary',
+        sky: 'group-hover:text-primary',
+        cyan: 'group-hover:text-brand-teal',
+        emerald: 'group-hover:text-success',
+        teal: 'group-hover:text-brand-teal',
+        purple: 'group-hover:text-brand-violet',
+        violet: 'group-hover:text-brand-violet',
+        indigo: 'group-hover:text-brand-indigo',
+        amber: 'group-hover:text-warning',
+        orange: 'group-hover:text-warning',
+        rose: 'group-hover:text-destructive',
+        slate: 'group-hover:text-foreground',
+        gray: 'group-hover:text-foreground',
     }[baseColor] || 'group-hover:text-primary';
 
     return (

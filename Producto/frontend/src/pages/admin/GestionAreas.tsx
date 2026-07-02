@@ -117,16 +117,16 @@ const GestionAreas = () => {
           
           {/* PANEL IZQUIERDO: FORMULARIO REGISTRO/EDICIÓN */}
           <Card className="lg:col-span-4 sticky top-6 overflow-hidden">
-            <CardHeader className="flex flex-row justify-between items-center bg-slate-50/50 border-b border-border py-4 px-6">
-              <CardTitle className="text-sm font-bold text-slate-700 uppercase tracking-wider">
+            <CardHeader className="flex flex-row justify-between items-center bg-muted/50 border-b border-border py-4 px-6">
+              <CardTitle className="text-sm font-bold text-foreground uppercase tracking-wider">
                 {selectedArea ? "Editar Área" : "Registrar Nueva Área"}
               </CardTitle>
               {selectedArea && (
-                <Button 
+                <Button
                   variant="link"
                   size="sm"
                   onClick={handleResetForm}
-                  className="text-xs text-blue-600 hover:underline font-medium uppercase p-0 h-auto"
+                  className="text-xs text-primary hover:underline font-medium uppercase p-0 h-auto"
                 >
                   Cancelar edición
                 </Button>
@@ -137,7 +137,7 @@ const GestionAreas = () => {
               <CardContent className="p-6 space-y-5">
                 <div>
                   <label className="block text-xs font-bold text-muted-foreground uppercase mb-2 tracking-wide">
-                    Nombre del Área <span className="text-red-500">*</span>
+                    Nombre del Área <span className="text-destructive">*</span>
                   </label>
                   <Input
                     type="text"
@@ -175,10 +175,10 @@ const GestionAreas = () => {
                   )}
                   <Button
                     type="submit"
-                    className={`flex-1 uppercase text-xs ${
-                      selectedArea 
-                        ? "bg-amber-600 hover:bg-amber-700 text-white" 
-                        : "bg-blue-600 hover:bg-blue-700 text-white"
+                    className={`flex-1 uppercase text-xs text-white ${
+                      selectedArea
+                        ? "bg-warning hover:bg-warning/90"
+                        : "bg-primary hover:bg-primary-hover"
                     }`}
                   >
                     {selectedArea ? <Edit2 size={16} /> : <Plus size={16} />}
@@ -193,7 +193,7 @@ const GestionAreas = () => {
           <div className="lg:col-span-8 space-y-4">
             
             {/* Buscador Limpio de una Sola Línea */}
-            <div className="bg-white rounded-xl border border-border shadow-sm flex items-center px-4 py-1 focus-within:ring-2 focus-within:ring-primary/25 transition-all">
+            <div className="bg-card rounded-xl border border-border shadow-sm flex items-center px-4 py-1 focus-within:ring-2 focus-within:ring-primary/25 transition-all">
               <Search size={18} className="text-muted-foreground mr-3 shrink-0" />
               <input
                 type="text"
@@ -216,12 +216,12 @@ const GestionAreas = () => {
 
             {/* Contenedor del listado */}
             <Card className="overflow-hidden">
-              <CardHeader className="px-6 py-4 bg-slate-50 border-b border-border flex flex-row items-center gap-2">
-                <Briefcase size={16} className="text-slate-500" />
-                <CardTitle className="text-sm font-bold text-slate-700 uppercase tracking-wider">
+              <CardHeader className="px-6 py-4 bg-muted border-b border-border flex flex-row items-center gap-2">
+                <Briefcase size={16} className="text-muted-foreground" />
+                <CardTitle className="text-sm font-bold text-foreground uppercase tracking-wider">
                   Listado de Áreas Activas
                 </CardTitle>
-                <span className="ml-auto bg-slate-200 text-slate-700 text-xs font-bold px-2.5 py-0.5 rounded-full">
+                <span className="ml-auto bg-muted-foreground/20 text-foreground text-xs font-bold px-2.5 py-0.5 rounded-full">
                   {filteredAreas.length}
                 </span>
               </CardHeader>
@@ -237,9 +237,9 @@ const GestionAreas = () => {
                 ) : filteredAreas.length === 0 ? (
                   <div className="p-12 text-center text-muted-foreground">
                     <div className="flex flex-col items-center gap-2">
-                      <FileText size={32} className="text-slate-300" strokeWidth={1.5} />
-                      <p className="font-medium text-sm text-slate-500 uppercase">No se encontraron resultados</p>
-                      <p className="text-xs text-slate-400 uppercase">Prueba con otro término o añade una nueva área a la izquierda.</p>
+                      <FileText size={32} className="text-muted-foreground/40" strokeWidth={1.5} />
+                      <p className="font-medium text-sm text-muted-foreground uppercase">No se encontraron resultados</p>
+                      <p className="text-xs text-muted-foreground/70 uppercase">Prueba con otro término o añade una nueva área a la izquierda.</p>
                     </div>
                   </div>
                 ) : (
@@ -250,14 +250,14 @@ const GestionAreas = () => {
                     return (
                       <div 
                         key={id} 
-                        className={`group p-5 flex items-start justify-between gap-4 transition-all hover:bg-slate-50 cursor-pointer ${
-                          isSelected ? "bg-blue-50/50 border-l-4 border-blue-600 pl-4" : ""
+                        className={`group p-5 flex items-start justify-between gap-4 transition-all hover:bg-muted cursor-pointer ${
+                          isSelected ? "bg-primary/5 border-l-4 border-primary pl-4" : ""
                         }`}
                         onClick={() => handleSelectArea(area)}
                       >
                         <div className="space-y-1 min-w-0 flex-1">
                           <div className="flex items-center gap-2.5">
-                            <span className="text-[10px] font-mono font-bold text-muted-foreground bg-slate-100 border border-border px-2 py-0.5 rounded tracking-wider uppercase">
+                            <span className="text-[10px] font-mono font-bold text-muted-foreground bg-muted border border-border px-2 py-0.5 rounded tracking-wider uppercase">
                               ID: {id}
                             </span>
                             <h3 className="font-bold text-foreground text-base group-hover:text-primary transition-colors truncate uppercase">
@@ -266,7 +266,7 @@ const GestionAreas = () => {
                           </div>
                           <p className="text-sm text-muted-foreground line-clamp-2 pr-4 uppercase">
                             {area.descripcion || (
-                              <span className="italic text-slate-300 text-xs normal-case">Sin descripción asignada</span>
+                              <span className="italic text-muted-foreground/60 text-xs normal-case">Sin descripción asignada</span>
                             )}
                           </p>
                         </div>
@@ -277,7 +277,7 @@ const GestionAreas = () => {
                             variant="ghost"
                             size="sm"
                             onClick={() => handleSelectArea(area)}
-                            className="p-2 text-muted-foreground hover:text-foreground hover:bg-slate-100 rounded-lg transition-all"
+                            className="p-2 text-muted-foreground hover:text-foreground hover:bg-muted rounded-lg transition-all"
                             title="Editar"
                           >
                             <Edit2 size={15} />
@@ -286,7 +286,7 @@ const GestionAreas = () => {
                             variant="ghost"
                             size="sm"
                             onClick={() => handleDelete(id)}
-                            className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-all"
+                            className="p-2 text-destructive hover:bg-destructive/10 rounded-lg transition-all"
                             title="Eliminar"
                           >
                             <Trash2 size={15} />

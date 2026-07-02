@@ -30,6 +30,7 @@ public class DescripcionPlantillaJpaEntity {
     @Column(name = "valor_descripcion", length = 500)
     private String valorDescripcion;
 
+    @Builder.Default
     @Column(name = "activo", nullable = false)
     private Boolean activo = true;
 

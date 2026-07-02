@@ -4,10 +4,10 @@ import { Factory, ClipboardList, CheckCircle2 } from 'lucide-react';
 export default function ListaOPs({
     ordenes,
     isSelectionMode,
-    setIsSelectionMode, 
-    selectedOPIds, 
-    toggleSelection, 
-    setSelectedOP, 
+    setIsSelectionMode,
+    selectedOPIds,
+    toggleSelection,
+    setSelectedOP,
     selectedOP,
     handleModificarRegistro,
     handleVerDetalles,
@@ -22,27 +22,27 @@ export default function ListaOPs({
 
     // Filter the ordenes array
     const filteredOrdenes = ordenes.filter(op => {
-        const matchesSearch = !searchTerm || 
+        const matchesSearch = !searchTerm ||
             (op.numeroOP || `OP-${op.id}`).toLowerCase().includes(searchTerm.toLowerCase()) ||
             getClientName(op).toLowerCase().includes(searchTerm.toLowerCase());
-            
+
         const matchesClient = !clientFilter || getClientName(op) === clientFilter;
-        
+
         return matchesSearch && matchesClient;
     });
 
     return (
-        <div className="max-w-2xl mx-auto bg-gray-50/30 min-h-[calc(100vh-120px)] p-4 pb-24 relative animate-in fade-in duration-700">
-            <h1 className="text-3xl font-black text-blue-600 mb-8 text-center tracking-tight uppercase italic">Registro de Producción</h1>
+        <div className="max-w-2xl mx-auto bg-muted/50 min-h-[calc(100vh-120px)] p-4 pb-24 relative animate-in fade-in duration-700">
+            <h1 className="text-3xl font-black text-primary mb-8 text-center tracking-tight uppercase italic">Registro de Producción</h1>
 
-            <div className="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 mb-8 space-y-4">
-                <div className="p-4 bg-gray-50/50 rounded-2xl border border-gray-100 text-center">
-                    <p className="text-gray-500 font-medium text-sm">Selecciona una OP reciente para actualizar sus estados:</p>
+            <div className="bg-card p-6 rounded-3xl shadow-sm border border-border mb-8 space-y-4">
+                <div className="p-4 bg-muted/50 rounded-2xl border border-border text-center">
+                    <p className="text-muted-foreground font-medium text-sm">Selecciona una OP reciente para actualizar sus estados:</p>
                 </div>
 
                 <div className="space-y-3">
-                    <select 
-                        className="w-full p-4 bg-white border border-gray-200 rounded-2xl text-[10px] font-black uppercase tracking-widest focus:ring-2 focus:ring-blue-500 outline-none appearance-none cursor-pointer"
+                    <select
+                        className="w-full p-4 bg-card border border-border rounded-2xl text-[10px] font-black uppercase tracking-widest focus:ring-2 focus:ring-primary outline-none appearance-none cursor-pointer"
                         value={clientFilter}
                         onChange={(e) => setClientFilter(e.target.value)}
                     >
@@ -56,7 +56,7 @@ export default function ListaOPs({
                         <input
                             type="text"
                             placeholder="Buscar OP o Cliente..."
-                            className="w-full p-4 bg-white border border-gray-200 rounded-2xl text-sm font-medium focus:ring-2 focus:ring-blue-500 outline-none placeholder:text-gray-400 shadow-inner"
+                            className="w-full p-4 bg-card border border-border rounded-2xl text-sm font-medium focus:ring-2 focus:ring-primary outline-none placeholder:text-muted-foreground shadow-inner"
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                         />
@@ -64,7 +64,7 @@ export default function ListaOPs({
 
                     <button
                         onClick={() => setIsSelectionMode(!isSelectionMode)}
-                        className={`w-full py-4 font-black text-xs uppercase tracking-widest rounded-2xl border transition-all shadow-sm ${isSelectionMode ? 'bg-red-50 text-red-600 border-red-200' : 'bg-blue-600/10 text-blue-700 border-blue-200 hover:bg-blue-600 hover:text-white'}`}
+                        className={`w-full py-4 font-black text-xs uppercase tracking-widest rounded-2xl border transition-all shadow-sm ${isSelectionMode ? 'bg-destructive/10 text-destructive border-destructive/20' : 'bg-primary/10 text-primary border-primary/20 hover:bg-primary hover:text-primary-foreground'}`}
                     >
                         {isSelectionMode ? 'Cancelar Selección' : 'Modificación múltiple'}
                     </button>
@@ -72,11 +72,11 @@ export default function ListaOPs({
             </div>
 
             <div className="flex justify-between items-center mb-4 ml-2">
-                <h3 className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">OPs en tu Estación</h3>
+                <h3 className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em]">OPs en tu Estación</h3>
                 {isSelectionMode && selectedOPIds.length > 0 && (
                     <button
                         onClick={handleBulkEdit}
-                        className="bg-blue-600 text-white px-6 py-2 rounded-full text-[10px] font-black uppercase tracking-widest shadow-lg shadow-blue-200 animate-in zoom-in"
+                        className="bg-primary text-primary-foreground px-6 py-2 rounded-full text-[10px] font-black uppercase tracking-widest shadow-lg shadow-primary/20 animate-in zoom-in"
                     >
                         Continuar ({selectedOPIds.length})
                     </button>
@@ -92,50 +92,50 @@ export default function ListaOPs({
                         <div
                             key={op.id}
                             onClick={() => isSelectionMode ? toggleSelection(op.id) : setSelectedOP(op)}
-                            className={`bg-white p-6 rounded-[2rem] shadow-sm border-2 transition-all cursor-pointer group ${isSelectionMode && isMultiSelected ? 'border-blue-500 ring-4 ring-blue-50 shadow-lg' : isSelected ? 'border-blue-500 ring-4 ring-blue-50 shadow-lg' : 'border-gray-50 hover:border-gray-200 hover:shadow-md'}`}
+                            className={`bg-card p-6 rounded-[2rem] shadow-sm border-2 transition-all cursor-pointer group ${isSelectionMode && isMultiSelected ? 'border-primary ring-4 ring-primary/10 shadow-lg' : isSelected ? 'border-primary ring-4 ring-primary/10 shadow-lg' : 'border-border hover:border-border-strong hover:shadow-md'}`}
                         >
                             <div className="flex justify-between items-start mb-1">
                                 <div className="flex items-center space-x-4">
                                     {isSelectionMode && (
-                                        <div className={`w-6 h-6 rounded-lg border-2 flex items-center justify-center transition-all ${isMultiSelected ? 'bg-blue-600 border-blue-600' : 'border-gray-200 bg-gray-50'}`}>
-                                            {isMultiSelected && <CheckCircle2 className="w-4 h-4 text-white" />}
+                                        <div className={`w-6 h-6 rounded-lg border-2 flex items-center justify-center transition-all ${isMultiSelected ? 'bg-primary border-primary' : 'border-border bg-muted'}`}>
+                                            {isMultiSelected && <CheckCircle2 className="w-4 h-4 text-primary-foreground" />}
                                         </div>
                                     )}
                                     <div>
-                                        <h4 className="font-black text-blue-600 text-lg uppercase tracking-tight">{op.numeroOP || `OP-${op.id}`}</h4>
-                                        <p className="text-[11px] font-bold text-gray-500 uppercase tracking-tight">{getClientName(op)}</p>
+                                        <h4 className="font-black text-primary text-lg uppercase tracking-tight">{op.numeroOP || `OP-${op.id}`}</h4>
+                                        <p className="text-[11px] font-bold text-muted-foreground uppercase tracking-tight">{getClientName(op)}</p>
                                     </div>
                                 </div>
                                 <div className="flex flex-col items-end">
-                                    <span className="text-[10px] font-black text-red-800 bg-red-50 px-2 py-0.5 rounded-full">{op.progreso}%</span>
+                                    <span className="text-[10px] font-black text-destructive bg-destructive/10 px-2 py-0.5 rounded-full">{op.progreso}%</span>
                                 </div>
                             </div>
 
                             <div className="mt-3">
-                                <div className="w-full bg-gray-100 h-1.5 rounded-full overflow-hidden shadow-inner">
+                                <div className="w-full bg-muted h-1.5 rounded-full overflow-hidden shadow-inner">
                                     <div
-                                        className="bg-blue-600 h-full rounded-full transition-all duration-1000"
+                                        className="bg-primary h-full rounded-full transition-all duration-1000"
                                         style={{ width: `${op.progreso}%` }}
                                     ></div>
                                 </div>
                             </div>
 
-                            <div className="mt-4 flex justify-between items-center text-[10px] font-bold text-gray-300">
+                            <div className="mt-4 flex justify-between items-center text-[10px] font-bold text-muted-foreground">
                                 <span>{op.fechaInicio || '-'}</span>
                                 <span className="uppercase">{op.estado || '-'}</span>
                             </div>
 
                             {!isSelectionMode && isSelected && (
-                                <div className="mt-6 pt-6 border-t border-dashed grid grid-cols-2 gap-4 animate-in fade-in slide-in-from-top-4">
+                                <div className="mt-6 pt-6 border-t border-dashed border-border grid grid-cols-2 gap-4 animate-in fade-in slide-in-from-top-4">
                                     <button
                                         onClick={(e) => { e.stopPropagation(); handleModificarRegistro(); }}
-                                        className="flex items-center justify-center p-4 bg-blue-600 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-xl shadow-blue-200"
+                                        className="flex items-center justify-center p-4 bg-primary text-primary-foreground rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-xl shadow-primary/20"
                                     >
                                         <CheckCircle2 className="w-3.5 h-3.5 mr-2" /> Modificar Registro
                                     </button>
                                     <button
                                         onClick={(e) => { e.stopPropagation(); handleVerDetalles(); }}
-                                        className="flex items-center justify-center p-4 bg-white border-2 border-gray-100 text-gray-700 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-gray-50 transition-all"
+                                        className="flex items-center justify-center p-4 bg-card border-2 border-border text-foreground rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-muted transition-all"
                                     >
                                         <ClipboardList className="w-3.5 h-3.5 mr-2" /> Detalles de OP
                                     </button>
@@ -145,38 +145,26 @@ export default function ListaOPs({
                     );
                 })}
                 {filteredOrdenes.length === 0 && (
-                    <p className="text-center py-10 text-gray-300 font-bold italic uppercase tracking-widest text-xs">
+                    <p className="text-center py-10 text-muted-foreground font-bold italic uppercase tracking-widest text-xs">
                         No hay Ordenes de Producción registradas que coincidan con la búsqueda
                     </p>
                 )}
             </div>
 
-            <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 p-4 flex justify-around items-center lg:hidden z-10 shadow-[0_-4px_20px_rgba(0,0,0,0.05)]">
-                <div className="flex flex-col items-center text-blue-600 bg-blue-50 px-4 py-2 rounded-2xl transition-all">
+            <div className="fixed bottom-0 left-0 right-0 bg-card border-t border-border p-4 flex justify-around items-center lg:hidden z-10 shadow-[0_-4px_20px_rgba(0,0,0,0.05)]">
+                <div className="flex flex-col items-center text-primary bg-primary/10 px-4 py-2 rounded-2xl transition-all">
                     <Factory className="w-6 h-6" />
                     <span className="text-[10px] mt-1 font-black uppercase tracking-tighter">Planta</span>
                 </div>
-                <div className="flex flex-col items-center text-gray-400 p-2 opacity-50">
+                <div className="flex flex-col items-center text-muted-foreground p-2 opacity-50">
                     <ClipboardList className="w-6 h-6" />
                     <span className="text-[10px] mt-1 font-bold">Órdenes</span>
                 </div>
-                <div className="flex flex-col items-center text-gray-400 p-2 opacity-50">
+                <div className="flex flex-col items-center text-muted-foreground p-2 opacity-50">
                     <CheckCircle2 className="w-6 h-6" />
                     <span className="text-[10px] mt-1 font-bold">Historial</span>
                 </div>
             </div>
-            <style>{`
-                .custom-scrollbar::-webkit-scrollbar {
-                    width: 4px;
-                }
-                .custom-scrollbar::-webkit-scrollbar-track {
-                    background: transparent;
-                }
-                .custom-scrollbar::-webkit-scrollbar-thumb {
-                    background: #e2e8f0;
-                    border-radius: 10px;
-                }
-            `}</style>
         </div>
     );
 }

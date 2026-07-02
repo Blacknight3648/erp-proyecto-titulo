@@ -4,7 +4,6 @@ import backend.com.produccion.application.UseCase.GestionarCosteoUseCase;
 import backend.com.produccion.application.dto.CosteoDTO;
 import backend.com.produccion.application.dto.CosteoResumenEVNDTO;
 import backend.com.produccion.infrastructure.api.CosteoController;
-import backend.com.produccion.infrastructure.api.HojaCompraController;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -84,12 +83,12 @@ class CosteoControllerTest {
         }
 
         @Test
-        @DisplayName("GET /scos/{scosId} - Error/404: no encuentra el costeo solicitado")
+        @DisplayName("GET /scos/{scosId} - Caso no encontrado: retorna 204 No Content")
         void obtenerPorScosIdNoEncontrado() throws Exception {
             when(gestionarCosteoUseCase.obtenerPorSCOS(999L)).thenReturn(Optional.empty());
 
             mockMvc.perform(get("/api/v1/produccion/costeos/scos/999"))
-                    .andExpect(status().isNotFound());
+                    .andExpect(status().isNoContent());
         }
 
         @Test

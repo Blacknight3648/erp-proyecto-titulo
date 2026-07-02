@@ -33,9 +33,11 @@ public class ArticuloJpaEntity {
     @JoinColumn(name = "id_tipo_articulo", nullable = false)
     private TipoArticuloJpaEntity tipoArticulo;
 
+    @Builder.Default
     @Column(name = "activo", nullable = false)
     private Boolean activo = true;
 
+    @Builder.Default
     @Column(name = "stock_actual", precision = 12, scale = 4, nullable = false)
     private java.math.BigDecimal stockActual = java.math.BigDecimal.ZERO;
 

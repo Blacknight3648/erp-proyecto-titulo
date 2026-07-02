@@ -1,7 +1,6 @@
 package backend.com.produccion.application.UseCase;
 
 import backend.com.produccion.application.dto.CrearOSRequest;
-import backend.com.produccion.domain.model.OrdenProduccion;
 import backend.com.produccion.domain.model.OrdenServicio;
 import backend.com.produccion.domain.repository.OrdenProduccionRepository;
 import backend.com.produccion.domain.repository.OrdenServicioRepository;
@@ -23,7 +22,7 @@ public class CrearOSUseCase {
     public OrdenServicio ejecutar(CrearOSRequest request) {
         validar(request);
 
-        OrdenProduccion op = ordenProduccionRepository.findById(request.getOpId())
+        ordenProduccionRepository.findById(request.getOpId())
                 .orElseThrow(() -> new EntityNotFoundException(
                         "Orden de Producción no encontrada: " + request.getOpId()));
 

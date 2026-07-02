@@ -5,11 +5,8 @@ import backend.com.produccion.infrastructure.persistence.entity.OrdenCompraJpaEn
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-import org.springframework.stereotype.Repository;
-
 import java.util.List;
 
-@Repository
 public interface OrdenCompraJpaRepository extends JpaRepository<OrdenCompraJpaEntity, Long> {
 
     List<OrdenCompraJpaEntity> findAllByEstado(EstadoOC estado);

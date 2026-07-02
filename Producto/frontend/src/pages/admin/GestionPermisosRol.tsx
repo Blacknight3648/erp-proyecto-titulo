@@ -60,11 +60,11 @@ const GestionPermisosRol = () => {
 
   const getModuleIcon = (modulo) => {
     switch(modulo.toLowerCase()) {
-      case 'clientes': return <Users size={20} className="text-blue-500" />;
-      case 'colaboradores': return <Users size={20} className="text-emerald-500" />;
-      case 'productos': return <Package size={20} className="text-orange-500" />;
-      case 'reportes': return <FileText size={20} className="text-purple-500" />;
-      default: return <Shield size={20} className="text-slate-500" />;
+      case 'clientes': return <Users size={20} className="text-primary" />;
+      case 'colaboradores': return <Users size={20} className="text-success" />;
+      case 'productos': return <Package size={20} className="text-warning" />;
+      case 'reportes': return <FileText size={20} className="text-brand-violet" />;
+      default: return <Shield size={20} className="text-muted-foreground" />;
     }
   };
 
@@ -109,9 +109,9 @@ const GestionPermisosRol = () => {
       <div className="max-w-5xl mx-auto space-y-6 pb-20">
         {Object.entries(groupedPermisos).map(([modulo, permisosModulo]) => (
           <Card key={modulo} className="overflow-hidden border border-border shadow-sm animate-in slide-in-from-bottom-4 duration-500">
-            <CardHeader className="px-8 py-5 border-b border-border bg-slate-50/50 flex flex-row items-center gap-3">
+            <CardHeader className="px-8 py-5 border-b border-border bg-muted/50 flex flex-row items-center gap-3">
               {getModuleIcon(modulo)}
-              <CardTitle className="text-sm font-black text-slate-700 uppercase tracking-widest">{modulo}</CardTitle>
+              <CardTitle className="text-sm font-black text-foreground uppercase tracking-widest">{modulo}</CardTitle>
             </CardHeader>
             
             <CardContent className="p-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -121,9 +121,9 @@ const GestionPermisosRol = () => {
                   <label 
                     key={p.id}
                     className={`relative flex items-center p-4 rounded-2xl border-2 transition-all cursor-pointer group ${
-                      isChecked 
-                        ? "border-primary bg-primary/5" 
-                        : "border-gray-100 bg-white hover:border-gray-200"
+                      isChecked
+                        ? "border-primary bg-primary/5"
+                        : "border-border bg-card hover:border-border-strong"
                     }`}
                   >
                     <Checkbox
@@ -152,7 +152,7 @@ const GestionPermisosRol = () => {
         ))}
 
         {Object.keys(groupedPermisos).length === 0 && !loadingPermisos && (
-          <Card className="text-center p-20 bg-white border-2 border-dashed border-border flex flex-col items-center justify-center">
+          <Card className="text-center p-20 bg-card border-2 border-dashed border-border flex flex-col items-center justify-center">
             <Shield size={48} className="text-muted-foreground mb-4" />
             <p className="text-muted-foreground font-bold uppercase tracking-widest">No se encontraron permisos configurados</p>
           </Card>

@@ -36,11 +36,11 @@ export default function TrazabilidadNV() {
             {/* Header */}
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
                 <div>
-                    <h1 className="text-3xl font-black text-gray-800 tracking-tight flex items-center">
-                        <LinkIcon className="w-8 h-8 mr-3 text-blue-600" />
+                    <h1 className="text-3xl font-black text-foreground tracking-tight flex items-center">
+                        <LinkIcon className="w-8 h-8 mr-3 text-primary" />
                         Trazabilidad NV
                     </h1>
-                    <p className="text-gray-500 font-medium mt-2">
+                    <p className="text-muted-foreground font-medium mt-2">
                         Vista unificada del ciclo de vida de cada orden (NV → OP)
                     </p>
                 </div>
@@ -48,17 +48,17 @@ export default function TrazabilidadNV() {
                 {/* Search & Filter */}
                 <div className="flex flex-col sm:flex-row gap-4">
                     <div className="relative group">
-                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 group-focus-within:text-blue-600 transition-colors" />
+                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
                         <input
                             type="text"
                             placeholder="Buscar por NV, Cliente..."
-                            className="pl-12 pr-4 py-3 bg-white border border-gray-200 rounded-xl text-sm font-medium focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none shadow-sm w-full sm:w-64"
+                            className="pl-12 pr-4 py-3 bg-card border border-border rounded-xl text-sm font-medium focus:ring-2 focus:ring-primary focus:border-transparent outline-none shadow-sm w-full sm:w-64"
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
                         />
                     </div>
                     <select
-                        className="px-4 py-3 bg-white border border-gray-200 rounded-xl text-sm font-medium focus:ring-2 focus:ring-blue-500 outline-none shadow-sm"
+                        className="px-4 py-3 bg-card border border-border rounded-xl text-sm font-medium focus:ring-2 focus:ring-primary outline-none shadow-sm"
                         value={statusFilter}
                         onChange={(e) => setStatusFilter(e.target.value)}
                     >
@@ -71,30 +71,30 @@ export default function TrazabilidadNV() {
             </div>
 
             {/* Traceability Table */}
-            <div className="bg-white rounded-[2rem] shadow-sm border border-gray-100 overflow-hidden">
+            <div className="bg-card rounded-[2rem] shadow-sm border border-border overflow-hidden">
                 <div className="overflow-x-auto">
                     <table className="w-full text-left border-collapse">
                         <thead>
-                            <tr className="bg-gray-50 border-b border-gray-100 text-xs font-black text-gray-400 uppercase tracking-widest">
+                            <tr className="bg-muted border-b border-border text-xs font-black text-muted-foreground uppercase tracking-widest">
                                 <th className="p-6">Nota Venta (NV)</th>
                                 <th className="p-6">Producción (OP)</th>
                                 <th className="p-6 text-center">Estado General</th>
                                 <th className="p-6"></th>
                             </tr>
                         </thead>
-                        <tbody className="divide-y divide-gray-50 text-sm">
+                        <tbody className="divide-y divide-border text-sm">
                             {filteredData.map((row, idx) => (
-                                <tr key={idx} className="group hover:bg-blue-50/30 transition-colors">
+                                <tr key={idx} className="group hover:bg-primary/5 transition-colors">
                                     {/* NV Column */}
                                     <td className="p-6 align-top">
-                                        <div className="font-bold text-gray-800 flex items-center space-x-2">
-                                            <span className="text-blue-600">{row.nv.idNV || row.nv.id}</span>
+                                        <div className="font-bold text-foreground flex items-center space-x-2">
+                                            <span className="text-primary">{row.nv.idNV || row.nv.id}</span>
                                             {row.nv.cliente.includes('VIP') && (
-                                                <span className="bg-amber-100 text-amber-700 text-[9px] px-2 py-0.5 rounded-full font-black">VIP</span>
+                                                <span className="bg-warning/10 text-warning text-[9px] px-2 py-0.5 rounded-full font-black">VIP</span>
                                             )}
                                         </div>
-                                        <div className="text-xs text-gray-500 mt-1 font-medium">{row.nv.cliente}</div>
-                                        <div className="text-[10px] text-gray-400 mt-2 flex items-center">
+                                        <div className="text-xs text-muted-foreground mt-1 font-medium">{row.nv.cliente}</div>
+                                        <div className="text-[10px] text-muted-foreground mt-2 flex items-center">
                                             <Clock className="w-3 h-3 mr-1" /> {row.nv.fecha}
                                         </div>
                                     </td>
@@ -105,14 +105,14 @@ export default function TrazabilidadNV() {
                                         {row.relatedOP && row.relatedOP.length > 0 ? (
                                             <div className="space-y-2">
                                                 {row.relatedOP.map(op => (
-                                                    <div key={op.id} className="flex items-center space-x-2 bg-amber-50 border border-amber-100 px-3 py-1.5 rounded-lg shadow-sm">
-                                                        <div className={`w-2 h-2 rounded-full ${op.estado === 'OP Terminada' ? 'bg-green-500' : op.estado === 'OP En Progreso' ? 'bg-blue-500' : 'bg-amber-500'}`}></div>
-                                                        <span className="text-xs font-bold text-amber-700">{op.id}</span>
+                                                    <div key={op.id} className="flex items-center space-x-2 bg-warning/5 border border-warning/20 px-3 py-1.5 rounded-lg shadow-sm">
+                                                        <div className={`w-2 h-2 rounded-full ${op.estado === 'OP Terminada' ? 'bg-success' : op.estado === 'OP En Progreso' ? 'bg-primary' : 'bg-warning'}`}></div>
+                                                        <span className="text-xs font-bold text-warning">{op.id}</span>
                                                     </div>
                                                 ))}
                                             </div>
                                         ) : (
-                                            <span className="text-gray-400 text-xs">-</span>
+                                            <span className="text-muted-foreground text-xs">-</span>
                                         )}
                                     </td>
 
@@ -123,15 +123,15 @@ export default function TrazabilidadNV() {
                                             // Priority 1: OP Status
                                             row.relatedOP && row.relatedOP.length > 0
                                                 ? row.relatedOP[0].estado === 'OP Terminada'
-                                                    ? 'bg-green-50 text-green-700 border-green-100' // OP Terminada
+                                                    ? 'bg-success/10 text-success border-success/20' // OP Terminada
                                                     : row.relatedOP[0].estado === 'OP En Progreso'
-                                                        ? 'bg-blue-50 text-blue-700 border-blue-100' // OP En Progreso
-                                                        : 'bg-amber-50 text-amber-700 border-amber-100' // OP Pendiente
+                                                        ? 'bg-primary/10 text-primary border-primary/20' // OP En Progreso
+                                                        : 'bg-warning/10 text-warning border-warning/20' // OP Pendiente
                                                 : row.nv.estado === 'Completado'
-                                                    ? 'bg-green-50 text-green-700 border-green-100'
+                                                    ? 'bg-success/10 text-success border-success/20'
                                                     : row.nv.estado === 'Pendiente SC'
-                                                        ? 'bg-red-50 text-red-700 border-red-100'
-                                                        : 'bg-gray-50 text-gray-700 border-gray-100'
+                                                        ? 'bg-destructive/10 text-destructive border-destructive/20'
+                                                        : 'bg-muted text-muted-foreground border-border'
                                             }`}>
                                             {/* Display Logic */}
                                             {row.relatedOP && row.relatedOP.length > 0
@@ -142,7 +142,7 @@ export default function TrazabilidadNV() {
                                     </td>
 
                                     <td className="p-6 align-top text-right">
-                                        <button className="text-gray-400 hover:text-blue-600 transition-colors">
+                                        <button className="text-muted-foreground hover:text-primary transition-colors">
                                             <MoreHorizontal className="w-5 h-5" />
                                         </button>
                                     </td>
@@ -153,8 +153,8 @@ export default function TrazabilidadNV() {
 
                     {filteredData.length === 0 && (
                         <div className="p-12 text-center">
-                            <AlertCircle className="w-12 h-12 text-gray-300 mx-auto mb-4" />
-                            <h3 className="text-gray-400 font-bold uppercase tracking-widest text-sm">No se encontraron registros</h3>
+                            <AlertCircle className="w-12 h-12 text-muted-foreground/40 mx-auto mb-4" />
+                            <h3 className="text-muted-foreground font-bold uppercase tracking-widest text-sm">No se encontraron registros</h3>
                         </div>
                     )}
                 </div>

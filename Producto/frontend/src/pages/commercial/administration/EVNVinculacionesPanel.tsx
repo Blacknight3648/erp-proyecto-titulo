@@ -15,9 +15,9 @@ export default function EVNVinculacionesPanel({
     return (
         <>
             {(vinculados.scos.length > 0 || vinculados.scot.length > 0) && (
-                <div className="px-8 py-4 bg-gray-50/50 border-b border-gray-100 flex gap-6 overflow-x-auto animate-in fade-in duration-500">
+                <div className="px-8 py-4 bg-muted/50 border-b border-border flex gap-6 overflow-x-auto animate-in fade-in duration-500">
                     {vinculados.scos.map(doc => (
-                        <div key={doc.id} className="flex items-center gap-2 bg-amber-100 text-amber-700 px-3 py-1.5 rounded-full text-[9px] font-black uppercase whitespace-nowrap shadow-sm border border-amber-200">
+                        <div key={doc.id} className="flex items-center gap-2 bg-warning/10 text-warning px-3 py-1.5 rounded-full text-[9px] font-black uppercase whitespace-nowrap shadow-sm border border-warning/20">
                             <Calculator className="w-3 h-3" /> {doc.numero}
                             {!isReadOnly && (
                                 <button
@@ -30,7 +30,7 @@ export default function EVNVinculacionesPanel({
                         </div>
                     ))}
                     {vinculados.scot.map(doc => (
-                        <div key={doc.id} className="flex items-center gap-2 bg-blue-100 text-blue-700 px-3 py-1.5 rounded-full text-[9px] font-black uppercase whitespace-nowrap shadow-sm border border-blue-200">
+                        <div key={doc.id} className="flex items-center gap-2 bg-primary/10 text-primary px-3 py-1.5 rounded-full text-[9px] font-black uppercase whitespace-nowrap shadow-sm border border-primary/20">
                             <FileText className="w-3 h-3" /> {doc.numero}
                             {!isReadOnly && (
                                 <button

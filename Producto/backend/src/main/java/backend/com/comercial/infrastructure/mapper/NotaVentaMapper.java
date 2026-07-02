@@ -1,7 +1,6 @@
 package backend.com.comercial.infrastructure.mapper;
 
 import backend.com.comercial.domain.enums.EstadoNV;
-import backend.com.comercial.domain.enums.TipoItem;
 import backend.com.comercial.domain.model.ItemNV;
 import backend.com.comercial.domain.model.ItemNVTalla;
 import backend.com.comercial.domain.model.NotaVenta;

@@ -7,7 +7,6 @@ import backend.com.gestionUsuarios.domain.model.User;
 import backend.com.gestionUsuarios.domain.model.Vendedor;
 import backend.com.gestionUsuarios.domain.repository.UserRepository;
 import backend.com.gestionUsuarios.domain.repository.VendedorRepository;
-import backend.com.gestionUsuarios.infrastructure.exception.VendedorNotFoundException;
 import backend.com.gestionUsuarios.infrastructure.mapper.VendedorMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -16,8 +15,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-
-import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;

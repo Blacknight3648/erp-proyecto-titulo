@@ -23,7 +23,7 @@ export default function AdministracionNegocios() {
     }, []);
 
     return (
-        <div className="administracion-negocios-container">
+        <div>
             {view === 'list' ? (
                 <ListaEVN
                     key={listKey}

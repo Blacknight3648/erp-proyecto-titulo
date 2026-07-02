@@ -48,15 +48,15 @@ export default function Articulos({
     <div className="space-y-6">
       {/* HEADER */}
       <div className="flex justify-between items-center mb-6">
-        <h4 className="text-sm font-black text-slate-800 uppercase tracking-widest flex items-center gap-2">
-          <div className="w-1.5 h-6 bg-blue-600 rounded-full"></div>
+        <h4 className="text-sm font-black text-foreground uppercase tracking-widest flex items-center gap-2">
+          <div className="w-1.5 h-6 bg-primary rounded-full"></div>
           Productos / Artículos
         </h4>
 
         <button
           type="button"
           onClick={onAdd}
-          className="flex items-center px-4 py-2 bg-slate-900 text-white rounded-xl text-[9px] font-black uppercase tracking-widest hover:bg-blue-600 transition-all shadow-sm"
+          className="flex items-center px-4 py-2 bg-foreground text-background rounded-xl text-[9px] font-black uppercase tracking-widest hover:bg-primary hover:text-primary-foreground transition-all shadow-sm"
         >
           <Plus className="w-3.5 h-3.5 mr-2" />
           Agregar Artículo
@@ -65,8 +65,8 @@ export default function Articulos({
 
       {/* LISTA VACÍA */}
       {items.length === 0 && (
-        <div className="text-center py-20 bg-slate-50/50 rounded-2xl border-2 border-dashed border-slate-100">
-           <p className="text-[10px] font-black text-slate-300 uppercase tracking-widest italic">
+        <div className="text-center py-20 bg-muted/50 rounded-2xl border-2 border-dashed border-border">
+           <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest italic">
             No hay productos registrados todavía
           </p>
         </div>

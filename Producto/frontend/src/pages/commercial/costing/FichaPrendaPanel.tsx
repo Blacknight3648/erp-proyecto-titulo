@@ -8,7 +8,7 @@ export default function FichaPrendaPanel({ formData, readOnly, onAddItem, onUpda
     return (
         <div className="space-y-8">
             {formData.hasLogo && (
-                <div className="animate-in slide-in-from-top-4 duration-300 bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden p-6 md:p-8 bg-slate-50/50">
+                <div className="animate-in slide-in-from-top-4 duration-300 bg-muted/50 border border-border rounded-2xl shadow-sm overflow-hidden p-6 md:p-8">
                     <LogotipoPanel
                         data={formData.plantillas?.[0]?.logotipos || []}
                         onAdd={() => !readOnly && onAddItem("logotipo")}
@@ -20,15 +20,15 @@ export default function FichaPrendaPanel({ formData, readOnly, onAddItem, onUpda
                 </div>
             )}
 
-            <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-                <div className="bg-slate-950 px-6 py-4 flex items-center gap-2.5">
-                    <Shirt className="w-4 h-4 text-blue-400" />
+            <div className="bg-card rounded-2xl shadow-sm border border-border overflow-hidden">
+                <div className="bg-sidebar px-6 py-4 flex items-center gap-2.5">
+                    <Shirt className="w-4 h-4 text-sidebar-primary" />
                     <h2 className="text-sm font-semibold tracking-wide text-white">
                         Ficha Técnica
                     </h2>
                 </div>
 
-                <div className="p-6 md:p-8 space-y-8 bg-slate-50/50">
+                <div className="p-6 md:p-8 space-y-8 bg-muted/50">
                     <TelasSCOSPanel
                         data={formData.plantillas?.[0]?.telas || []}
                         onAdd={() => !readOnly && onAddItem("telas")}

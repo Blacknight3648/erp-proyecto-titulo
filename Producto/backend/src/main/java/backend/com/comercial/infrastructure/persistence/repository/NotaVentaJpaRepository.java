@@ -2,11 +2,8 @@ package backend.com.comercial.infrastructure.persistence.repository;
 
 import backend.com.comercial.infrastructure.persistence.entity.NotaVentaJpaEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
-
 import java.util.List;
 
-@Repository
 public interface NotaVentaJpaRepository extends JpaRepository<NotaVentaJpaEntity, Long> {
     List<NotaVentaJpaEntity> findByEstado(String estado);
 

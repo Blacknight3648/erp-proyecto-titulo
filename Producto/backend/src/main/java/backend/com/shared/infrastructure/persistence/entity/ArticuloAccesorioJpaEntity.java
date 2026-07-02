@@ -39,6 +39,7 @@ public class ArticuloAccesorioJpaEntity {
     @Column(name = "codigo_proveedor", length = 30)
     private String codigoProveedor;
 
+    @Builder.Default
     @Column(name = "requiere_logo_cliente", nullable = false)
     private Boolean requiereLogoCliente = false;
 }

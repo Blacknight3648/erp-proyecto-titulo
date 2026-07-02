@@ -23,6 +23,7 @@ public class ColorTelaJpaEntity {
     @Column(name = "descripcion_color", nullable = false, length = 40)
     private String descripcionColor;
 
+    @Builder.Default
     @Column(name = "es_pantone", nullable = false)
     private Boolean esPantone = false;
 }

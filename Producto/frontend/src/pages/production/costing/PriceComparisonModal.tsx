@@ -5,10 +5,10 @@ export default function PriceComparisonModal({ show, onClose }) {
     if (!show) return null;
 
     return (
-        <div className="fixed inset-0 z-[110] flex items-center justify-center p-6 bg-slate-900/40 backdrop-blur-md animate-in fade-in duration-300">
-            <div className="bg-white w-full max-w-5xl rounded-[3.5rem] shadow-2xl relative overflow-hidden animate-in zoom-in-95 duration-300 flex flex-col max-h-[90vh]">
+        <div className="fixed inset-0 z-[110] flex items-center justify-center p-6 bg-foreground/60 backdrop-blur-md animate-in fade-in duration-300">
+            <div className="bg-card w-full max-w-5xl rounded-[3.5rem] shadow-2xl relative overflow-hidden animate-in zoom-in-95 duration-300 flex flex-col max-h-[90vh]">
                 {/* Header del Modal */}
-                <div className="bg-indigo-600 p-8 text-white">
+                <div className="bg-brand-indigo p-8 text-white">
                     <button
                         onClick={onClose}
                         className="absolute top-8 right-8 p-2 bg-white/10 rounded-full hover:bg-white/20 transition-all active:scale-95"
@@ -20,17 +20,17 @@ export default function PriceComparisonModal({ show, onClose }) {
                             <TrendingUp className="w-6 h-6" />
                         </div>
                         <div>
-                            <h3 className="text-2xl font-black tracking-tight uppercase italic underline decoration-indigo-400 decoration-4 underline-offset-4">Análisis Comparativo de Precios</h3>
-                            <p className="text-[10px] font-black text-indigo-200 uppercase tracking-[0.3em] mt-2 ml-1">Evaluación de costos históricos por producto y proveedor</p>
+                            <h3 className="text-2xl font-black tracking-tight uppercase italic underline decoration-white/40 decoration-4 underline-offset-4">Análisis Comparativo de Precios</h3>
+                            <p className="text-[10px] font-black text-white/70 uppercase tracking-[0.3em] mt-2 ml-1">Evaluación de costos históricos por producto y proveedor</p>
                         </div>
                     </div>
                 </div>
 
                 {/* Filtros de Comparación */}
-                <div className="p-8 bg-gray-50 border-b border-gray-100 grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="p-8 bg-muted border-b border-border grid grid-cols-1 md:grid-cols-3 gap-6">
                     <div className="space-y-2">
-                        <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Periodo de Análisis</label>
-                        <select className="w-full p-4 bg-white border border-gray-100 rounded-2xl font-bold text-xs uppercase tracking-widest outline-none focus:ring-2 focus:ring-indigo-500 transition-all appearance-none cursor-pointer">
+                        <label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest ml-1">Periodo de Análisis</label>
+                        <select className="w-full p-4 bg-card border border-border rounded-2xl font-bold text-xs uppercase tracking-widest outline-none focus:ring-2 focus:ring-brand-indigo/50 transition-all appearance-none cursor-pointer">
                             <option>Último Trimestre</option>
                             <option>Último Semestre</option>
                             <option>Año 2024 Completo</option>
@@ -38,8 +38,8 @@ export default function PriceComparisonModal({ show, onClose }) {
                         </select>
                     </div>
                     <div className="space-y-2">
-                        <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Producto / Insumo</label>
-                        <select className="w-full p-4 bg-white border border-gray-100 rounded-2xl font-bold text-xs uppercase tracking-widest outline-none focus:ring-2 focus:ring-indigo-500 transition-all appearance-none cursor-pointer">
+                        <label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest ml-1">Producto / Insumo</label>
+                        <select className="w-full p-4 bg-card border border-border rounded-2xl font-bold text-xs uppercase tracking-widest outline-none focus:ring-2 focus:ring-brand-indigo/50 transition-all appearance-none cursor-pointer">
                             <option>Todos los productos</option>
                             <option>Tela Jersey 24/1</option>
                             <option>Piqué Lacoste</option>
@@ -48,8 +48,8 @@ export default function PriceComparisonModal({ show, onClose }) {
                         </select>
                     </div>
                     <div className="space-y-2">
-                        <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Proveedor Base</label>
-                        <select className="w-full p-4 bg-white border border-gray-100 rounded-2xl font-bold text-xs uppercase tracking-widest outline-none focus:ring-2 focus:ring-indigo-500 transition-all appearance-none cursor-pointer">
+                        <label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest ml-1">Proveedor Base</label>
+                        <select className="w-full p-4 bg-card border border-border rounded-2xl font-bold text-xs uppercase tracking-widest outline-none focus:ring-2 focus:ring-brand-indigo/50 transition-all appearance-none cursor-pointer">
                             <option>Todos los proveedores</option>
                             <option>TEXTIL PACÍFICO</option>
                             <option>TELAS COLÓN</option>
@@ -59,10 +59,10 @@ export default function PriceComparisonModal({ show, onClose }) {
                 </div>
 
                 {/* Tabla de Resultados */}
-                <div className="flex-1 overflow-y-auto p-8 custom-scrollbar bg-white">
+                <div className="flex-1 overflow-y-auto p-8 custom-scrollbar bg-card">
                     <table className="w-full text-left border-separate border-spacing-y-3">
                         <thead>
-                            <tr className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">
+                            <tr className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em]">
                                 <th className="px-6 py-2">Fecha / ID</th>
                                 <th className="px-6 py-2">Producto Analizado</th>
                                 <th className="px-6 py-2">Proveedor</th>
@@ -77,25 +77,25 @@ export default function PriceComparisonModal({ show, onClose }) {
                                 { id: 'SCOS-25980', date: '20/12/2025', product: 'Piqué Lacoste', supplier: 'TEXTIL PACÍFICO', price: 5650, variance: -2.58, trend: 'down' },
                                 { id: 'SCOS-25940', date: '15/11/2025', product: 'Piqué Lacoste', supplier: 'IMPORTADORA SANTIAGO', price: 6300, variance: 8.62, trend: 'up' },
                             ].map((row, i) => (
-                                <tr key={i} className="group hover:bg-indigo-50/50 transition-all decoration-indigo-100">
-                                    <td className="px-6 py-5 bg-gray-50/50 rounded-l-2xl border-y border-l border-gray-100 group-hover:bg-white group-hover:border-indigo-100">
-                                        <div className="text-xs font-black text-gray-800">{row.id}</div>
-                                        <div className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-0.5">{row.date}</div>
+                                <tr key={i} className="group hover:bg-brand-indigo/5 transition-all">
+                                    <td className="px-6 py-5 bg-muted/50 rounded-l-2xl border-y border-l border-border group-hover:bg-card group-hover:border-brand-indigo/20">
+                                        <div className="text-xs font-black text-foreground">{row.id}</div>
+                                        <div className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mt-0.5">{row.date}</div>
                                     </td>
-                                    <td className="px-6 py-5 bg-gray-50/50 border-y border-gray-100 group-hover:bg-white group-hover:border-indigo-100">
-                                        <span className="text-[11px] font-black text-gray-600 uppercase tracking-tight">{row.product}</span>
+                                    <td className="px-6 py-5 bg-muted/50 border-y border-border group-hover:bg-card group-hover:border-brand-indigo/20">
+                                        <span className="text-[11px] font-black text-foreground uppercase tracking-tight">{row.product}</span>
                                     </td>
-                                    <td className="px-6 py-5 bg-gray-50/50 border-y border-gray-100 group-hover:bg-white group-hover:border-indigo-100">
-                                        <span className="text-[10px] font-black text-indigo-500 bg-indigo-50 px-3 py-1 rounded-full uppercase tracking-widest border border-indigo-100">{row.supplier}</span>
+                                    <td className="px-6 py-5 bg-muted/50 border-y border-border group-hover:bg-card group-hover:border-brand-indigo/20">
+                                        <span className="text-[10px] font-black text-brand-indigo bg-brand-indigo/10 px-3 py-1 rounded-full uppercase tracking-widest border border-brand-indigo/20">{row.supplier}</span>
                                     </td>
-                                    <td className="px-6 py-5 bg-gray-50/50 border-y border-gray-100 group-hover:bg-white group-hover:border-indigo-100 text-right">
-                                        <span className="text-lg font-black text-gray-900 tracking-tighter italic">
-                                            <span className="text-xs text-gray-400 not-italic mr-1">$</span>
+                                    <td className="px-6 py-5 bg-muted/50 border-y border-border group-hover:bg-card group-hover:border-brand-indigo/20 text-right">
+                                        <span className="text-lg font-black text-foreground tracking-tighter italic">
+                                            <span className="text-xs text-muted-foreground not-italic mr-1">$</span>
                                             {row.price.toLocaleString()}
                                         </span>
                                     </td>
-                                    <td className="px-6 py-5 bg-gray-50/50 rounded-r-2xl border-y border-r border-gray-100 group-hover:bg-white group-hover:border-indigo-100 text-center">
-                                        <div className={`flex items-center justify-center gap-1 font-black text-[10px] uppercase tracking-widest ${row.trend === 'up' ? 'text-red-500' : row.trend === 'down' ? 'text-emerald-500' : 'text-gray-400'
+                                    <td className="px-6 py-5 bg-muted/50 rounded-r-2xl border-y border-r border-border group-hover:bg-card group-hover:border-brand-indigo/20 text-center">
+                                        <div className={`flex items-center justify-center gap-1 font-black text-[10px] uppercase tracking-widest ${row.trend === 'up' ? 'text-destructive' : row.trend === 'down' ? 'text-success' : 'text-muted-foreground'
                                             }`}>
                                             {row.trend === 'up' ? <TrendingUp className="w-3 h-3 rotate-45" /> : row.trend === 'down' ? <TrendingUp className="w-3 h-3 -rotate-45" /> : <Activity className="w-3 h-3" />}
                                             {row.variance !== 0 ? `${row.variance > 0 ? '+' : ''}${row.variance}%` : 'Base'}
@@ -108,39 +108,24 @@ export default function PriceComparisonModal({ show, onClose }) {
                 </div>
 
                 {/* Footer del Modal */}
-                <div className="p-8 bg-gray-50 border-t border-gray-100 flex items-center justify-between">
+                <div className="p-8 bg-muted border-t border-border flex items-center justify-between">
                     <div className="flex items-center space-x-2">
-                        <span className="w-3 h-3 bg-indigo-600 rounded-full animate-pulse" />
-                        <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest italic">Análisis basado en 42 registros históricos validos</span>
+                        <span className="w-3 h-3 bg-brand-indigo rounded-full animate-pulse" />
+                        <span className="text-[10px] font-black text-muted-foreground uppercase tracking-widest italic">Análisis basado en 42 registros históricos validos</span>
                     </div>
                     <div className="flex space-x-3">
                         <button
                             onClick={onClose}
-                            className="px-6 py-3 text-[10px] font-black text-gray-400 uppercase tracking-widest hover:text-indigo-600 transition-colors"
+                            className="px-6 py-3 text-[10px] font-black text-muted-foreground uppercase tracking-widest hover:text-brand-indigo transition-colors"
                         >
                             Cerrar Ventana
                         </button>
-                        <button className="px-8 py-3 bg-gray-900 text-white rounded-xl text-[10px] font-black uppercase tracking-widest shadow-xl shadow-gray-200 hover:bg-black transition-all">
+                        <button className="px-8 py-3 bg-foreground text-background rounded-xl text-[10px] font-black uppercase tracking-widest shadow-xl shadow-foreground/10 hover:bg-foreground/90 transition-all">
                             <Download className="w-4 h-4 mr-2 inline" /> Descargar Informe
                         </button>
                     </div>
                 </div>
             </div>
-            <style>{`
-                .custom-scrollbar::-webkit-scrollbar {
-                    width: 4px;
-                }
-                .custom-scrollbar::-webkit-scrollbar-track {
-                    background: transparent;
-                }
-                .custom-scrollbar::-webkit-scrollbar-thumb {
-                    background: #e2e8f0;
-                    border-radius: 10px;
-                }
-                .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-                    background: #cbd5e1;
-                }
-            `}</style>
         </div>
     );
 };

@@ -110,11 +110,12 @@ public class GlobalExceptionHandler {
     public ResponseEntity<StandardErrorResponse> handleTipoIncorrecto(
             MethodArgumentTypeMismatchException ex, HttpServletRequest request) {
 
+        Class<?> requiredType = ex.getRequiredType();
         String mensaje = String.format(
                 "El parámetro '%s' recibió el valor '%s' que no es del tipo esperado '%s'",
                 ex.getName(),
                 ex.getValue(),
-                ex.getRequiredType() != null ? ex.getRequiredType().getSimpleName() : "desconocido");
+                requiredType != null ? requiredType.getSimpleName() : "desconocido");
 
         log.warn("[400] Tipo de argumento incorrecto | ruta={} | mensaje={}",
                 request.getRequestURI(), mensaje);

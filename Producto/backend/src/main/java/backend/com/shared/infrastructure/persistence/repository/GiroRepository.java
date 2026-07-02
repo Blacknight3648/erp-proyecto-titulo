@@ -2,12 +2,9 @@ package backend.com.shared.infrastructure.persistence.repository;
 
 import backend.com.shared.infrastructure.persistence.entity.GiroJpaEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
-
 import java.util.List;
 import java.util.Optional;
 
-@Repository
 public interface GiroRepository extends JpaRepository<GiroJpaEntity, Long> {
 
     Optional<GiroJpaEntity> findByCodigoSii(String codigoSii);

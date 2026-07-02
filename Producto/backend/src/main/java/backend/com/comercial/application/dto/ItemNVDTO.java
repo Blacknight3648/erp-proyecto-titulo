@@ -21,6 +21,11 @@ public class ItemNVDTO {
     private String llevaLogo;
     private String logoDetalle;
     private TipoItem itemType;
+    /**
+     * Costeo existente (APROBADO) a vincular manualmente a la OP, para ítems tipo OP
+     * que no heredan un costeo desde la EVN plantilla. Solo aplica al crear la NV.
+     */
+    private Long costeoId;
     private Boolean requiereOt;
     private String detalleOt;
     private List<TallaDTO> tallas;

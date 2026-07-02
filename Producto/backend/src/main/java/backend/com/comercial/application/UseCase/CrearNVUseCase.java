@@ -110,7 +110,18 @@ public class CrearNVUseCase {
                 guardada.getItems().stream().anyMatch(i -> TipoItem.OP == i.getTipoItem());
 
         if (tieneItemsOP) {
-            backend.com.produccion.domain.model.OrdenProduccion op = crearOPUseCase.execute(guardada);
+            // Costeo elegido manualmente en algún ítem OP nuevo (sin costeo heredado de la EVN).
+            // Se toma del primer ítem OP del comando que traiga uno, igual que se hace con
+            // ItemEVN.costeoId al derivar el costeo desde la EVN plantilla.
+            Long costeoIdManual = command.getItems() == null ? null
+                    : command.getItems().stream()
+                            .filter(dto -> TipoItem.OP == (dto.getItemType() != null ? dto.getItemType() : TipoItem.OP)
+                                    && dto.getCosteoId() != null)
+                            .map(ItemNVDTO::getCosteoId)
+                            .findFirst()
+                            .orElse(null);
+
+            backend.com.produccion.domain.model.OrdenProduccion op = crearOPUseCase.execute(guardada, costeoIdManual);
             // Trazabilidad: registrar qué OP fue generada para cada ítem OP de esta NV
             nvRepository.vincularOpAItems(guardada.getIdNV(), op.getIdOP());
         }

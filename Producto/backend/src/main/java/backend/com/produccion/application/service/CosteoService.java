@@ -15,6 +15,8 @@ public interface CosteoService {
     Optional<CosteoResumenEVNDTO> obtenerResumenEVN(Long idCosteo);
     /** Costeos APROBADOS y no vinculados a ningún ítem de EVN (disponibles para vincular). */
     List<CosteoDTO> obtenerDisponiblesParaEVN();
+    /** Costeos APROBADOS, no vinculados a ningún ítem de EVN y no usados por ninguna OP (disponibles para vincular manualmente al crear una NV). */
+    List<CosteoDTO> obtenerDisponiblesParaOP();
 
     // --- Transiciones del ciclo de vida ---
     /** BORRADOR → COSTEADO (producción confirma los costos). */

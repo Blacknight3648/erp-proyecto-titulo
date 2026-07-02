@@ -11,6 +11,7 @@ import backend.com.produccion.domain.enums.EstadoCosteo;
 import backend.com.produccion.domain.model.Costeo;
 import backend.com.produccion.domain.model.CosteoItem;
 import backend.com.produccion.domain.repository.CosteoRepository;
+import backend.com.produccion.domain.repository.OrdenProduccionRepository;
 import backend.com.produccion.infrastructure.mapper.CosteoMapper;
 import backend.com.shared.application.service.HistorialEstadoService;
 import backend.com.shared.application.service.NumeroDocumentoService;
@@ -33,6 +34,7 @@ public class CosteoServiceImpl implements CosteoService {
     private final SolicitudCostosRepository scosRepository;
     private final ArticuloRepository articuloRepository;
     private final EvaluacionNegocioRepository evnRepository;
+    private final OrdenProduccionRepository ordenProduccionRepository;
     private final NumeroDocumentoService numeroDocumentoService;
     private final CrearVersionCosteoUseCase crearVersionCosteoUseCase;
     private final HistorialEstadoService historialEstadoService;
@@ -168,6 +170,21 @@ public class CosteoServiceImpl implements CosteoService {
         // Solo costeos APROBADOS pueden vincularse a un ítem de EVN/NV.
         return repository.findAll().stream()
                 .filter(c -> c.getIdCosteo() != null && !vinculados.contains(c.getIdCosteo()))
+                .filter(c -> c.getEstado() == backend.com.produccion.domain.enums.EstadoCosteo.APROBADO)
+                .map(this::toEnrichedDto)
+                .collect(java.util.stream.Collectors.toList());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public java.util.List<CosteoDTO> obtenerDisponiblesParaOP() {
+        java.util.Set<Long> vinculadosEVN = new java.util.HashSet<>(evnRepository.findLinkedCosteoIds());
+        java.util.Set<Long> enUsoOP = new java.util.HashSet<>(ordenProduccionRepository.findCosteoIdsEnUso());
+        // Solo costeos APROBADOS, sin vínculo previo a EVN ni a otra OP, pueden ofrecerse para vincular manualmente.
+        return repository.findAll().stream()
+                .filter(c -> c.getIdCosteo() != null
+                        && !vinculadosEVN.contains(c.getIdCosteo())
+                        && !enUsoOP.contains(c.getIdCosteo()))
                 .filter(c -> c.getEstado() == backend.com.produccion.domain.enums.EstadoCosteo.APROBADO)
                 .map(this::toEnrichedDto)
                 .collect(java.util.stream.Collectors.toList());

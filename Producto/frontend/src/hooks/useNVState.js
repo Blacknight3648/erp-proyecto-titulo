@@ -1,9 +1,10 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import { api } from '../remote/service/api';
 import { useVendedores } from './useVendedores';
 import { useProveedores } from './useProveedores';
 import { useClientes } from './useClientes';
 import { useComercial } from './useComercial';
+import { useProduccion } from './useProduccion';
 import { toast } from 'sonner';
 import { validateNumericInput } from '../utils/validations';
 
@@ -17,12 +18,13 @@ export const useNVState = (initialView = 'list') => {
     const { clientes, loading: loadingClientes } = useClientes();
     const { vendedores } = useVendedores();
     const { proveedores } = useProveedores();
-    const { 
-        notasVenta, 
-        evaluacionesNegocio, 
-        load: loadComercial, 
-        loading: loadingComercial 
+    const {
+        notasVenta,
+        evaluacionesNegocio,
+        load: loadComercial,
+        loading: loadingComercial
     } = useComercial();
+    const { getCosteosDisponiblesOP, getOrdenesProduccionPorNotaVenta } = useProduccion();
 
     const registros = useMemo(() => {
         return (notasVenta || []).map(r => {
@@ -69,6 +71,46 @@ export const useNVState = (initialView = 'list') => {
     const [nextNumbers, setNextNumbers] = useState({ nv: '...', sc: '...' });
     const [evnModal, setEvnModal] = useState({ open: false, evn: null, selectedIds: new Set() });
 
+    // Info de solo lectura del costeo ya vinculado a la OP de esta NV (si ya existe),
+    // para mostrarla en los ítems tipo OP cuando se edita/visualiza una NV guardada.
+    const [opCosteoInfo, setOpCosteoInfo] = useState(null);
+
+    // Vínculo manual de Costeo existente a un ítem tipo OP nuevo (que aún no
+    // hereda un costeo desde la EVN plantilla). Solo aplica al crear la NV.
+    const [showCosteoModal, setShowCosteoModal] = useState(false);
+    const [costeoModalItemId, setCosteoModalItemId] = useState(null);
+    const [costeosDisponibles, setCosteosDisponibles] = useState([]);
+    const [loadingCosteos, setLoadingCosteos] = useState(false);
+
+    const openCosteoSelector = useCallback(async (itemId) => {
+        setCosteoModalItemId(itemId);
+        setShowCosteoModal(true);
+        setLoadingCosteos(true);
+        try {
+            const data = await getCosteosDisponiblesOP();
+            setCosteosDisponibles(data || []);
+        } finally {
+            setLoadingCosteos(false);
+        }
+    }, [getCosteosDisponiblesOP]);
+
+    const closeCosteoSelector = useCallback(() => {
+        setShowCosteoModal(false);
+        setCosteoModalItemId(null);
+    }, []);
+
+    const handleSelectCosteo = useCallback((idCosteo) => {
+        if (costeoModalItemId != null) {
+            setFormData(prev => ({
+                ...prev,
+                items: prev.items.map(item =>
+                    item.id === costeoModalItemId ? { ...item, costeoId: idCosteo || null } : item)
+            }));
+        }
+        setShowCosteoModal(false);
+        setCosteoModalItemId(null);
+    }, [costeoModalItemId]);
+
     useEffect(() => {
         loadComercial();
     }, []);
@@ -100,9 +142,29 @@ export const useNVState = (initialView = 'list') => {
             .map(([talla, cantidad]) => ({ talla, cantidad }));
     };
 
+    const loadOpCosteoInfo = useCallback(async (notaVentaId) => {
+        if (!notaVentaId) {
+            setOpCosteoInfo(null);
+            return;
+        }
+        const ops = await getOrdenesProduccionPorNotaVenta(notaVentaId);
+        const op = (ops || [])[0] || null;
+        setOpCosteoInfo(op ? {
+            opId: op.idOP,
+            numeroOP: op.numeroOP,
+            numeroCosteo: op.numeroCosteo,
+            estadoCosteo: op.estadoCosteo
+        } : null);
+    }, [getOrdenesProduccionPorNotaVenta]);
+
     const handleOpenForm = (data = null, mode = 'new') => {
         setSubmitStatus(null);
         setSourceEVN(null);
+        setOpCosteoInfo(null);
+
+        if (mode === 'view' || mode === 'edit') {
+            loadOpCosteoInfo(data?.idNV);
+        }
 
         if (mode === 'view') {
             setFormData({
@@ -145,6 +207,7 @@ export const useNVState = (initialView = 'list') => {
                     proveedorId: item.proveedorId || '',
                     requiereOt: item.requiereOt || false,
                     detalleOt: item.detalleOt || '',
+                    costeoId: item.costeoId || null,
                 }))
             });
             setIsReadOnly(false);
@@ -176,7 +239,10 @@ export const useNVState = (initialView = 'list') => {
                     logo: item.logo || 'N/A',
                     proveedorId: item.proveedorId || '',
                     requiereOt: item.requiereOt || false,
-                    detalleOt: item.detalleOt || ''
+                    detalleOt: item.detalleOt || '',
+                    // Costeo ya vinculado en la EVN (si el ítem OP lo trae); si no viene,
+                    // el usuario podrá vincular uno existente manualmente en el formulario.
+                    costeoId: item.costeoId || null,
                 }))
             });
             setSourceEVN(data.evaluacionNegocioId || data.id);
@@ -216,7 +282,8 @@ export const useNVState = (initialView = 'list') => {
             logo: 'N/A',
             proveedorId: '',
             requiereOt: false,
-            detalleOt: ''
+            detalleOt: '',
+            costeoId: null,
         };
         setFormData({ ...formData, items: [...formData.items, newItem] });
     };
@@ -327,6 +394,7 @@ export const useNVState = (initialView = 'list') => {
                     proveedorId: item.proveedorId ? parseInt(item.proveedorId) : null,
                     llevaLogo: item.logo || 'N/A',
                     itemType: item.tipoItem,
+                    costeoId: item.tipoItem === 'OP' ? (item.costeoId || null) : null,
                     requiereOt: item.requiereOt,
                     detalleOt: item.detalleOt,
                     logoDetalle: item.logo || 'N/A'
@@ -369,6 +437,14 @@ export const useNVState = (initialView = 'list') => {
         sourceEVN,
         nextNumbers,
         evnModal, setEvnModal,
+        opCosteoInfo,
+        showCosteoModal,
+        costeoModalItemId,
+        costeosDisponibles,
+        loadingCosteos,
+        openCosteoSelector,
+        closeCosteoSelector,
+        handleSelectCosteo,
         handleOpenForm,
         addItem,
         removeItem,

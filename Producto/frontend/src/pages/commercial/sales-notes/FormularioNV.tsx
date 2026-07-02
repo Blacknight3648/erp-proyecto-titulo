@@ -1,6 +1,7 @@
 import React from 'react';
-import { FileText, ChevronRight, Save, Plus, Trash2, Wrench, CheckCircle2, AlertCircle } from 'lucide-react';
+import { FileText, ChevronRight, Save, Plus, Trash2, Wrench, CheckCircle2, AlertCircle, Calculator } from 'lucide-react';
 import { pdfService } from '../../../remote/service/pdfService';
+import CosteoSelectionModal from '../administration/CosteoSelectionModal';
 
 export default function FormularioNV({
     formData,
@@ -21,8 +22,21 @@ export default function FormularioNV({
     totalAmount,
     isSubmitting,
     submitStatus,
-    setView
+    setView,
+    opCosteoInfo,
+    showCosteoModal,
+    costeoModalItemId,
+    costeosDisponibles,
+    loadingCosteos,
+    openCosteoSelector,
+    closeCosteoSelector,
+    handleSelectCosteo
 }) {
+    // La OP recién se crea al guardar la NV por primera vez, así que el vínculo
+    // manual de costeo solo tiene sentido mientras la NV todavía no existe.
+    const puedeVincularCosteo = !isReadOnly && !formData.idNV;
+    const currentModalItem = (formData.items || []).find(item => item.id === costeoModalItemId);
+
     return (
         <div className="animate-in fade-in duration-500 space-y-8 bg-muted/50 min-h-screen p-6 pb-24">
             <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between mb-10 bg-card p-8 rounded-[2.5rem] shadow-sm border border-border">
@@ -139,12 +153,44 @@ export default function FormularioNV({
                     <div className="p-8 space-y-6">
                         {formData.items.map((item) => (
                             <div key={item.id} className="p-8 rounded-[2.5rem] border-2 border-border hover:border-primary/30 transition-all space-y-6 relative group">
-                                <div className="flex items-center gap-2 p-1 bg-muted/50 rounded-xl w-fit">
-                                    {['OP', 'SC', 'SCI'].map(type => (
-                                        <button key={type} disabled={isReadOnly} onClick={() => updateItem(item.id, 'tipoItem', type)} className={`px-4 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all ${item.tipoItem === type ? 'bg-primary text-primary-foreground shadow-md' : 'text-muted-foreground'}`}>
-                                            {type === 'OP' ? 'Orden de Producción(OP)' : type === 'SC' ? 'Solicitud de Compra(SC)' : 'Solicitud de Compra Internacional(SCI)'}
-                                        </button>
-                                    ))}
+                                <div className="flex items-center justify-between gap-4">
+                                    <div className="flex items-center gap-2 p-1 bg-muted/50 rounded-xl w-fit">
+                                        {['OP', 'SC', 'SCI'].map(type => (
+                                            <button key={type} disabled={isReadOnly} onClick={() => updateItem(item.id, 'tipoItem', type)} className={`px-4 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all ${item.tipoItem === type ? 'bg-primary text-primary-foreground shadow-md' : 'text-muted-foreground'}`}>
+                                                {type === 'OP' ? 'Orden de Producción(OP)' : type === 'SC' ? 'Solicitud de Compra(SC)' : 'Solicitud de Compra Internacional(SCI)'}
+                                            </button>
+                                        ))}
+                                    </div>
+                                    {item.tipoItem === 'OP' && (
+                                        formData.idNV ? (
+                                            // La OP ya existe y tiene un único costeo para toda la orden: cualquier
+                                            // ítem OP de esta NV (incluidos los que se agreguen recién ahora) queda
+                                            // bajo ese mismo costeo al guardar, así que se muestra en todos por igual.
+                                            opCosteoInfo && (
+                                                <span className="px-4 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest bg-warning/10 text-warning border border-warning/20 flex items-center gap-2">
+                                                    <Calculator className="w-3.5 h-3.5" />
+                                                    Costeo {opCosteoInfo.numeroCosteo || `#${opCosteoInfo.opId}`} · {opCosteoInfo.estadoCosteo}
+                                                </span>
+                                            )
+                                        ) : puedeVincularCosteo && (
+                                            item.costeoId ? (
+                                                <span className="px-4 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest bg-warning/10 text-warning border border-warning/20 flex items-center gap-2">
+                                                    <Calculator className="w-3.5 h-3.5" />
+                                                    Costeo #{item.costeoId} vinculado
+                                                </span>
+                                            ) : (
+                                                <button
+                                                    type="button"
+                                                    onClick={() => openCosteoSelector(item.id)}
+                                                    title="OP nueva sin costeo asociado: vincular uno existente (opcional)"
+                                                    className="px-4 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all flex items-center gap-2 bg-indigo-50 text-indigo-600 border border-indigo-100 hover:bg-indigo-100"
+                                                >
+                                                    <Calculator className="w-3.5 h-3.5" />
+                                                    <span>Vincular costeo existente (opcional)</span>
+                                                </button>
+                                            )
+                                        )
+                                    )}
                                 </div>
                                 <div className="grid grid-cols-12 gap-6">
                                     <div className="col-span-3">
@@ -288,6 +334,15 @@ export default function FormularioNV({
                     <p className="font-black text-sm uppercase tracking-widest">{submitStatus.message}</p>
                 </div>
             )}
+
+            <CosteoSelectionModal
+                open={showCosteoModal}
+                costeos={costeosDisponibles}
+                loading={loadingCosteos}
+                currentCosteoId={currentModalItem?.costeoId || null}
+                onSelect={handleSelectCosteo}
+                onClose={closeCosteoSelector}
+            />
         </div>
     );
 }

@@ -35,6 +35,11 @@ public class CrearOrdenProduccionUseCase {
 
     @Transactional
     public OrdenProduccion execute(NotaVenta notaVenta) {
+        return execute(notaVenta, null);
+    }
+
+    @Transactional
+    public OrdenProduccion execute(NotaVenta notaVenta, Long costeoIdManual) {
         if (notaVenta == null)
             throw new ValidationException("La Nota de Venta no puede ser nula");
 
@@ -80,6 +85,29 @@ public class CrearOrdenProduccionUseCase {
                         "SYSTEM");
                 costeoVersionId = versionInicial.getIdCosteoVersion();
             }
+        }
+
+        // Intento 1.5: si la EVN no traía costeo vinculado, permitir vincular manualmente
+        // un Costeo existente (ej. seleccionado por el usuario al crear la NV). Solo se
+        // acepta si está APROBADO y no está siendo usado ya por otra OP.
+        if (costeoVersionId == null && costeoIdManual != null) {
+            Costeo costeoManual = costeoRepository.findById(costeoIdManual)
+                    .orElseThrow(() -> new EntityNotFoundException("Costeo no encontrado: " + costeoIdManual));
+
+            if (costeoManual.getEstado() != backend.com.produccion.domain.enums.EstadoCosteo.APROBADO) {
+                throw new ValidationException(
+                        "El Costeo " + costeoIdManual + " debe estar APROBADO para poder vincularse a la OP.");
+            }
+            if (repository.findCosteoIdsEnUso().contains(costeoIdManual)) {
+                throw new ValidationException(
+                        "El Costeo " + costeoIdManual + " ya está vinculado a otra Orden de Producción.");
+            }
+
+            CosteoVersion versionManual = crearVersionCosteoUseCase.ejecutar(
+                    costeoManual.getIdCosteo(),
+                    "Costeo existente vinculado manualmente desde la NV",
+                    "SYSTEM");
+            costeoVersionId = versionManual.getIdCosteoVersion();
         }
 
         // Intento 2 (garantía ACID): si la EVN no tenía costeo vinculado, crear uno vacío

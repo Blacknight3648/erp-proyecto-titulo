@@ -12,4 +12,7 @@ public interface OrdenProduccionRepository {
     List<OrdenProduccion> findAll();
 
     List<OrdenProduccion> findByNotaVentaId(Long notaVentaId);
+
+    /** IDs de costeos que ya son usados por alguna Orden de Producción existente. */
+    List<Long> findCosteoIdsEnUso();
 }

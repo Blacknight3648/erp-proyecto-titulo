@@ -7,6 +7,8 @@ import backend.com.produccion.application.dto.AvanceOPResponse;
 import backend.com.produccion.application.dto.OPResponse;
 import backend.com.produccion.application.dto.SeguimientoOPDTO;
 import backend.com.produccion.domain.model.SeguimientoOP;
+import backend.com.produccion.domain.repository.CosteoRepository;
+import backend.com.produccion.domain.repository.CosteoVersionRepository;
 import backend.com.produccion.domain.repository.OrdenProduccionRepository;
 import backend.com.produccion.domain.repository.SeguimientoOPRepository;
 import backend.com.shared.exception.EntityNotFoundException;
@@ -26,6 +28,8 @@ public class OrdenProduccionController {
     private final CalcularAvanceUseCase calcularAvanceUseCase;
     private final ActualizarSeguimientoUseCase actualizarSeguimientoUseCase;
     private final SeguimientoOPRepository seguimientoRepository;
+    private final CosteoVersionRepository costeoVersionRepository;
+    private final CosteoRepository costeoRepository;
 
     @GetMapping
     public List<OPResponse> getAll() {
@@ -39,6 +43,27 @@ public class OrdenProduccionController {
         return repository.findById(id)
                 .map(OPResponse::fromDomain)
                 .orElseThrow(() -> new EntityNotFoundException("Orden de Producción no encontrada: " + id));
+    }
+
+    /** OP(s) de una Nota de Venta, con el número/estado del costeo vinculado resuelto. */
+    @GetMapping("/por-nota-venta/{notaVentaId}")
+    public List<OPResponse> getByNotaVentaId(@PathVariable Long notaVentaId) {
+        return repository.findByNotaVentaId(notaVentaId).stream()
+                .map(this::toResponseConCosteo)
+                .collect(Collectors.toList());
+    }
+
+    private OPResponse toResponseConCosteo(backend.com.produccion.domain.model.OrdenProduccion op) {
+        OPResponse r = OPResponse.fromDomain(op);
+        if (op.getCosteoVersionId() != null) {
+            costeoVersionRepository.findById(op.getCosteoVersionId())
+                    .flatMap(version -> costeoRepository.findById(version.getCosteoId()))
+                    .ifPresent(costeo -> {
+                        r.setNumeroCosteo(costeo.getNumeroCosteo() != null ? costeo.getNumeroCosteo().getValue() : null);
+                        r.setEstadoCosteo(costeo.getEstado() != null ? costeo.getEstado().name() : null);
+                    });
+        }
+        return r;
     }
 
     @PostMapping("/recepcionar/{id}")

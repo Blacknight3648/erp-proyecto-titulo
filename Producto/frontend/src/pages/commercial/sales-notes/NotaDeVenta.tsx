@@ -35,6 +35,14 @@ export default function NotaDeVenta() {
         sourceEVN,
         nextNumbers,
         evnModal, setEvnModal,
+        opCosteoInfo,
+        showCosteoModal,
+        costeoModalItemId,
+        costeosDisponibles,
+        loadingCosteos,
+        openCosteoSelector,
+        closeCosteoSelector,
+        handleSelectCosteo,
         handleOpenForm,
         addItem,
         removeItem,
@@ -105,6 +113,14 @@ export default function NotaDeVenta() {
                     isSubmitting={isSubmitting}
                     submitStatus={submitStatus}
                     setView={setView}
+                    opCosteoInfo={opCosteoInfo}
+                    showCosteoModal={showCosteoModal}
+                    costeoModalItemId={costeoModalItemId}
+                    costeosDisponibles={costeosDisponibles}
+                    loadingCosteos={loadingCosteos}
+                    openCosteoSelector={openCosteoSelector}
+                    closeCosteoSelector={closeCosteoSelector}
+                    handleSelectCosteo={handleSelectCosteo}
                 />
             )}
 

@@ -12,6 +12,9 @@ import java.util.stream.Collectors;
 public class OPResponse {
     private Long idOP;
     private Long costeoVersionId;
+    /** Resueltos aparte (requieren repositorios), no se llenan en fromDomain. */
+    private String numeroCosteo;
+    private String estadoCosteo;
     private String numeroOP;
     private Long notaVentaId;
     private String estado;

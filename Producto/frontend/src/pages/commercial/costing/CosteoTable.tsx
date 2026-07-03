@@ -1,7 +1,95 @@
 import React from 'react';
-import { Trash2, Plus } from 'lucide-react';
+import { Trash2, Plus, ChevronsUpDown, Check } from 'lucide-react';
+import { Popover, PopoverTrigger, PopoverContent } from '../../../ui/popover';
+import { Command, CommandInput, CommandList, CommandEmpty, CommandGroup, CommandItem } from '../../../ui/command';
+import { cn } from '../../../ui/utils';
 
-export default function CosteoTable({ title, insumos, onUpdateItem, onRemoveItem, onAddItem, disabled }) {
+function AutocompleteInput({ value, onChange, disabled, opcionesAutocomplete, placeholder = "Producto..." }) {
+    const [open, setOpen] = React.useState(false);
+    const [inputValue, setInputValue] = React.useState(value || '');
+
+    // Sync input value with external value
+    React.useEffect(() => {
+        setInputValue(value || '');
+    }, [value]);
+
+    const handleSelect = (currentValue) => {
+        onChange(currentValue);
+        setInputValue(currentValue);
+        setOpen(false);
+    };
+
+    const handleInputChange = (val) => {
+        setInputValue(val);
+        onChange(val);
+    };
+
+    if (!opcionesAutocomplete) {
+        return (
+            <input
+                type="text"
+                disabled={disabled}
+                className={`w-full bg-transparent border-none text-sm font-bold ${disabled ? 'text-muted-foreground' : 'text-foreground'} focus:ring-0`}
+                value={value}
+                onChange={(e) => handleInputChange(e.target.value)}
+                placeholder={placeholder}
+            />
+        );
+    }
+
+    return (
+        <Popover open={open} onOpenChange={setOpen}>
+            <PopoverTrigger asChild>
+                <div
+                    role="combobox"
+                    aria-expanded={open}
+                    className={`flex w-full items-center justify-between bg-transparent px-2 py-1 text-sm font-bold border rounded-md cursor-text ${disabled ? 'text-muted-foreground opacity-50 cursor-not-allowed border-transparent' : 'text-foreground hover:bg-muted/50 border-transparent hover:border-border'}`}
+                    onClick={(e) => {
+                        if (disabled) return;
+                        setOpen(true);
+                    }}
+                >
+                    <input
+                        type="text"
+                        disabled={disabled}
+                        className="w-full bg-transparent border-none focus:ring-0 p-0 text-sm font-bold truncate"
+                        value={inputValue}
+                        onChange={(e) => handleInputChange(e.target.value)}
+                        placeholder={placeholder}
+                    />
+                    <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                </div>
+            </PopoverTrigger>
+            <PopoverContent className="w-[300px] p-0" align="start">
+                <Command>
+                    <CommandInput placeholder="Buscar..." />
+                    <CommandList>
+                        <CommandEmpty>No se encontraron resultados.</CommandEmpty>
+                        <CommandGroup>
+                            {opcionesAutocomplete.map((opcion) => (
+                                <CommandItem
+                                    key={opcion.idArticulo}
+                                    value={opcion.nombreArticulo}
+                                    onSelect={() => handleSelect(opcion.nombreArticulo)}
+                                >
+                                    <Check
+                                        className={cn(
+                                            "mr-2 h-4 w-4",
+                                            inputValue.toLowerCase() === (opcion.nombreArticulo || '').toLowerCase() ? "opacity-100" : "opacity-0"
+                                        )}
+                                    />
+                                    {opcion.nombreArticulo}
+                                </CommandItem>
+                            ))}
+                        </CommandGroup>
+                    </CommandList>
+                </Command>
+            </PopoverContent>
+        </Popover>
+    );
+}
+
+export default function CosteoTable({ title, insumos, onUpdateItem, onRemoveItem, onAddItem, disabled, opcionesAutocomplete, searchOpciones }) {
     const isLogoTable = insumos.length > 0 && insumos[0].categoryId === 'logotipo';
 
     return (
@@ -63,12 +151,11 @@ export default function CosteoTable({ title, insumos, onUpdateItem, onRemoveItem
                                             </span>
                                         </td>
                                         <td className="px-6 py-4">
-                                            <input
-                                                type="text"
-                                                disabled={disabled}
-                                                className={`w-full bg-transparent border-none text-sm font-bold ${disabled || !isNew ? 'text-muted-foreground' : 'text-foreground'} focus:ring-0`}
+                                            <AutocompleteInput
                                                 value={item.producto}
-                                                onChange={(e) => onUpdateItem(item.id, 'producto', e.target.value)}
+                                                onChange={(val) => onUpdateItem(item.id, 'producto', val)}
+                                                disabled={disabled}
+                                                opcionesAutocomplete={opcionesAutocomplete}
                                                 placeholder="Producto..."
                                             />
                                         </td>
@@ -155,12 +242,12 @@ export default function CosteoTable({ title, insumos, onUpdateItem, onRemoveItem
                                             />
                                         </td>
                                         <td className="px-6 py-4">
-                                            <input
-                                                type="text"
-                                                disabled={disabled}
-                                                className={`w-full bg-transparent border-none text-sm font-bold ${disabled || !isNew ? 'text-muted-foreground' : 'text-foreground'} focus:ring-0`}
+                                            <AutocompleteInput
                                                 value={item.producto}
-                                                onChange={(e) => onUpdateItem(item.id, 'producto', e.target.value)}
+                                                onChange={(val) => onUpdateItem(item.id, 'producto', val)}
+                                                disabled={disabled}
+                                                opcionesAutocomplete={opcionesAutocomplete}
+                                                placeholder="Producto..."
                                             />
                                         </td>
                                         <td className="px-6 py-4 text-xs text-muted-foreground font-bold uppercase truncate max-w-[100px]">

@@ -28,6 +28,13 @@ public class CosteoDTO {
     // Costos base
     private BigDecimal costoHilos;
     private BigDecimal costoManoObra;
+    // Desglose de mano de obra (costoManoObra = suma de estos + costoMoPropia + costoGratificacion)
+    private BigDecimal moPrenda;
+    private BigDecimal moCinta;
+    private BigDecimal moCosturaSellada;
+    private BigDecimal moAcolchado;
+    private BigDecimal costoMoPropia;
+    private BigDecimal costoGratificacion;
     private String observacionesManoObra;
     private BigDecimal costoEtiquetas;
     private BigDecimal costoEmbalaje;

@@ -25,7 +25,7 @@ public class CosteoController {
     public ResponseEntity<CosteoDTO> getBySCOS(@PathVariable Long scosId) {
         return gestionarCosteoUseCase.obtenerPorSCOS(scosId)
                 .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.noContent().build());
+                .orElse(ResponseEntity.notFound().build());
     }
 
     @GetMapping("/scos/{scosId}/all")

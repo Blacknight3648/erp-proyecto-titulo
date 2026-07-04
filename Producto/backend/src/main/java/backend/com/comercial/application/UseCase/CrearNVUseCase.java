@@ -94,6 +94,11 @@ public class CrearNVUseCase {
                         dto.getCantidad(),
                         new Money(dto.getPrecioUnitario(), "CLP"),
                         tallas);
+
+                // Costeo elegido manualmente para este ítem OP (si no hereda uno de la EVN).
+                if (dto.getCosteoId() != null) {
+                    item.setCosteoIdManual(dto.getCosteoId());
+                }
                 nv.addItem(item);
 
             }
@@ -103,27 +108,28 @@ public class CrearNVUseCase {
             nv.emitir();
         }
 
+        // Borrador: reservar números de OP para cada ítem tipo OP nuevo (sin número aún).
+        // El número se consume del contador atómico para que nadie más pueda usarlo.
+        if (!Boolean.TRUE.equals(command.getEmitir())) {
+            if (nv.getItems() != null) {
+                for (ItemNV item : nv.getItems()) {
+                    if (TipoItem.OP == item.getTipoItem()
+                            && item.getNumeroOPReservado() == null
+                            && item.getOpId() == null) {
+                        DocumentNumber reservado = numeroDocumentoService.siguienteFormateado("OP");
+                        item.setNumeroOPReservado(reservado.getValue());
+                    }
+                }
+            }
+        }
+
         NotaVenta guardada = nvRepository.save(nv);
 
-        // Crear OP y obtener el id asignado para vincularlo a los ítems de la NV
-        boolean tieneItemsOP = guardada.getItems() != null &&
-                guardada.getItems().stream().anyMatch(i -> TipoItem.OP == i.getTipoItem());
-
-        if (tieneItemsOP) {
-            // Costeo elegido manualmente en algún ítem OP nuevo (sin costeo heredado de la EVN).
-            // Se toma del primer ítem OP del comando que traiga uno, igual que se hace con
-            // ItemEVN.costeoId al derivar el costeo desde la EVN plantilla.
-            Long costeoIdManual = command.getItems() == null ? null
-                    : command.getItems().stream()
-                            .filter(dto -> TipoItem.OP == (dto.getItemType() != null ? dto.getItemType() : TipoItem.OP)
-                                    && dto.getCosteoId() != null)
-                            .map(ItemNVDTO::getCosteoId)
-                            .findFirst()
-                            .orElse(null);
-
-            backend.com.produccion.domain.model.OrdenProduccion op = crearOPUseCase.execute(guardada, costeoIdManual);
-            // Trazabilidad: registrar qué OP fue generada para cada ítem OP de esta NV
-            nvRepository.vincularOpAItems(guardada.getIdNV(), op.getIdOP());
+        // Solo al emitir se crean las OPs reales (con costeo, fases, etc.).
+        if (Boolean.TRUE.equals(command.getEmitir())) {
+            crearOPUseCase.execute(guardada);
+            // Re-leer desde BD para que el NVResponse incluya los opId asignados por vincularOpAItem.
+            guardada = nvRepository.findById(guardada.getIdNV()).orElse(guardada);
         }
 
         return NVResponse.fromDomain(guardada);

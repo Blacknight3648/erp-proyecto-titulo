@@ -19,7 +19,19 @@ public class NotaVentaRepositoryImpl implements NotaVentaRepository {
 
     @Override
     public NotaVenta save(NotaVenta notaVenta) {
-        NotaVentaJpaEntity entity = mapper.toEntity(notaVenta);
+        NotaVentaJpaEntity entity;
+        if (notaVenta.getIdNV() != null) {
+            Optional<NotaVentaJpaEntity> opt = jpaRepository.findById(notaVenta.getIdNV());
+            if (opt.isPresent()) {
+                entity = opt.get();
+                mapper.updateEntity(notaVenta, entity);
+            } else {
+                entity = mapper.toEntity(notaVenta);
+            }
+        } else {
+            entity = mapper.toEntity(notaVenta);
+        }
+
         if (entity == null) {
             throw new IllegalArgumentException("La entidad de Nota de Venta no puede ser nula");
         }
@@ -44,8 +56,8 @@ public class NotaVentaRepositoryImpl implements NotaVentaRepository {
     }
 
     @Override
-    public void vincularOpAItems(Long notaVentaId, Long opId) {
-        jpaRepository.vincularOpAItems(notaVentaId, opId, backend.com.comercial.domain.enums.TipoItem.OP);
+    public void vincularOpAItem(Long itemId, Long opId) {
+        jpaRepository.vincularOpAItem(itemId, opId);
     }
 
     @Override
@@ -53,5 +65,12 @@ public class NotaVentaRepositoryImpl implements NotaVentaRepository {
         return jpaRepository.findAll().stream()
                 .map(mapper::toDomain)
                 .collect(java.util.stream.Collectors.toList());
+    }
+
+    @Override
+    public void delete(NotaVenta notaVenta) {
+        if (notaVenta != null && notaVenta.getIdNV() != null) {
+            jpaRepository.deleteById(notaVenta.getIdNV());
+        }
     }
 }

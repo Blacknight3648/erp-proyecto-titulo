@@ -31,8 +31,12 @@ public class CosteoJpaEntity {
     @Column(name = "solicitud_costos_id")
     private Long solicitudCostosId;
 
-    /** Referencia suave a la NV (solo para costeos auto-creados sin solicitud de costos). */
-    @Column(name = "nota_venta_id", unique = true)
+    /**
+     * Referencia suave a la NV (solo para costeos auto-creados sin solicitud de costos).
+     * No es única: una NV puede tener varios ítems tipo OP, cada uno con su propio
+     * Costeo auto-creado de respaldo.
+     */
+    @Column(name = "nota_venta_id")
     private Long notaVentaId;
 
     @OneToMany(mappedBy = "costeo", cascade = CascadeType.ALL, orphanRemoval = true)

@@ -35,6 +35,21 @@ public class ItemNV {
 
     private Long opId;
 
+    /**
+     * Número de OP reservado al guardar el borrador. Se consume del contador atómico para
+     * que nadie más pueda usarlo. Cuando la NV se emite, CrearOrdenProduccionUseCase usa
+     * este número en vez de generar uno nuevo.
+     */
+    private String numeroOPReservado;
+
+    /**
+     * Costeo elegido manualmente por el usuario para este ítem, cuando es un ítem tipo OP
+     * nuevo sin costeo heredado de la EVN. Se persiste para que la selección sobreviva
+     * entre sesiones de edición del borrador. Al emitir la NV, CrearOrdenProduccionUseCase
+     * usa este ID para vincular el costeo a la OP creada.
+     */
+    private Long costeoIdManual;
+
     private List<ItemNVTalla> tallas = new ArrayList<>();
 
     /** Vincula el id de la OP generada a partir de este ítem. Solo se puede asignar una vez. */
@@ -43,6 +58,14 @@ public class ItemNV {
             throw new IllegalStateException("El ítem NV ya está vinculado a la OP " + this.opId);
         }
         this.opId = opId;
+    }
+
+    public void setCosteoIdManual(Long costeoIdManual) {
+        this.costeoIdManual = costeoIdManual;
+    }
+
+    public void setNumeroOPReservado(String numeroOPReservado) {
+        this.numeroOPReservado = numeroOPReservado;
     }
 
     public ItemNV(Long idItemNV, Integer nroItem, Integer articuloId, String nombreProducto, String modelo, String tela, String composicion,

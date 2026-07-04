@@ -168,7 +168,7 @@ export default function AdminDashboard({
 
                     {/* Sparkline de Ventas de Fondo */}
                     <div className="absolute inset-x-0 bottom-16 h-12 z-0 opacity-40">
-                        <ResponsiveContainer width="100%" height="100%">
+                        <ResponsiveContainer width="100%" height="100%" minWidth={1} minHeight={1}>
                             <AreaChart data={salesData.slice(-6)}>
                                 <defs>
                                     <linearGradient id="visaChartGrad" x1="0" y1="0" x2="0" y2="1">
@@ -268,7 +268,7 @@ export default function AdminDashboard({
                             </div>
                         </div>
                         <div className="w-20 h-10 opacity-70">
-                            <ResponsiveContainer width="100%" height="100%">
+                            <ResponsiveContainer width="100%" height="100%" minWidth={1} minHeight={1}>
                                 <BarChart data={scosSparkline}>
                                     <Bar dataKey="v" fill="var(--warning)" radius={[2, 2, 0, 0]} />
                                 </BarChart>
@@ -288,7 +288,7 @@ export default function AdminDashboard({
                             </div>
                         </div>
                         <div className="w-20 h-10 opacity-70">
-                            <ResponsiveContainer width="100%" height="100%">
+                            <ResponsiveContainer width="100%" height="100%" minWidth={1} minHeight={1}>
                                 <BarChart data={evnSparkline}>
                                     <Bar dataKey="v" fill="var(--secondary-foreground)" radius={[2, 2, 0, 0]} />
                                 </BarChart>
@@ -308,7 +308,7 @@ export default function AdminDashboard({
                             </div>
                         </div>
                         <div className="w-20 h-10 opacity-70">
-                            <ResponsiveContainer width="100%" height="100%">
+                            <ResponsiveContainer width="100%" height="100%" minWidth={1} minHeight={1}>
                                 <BarChart data={opsSparkline}>
                                     <Bar dataKey="v" fill="var(--success)" radius={[2, 2, 0, 0]} />
                                 </BarChart>
@@ -328,7 +328,7 @@ export default function AdminDashboard({
                             </div>
                         </div>
                         <div className="w-20 h-10 opacity-75">
-                            <ResponsiveContainer width="100%" height="100%">
+                            <ResponsiveContainer width="100%" height="100%" minWidth={1} minHeight={1}>
                                 <LineChart data={totalVentasSparkline}>
                                     <Line type="monotone" dataKey="v" stroke="var(--info)" strokeWidth={2} dot={false} />
                                 </LineChart>

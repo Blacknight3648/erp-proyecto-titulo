@@ -71,4 +71,14 @@ public class GestionarNVUseCase {
 
         return NVResponse.fromDomain(nv);
     }
+
+    @Transactional
+    public void eliminarBorrador(Long id) {
+        NotaVenta nv = repository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Nota de Venta no encontrada: " + id));
+        if (nv.getEstado() != EstadoNV.BORRADOR) {
+            throw new ValidationException("Solo se pueden eliminar notas de venta en estado BORRADOR");
+        }
+        repository.delete(nv);
+    }
 }

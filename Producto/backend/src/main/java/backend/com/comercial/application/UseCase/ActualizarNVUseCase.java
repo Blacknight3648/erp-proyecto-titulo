@@ -10,15 +10,16 @@ import backend.com.comercial.domain.model.ItemNVTalla;
 import backend.com.comercial.domain.model.NotaVenta;
 import backend.com.comercial.domain.repository.NotaVentaRepository;
 import backend.com.produccion.application.UseCase.CrearOrdenProduccionUseCase;
-import backend.com.produccion.domain.model.OrdenProduccion;
-import backend.com.produccion.domain.repository.OrdenProduccionRepository;
+import backend.com.shared.application.service.NumeroDocumentoService;
 import backend.com.shared.exception.EntityNotFoundException;
+import backend.com.shared.valueobjects.DocumentNumber;
 import backend.com.shared.valueobjects.Money;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -27,7 +28,7 @@ public class ActualizarNVUseCase {
 
     private final NotaVentaRepository nvRepository;
     private final CrearOrdenProduccionUseCase crearOPUseCase;
-    private final OrdenProduccionRepository opRepository;
+    private final NumeroDocumentoService numeroDocumentoService;
 
     @Transactional
     public NVResponse ejecutar(Long id, CrearNVCommand command) {
@@ -47,6 +48,13 @@ public class ActualizarNVUseCase {
                 command.getDetalleKit(),
                 command.getFechaEntregaEstimada());
 
+        // Los ítems que ya existían pueden tener una OP asignada y/o un número de OP
+        // reservado; hay que preservarlos al reconstruir la lista desde el comando.
+        Map<Long, ItemNV> itemsActualesPorId = nv.getItems() == null ? Map.of()
+                : nv.getItems().stream()
+                        .filter(i -> i.getIdItemNV() != null)
+                        .collect(Collectors.toMap(ItemNV::getIdItemNV, i -> i));
+
         nv.clearItems();
 
         if (command.getItems() != null) {
@@ -59,7 +67,7 @@ public class ActualizarNVUseCase {
                                 .collect(Collectors.toList());
 
                 ItemNV item = new ItemNV(
-                        null,
+                        dto.getIdItemNV(),
                         i + 1,
                         dto.getArticuloId(),
                         "Prenda",
@@ -80,6 +88,19 @@ public class ActualizarNVUseCase {
                         dto.getCantidad(),
                         new Money(dto.getPrecioUnitario(), "CLP"),
                         tallas);
+
+                ItemNV existente = dto.getIdItemNV() != null ? itemsActualesPorId.get(dto.getIdItemNV()) : null;
+                if (existente != null && existente.getOpId() != null) {
+                    item.vincularOp(existente.getOpId());
+                } else if (dto.getCosteoId() != null) {
+                    item.setCosteoIdManual(dto.getCosteoId());
+                }
+
+                // Preservar número de OP reservado del guardado anterior.
+                if (existente != null && existente.getNumeroOPReservado() != null) {
+                    item.setNumeroOPReservado(existente.getNumeroOPReservado());
+                }
+
                 nv.addItem(item);
             }
         }
@@ -88,21 +109,26 @@ public class ActualizarNVUseCase {
             nv.emitir();
         }
 
+        // Borrador: reservar números de OP para ítems OP nuevos que aún no tienen número.
+        if (!Boolean.TRUE.equals(command.getEmitir())) {
+            if (nv.getItems() != null) {
+                for (ItemNV item : nv.getItems()) {
+                    if (TipoItem.OP == item.getTipoItem()
+                            && item.getNumeroOPReservado() == null
+                            && item.getOpId() == null) {
+                        DocumentNumber reservado = numeroDocumentoService.siguienteFormateado("OP");
+                        item.setNumeroOPReservado(reservado.getValue());
+                    }
+                }
+            }
+        }
+
         NotaVenta guardada = nvRepository.save(nv);
 
         if (Boolean.TRUE.equals(command.getEmitir())) {
-            boolean tieneItemsOP = guardada.getItems() != null &&
-                    guardada.getItems().stream().anyMatch(i -> TipoItem.OP == i.getTipoItem());
-            if (tieneItemsOP) {
-                List<OrdenProduccion> opsExistentes = opRepository.findByNotaVentaId(guardada.getIdNV());
-                Long opId;
-                if (!opsExistentes.isEmpty()) {
-                    opId = opsExistentes.get(0).getIdOP();
-                } else {
-                    opId = crearOPUseCase.execute(guardada).getIdOP();
-                }
-                nvRepository.vincularOpAItems(guardada.getIdNV(), opId);
-            }
+            crearOPUseCase.execute(guardada);
+            // Re-leer desde BD para que el NVResponse incluya los opId asignados.
+            guardada = nvRepository.findById(guardada.getIdNV()).orElse(guardada);
         }
 
         return NVResponse.fromDomain(guardada);

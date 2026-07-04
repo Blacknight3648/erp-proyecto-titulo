@@ -54,6 +54,9 @@ public class NVResponse {
         private String nombreProveedor;
         private String llevaLogo;
         private String logoDetalle;
+        private Long opId;
+        private String numeroOPReservado;
+        private Long costeoIdManual;
         private List<ItemNVTallaResponse> tallas;
     }
 
@@ -96,6 +99,9 @@ public class NVResponse {
             itemResponse.setNombreProveedor(item.getNombreProveedor());
             itemResponse.setLlevaLogo(item.getLlevaLogo());
             itemResponse.setLogoDetalle(item.getLogoDetalle());
+            itemResponse.setOpId(item.getOpId());
+            itemResponse.setNumeroOPReservado(item.getNumeroOPReservado());
+            itemResponse.setCosteoIdManual(item.getCosteoIdManual());
             if (item.getTallas() != null && !item.getTallas().isEmpty()) {
                 itemResponse.setTallas(item.getTallas().stream().map(t -> {
                     ItemNVTallaResponse tr = new ItemNVTallaResponse();

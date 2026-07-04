@@ -87,4 +87,9 @@ public class NotaVentaController {
     public List<HistorialEstadoDTO> historial(@PathVariable Long id) {
         return historialService.consultar("NV", id);
     }
+
+    @DeleteMapping("/{id}")
+    public void eliminarBorrador(@PathVariable Long id) {
+        gestionarNVUseCase.eliminarBorrador(id);
+    }
 }

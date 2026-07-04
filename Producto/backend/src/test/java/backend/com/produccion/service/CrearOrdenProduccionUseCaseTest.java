@@ -8,6 +8,7 @@ import backend.com.comercial.domain.model.ItemEVN;
 import backend.com.comercial.domain.model.ItemNV;
 import backend.com.comercial.domain.model.NotaVenta;
 import backend.com.comercial.domain.repository.EvaluacionNegocioRepository;
+import backend.com.comercial.domain.repository.NotaVentaRepository;
 import backend.com.produccion.application.UseCase.CrearOrdenProduccionUseCase;
 import backend.com.produccion.application.UseCase.CrearVersionCosteoUseCase;
 import backend.com.produccion.domain.enums.FaseProduccion;
@@ -66,6 +67,8 @@ class CrearOrdenProduccionUseCaseTest {
     @Mock
     private OrdenTrabajoRepository otRepository;
     @Mock
+    private NotaVentaRepository nvRepository;
+    @Mock
     private CrearVersionCosteoUseCase crearVersionCosteoUseCase;
     @Mock
     private backend.com.shared.application.service.NumeroDocumentoService numeroDocumentoService;
@@ -104,7 +107,7 @@ class CrearOrdenProduccionUseCaseTest {
     }
 
     private ItemNV itemOP(int nroItem, Integer cantidad, String llevaLogo, String logoDetalle) {
-        return new ItemNV((long) (100 + nroItem), nroItem, 1, "Polera Basica", null, "Algodón", "100% Algodón",
+        return new ItemNV((long) (100 + nroItem), nroItem, 1, "Polera Basica", "Polera Basica", "Algodón", "100% Algodón",
                 "Azul", "M", "Unisex", "COD-" + nroItem, 5L, null, llevaLogo, TipoItem.OP, true, "Detalle OT",
                 logoDetalle, cantidad, new Money(new BigDecimal("5000"), "CLP"), List.of());
     }
@@ -166,7 +169,9 @@ class CrearOrdenProduccionUseCaseTest {
         ItemNV item = itemOP(1, 10, "N/A", null);
         NotaVenta nv = notaVenta(7L, List.of(item));
 
-        OrdenProduccion result = useCase.execute(nv);
+        List<OrdenProduccion> resultados = useCase.execute(nv);
+        assertThat(resultados).hasSize(1);
+        OrdenProduccion result = resultados.get(0);
 
         assertThat(result.getNumeroOP().getValue()).isEqualTo("OP-0000001");
         assertThat(result.getCosteoVersionId()).isEqualTo(888L);
@@ -201,7 +206,9 @@ class CrearOrdenProduccionUseCaseTest {
 
         when(evnRepository.findById(7L)).thenReturn(Optional.of(evnEntity));
 
-        OrdenProduccion result = useCase.execute(nv);
+        List<OrdenProduccion> resultados = useCase.execute(nv);
+        assertThat(resultados).hasSize(1);
+        OrdenProduccion result = resultados.get(0);
 
         assertThat(result.getNumeroOP().getValue()).isEqualTo("OP-0000001");
         assertThat(result.getCosteoVersionId()).isEqualTo(888L);
@@ -240,7 +247,9 @@ class CrearOrdenProduccionUseCaseTest {
         when(crearVersionCosteoUseCase.ejecutar(50L, "Versión inicial al crear OP", "SYSTEM"))
                 .thenReturn(version);
 
-        OrdenProduccion result = useCase.execute(nv);
+        List<OrdenProduccion> resultados = useCase.execute(nv);
+        assertThat(resultados).hasSize(1);
+        OrdenProduccion result = resultados.get(0);
 
         assertThat(result.getNumeroOP().getValue()).isEqualTo("OP-0000001");
         assertThat(result.getCosteoVersionId()).isEqualTo(777L);
@@ -287,7 +296,9 @@ class CrearOrdenProduccionUseCaseTest {
         ItemNV item = itemOP(2, 8, "NO", null);
         NotaVenta nv = notaVenta(null, List.of(item));
 
-        OrdenProduccion result = useCase.execute(nv);
+        List<OrdenProduccion> resultados = useCase.execute(nv);
+        assertThat(resultados).hasSize(1);
+        OrdenProduccion result = resultados.get(0);
 
         ArgumentCaptor<OrdenTrabajo> captor = ArgumentCaptor.forClass(OrdenTrabajo.class);
         verify(otRepository, times(3)).save(captor.capture());
@@ -312,7 +323,9 @@ class CrearOrdenProduccionUseCaseTest {
         ItemNV insumoItem = itemNoOP(2);
         NotaVenta nv = notaVenta(null, List.of(opItem, insumoItem));
 
-        OrdenProduccion result = useCase.execute(nv);
+        List<OrdenProduccion> resultados = useCase.execute(nv);
+        assertThat(resultados).hasSize(1);
+        OrdenProduccion result = resultados.get(0);
 
         assertThat(result.getItems()).hasSize(1);
         assertThat(result.getItems().get(0).getNroItem()).isEqualTo(1);
@@ -325,7 +338,9 @@ class CrearOrdenProduccionUseCaseTest {
         ItemNV item = itemOP(3, 25, "N/A", null);
         NotaVenta nv = notaVenta(null, List.of(item));
 
-        OrdenProduccion result = useCase.execute(nv);
+        List<OrdenProduccion> resultados = useCase.execute(nv);
+        assertThat(resultados).hasSize(1);
+        OrdenProduccion result = resultados.get(0);
 
         OrdenProduccionItem opItem = result.getItems().get(0);
         assertThat(opItem.getArticuloId()).isEqualTo(item.getArticuloId());

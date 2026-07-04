@@ -70,6 +70,12 @@ public class NotaVentaMapper {
         if (entity.getOpId() != null) {
             item.vincularOp(entity.getOpId());
         }
+        if (entity.getNumeroOPReservado() != null) {
+            item.setNumeroOPReservado(entity.getNumeroOPReservado());
+        }
+        if (entity.getCosteoIdManual() != null) {
+            item.setCosteoIdManual(entity.getCosteoIdManual());
+        }
         return item;
     }
 
@@ -152,6 +158,8 @@ public class NotaVentaMapper {
                 itemEntity.setProveedor(prov);
             }
             itemEntity.setOpId(itemDomain.getOpId());
+            itemEntity.setNumeroOPReservado(itemDomain.getNumeroOPReservado());
+            itemEntity.setCosteoIdManual(itemDomain.getCosteoIdManual());
             itemEntity.setLlevaLogo(itemDomain.getLlevaLogo());
             itemEntity.setTipoItem(itemDomain.getTipoItem());
             itemEntity.setRequiereOt(itemDomain.getRequiereOt());
@@ -179,5 +187,93 @@ public class NotaVentaMapper {
         });
 
         return entity;
+    }
+
+    public void updateEntity(NotaVenta domain, NotaVentaJpaEntity entity) {
+        if (domain == null || entity == null) return;
+        
+        entity.setEstado(domain.getEstado().name());
+        entity.setEsKit(domain.getEsKit());
+        entity.setDetalleKit(domain.getDetalleKit());
+        entity.setFechaEmision(domain.getFechaEmision());
+        entity.setFechaEntregaEstimada(domain.getFechaEntregaEstimada());
+
+        if (domain.getClienteId() != null) {
+            ClienteJpaEntity c = new ClienteJpaEntity();
+            c.setClienteId(domain.getClienteId());
+            entity.setCliente(c);
+        }
+        if (domain.getVendedorId() != null) {
+            VendedorJpaEntity v = new VendedorJpaEntity();
+            v.setIdVendedor(domain.getVendedorId());
+            entity.setVendedor(v);
+        } else {
+            entity.setVendedor(null);
+        }
+
+        if (domain.getMontoSubtotal() != null) {
+            entity.setMontoSubtotal(domain.getMontoSubtotal().getAmount());
+            entity.setMonedaSubtotal(domain.getMontoSubtotal().getCurrency());
+        }
+        if (domain.getMontoIva() != null) {
+            entity.setMontoIva(domain.getMontoIva().getAmount());
+            entity.setMonedaIva(domain.getMontoIva().getCurrency());
+        }
+        if (domain.getMontoTotal() != null) {
+            entity.setMontoTotal(domain.getMontoTotal().getAmount());
+            entity.setMonedaTotal(domain.getMontoTotal().getCurrency());
+        }
+
+        entity.getItems().clear();
+        domain.getItems().forEach(itemDomain -> {
+            NotaVentaItemJpaEntity itemEntity = new NotaVentaItemJpaEntity();
+            if (itemDomain.getIdItemNV() != null) {
+                itemEntity.setIdItemNV(itemDomain.getIdItemNV());
+            }
+            itemEntity.setNroItem(itemDomain.getNroItem());
+            itemEntity.setTipoItem(itemDomain.getTipoItem());
+            itemEntity.setModelo(itemDomain.getModelo());
+            itemEntity.setTela(itemDomain.getTela());
+            itemEntity.setComposicion(itemDomain.getComposicion());
+            itemEntity.setColor(itemDomain.getColor());
+            itemEntity.setTalla(itemDomain.getTalla());
+            itemEntity.setGenero(itemDomain.getGenero());
+            itemEntity.setCodigo(itemDomain.getCodigo());
+            itemEntity.setLlevaLogo(itemDomain.getLlevaLogo());
+            itemEntity.setRequiereOt(itemDomain.getRequiereOt());
+            itemEntity.setDetalleOt(itemDomain.getDetalleOt());
+            itemEntity.setLogoDetalle(itemDomain.getLogoDetalle());
+            itemEntity.setCantidad(itemDomain.getCantidad());
+            itemEntity.setOpId(itemDomain.getOpId());
+            itemEntity.setNumeroOPReservado(itemDomain.getNumeroOPReservado());
+            itemEntity.setCosteoIdManual(itemDomain.getCosteoIdManual());
+
+            if (itemDomain.getArticuloId() != null) {
+                ArticuloJpaEntity a = new ArticuloJpaEntity();
+                a.setIdArticulo(itemDomain.getArticuloId());
+                itemEntity.setArticulo(a);
+            }
+            if (itemDomain.getProveedorId() != null) {
+                ProveedorJpaEntity p = new ProveedorJpaEntity();
+                p.setProveedorId(itemDomain.getProveedorId());
+                itemEntity.setProveedor(p);
+            }
+
+            if (itemDomain.getPrecioUnitario() != null) {
+                itemEntity.setPrecioUnitario(itemDomain.getPrecioUnitario().getAmount());
+                itemEntity.setMonedaPrecioUnitario(itemDomain.getPrecioUnitario().getCurrency());
+            }
+
+            if (itemDomain.getTallas() != null) {
+                itemDomain.getTallas().forEach(t -> {
+                    NotaVentaItemTallaJpaEntity tEntity = new NotaVentaItemTallaJpaEntity();
+                    tEntity.setTalla(t.getTalla());
+                    tEntity.setCantidad(t.getCantidad());
+                    itemEntity.addTalla(tEntity);
+                });
+            }
+
+            entity.addItem(itemEntity);
+        });
     }
 }

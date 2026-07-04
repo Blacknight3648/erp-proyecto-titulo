@@ -68,7 +68,7 @@ export default function CosteoSelectionModal({
                             {filtered.map((c) => (
                                 <div
                                     key={c.idCosteo}
-                                    onClick={() => onSelect(c.idCosteo)}
+                                    onClick={() => onSelect(c.idCosteo, c.numeroCosteo)}
                                     className="group p-5 rounded-3xl border-2 border-border hover:border-brand-indigo hover:bg-brand-indigo/5 transition-all cursor-pointer flex items-center justify-between"
                                 >
                                     <div className="flex items-center space-x-4">
@@ -94,7 +94,7 @@ export default function CosteoSelectionModal({
                 {currentCosteoId && (
                     <div className="p-8 bg-muted/50 border-t border-border">
                         <button
-                            onClick={() => onSelect(null)}
+                            onClick={() => onSelect(null, null)}
                             className="w-full py-4 text-xs font-black text-muted-foreground uppercase tracking-[0.2em] hover:text-destructive transition-colors flex items-center justify-center gap-2"
                         >
                             <Link2Off className="w-4 h-4" />

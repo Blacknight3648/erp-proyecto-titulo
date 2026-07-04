@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { FileText, ChevronRight, Save, Plus, Trash2, Wrench, CheckCircle2, AlertCircle, Calculator } from 'lucide-react';
 import { pdfService } from '../../../remote/service/pdfService';
 import CosteoSelectionModal from '../administration/CosteoSelectionModal';
@@ -18,12 +18,13 @@ export default function FormularioNV({
     updateItem,
     updateSize,
     handleConfirmNV,
+    deleteDraftNV,
     totalItems,
     totalAmount,
     isSubmitting,
     submitStatus,
     setView,
-    opCosteoInfo,
+    opsCosteoInfo,
     showCosteoModal,
     costeoModalItemId,
     costeosDisponibles,
@@ -32,13 +33,35 @@ export default function FormularioNV({
     closeCosteoSelector,
     handleSelectCosteo
 }) {
-    // La OP recién se crea al guardar la NV por primera vez, así que el vínculo
-    // manual de costeo solo tiene sentido mientras la NV todavía no existe.
-    const puedeVincularCosteo = !isReadOnly && !formData.idNV;
+    const [showCancelModal, setShowCancelModal] = useState(false);
+    const [itemToDelete, setItemToDelete] = useState(null);
     const currentModalItem = (formData.items || []).find(item => item.id === costeoModalItemId);
+
+    const handleDeleteDraft = async () => {
+        if (!formData.idNV) return;
+        const success = await deleteDraftNV(formData.idNV);
+        if (success) {
+            setShowCancelModal(false);
+            setView('list');
+        }
+    };
 
     return (
         <div className="animate-in fade-in duration-500 space-y-8 bg-muted/50 min-h-screen p-6 pb-24">
+            
+            {itemToDelete && (
+                <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+                    <div className="bg-card p-8 rounded-3xl max-w-sm w-full border border-border shadow-2xl animate-in zoom-in-95">
+                        <h3 className="text-xl font-black text-foreground mb-4">¿Eliminar ítem?</h3>
+                        <p className="text-sm text-muted-foreground mb-8">Esta acción eliminará el ítem de la nota de venta. ¿Estás seguro?</p>
+                        <div className="flex gap-3">
+                            <button onClick={() => setItemToDelete(null)} className="flex-1 py-3 rounded-xl font-black text-xs uppercase bg-muted text-muted-foreground hover:bg-muted/80 transition-all">Cancelar</button>
+                            <button onClick={() => { removeItem(itemToDelete); setItemToDelete(null); }} className="flex-1 py-3 rounded-xl font-black text-xs uppercase bg-destructive text-destructive-foreground hover:bg-destructive/90 transition-all">Eliminar</button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
             <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between mb-10 bg-card p-8 rounded-[2.5rem] shadow-sm border border-border">
                 <div className="flex items-center space-x-6">
                     <button onClick={() => setView('list')} className="p-3 hover:bg-muted rounded-2xl transition-all group">
@@ -162,33 +185,42 @@ export default function FormularioNV({
                                         ))}
                                     </div>
                                     {item.tipoItem === 'OP' && (
-                                        formData.idNV ? (
-                                            // La OP ya existe y tiene un único costeo para toda la orden: cualquier
-                                            // ítem OP de esta NV (incluidos los que se agreguen recién ahora) queda
-                                            // bajo ese mismo costeo al guardar, así que se muestra en todos por igual.
-                                            opCosteoInfo && (
-                                                <span className="px-4 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest bg-warning/10 text-warning border border-warning/20 flex items-center gap-2">
-                                                    <Calculator className="w-3.5 h-3.5" />
-                                                    Costeo {opCosteoInfo.numeroCosteo || `#${opCosteoInfo.opId}`} · {opCosteoInfo.estadoCosteo}
-                                                </span>
-                                            )
-                                        ) : puedeVincularCosteo && (
-                                            item.costeoId ? (
-                                                <span className="px-4 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest bg-warning/10 text-warning border border-warning/20 flex items-center gap-2">
-                                                    <Calculator className="w-3.5 h-3.5" />
-                                                    Costeo #{item.costeoId} vinculado
-                                                </span>
-                                            ) : (
-                                                <button
-                                                    type="button"
-                                                    onClick={() => openCosteoSelector(item.id)}
-                                                    title="OP nueva sin costeo asociado: vincular uno existente (opcional)"
-                                                    className="px-4 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all flex items-center gap-2 bg-indigo-50 text-indigo-600 border border-indigo-100 hover:bg-indigo-100"
-                                                >
-                                                    <Calculator className="w-3.5 h-3.5" />
-                                                    <span>Vincular costeo existente (opcional)</span>
-                                                </button>
-                                            )
+                                        item.opId ? (
+                                            // Este ítem ya tiene su propia OP creada: mostrar en solo lectura
+                                            // el costeo real de ESA OP (cada ítem OP tiene su propia OP/costeo).
+                                            (() => {
+                                                const opInfo = (opsCosteoInfo || []).find(o => o.opId === item.opId);
+                                                return opInfo && (
+                                                    <span className="px-4 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest bg-warning/10 text-warning border border-warning/20 flex items-center gap-2">
+                                                        <Calculator className="w-3.5 h-3.5" />
+                                                        Costeo {opInfo.numeroCosteo || `#${opInfo.opId}`} · {opInfo.estadoCosteo}
+                                                    </span>
+                                                );
+                                            })()
+                                        ) : !isReadOnly && (
+                                            <div className="flex items-center gap-2">
+                                                {item.numeroOPReservado && (
+                                                    <span className="px-3 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest bg-emerald-50 text-emerald-600 border border-emerald-100 flex items-center gap-1.5">
+                                                        OP {item.numeroOPReservado} reservada
+                                                    </span>
+                                                )}
+                                                {item.costeoId ? (
+                                                    <span className="px-4 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest bg-warning/10 text-warning border border-warning/20 flex items-center gap-2">
+                                                        <Calculator className="w-3.5 h-3.5" />
+                                                        Costeo {item.numeroCosteo || `COST-${String(item.costeoId).padStart(7, '0')}`} vinculado
+                                                    </span>
+                                                ) : (
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => openCosteoSelector(item.id)}
+                                                        title="Ítem OP nuevo sin costeo asociado: vincular uno existente (opcional)"
+                                                        className="px-4 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all flex items-center gap-2 bg-indigo-50 text-indigo-600 border border-indigo-100 hover:bg-indigo-100"
+                                                    >
+                                                        <Calculator className="w-3.5 h-3.5" />
+                                                        <span>Vincular costeo existente (opcional)</span>
+                                                    </button>
+                                                )}
+                                            </div>
                                         )
                                     )}
                                 </div>
@@ -276,7 +308,7 @@ export default function FormularioNV({
                                         <Wrench className="w-4 h-4" /><span className="text-[10px] font-black uppercase">Requerimientos OT</span>
                                     </button>
                                     {!isReadOnly && (
-                                        <button onClick={() => removeItem(item.id)} className="p-2 text-destructive/60 hover:text-destructive transition-all">
+                                        <button type="button" onClick={() => setItemToDelete(item.id)} className="p-2 text-destructive/60 hover:text-destructive transition-all">
                                             <Trash2 className="w-5 h-5" />
                                         </button>
                                     )}
@@ -298,7 +330,7 @@ export default function FormularioNV({
                             <div className="border-l border-sidebar-border pl-10"><p className="text-[10px] font-black text-success uppercase tracking-widest mb-2 italic">Total Neto (CLP)</p><p className="text-4xl font-black font-mono text-success">${totalAmount.toLocaleString()}</p></div>
                         </div>
                         <div className="flex gap-4">
-                            <button onClick={() => setView('list')} className="px-10 py-5 bg-white/5 hover:bg-white/10 text-white rounded-3xl text-[10px] uppercase font-black tracking-widest">Cancelar</button>
+                            <button onClick={() => setShowCancelModal(true)} className="px-10 py-5 bg-white/5 hover:bg-white/10 text-white rounded-3xl text-[10px] uppercase font-black tracking-widest">Cancelar</button>
                             <button
                                 onClick={() => pdfService.generateNV(formData)}
                                 disabled={formData.items.length === 0}
@@ -332,6 +364,43 @@ export default function FormularioNV({
                 <div className={`fixed bottom-10 right-10 p-6 rounded-3xl shadow-3xl flex items-center gap-4 animate-in slide-in-from-right-10 duration-500 z-50 ${submitStatus.type === 'success' ? 'bg-success text-white' : 'bg-destructive text-white'}`}>
                     {submitStatus.type === 'success' ? <CheckCircle2 className="w-6 h-6" /> : <AlertCircle className="w-6 h-6" />}
                     <p className="font-black text-sm uppercase tracking-widest">{submitStatus.message}</p>
+                </div>
+            )}
+
+            {showCancelModal && (
+                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-foreground/60 backdrop-blur-sm">
+                    <div className="bg-card w-full max-w-md rounded-[2.5rem] shadow-2xl overflow-hidden border border-border flex flex-col p-8">
+                        <h3 className="text-xl font-black text-foreground mb-2 tracking-tight">Cancelar Edición</h3>
+                        <p className="text-sm text-muted-foreground mb-8">
+                            ¿Qué deseas hacer con esta nota de venta?
+                        </p>
+                        <div className="flex flex-col gap-3">
+                            <button
+                                onClick={() => {
+                                    setShowCancelModal(false);
+                                    setView('list');
+                                }}
+                                className="px-6 py-4 bg-muted hover:bg-muted/80 text-foreground font-black rounded-2xl text-xs uppercase tracking-widest transition-all"
+                            >
+                                Descartar Modificaciones
+                            </button>
+                            {formData.idNV && (
+                                <button
+                                    onClick={handleDeleteDraft}
+                                    disabled={isSubmitting}
+                                    className="px-6 py-4 bg-destructive hover:bg-destructive/90 text-destructive-foreground font-black rounded-2xl text-xs uppercase tracking-widest transition-all"
+                                >
+                                    {isSubmitting ? 'Eliminando...' : 'Eliminar Borrador Definitivamente'}
+                                </button>
+                            )}
+                            <button
+                                onClick={() => setShowCancelModal(false)}
+                                className="px-6 py-4 mt-2 text-muted-foreground hover:text-foreground font-black rounded-2xl text-xs uppercase tracking-widest transition-all"
+                            >
+                                Volver al Formulario
+                            </button>
+                        </div>
+                    </div>
                 </div>
             )}
 

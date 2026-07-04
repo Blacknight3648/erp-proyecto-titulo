@@ -93,6 +93,14 @@ public class NotaVentaItemJpaEntity {
     @Column(name = "op_id")
     private Long opId;
 
+    /** Número de OP reservado al guardar borrador; se usa al crear la OP real al emitir. */
+    @Column(name = "numero_op_reservado", length = 30)
+    private String numeroOPReservado;
+
+    /** Costeo elegido manualmente por el usuario; se persiste para sobrevivir entre sesiones. */
+    @Column(name = "costeo_id_manual")
+    private Long costeoIdManual;
+
     @OneToMany(mappedBy = "item", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<NotaVentaItemTallaJpaEntity> tallas = new ArrayList<>();
 

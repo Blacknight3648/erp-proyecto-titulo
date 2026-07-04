@@ -35,7 +35,7 @@ export default function NotaDeVenta() {
         sourceEVN,
         nextNumbers,
         evnModal, setEvnModal,
-        opCosteoInfo,
+        opsCosteoInfo,
         showCosteoModal,
         costeoModalItemId,
         costeosDisponibles,
@@ -49,6 +49,7 @@ export default function NotaDeVenta() {
         updateItem,
         updateSize,
         handleConfirmNV,
+        deleteDraftNV,
         totalItems,
         totalAmount
     } = useNVState(getInitialView());
@@ -108,12 +109,13 @@ export default function NotaDeVenta() {
                     updateItem={updateItem}
                     updateSize={updateSize}
                     handleConfirmNV={handleConfirmNV}
+                    deleteDraftNV={deleteDraftNV}
                     totalItems={totalItems}
                     totalAmount={totalAmount}
                     isSubmitting={isSubmitting}
                     submitStatus={submitStatus}
                     setView={setView}
-                    opCosteoInfo={opCosteoInfo}
+                    opsCosteoInfo={opsCosteoInfo}
                     showCosteoModal={showCosteoModal}
                     costeoModalItemId={costeoModalItemId}
                     costeosDisponibles={costeosDisponibles}

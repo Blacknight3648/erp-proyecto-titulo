@@ -899,7 +899,6 @@ CREATE TABLE IF NOT EXISTS produccion_costeos (
     margen_bruto_sugerido     DECIMAL(5,2),
     precio_venta_sugerido     DECIMAL(12,2),
     PRIMARY KEY (id_costeo),
-    UNIQUE KEY uq_costeo_nota_venta (nota_venta_id),
     CONSTRAINT fk_costeo_scos FOREIGN KEY (solicitud_costos_id) REFERENCES solicitudes_costos (id_scos)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -1057,7 +1056,6 @@ CREATE TABLE IF NOT EXISTS orden_produccion (
     updated_at               DATETIME,
     PRIMARY KEY (id_op),
     UNIQUE KEY uk_op_numero     (numero_op),
-    UNIQUE KEY uq_op_nota_venta (nota_venta_id),
     CONSTRAINT fk_op_costeo_version FOREIGN KEY (costeo_version_id) REFERENCES produccion_costeo_versiones (id_costeo_version),
     CONSTRAINT fk_op_nota_venta     FOREIGN KEY (nota_venta_id)     REFERENCES notas_venta                  (id_nv)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

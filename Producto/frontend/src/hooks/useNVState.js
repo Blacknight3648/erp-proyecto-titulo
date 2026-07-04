@@ -71,9 +71,10 @@ export const useNVState = (initialView = 'list') => {
     const [nextNumbers, setNextNumbers] = useState({ nv: '...', sc: '...' });
     const [evnModal, setEvnModal] = useState({ open: false, evn: null, selectedIds: new Set() });
 
-    // Info de solo lectura del costeo ya vinculado a la OP de esta NV (si ya existe),
-    // para mostrarla en los ítems tipo OP cuando se edita/visualiza una NV guardada.
-    const [opCosteoInfo, setOpCosteoInfo] = useState(null);
+    // Info de solo lectura de las OP ya creadas para esta NV (una por cada ítem tipo OP
+    // que ya tenga OP asignada), para mostrar el costeo real de cada ítem al editar/ver
+    // una NV guardada. Cada ítem tipo OP tiene su propia OP y su propio costeo.
+    const [opsCosteoInfo, setOpsCosteoInfo] = useState([]);
 
     // Vínculo manual de Costeo existente a un ítem tipo OP nuevo (que aún no
     // hereda un costeo desde la EVN plantilla). Solo aplica al crear la NV.
@@ -99,12 +100,12 @@ export const useNVState = (initialView = 'list') => {
         setCosteoModalItemId(null);
     }, []);
 
-    const handleSelectCosteo = useCallback((idCosteo) => {
+    const handleSelectCosteo = useCallback((idCosteo, numeroCosteo) => {
         if (costeoModalItemId != null) {
             setFormData(prev => ({
                 ...prev,
                 items: prev.items.map(item =>
-                    item.id === costeoModalItemId ? { ...item, costeoId: idCosteo || null } : item)
+                    item.id === costeoModalItemId ? { ...item, costeoId: idCosteo || null, numeroCosteo: numeroCosteo || null } : item)
             }));
         }
         setShowCosteoModal(false);
@@ -144,23 +145,22 @@ export const useNVState = (initialView = 'list') => {
 
     const loadOpCosteoInfo = useCallback(async (notaVentaId) => {
         if (!notaVentaId) {
-            setOpCosteoInfo(null);
+            setOpsCosteoInfo([]);
             return;
         }
         const ops = await getOrdenesProduccionPorNotaVenta(notaVentaId);
-        const op = (ops || [])[0] || null;
-        setOpCosteoInfo(op ? {
+        setOpsCosteoInfo((ops || []).map(op => ({
             opId: op.idOP,
             numeroOP: op.numeroOP,
             numeroCosteo: op.numeroCosteo,
             estadoCosteo: op.estadoCosteo
-        } : null);
+        })));
     }, [getOrdenesProduccionPorNotaVenta]);
 
     const handleOpenForm = (data = null, mode = 'new') => {
         setSubmitStatus(null);
         setSourceEVN(null);
-        setOpCosteoInfo(null);
+        setOpsCosteoInfo([]);
 
         if (mode === 'view' || mode === 'edit') {
             loadOpCosteoInfo(data?.idNV);
@@ -191,6 +191,9 @@ export const useNVState = (initialView = 'list') => {
                 detalleKit: data.detalleKit || '',
                 items: (data.items || []).map((item, i) => ({
                     id: Date.now() + i,
+                    idItemNV: item.idItemNV || null,
+                    opId: item.opId || null,
+                    numeroOPReservado: item.numeroOPReservado || null,
                     productoId: item.articuloId || '',
                     nombreProducto: item.nombreProducto || item.modelo || '',
                     modelo: item.modelo || '',
@@ -207,9 +210,10 @@ export const useNVState = (initialView = 'list') => {
                     proveedorId: item.proveedorId || '',
                     requiereOt: item.requiereOt || false,
                     detalleOt: item.detalleOt || '',
-                    costeoId: item.costeoId || null,
+                    costeoId: item.costeoIdManual || item.costeoId || null,
                 }))
             });
+            setSourceEVN(data.evaluacionNegocioId || null);
             setIsReadOnly(false);
             setView('form');
         } else if (mode === 'template') {
@@ -267,6 +271,9 @@ export const useNVState = (initialView = 'list') => {
         if (isReadOnly) return;
         const newItem = {
             id: Date.now(),
+            idItemNV: null,
+            opId: null,
+            numeroOPReservado: null,
             productoId: '',
             nombreProducto: '',
             modelo: '',
@@ -382,6 +389,7 @@ export const useNVState = (initialView = 'list') => {
                 fechaEntregaEstimada: formData.fechaEntregaEstimada,
                 evaluacionNegocioId: sourceEVN || null,
                 items: formData.items.map(item => ({
+                    idItemNV: item.idItemNV || null,
                     articuloId: item.productoId ? parseInt(item.productoId) : null,
                     cantidad: item.quantity,
                     precioUnitario: item.unitPrice,
@@ -400,16 +408,55 @@ export const useNVState = (initialView = 'list') => {
                     logoDetalle: item.logo || 'N/A'
                 }))
             };
+            let savedNV;
             if (formData.idNV) {
-                await api.put(`/comercial/notas-venta/${formData.idNV}`, payload);
+                const res = await api.put(`/comercial/notas-venta/${formData.idNV}`, payload);
+                savedNV = res.data;
             } else {
-                await api.post('/comercial/notas-venta', payload);
+                const res = await api.post('/comercial/notas-venta', payload);
+                savedNV = res.data;
             }
+
+            // Actualizar el estado local con los IDs asignados por el backend
+            // (idItemNV, opId, numeroOPReservado) para que un segundo guardado no pierda datos.
+            if (savedNV && savedNV.items && isDraft) {
+                setFormData(prev => ({
+                    ...prev,
+                    idNV: savedNV.idNV || prev.idNV,
+                    numeroNV: savedNV.numeroNV || prev.numeroNV,
+                    items: prev.items.map((localItem, idx) => {
+                        const serverItem = savedNV.items[idx];
+                        if (!serverItem) return localItem;
+                        return {
+                            ...localItem,
+                            idItemNV: serverItem.idItemNV || localItem.idItemNV,
+                            opId: serverItem.opId || localItem.opId,
+                            numeroOPReservado: serverItem.numeroOPReservado || localItem.numeroOPReservado,
+                            costeoId: serverItem.costeoIdManual || localItem.costeoId,
+                        };
+                    })
+                }));
+            }
+
             setSubmitStatus({ type: 'success', message: 'Operación exitosa' });
             setTimeout(() => { setView('list'); loadComercial(); }, 2000);
         } catch (error) {
             const msg = error.response?.data?.message || error.message || 'Error desconocido';
             setSubmitStatus({ type: 'error', message: msg });
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
+
+    const deleteDraftNV = async (id) => {
+        setIsSubmitting(true);
+        try {
+            await api.delete(`/comercial/notas-venta/${id}`);
+            return true;
+        } catch (error) {
+            console.error("Error al eliminar borrador:", error);
+            setSubmitStatus({ type: 'error', message: 'Error al eliminar el borrador' });
+            return false;
         } finally {
             setIsSubmitting(false);
         }
@@ -437,7 +484,7 @@ export const useNVState = (initialView = 'list') => {
         sourceEVN,
         nextNumbers,
         evnModal, setEvnModal,
-        opCosteoInfo,
+        opsCosteoInfo,
         showCosteoModal,
         costeoModalItemId,
         costeosDisponibles,
@@ -451,6 +498,8 @@ export const useNVState = (initialView = 'list') => {
         updateItem,
         updateSize,
         handleConfirmNV,
+        deleteDraftNV,
+        resetForm: () => handleOpenForm(),
         totalItems,
         totalAmount
     };

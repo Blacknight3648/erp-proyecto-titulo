@@ -38,6 +38,14 @@ public class Costeo {
 
     private String observacionesManoObra;
 
+    // Desglose de mano de obra (costoManoObra = suma de estos + costoMoPropia + costoGratificacion)
+    private BigDecimal moPrenda;
+    private BigDecimal moCinta;
+    private BigDecimal moCosturaSellada;
+    private BigDecimal moAcolchado;
+    private BigDecimal costoMoPropia;
+    private BigDecimal costoGratificacion;
+
     // Detalle de costos (Money para precios, BigDecimal para cantidades)
     private Money costoHilos;
     private Money costoManoObra;
@@ -70,6 +78,12 @@ public class Costeo {
         c.notaVentaId = notaVentaId;
         c.solicitudCostosId = null;
         c.observacionesManoObra = "";
+        c.moPrenda = java.math.BigDecimal.ZERO;
+        c.moCinta = java.math.BigDecimal.ZERO;
+        c.moCosturaSellada = java.math.BigDecimal.ZERO;
+        c.moAcolchado = java.math.BigDecimal.ZERO;
+        c.costoMoPropia = java.math.BigDecimal.ZERO;
+        c.costoGratificacion = java.math.BigDecimal.ZERO;
         c.costoHilos = new Money(java.math.BigDecimal.ZERO, "CLP");
         c.costoManoObra = new Money(java.math.BigDecimal.ZERO, "CLP");
         c.costoEtiquetas = new Money(java.math.BigDecimal.ZERO, "CLP");

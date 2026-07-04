@@ -290,7 +290,7 @@ export default function ListaCosteos({
 
                             <div className="space-y-3 mb-4">
                                 <div className="p-4 bg-muted rounded-2xl flex flex-col justify-center">
-                                    <p className="text-[9px] font-black text-muted-foreground uppercase tracking-widest mb-1">Costo Total Costeo OP</p>
+                                    <p className="text-[9px] font-black text-muted-foreground uppercase tracking-widest mb-1">Costo Total de Producción</p>
                                     <p className={`text-xl font-black tracking-tight ${record.costoTotal <= 0 ? 'text-destructive' : 'text-foreground'}`}>
                                         ${(record.costoTotal || 0).toLocaleString('es-CL')}
                                     </p>

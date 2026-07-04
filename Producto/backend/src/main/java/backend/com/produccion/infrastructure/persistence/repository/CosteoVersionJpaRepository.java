@@ -11,4 +11,7 @@ public interface CosteoVersionJpaRepository extends JpaRepository<CosteoVersionJ
     Optional<CosteoVersionJpaEntity> findTopByCosteo_IdCosteoOrderByNumeroVersionDesc(Long costeoId);
 
     List<CosteoVersionJpaEntity> findByCosteo_IdCosteoOrderByNumeroVersionAsc(Long costeoId);
+
+    /** Borra todas las versiones de los costeos indicados (usado antes de borrar el costeo padre). */
+    void deleteByCosteo_IdCosteoIn(java.util.List<Long> costeoIds);
 }

@@ -148,15 +148,10 @@ export function useCosteosOPState() {
         );
     }, [solicitudesCostos]);
 
-    // Registros que ya tienen costeos realizados (Estado Costeado/Aprobado) o están listos para ser procesados
+    // Todos los registros de tipo COSTEO se muestran en la lista, sin filtrar por estado;
+    // el filtro de estado lo aplica el buscador (statusFilter) más abajo.
     const allRecords = useMemo(() => {
-        return solicitudesFiltradas.filter(s =>
-            s.estado === 'Costeado' ||
-            s.estado === 'APROBADA' ||
-            s.estado === 'COSTEO REALIZADO' ||
-            s.estado === 'PENDIENTE' ||
-            s.estado === 'PENDIENTE PRODUCCIÓN'
-        );
+        return solicitudesFiltradas;
     }, [solicitudesFiltradas]);
 
     const dashboardStats = useMemo(() => {
@@ -189,9 +184,14 @@ export function useCosteosOPState() {
                         costeoId: costeo.idCosteo,
                         costeoEstado: costeo.estado,
                         costeoVersion: costeo.version,
-                        costoTotal: costeo.costoTotalMateriaPrima ?? 0
+                        costoTotal: (costeo.costoTotalMateriaPrima || 0) + 
+                                    (costeo.costoManoObra || 0) + 
+                                    (costeo.costoHilos || 0) + 
+                                    (costeo.costoEtiquetas || 0) + 
+                                    (costeo.costoEmbalaje || 0) + 
+                                    (costeo.costoFlete || 0)
                       }
-                    : { ...r, costoTotal: 0 };
+                    : { ...r, costoTotal: r.costoTotal || 0 };
             })
             .filter(r => {
                 const cliente = clientes.find(c => (c.clienteId || c.id)?.toString() === r.clienteId?.toString());
@@ -289,9 +289,13 @@ export function useCosteosOPState() {
             savedCosteo = await getCosteoBySCOS(record.id);
             if (savedCosteo) {
                 setCostoHilo(savedCosteo.costoHilos || 0);
-                setCostoMoPropia(savedCosteo.costoManoObra || 0);
+                setMoPrenda(savedCosteo.moPrenda || 0);
+                setMoCinta(savedCosteo.moCinta || 0);
+                setMoCosturaSellada(savedCosteo.moCosturaSellada || 0);
+                setMoAcolchado(savedCosteo.moAcolchado || 0);
+                setCostoMoPropia(savedCosteo.costoMoPropia || 0);
+                setCostoGratificacion(savedCosteo.costoGratificacion || 0);
                 setObservacionesManoObra(savedCosteo.observacionesManoObra || '');
-                setCostoGratificacion(0);
                 setCostoEtiqueta(savedCosteo.costoEtiquetas || 0);
                 setCostoEmbalaje(savedCosteo.costoEmbalaje || 0);
                 setCostoFlete(savedCosteo.costoFlete || 0);
@@ -300,9 +304,13 @@ export function useCosteosOPState() {
                 setMotivoRechazo(savedCosteo.motivoRechazo || null);
             } else {
                 setCostoHilo(0);
+                setMoPrenda(0);
+                setMoCinta(0);
+                setMoCosturaSellada(0);
+                setMoAcolchado(0);
                 setCostoMoPropia(0);
-                setObservacionesManoObra('');
                 setCostoGratificacion(0);
+                setObservacionesManoObra('');
                 setCostoEtiqueta(0);
                 setCostoEmbalaje(0);
                 setCostoFlete(0);
@@ -493,15 +501,23 @@ export function useCosteosOPState() {
                 telas: updatedTelas,
                 accesorios: updatedAccesorios,
                 logotipos: updatedLogotipos,
-                estado: 'APROBADA'
+                // Mantener el estado actual de la SCOS; la aprobación se maneja
+                // por flujo separado (handleAprobarCosteo).
+                estado: currentSolicitud.estado || 'PENDIENTE'
             };
 
 
             const productionPayload = {
                 solicitudCostosId: parseId(currentSolicitud.id),
-                numeroCosteo: `C-${(currentSolicitud.numero || currentSolicitud.id).toString().slice(-10)}-${Date.now().toString().slice(-4)}`,
+                // Nota: numeroCosteo NO se envía; el backend lo asigna atómicamente
                 costoHilos: costoHilo,
                 costoManoObra: totalMO + costoMoPropia + costoGratificacion,
+                moPrenda: moPrenda,
+                moCinta: moCinta,
+                moCosturaSellada: moCosturaSellada,
+                moAcolchado: moAcolchado,
+                costoMoPropia: costoMoPropia,
+                costoGratificacion: costoGratificacion,
                 observacionesManoObra: observacionesManoObra,
                 costoEtiquetas: costoEtiqueta,
                 costoEmbalaje: costoEmbalaje,

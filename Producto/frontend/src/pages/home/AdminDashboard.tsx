@@ -57,11 +57,31 @@ const CircularGauge = ({ percentage, colorClass, size = 70, strokeWidth = 6 }) =
     );
 };
 
+interface DashboardStats {
+    ventas?: string;
+    scos?: number;
+    evn?: number;
+    ops?: number;
+    totalScos?: number;
+    totalEvn?: number;
+    totalOps?: number;
+}
+
+interface DashboardUser {
+    name?: string;
+    role?: string;
+}
+
 export default function AdminDashboard({
-    user = {},
-    stats = {},
+    user = {} as DashboardUser,
+    stats = {} as DashboardStats,
     salesData = [],
     profitabilityData = [],
+}: {
+    user?: DashboardUser;
+    stats?: DashboardStats;
+    salesData?: any[];
+    profitabilityData?: any[];
 }) {
     const values = {
         ventas: stats.ventas ?? "$0",

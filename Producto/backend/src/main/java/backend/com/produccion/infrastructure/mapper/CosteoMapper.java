@@ -54,6 +54,12 @@ public class CosteoMapper {
         c.setEstado(entity.getEstado() != null ? entity.getEstado() : backend.com.produccion.domain.enums.EstadoCosteo.BORRADOR);
         c.setMotivoRechazo(entity.getMotivoRechazo());
         c.setVersion(entity.getVersion() != null ? entity.getVersion() : 1);
+        c.setMoPrenda(entity.getMoPrenda());
+        c.setMoCinta(entity.getMoCinta());
+        c.setMoCosturaSellada(entity.getMoCosturaSellada());
+        c.setMoAcolchado(entity.getMoAcolchado());
+        c.setCostoMoPropia(entity.getCostoMoPropia());
+        c.setCostoGratificacion(entity.getCostoGratificacion());
         return c;
     }
 
@@ -71,6 +77,12 @@ public class CosteoMapper {
         entity.setNotaVentaId(domain.getNotaVentaId());
         entity.setCostoHilos(domain.getCostoHilos().getAmount());
         entity.setCostoManoObra(domain.getCostoManoObra().getAmount());
+        entity.setMoPrenda(domain.getMoPrenda());
+        entity.setMoCinta(domain.getMoCinta());
+        entity.setMoCosturaSellada(domain.getMoCosturaSellada());
+        entity.setMoAcolchado(domain.getMoAcolchado());
+        entity.setCostoMoPropia(domain.getCostoMoPropia());
+        entity.setCostoGratificacion(domain.getCostoGratificacion());
         entity.setObservacionesManoObra(domain.getObservacionesManoObra());
         entity.setCostoEtiquetas(domain.getCostoEtiquetas().getAmount());
         entity.setCostoEmbalaje(domain.getCostoEmbalaje().getAmount());
@@ -112,6 +124,12 @@ public class CosteoMapper {
                 .vendedorNombre(domain.getVendedorNombre())
                 .costoHilos(domain.getCostoHilos().getAmount())
                 .costoManoObra(domain.getCostoManoObra().getAmount())
+                .moPrenda(domain.getMoPrenda())
+                .moCinta(domain.getMoCinta())
+                .moCosturaSellada(domain.getMoCosturaSellada())
+                .moAcolchado(domain.getMoAcolchado())
+                .costoMoPropia(domain.getCostoMoPropia())
+                .costoGratificacion(domain.getCostoGratificacion())
                 .observacionesManoObra(domain.getObservacionesManoObra())
                 .costoEtiquetas(domain.getCostoEtiquetas().getAmount())
                 .costoEmbalaje(domain.getCostoEmbalaje().getAmount())
@@ -166,6 +184,12 @@ public class CosteoMapper {
         if (dto.getVersion() != null) {
             costeo.setVersion(dto.getVersion());
         }
+        costeo.setMoPrenda(dto.getMoPrenda());
+        costeo.setMoCinta(dto.getMoCinta());
+        costeo.setMoCosturaSellada(dto.getMoCosturaSellada());
+        costeo.setMoAcolchado(dto.getMoAcolchado());
+        costeo.setCostoMoPropia(dto.getCostoMoPropia());
+        costeo.setCostoGratificacion(dto.getCostoGratificacion());
         return costeo;
     }
 

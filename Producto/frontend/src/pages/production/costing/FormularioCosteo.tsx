@@ -1,4 +1,3 @@
-import React from 'react';
 import { 
     ChevronLeft, 
     Save, 
@@ -18,6 +17,7 @@ import { FIELD_LABELS } from '../../../hooks/usePlantillas';
 import EstadoCosteo, { ESTADO_COSTEO_LABEL } from '../../../remote/DTO/EstadoCosteo';
 import HistorialVersionCosteo from './HistorialVersionCosteo';
 import { useState } from 'react';
+import { useArticulosSearch } from '../../../hooks/useArticulosSearch';
 
 export default function FormularioCosteo({
     onBack,
@@ -27,6 +27,7 @@ export default function FormularioCosteo({
     costeoEstado,
     motivoRechazo,
     handleValidateCostos,
+    onReabrir,
     totalMateriales,
     totalMO,
     totalCostosFijos,
@@ -58,6 +59,10 @@ export default function FormularioCosteo({
 }) {
     const [showHistorial, setShowHistorial] = useState(false);
     const [historialData, setHistorialData] = useState([]);
+
+    const { articulos: telasAutocomplete, search: searchTelas } = useArticulosSearch('TELA');
+    const { articulos: accesoriosAutocomplete, search: searchAccesorios } = useArticulosSearch('ACCESORIO');
+    const { articulos: insumosAutocomplete, search: searchInsumos } = useArticulosSearch('INSUMO');
 
     const handleViewHistorial = async () => {
         const idCosteo = currentSolicitud?.costeoId || selectedRecord?.idCosteo || selectedRecord?.costeoId;
@@ -282,6 +287,8 @@ export default function FormularioCosteo({
                                                 onRemoveItem={handleRemoveItem}
                                                 onAddItem={() => handleAddItem('telas')}
                                                 disabled={costeoEstado === EstadoCosteo.APROBADO}
+                                                opcionesAutocomplete={telasAutocomplete}
+                                                searchOpciones={searchTelas}
                                             />
 
                                             {/* SCOS Telas Colapsable */}
@@ -334,6 +341,8 @@ export default function FormularioCosteo({
                                                 onRemoveItem={handleRemoveItem}
                                                 onAddItem={() => handleAddItem('accesorios')}
                                                 disabled={costeoEstado === EstadoCosteo.APROBADO}
+                                                opcionesAutocomplete={accesoriosAutocomplete}
+                                                searchOpciones={searchAccesorios}
                                             />
 
                                             {/* SCOS Accesorios Colapsable */}
@@ -393,6 +402,8 @@ export default function FormularioCosteo({
                                             onRemoveItem={handleRemoveItem}
                                             onAddItem={() => handleAddItem('insumos')}
                                             disabled={costeoEstado === EstadoCosteo.APROBADO}
+                                            opcionesAutocomplete={insumosAutocomplete}
+                                            searchOpciones={searchInsumos}
                                         />
                                     </div>
                                 )}

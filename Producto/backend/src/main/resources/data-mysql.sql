@@ -311,7 +311,7 @@ INSERT IGNORE INTO notas_venta_item_tallas (id_item_talla, item_id, talla, canti
 INSERT INTO produccion_costeos (id_costeo, solicitud_costos_id, numero_costeo, estado, version,
     costo_hilos, costo_mano_obra, costo_etiquetas, costo_embalaje, costo_flete,
     porcentaje_costo_fijo, costo_total_materia_prima, margen_bruto_sugerido, precio_venta_sugerido) VALUES
-    (1, 2, 'COST-000001', 'APROBADO', 1,
+    (1, 2, 'COST-0000001', 'APROBADO', 1,
     12500.00, 190000.00, 7500.00, 10800.00, 25000.00,
     10.00, 586250.00, 25.00, 1220340.00)
 ON DUPLICATE KEY UPDATE
@@ -386,6 +386,64 @@ ON DUPLICATE KEY UPDATE
     activo          = VALUES(activo);
 
 -- ============================================================
+-- 7.7.1. COSTEO: POLERA PIQUÉ CORPORATIVA (100 unidades — HITES)
+-- ============================================================
+-- Costeo asociado a SCOS-000001 (Polera Piqué), estado APROBADO.
+-- Toda SCOS creada vía la app recibe automáticamente un Costeo
+-- (generatePreCosteo) — esta fila evita que SCOS-000001 quede sin el suyo.
+INSERT INTO produccion_costeos (id_costeo, solicitud_costos_id, numero_costeo, estado, version,
+    costo_hilos, costo_mano_obra, costo_etiquetas, costo_embalaje, costo_flete,
+    porcentaje_costo_fijo, costo_total_materia_prima, margen_bruto_sugerido, precio_venta_sugerido) VALUES
+    (2, 1, 'COST-0000002', 'APROBADO', 1,
+    8000.00, 220000.00, 12000.00, 15000.00, 20000.00,
+    10.00, 620000.00, 25.00, 1312667.00)
+ON DUPLICATE KEY UPDATE
+    estado                    = VALUES(estado),
+    version                   = VALUES(version),
+    costo_hilos               = VALUES(costo_hilos),
+    costo_mano_obra           = VALUES(costo_mano_obra),
+    costo_etiquetas           = VALUES(costo_etiquetas),
+    costo_embalaje            = VALUES(costo_embalaje),
+    costo_flete               = VALUES(costo_flete),
+    porcentaje_costo_fijo     = VALUES(porcentaje_costo_fijo),
+    costo_total_materia_prima = VALUES(costo_total_materia_prima),
+    margen_bruto_sugerido     = VALUES(margen_bruto_sugerido),
+    precio_venta_sugerido     = VALUES(precio_venta_sugerido);
+
+INSERT INTO produccion_costeo_items (id_costeo_item, costeo_id, tipo_insumo, articulo_id, nombre_insumo, consumo, precio_unitario, costo_total) VALUES
+    (6, 2, 'TELAS',      3, 'JERSEY PIQUÉ ALGODÓN 180 GSM', 1.2000, 4500.00, 540000.00),
+    (7, 2, 'ACCESORIOS', 6, 'HILO INDUSTRIAL 40/2',         0.1000, 3500.00,  35000.00),
+    (8, 2, 'ACCESORIOS', 7, 'CINTA REFLECTANTE 50MM',       0.4500,  980.00,  44100.00)
+ON DUPLICATE KEY UPDATE
+    tipo_insumo     = VALUES(tipo_insumo),
+    articulo_id     = VALUES(articulo_id),
+    nombre_insumo   = VALUES(nombre_insumo),
+    consumo         = VALUES(consumo),
+    precio_unitario = VALUES(precio_unitario),
+    costo_total     = VALUES(costo_total);
+
+-- Versión 1 del costeo de poleras — usada por OP-00002 (ver 8.4)
+INSERT IGNORE INTO produccion_costeo_versiones (id_costeo_version, costeo_id, numero_version, fecha_creacion, usuario_creador,
+    total_mano_obra, total_hilo, total_flete, total_embalaje, total_etiquetas,
+    porcentaje_costo_fijo, costo_total_materia_prima, margen_bruto_sugerido, precio_venta_sugerido) VALUES
+    (2, 2, 1, CURRENT_TIMESTAMP, 'SISTEMA',
+    220000.00, 8000.00, 20000.00, 15000.00, 12000.00,
+    10.00, 620000.00, 25.00, 1312667.00);
+
+INSERT INTO produccion_costeo_item_versiones (id_costeo_item_version, costeo_version_id, costeo_item_id, tipo_insumo, articulo_id, nombre_insumo, consumo, precio_unitario, costo_total, activo) VALUES
+    (6, 2, 6, 'TELAS',      3, 'JERSEY PIQUÉ ALGODÓN 180 GSM', 1.2000, 4500.00, 540000.00, true),
+    (7, 2, 7, 'ACCESORIOS', 6, 'HILO INDUSTRIAL 40/2',         0.1000, 3500.00,  35000.00, true),
+    (8, 2, 8, 'ACCESORIOS', 7, 'CINTA REFLECTANTE 50MM',       0.4500,  980.00,  44100.00, true)
+ON DUPLICATE KEY UPDATE
+    tipo_insumo     = VALUES(tipo_insumo),
+    articulo_id     = VALUES(articulo_id),
+    nombre_insumo   = VALUES(nombre_insumo),
+    consumo         = VALUES(consumo),
+    precio_unitario = VALUES(precio_unitario),
+    costo_total     = VALUES(costo_total),
+    activo          = VALUES(activo);
+
+-- ============================================================
 -- 7.8. ORDEN DE PRODUCCIÓN (OP)
 -- ============================================================
 -- OP-00001: Pantalón Cargo MEDCELL → referencia NV-0000001 (cliente MEDCELL, EN_PRODUCCION)
@@ -421,7 +479,7 @@ INSERT IGNORE INTO document_counter (tipo, ultimo_numero) VALUES
     ('EVN',  2),
     ('SCOS', 2),
     ('SCOT', 0),
-    ('C',    1),
+    ('COST', 4),
     ('OP',   1),
     ('HC',   1);
 
@@ -445,6 +503,13 @@ VALUES
      'CHALECO', 'CHALECO CORPORATIVO ACOLCHADO', 'UNISEX', 'TALLA UNICA',
      true, false, 50, CURRENT_DATE, 0.00)
 ON DUPLICATE KEY UPDATE estado = VALUES(estado);
+
+-- Costeos en blanco (BORRADOR) para SCOS-000003 y SCOS-000004 — toda SCOS
+-- creada vía la app recibe automáticamente un Costeo vacío (generatePreCosteo),
+-- aunque siga PENDIENTE de costear.
+INSERT IGNORE INTO produccion_costeos (id_costeo, solicitud_costos_id, numero_costeo, estado, version) VALUES
+    (3, 3, 'COST-0000003', 'BORRADOR', 1),
+    (4, 4, 'COST-0000004', 'BORRADOR', 1);
 
 -- ── 8.2. EVN EN BORRADOR / EVALUACIÓN ──────────────────────
 -- Agrega 2 EVN activas para que el KPI "EVN en Evaluación" muestre 2
@@ -548,13 +613,14 @@ ON DUPLICATE KEY UPDATE cantidad = VALUES(cantidad);
 
 -- ── 8.4. OP ADICIONAL EN ESTADO PENDIENTE ──────────────────
 -- Agrega una segunda OP (poleras HITES) para que el KPI "OPs en Planta" muestre 2.
--- Reutiliza costeo_version_id=1 (requerido NOT NULL por la entidad JPA).
+-- Usa costeo_version_id=2 (costeo de poleras, ver 7.7.1) — antes reutilizaba
+-- por error el costeo_version_id=1 del pantalón cargo de otra OP/cliente.
 INSERT IGNORE INTO orden_produccion
     (id_op, costeo_version_id, numero_op, nota_venta_id, estado,
      fecha_inicio, fecha_entrega_programada, observaciones,
      created_at, updated_at)
 VALUES
-    (2, 1, 'OP-00002', 2, 'PENDIENTE',
+    (2, 2, 'OP-00002', 2, 'PENDIENTE',
      DATE_ADD(CURRENT_DATE, INTERVAL 3 DAY),
      DATE_ADD(CURRENT_DATE, INTERVAL 12 DAY),
      'POLERA PIQUÉ CORPORATIVA — HITES S.A. — 100 UNIDADES — EN ESPERA DE INSUMOS',

@@ -106,7 +106,7 @@ public class CosteoServiceImpl implements CosteoService {
     }
 
     /**
-     * Garantiza que el Costeo tenga su propio número correlativo ({@code C-0000001}).
+     * Garantiza que el Costeo tenga su propio número correlativo ({@code COST-0000001}).
      * En creación genera uno nuevo de forma atómica dentro de esta transacción
      * (sin huecos si el save falla). En actualización conserva el número ya
      * asignado, recuperándolo de BD si el DTO no lo trajo, para no regenerarlo
@@ -124,7 +124,7 @@ public class CosteoServiceImpl implements CosteoService {
         }
         // Creación (o registro legacy sin número): asignar correlativo propio.
         if (domain.getNumeroCosteo() == null) {
-            domain.setNumeroCosteo(numeroDocumentoService.siguienteFormateado("C"));
+            domain.setNumeroCosteo(numeroDocumentoService.siguienteFormateado("COST"));
         }
     }
 

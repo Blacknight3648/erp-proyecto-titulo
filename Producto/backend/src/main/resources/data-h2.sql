@@ -290,7 +290,11 @@ MERGE INTO notas_venta (id_nv, numero_nv, evaluacion_negocio_id, cliente_id, ven
 MERGE INTO produccion_costeos (id_costeo, solicitud_costos_id, numero_costeo, estado, version)
     KEY (id_costeo)
     VALUES
-    (1, 2, 'COST-000001', 'APROBADO', 1);
+    (1, 2, 'COST-0000001', 'APROBADO', 1),
+    -- Costeo en blanco de SCOS-000001 (Polera) — toda SCOS creada vía la app
+    -- recibe automáticamente un Costeo (generatePreCosteo), aunque no se use
+    -- en el flujo de pruebas de OP/HC de este seed.
+    (2, 1, 'COST-0000002', 'BORRADOR', 1);
 
 MERGE INTO produccion_costeo_versiones (id_costeo_version, costeo_id, numero_version, fecha_creacion, usuario_creador)
     KEY (id_costeo_version)
@@ -330,7 +334,7 @@ MERGE INTO document_counter (tipo, ultimo_numero)
     ('EVN',  2),
     ('SCOS', 2),
     ('SCOT', 0),
-    ('C',    1),
+    ('COST', 2),
     ('OP',   1),
     ('HC',   1);
 

@@ -23,7 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
  * El formato es consecutivo puro {@code PREFIJO-0000001} (7 dígitos, sin año),
  * donde el prefijo es el propio tipo del documento.
  *
- * Tipos canónicos: "NV", "EVN", "OP", "HC", "C", "SCOS", "SCOT", "SC", "OC".
+ * Tipos canónicos: "NV", "EVN", "OP", "HC", "COST", "SCOS", "SCOT", "SC", "OC".
  */
 @Service
 @RequiredArgsConstructor

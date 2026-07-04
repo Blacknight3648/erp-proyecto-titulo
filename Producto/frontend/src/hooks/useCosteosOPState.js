@@ -182,6 +182,7 @@ export function useCosteosOPState() {
                     ? {
                         ...r,
                         costeoId: costeo.idCosteo,
+                        numeroCosteo: costeo.numeroCosteo,
                         costeoEstado: costeo.estado,
                         costeoVersion: costeo.version,
                         costoTotal: (costeo.costoTotalMateriaPrima || 0) + 
@@ -199,7 +200,8 @@ export function useCosteosOPState() {
 
                 const matchesSearch = clienteNombre.toUpperCase().includes(searchTerm.toUpperCase()) ||
                     (r.id?.toString() || '').toUpperCase().includes(searchTerm.toUpperCase()) ||
-                    (r.numero?.toString() || '').toUpperCase().includes(searchTerm.toUpperCase());
+                    (r.numero?.toString() || '').toUpperCase().includes(searchTerm.toUpperCase()) ||
+                    (r.numeroCosteo?.toString() || '').toUpperCase().includes(searchTerm.toUpperCase());
 
                 // El filtro de estado usa el estado real del Costeo si existe; si no, el de la SCOS.
                 const estadoParaFiltro = r.costeoEstado || r.estado;

@@ -93,7 +93,7 @@ export default function ListaCosteos({
 
         // Validacion de consistencia: No se puede enviar informacion nula o vacia.
         if (!record.costoTotal || record.costoTotal <= 0) {
-            triggerWarning(`Error: El costeo ID ${record.id || record.numero} no posee un costo total valido para ser aprobado.`);
+            triggerWarning(`Error: El costeo ID ${record.numeroCosteo || record.numero || record.id} no posee un costo total valido para ser aprobado.`);
             return;
         }
 
@@ -242,7 +242,9 @@ export default function ListaCosteos({
                 {recordsToDisplay.map((record) => {
                     const recordClienteId = record.clienteId?.toString();
                     const cliente = clienteMap.get(recordClienteId);
-                    const displayId = record.numero || record.id;
+                    // Se prioriza el numero propio del Costeo (COST-XXXXXXX); el numero de
+                    // la SCOS solo se usa como respaldo si aun no existe un Costeo real.
+                    const displayId = record.numeroCosteo || record.numero || record.id;
                     const estadoCosteo = record.costeoEstado;
 
                     // Definicion explicita de politicas y restricciones de transicion de estados
@@ -274,7 +276,7 @@ export default function ListaCosteos({
                             <div className="flex justify-between items-start mb-4">
                                 <div className="flex-1">
                                     <div className="flex items-center gap-2 mb-1">
-                                        <span className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">ID: {displayId}</span>
+                                        <span className="text-sm font-black text-foreground uppercase tracking-widest">{displayId}</span>
                                         <span className={`px-2 py-0.5 rounded-full text-[8px] font-black uppercase tracking-widest ${badgeFor(estadoCosteo ?? record.estado).className}`}>
                                             {badgeFor(estadoCosteo ?? record.estado).label}
                                         </span>
@@ -282,6 +284,11 @@ export default function ListaCosteos({
                                             <span className="px-2 py-0.5 rounded-full text-[8px] font-black uppercase tracking-widest bg-brand-indigo/10 text-brand-indigo">v{record.costeoVersion}</span>
                                         )}
                                     </div>
+                                    {record.numeroCosteo && record.numero && (
+                                        <span className="block text-[9px] font-bold text-muted-foreground/70 uppercase tracking-widest mb-1">
+                                            Solicitud: {record.numero}
+                                        </span>
+                                    )}
                                     <h3 className="text-md font-black text-foreground group-hover:text-success transition-colors uppercase leading-tight">
                                         {record.clienteNombre || cliente?.nombreCliente || cliente?.nombre || 'Cliente SCOS'}
                                     </h3>
@@ -403,7 +410,7 @@ export default function ListaCosteos({
                             <div>
                                 <h3 className="text-sm font-black text-foreground uppercase tracking-tight">Confirmar Rechazo Obligatorio</h3>
                                 <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
-                                    ID Registro: {rechazoRecord.numero || rechazoRecord.id}
+                                    ID Registro: {rechazoRecord.numeroCosteo || rechazoRecord.numero || rechazoRecord.id}
                                 </p>
                             </div>
                         </div>

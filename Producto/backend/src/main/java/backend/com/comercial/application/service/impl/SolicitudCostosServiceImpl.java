@@ -310,10 +310,8 @@ public class SolicitudCostosServiceImpl implements SolicitudCostosService {
                         .items(new java.util.ArrayList<>())
                         .build());
 
-        if (costeoDTO.getNumeroCosteo() == null) {
-            costeoDTO.setNumeroCosteo("PRE-" + scos.getNumeroSCOS().getValue());
-        }
-
+        // El número real (COST-XXXXXXX) lo asigna CosteoServiceImpl.asignarNumeroSiCorresponde
+        // al guardar, igual que cualquier otro Costeo nuevo — no se usa un placeholder aparte.
         costeoService.save(costeoDTO);
     }
 }

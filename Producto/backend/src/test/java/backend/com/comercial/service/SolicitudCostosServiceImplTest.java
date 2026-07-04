@@ -152,7 +152,9 @@ class SolicitudCostosServiceImplTest {
 
         ArgumentCaptor<CosteoDTO> costeoCaptor = ArgumentCaptor.forClass(CosteoDTO.class);
         verify(costeoService).save(costeoCaptor.capture());
-        assertThat(costeoCaptor.getValue().getNumeroCosteo()).isEqualTo("PRE-SCOS-0000004");
+        // El número real (COST-XXXXXXX) lo asigna CosteoServiceImpl.save al persistir;
+        // este use case ya no fija un placeholder propio.
+        assertThat(costeoCaptor.getValue().getNumeroCosteo()).isNull();
         assertThat(costeoCaptor.getValue().getSolicitudCostosId()).isEqualTo(1L);
     }
 

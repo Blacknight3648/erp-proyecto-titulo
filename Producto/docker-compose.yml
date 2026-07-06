@@ -20,8 +20,9 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile
-    image: ${DOCKER_USER}/erp-backend:latest
+    image: ${DOCKER_USER:-erp}/erp-backend:latest
     container_name: erp-backend
+    stop_grace_period: 30s
     depends_on:
       mysql:
         condition: service_healthy
@@ -51,7 +52,7 @@ services:
       dockerfile: Dockerfile
       args:
         VITE_API_URL: http://localhost:8050
-    image: ${DOCKER_USER}/erp-frontend:latest
+    image: ${DOCKER_USER:-erp}/erp-frontend:latest
     container_name: erp-frontend
     ports:
       - "5173:80"

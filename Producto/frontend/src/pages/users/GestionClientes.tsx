@@ -36,8 +36,7 @@ export default function GestionClientes() {
     const matchesSearch =
       c.razonSocial?.toLowerCase()?.includes(search) ||
       c.runCliente?.toLowerCase()?.includes(search) ||
-      c.sigla?.descripcionSigla?.toLowerCase()?.includes(search) ||
-      c.sigla?.siglaAbreviatura?.toLowerCase()?.includes(search) ||
+      c.sigla?.toLowerCase()?.includes(search) ||
       c.giro?.descripcionGiro?.toLowerCase()?.includes(search);
 
     const status = c.activo ? "Activo" : "Suspendido";

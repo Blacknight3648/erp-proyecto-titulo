@@ -1,5 +1,8 @@
 -- V25__hoja_compra_item_oc_link.sql
--- Añadir campos oc_id y numero_oc en la tabla de ítems de hoja de compra para evitar desvinculación
-ALTER TABLE produccion_hoja_compra_items
-ADD COLUMN IF NOT EXISTS oc_id BIGINT NULL COMMENT 'ID de la Orden de Compra asociada',
-ADD COLUMN IF NOT EXISTS numero_oc VARCHAR(100) NULL COMMENT 'Número de la Orden de Compra asociada';
+--
+-- Esta migración quedó como no-op: `oc_id` y `numero_oc` ya están mapeadas
+-- en HojaCompraItemJpaEntity (@Column), por lo que Hibernate
+-- (ddl-auto=update) las crea. El `ADD COLUMN IF NOT EXISTS` era redundante
+-- y MySQL no lo soporta (ver V10__evn_item_costeo_columns.sql) → se retiró.
+--
+-- Se conserva el archivo (sin sentencias) para no alterar el versionado Flyway.

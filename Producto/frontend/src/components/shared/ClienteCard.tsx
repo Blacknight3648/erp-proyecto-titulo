@@ -19,12 +19,13 @@ export default function ClienteCard({ cliente, onDelete, onToggle, onEdit }) {
 
   const initial = cliente.razonSocial?.charAt(0)?.toUpperCase() || "?";
 
-  const siglaLabel =
-    cliente.sigla?.siglaAbreviatura ||
-    cliente.sigla?.descripcionSigla ||
-    "Sin sigla";
+  const siglaLabel = cliente.sigla || "Sin sigla";
 
   const giroLabel = cliente.giro?.descripcionGiro || "Sin giro";
+
+  const contactoPrincipal = cliente.contactos?.[0];
+  const correoLabel = contactoPrincipal?.emailContacto || "Sin correo";
+  const telefonoLabel = contactoPrincipal?.telefonoContacto || "Sin teléfono";
 
   return (
     <div className="group bg-card rounded-[2.5rem] p-8 shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 border border-border flex flex-col h-full relative overflow-hidden">
@@ -105,14 +106,12 @@ export default function ClienteCard({ cliente, onDelete, onToggle, onEdit }) {
 
           <div className="flex items-center text-sm font-bold text-muted-foreground gap-3">
             <Mail size={16} className="text-muted-foreground" />
-            <span className="truncate">
-              {cliente.correoCliente || "Sin correo"}
-            </span>
+            <span className="truncate">{correoLabel}</span>
           </div>
 
           <div className="flex items-center text-sm font-bold text-muted-foreground gap-3">
             <Phone size={16} className="text-muted-foreground" />
-            <span>{cliente.telefonoCliente || "Sin teléfono"}</span>
+            <span>{telefonoLabel}</span>
           </div>
         </div>
       </div>

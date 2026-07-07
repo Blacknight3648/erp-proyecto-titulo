@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { OrdenCompraService } from '../remote/service/OrdenCompraService';
 import { HojaCompraService } from '../remote/service/HojaCompraService';
 import { RecepcionOCService } from '../remote/service/RecepcionOCService';
+import { ProveedorService } from '../remote/service/ProveedorService';
 
 /**
  * Hook para gestionar el estado de Órdenes de Compra (lista + acciones + flujo
@@ -16,9 +17,16 @@ export function useOCState() {
     const [ocs, setOcs] = useState([]);
     const [hcsAprobadas, setHcsAprobadas] = useState([]);
     const [recepciones, setRecepciones] = useState([]);
+    const [proveedores, setProveedores] = useState([]);
     const [loading, setLoading] = useState(false);
     const [submitting, setSubmitting] = useState(false);
     const [error, setError] = useState(null);
+
+    useEffect(() => {
+        ProveedorService.getAll()
+            .then(data => setProveedores(data.map(p => ({ id: p.proveedorId, nombre: p.nombreProveedor }))))
+            .catch(e => console.error('Error cargando proveedores:', e));
+    }, []);
 
     const refresh = useCallback(async () => {
         setLoading(true);
@@ -183,6 +191,7 @@ export function useOCState() {
         ocs: filteredOCs,
         hcsAprobadas,
         recepciones,
+        proveedores,
         loading,
         submitting,
         error,

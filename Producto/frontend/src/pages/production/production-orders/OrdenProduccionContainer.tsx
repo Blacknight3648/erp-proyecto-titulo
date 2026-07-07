@@ -1,10 +1,13 @@
 import { useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import OrdenProduccionList from './OrdenProduccionList';
 import OrdenProduccionDetail from './OrdenProduccionDetail';
 
 export default function OrdenProduccionContainer() {
-    const [view, setView] = useState('list'); // 'list', 'detail'
-    const [selectedOpId, setSelectedOpId] = useState(null);
+    const location = useLocation();
+    // Permite deep-linking desde otras pantallas (ej. Dashboard OP) pasando { state: { opId } }
+    const [view, setView] = useState(location.state?.opId ? 'detail' : 'list');
+    const [selectedOpId, setSelectedOpId] = useState(location.state?.opId ?? null);
 
     const handleSelectOp = (id) => {
         setSelectedOpId(id);

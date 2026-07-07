@@ -22,6 +22,9 @@ public class OPResponse {
     private LocalDate fechaEntregaProgramada;
     private String observaciones;
     private List<OPItemResponse> items;
+    /** Alertas de atraso vigentes (puede haber varias a la vez, o ninguna). Resueltas
+     *  aparte (requieren SeguimientoOPRepository), no se llenan en fromDomain. */
+    private List<AlertaOPDTO> alertas;
 
     public static OPResponse fromDomain(OrdenProduccion op) {
         if (op == null)
@@ -38,6 +41,7 @@ public class OPResponse {
         r.items = op.getItems() != null
                 ? op.getItems().stream().map(OPItemResponse::fromDomain).collect(Collectors.toList())
                 : List.of();
+        r.alertas = List.of();
         return r;
     }
 

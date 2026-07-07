@@ -6,7 +6,7 @@ export default function SelectionModal({
     onClose,
     opFields,
     selectedOPIds,
-    mockOpDetails,
+    seguimientoDetails,
     onSelectField
 }) {
     if (!show) return null;
@@ -23,7 +23,7 @@ export default function SelectionModal({
                     {opFields.map((field, idx) => {
                         // Check if all selected OPs have data for this field
                         const isCompleteForAll = selectedOPIds.length > 0 &&
-                            selectedOPIds.every(id => mockOpDetails[id]?.[field.key]);
+                            selectedOPIds.every(id => seguimientoDetails[id]?.[field.key]);
 
                         return (
                             <button

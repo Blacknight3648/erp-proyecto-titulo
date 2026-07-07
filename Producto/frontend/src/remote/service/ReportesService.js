@@ -38,4 +38,27 @@ export const ReportesService = {
             throw error;
         }
     },
+
+    dashboardOPKpis: async () => {
+        try {
+            const response = await api.get('/reportes/dashboard-op/kpis');
+            return response.data;
+        } catch (error) {
+            console.error('Error fetching KPIs de dashboard OP:', error);
+            throw error;
+        }
+    },
+
+    historialPrecios: async ({ articuloId, proveedorId } = {}) => {
+        try {
+            const params = {};
+            if (articuloId) params.articuloId = articuloId;
+            if (proveedorId) params.proveedorId = proveedorId;
+            const response = await api.get('/reportes/historial-precios', { params });
+            return response.data || [];
+        } catch (error) {
+            console.error('Error fetching historial de precios:', error);
+            throw error;
+        }
+    },
 };

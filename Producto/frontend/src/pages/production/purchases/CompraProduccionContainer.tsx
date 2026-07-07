@@ -22,7 +22,7 @@ const TABS = [
 
 export default function CompraProduccionContainer() {
     const {
-        view, ocs, hcsAprobadas, recepciones, loading, submitting, error,
+        view, ocs, hcsAprobadas, recepciones, proveedores, loading, submitting, error,
         activeTab, setActiveTab, searchTerm, setSearchTerm,
         selectedOC, openCreate, openDetail, back,
         generarConsolidada, marcarEnviada, marcarRecepcionada, cerrar, actualizarPrecioItem,
@@ -44,6 +44,7 @@ export default function CompraProduccionContainer() {
             <EmisorCompraProduccion
                 onBack={back}
                 hcsAprobadas={hcsAprobadas}
+                proveedores={proveedores}
                 onGenerar={generarConsolidada}
                 submitting={submitting}
                 error={error}

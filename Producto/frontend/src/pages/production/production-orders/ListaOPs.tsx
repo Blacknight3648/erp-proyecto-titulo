@@ -13,7 +13,7 @@ export default function ListaOPs({
     handleVerDetalles,
     handleBulkEdit,
     getClientName,
-    mockOpDetails,
+    seguimientoDetails,
     searchTerm, setSearchTerm,
     clientFilter, setClientFilter
 }) {

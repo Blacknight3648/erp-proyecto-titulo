@@ -4,7 +4,6 @@ import { useComercial } from './useComercial';
 import { useProduccion } from './useProduccion';
 import { useClientes } from './useClientes';
 import { useProveedores } from './useProveedores';
-import { mockOperaciones } from '../data/mockData';
 import { parseId } from '../utils/formUtils';
 import EstadoCosteo from '../remote/DTO/EstadoCosteo';
 
@@ -549,35 +548,6 @@ export function useCosteosOPState() {
                 savedCosteoResult = await saveCosteo(productionPayload);
             }
 
-
-            const scosNumber = currentSolicitud.numero || currentSolicitud.id;
-            const match = String(scosNumber).match(/(\d+)/);
-            if (match) {
-                const numericId = match[1];
-                const newOpId = `OP-${numericId}`;
-                const existingOpIndex = mockOperaciones.findIndex(op => op.idOP === newOpId);
-                const cliente = currentSolicitud.clienteNombre ||
-                    clientes.find(c => (c.clienteId || c.id)?.toString() === currentSolicitud.clienteId?.toString())?.nombreCliente ||
-                    'Cliente SCOS';
-
-                if (existingOpIndex >= 0) {
-                    mockOperaciones[existingOpIndex].estado = 'En Proceso';
-                    mockOperaciones[existingOpIndex].progreso = Math.max(20, mockOperaciones[existingOpIndex].progreso);
-                } else {
-                    mockOperaciones.unshift({
-                        idOP: newOpId,
-                        notaVentaId: 'S/N',
-                        cliente: cliente,
-                        producto: currentSolicitud.articuloDescripcion || 'Sin Descripción',
-                        estado: 'En Proceso',
-                        progreso: 20,
-                        prioridad: 'Media',
-                        fechaInicio: new Date().toISOString().split('T')[0],
-                        sla: { corte: 2, logo: 2, taller: 5, term: 2, entrega: 1 },
-                        tienePersonalizado: false
-                    });
-                }
-            }
 
             toast.success("Costeo validado y guardado correctamente");
 

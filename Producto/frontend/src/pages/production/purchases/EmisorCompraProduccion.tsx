@@ -12,6 +12,7 @@ import { ChevronLeft, Save, AlertCircle, Package, Layers, Truck } from 'lucide-r
 export default function EmisorCompraProduccion({
     onBack,
     hcsAprobadas,
+    proveedores = [],
     onGenerar,
     submitting,
     error,
@@ -168,14 +169,27 @@ export default function EmisorCompraProduccion({
                             <h3 className="text-[10px] font-black text-slate-800 uppercase tracking-widest">Proveedor</h3>
                         </div>
                         <div className="space-y-2">
-                            <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest">ID Proveedor</label>
-                            <input
-                                type="number"
-                                min={1}
+                            <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Proveedor</label>
+                            <select
                                 value={proveedorId}
                                 onChange={(e) => setProveedorId(e.target.value)}
-                                placeholder="Ej: 5"
-                                className="w-full h-12 px-4 bg-slate-50 border border-slate-100 rounded-2xl text-sm font-black text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                                className="w-full h-12 px-4 bg-slate-50 border border-slate-100 rounded-2xl text-xs font-black text-slate-700 uppercase focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                            >
+                                <option value="">Seleccione un proveedor...</option>
+                                {proveedores.map((p) => (
+                                    <option key={p.id} value={p.id}>{p.nombre}</option>
+                                ))}
+                            </select>
+                        </div>
+                        <div className="space-y-2">
+                            <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest">ID Proveedor</label>
+                            <input
+                                type="text"
+                                value={proveedorId}
+                                disabled
+                                readOnly
+                                placeholder="—"
+                                className="w-full h-12 px-4 bg-slate-100 border border-slate-100 rounded-2xl text-sm font-black text-slate-400 cursor-not-allowed"
                             />
                         </div>
                         <div className="space-y-2">

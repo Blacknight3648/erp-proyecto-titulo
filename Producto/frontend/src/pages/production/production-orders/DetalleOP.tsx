@@ -21,7 +21,7 @@ export default function DetalleOP({
     editingFieldIdx,
     handleSelectFieldInline,
     opFields,
-    mockOpDetails,
+    seguimientoDetails,
     tempValue,
     setTempValue,
     isManualCutting,
@@ -91,14 +91,29 @@ export default function DetalleOP({
                     <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:rotate-12 transition-transform">
                         <Factory className="w-20 h-20 text-primary" />
                     </div>
-                    <div className="flex flex-wrap items-center justify-center gap-3 mb-3">
-                        <span className="text-2xl">📅</span>
-                        <h3 className="text-primary font-black text-xl tracking-tighter uppercase italic">ENTREGA OP: <span className="text-foreground ml-1">25/02/2026</span></h3>
-                        <span className="bg-success/10 text-success text-[11px] font-black px-4 py-1.5 rounded-full border border-success/20 shadow-sm flex items-center">
-                            🏆 Quedan 15 días
-                        </span>
-                    </div>
-                    <p className="text-muted-foreground text-sm font-medium uppercase tracking-tighter">(Cliente solicita para: 27/2/2026)</p>
+                    {selectedOP?.fechaEntregaProgramada ? (
+                        (() => {
+                            const [y, m, d] = selectedOP.fechaEntregaProgramada.split('-');
+                            const fechaFmt = `${d}/${m}/${y}`;
+                            const diasRestantes = Math.ceil(
+                                (new Date(selectedOP.fechaEntregaProgramada) - new Date(new Date().toDateString())) / (1000 * 60 * 60 * 24)
+                            );
+                            return (
+                                <div className="flex flex-wrap items-center justify-center gap-3 mb-3">
+                                    <span className="text-2xl">📅</span>
+                                    <h3 className="text-primary font-black text-xl tracking-tighter uppercase italic">ENTREGA OP: <span className="text-foreground ml-1">{fechaFmt}</span></h3>
+                                    <span className={`text-[11px] font-black px-4 py-1.5 rounded-full border shadow-sm flex items-center ${diasRestantes < 0 ? 'bg-destructive/10 text-destructive border-destructive/20' : 'bg-success/10 text-success border-success/20'}`}>
+                                        {diasRestantes < 0 ? `⚠️ ${Math.abs(diasRestantes)} días de atraso` : `🏆 Quedan ${diasRestantes} días`}
+                                    </span>
+                                </div>
+                            );
+                        })()
+                    ) : (
+                        <div className="flex flex-wrap items-center justify-center gap-3 mb-3">
+                            <span className="text-2xl">📅</span>
+                            <h3 className="text-muted-foreground font-black text-xl tracking-tighter uppercase italic">Sin fecha de entrega programada</h3>
+                        </div>
+                    )}
                 </div>
 
                 <div className="mb-12 px-2">
@@ -114,7 +129,7 @@ export default function DetalleOP({
                 <div className="grid grid-cols-1 gap-4 mb-12">
                     {opFields.map((item, i) => {
                         const isEditing = editingFieldIdx === i;
-                        const currentOpDetails = mockOpDetails[selectedOP?.id] || {};
+                        const currentOpDetails = seguimientoDetails[selectedOP?.id] || {};
                         const fieldValue = currentOpDetails[item.key];
 
                         return (

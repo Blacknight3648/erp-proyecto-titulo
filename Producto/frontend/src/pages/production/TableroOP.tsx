@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import {
     Factory,
     Search,
@@ -6,37 +6,54 @@ import {
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import ProgressCard from '../../ui/data-display/ProgressCard';
-import { mockOperaciones, mockOpDetails, mockOTs, mockAllOCs, mockOpPersonalizacion } from '../../data/mockData';
-import { calculateOPStatus } from '../../utils/statusUtils';
+import { useTableroOP } from '../../hooks/useTableroOP';
+
+const stages = [
+    { id: 'Tizado', label: 'Tizado', key: 'finTizado' },
+    { id: 'Corte', label: 'Corte', key: 'finCorte' },
+    { id: 'Logo', label: 'Logo', key: 'regresoLogo' },
+    { id: 'Taller Externo', label: 'Taller Ext.', key: 'finTaller' },
+    { id: 'Terminaciones', label: 'Term.', key: 'finOP' },
+    { id: 'Personalizado', label: 'Pers.', key: 'finPersonalizado' },
+    { id: 'Entrega', label: 'Entrega', key: 'entregaBodega' },
+];
+
+// Deriva la etapa "actual" de una OP a partir de la última fecha de seguimiento
+// registrada, para que la barra de progreso de ProgressCard resalte la etapa correcta.
+const getEtapaActual = (opId, seguimientoDetails) => {
+    const detalle = seguimientoDetails[opId] || {};
+    let etapa = stages[0].id;
+    for (const stage of stages) {
+        if (detalle[stage.key]) etapa = stage.id;
+    }
+    return etapa;
+};
 
 const TableroOP = () => {
+    const { ordenes, seguimientoDetails, loading } = useTableroOP();
     const [searchQuery, setSearchQuery] = useState('');
     const [healthFilter, setHealthFilter] = useState('all'); // 'all' | 'delayed' | 'normal'
 
-    const stages = [
-        { id: 'Tizado', label: 'Tizado', key: 'tizado' },
-        { id: 'Corte', label: 'Corte', key: 'fin_corte' },
-        { id: 'Logo', label: 'Logo', key: 'regreso_logo' },
-        { id: 'Taller Externo', label: 'Taller Ext.', key: 'fin_taller' },
-        { id: 'Terminaciones', label: 'Term.', key: 'fin_op' },
-        { id: 'Personalizado', label: 'Pers.', key: 'personalizado' },
-        { id: 'Entrega', label: 'Entrega', key: 'entrega_bodega' },
-    ];
+    const filteredData = ordenes
+        .map(op => ({
+            ...op,
+            producto: op.items?.[0]?.modelo || op.numeroOP,
+            cliente: op.notaVentaId ? `NV ${op.notaVentaId}` : '-',
+            estado: getEtapaActual(op.id, seguimientoDetails),
+        }))
+        .filter(op => {
+            const matchesSearch = (op.numeroOP || op.id || '').toString().toLowerCase().includes(searchQuery.toLowerCase()) ||
+                (op.cliente || '').toString().toLowerCase().includes(searchQuery.toLowerCase()) ||
+                (op.producto || '').toString().toLowerCase().includes(searchQuery.toLowerCase());
 
-    const filteredData = mockOperaciones.filter(op => {
-        const matchesSearch = (op.idOP || op.id || '').toString().toLowerCase().includes(searchQuery.toLowerCase()) ||
-            (op.cliente || '').toString().toLowerCase().includes(searchQuery.toLowerCase()) ||
-            (op.producto || '').toString().toLowerCase().includes(searchQuery.toLowerCase());
+            const isDelayed = (op.alertas?.length ?? 0) > 0;
 
-        const { estadoGlobal } = calculateOPStatus(op, mockOTs, mockAllOCs, mockOpPersonalizacion);
-        const isDelayed = estadoGlobal === 'ATRASADA';
+            const matchesHealth = healthFilter === 'all'
+                ? true
+                : healthFilter === 'delayed' ? isDelayed : !isDelayed;
 
-        const matchesHealth = healthFilter === 'all'
-            ? true
-            : healthFilter === 'delayed' ? isDelayed : !isDelayed;
-
-        return matchesSearch && matchesHealth;
-    });
+            return matchesSearch && matchesHealth;
+        });
 
     return (
         <div className="max-w-[1800px] mx-auto space-y-8 animate-in fade-in duration-700 pb-12">
@@ -100,17 +117,23 @@ const TableroOP = () => {
 
             {/* Progress List View */}
             <div className="space-y-4 max-w-6xl">
-                {filteredData.map((op, idx) => (
+                {loading && (
+                    <div className="p-20 text-center bg-white rounded-[3rem] border border-dashed border-gray-200 shadow-sm">
+                        <p className="text-gray-400 font-bold uppercase tracking-widest text-xs">Cargando Órdenes de Producción...</p>
+                    </div>
+                )}
+
+                {!loading && filteredData.map((op) => (
                     <ProgressCard
-                        key={op.idOP ?? op.id ?? op.numeroOP ?? `op-idx-${idx}`}
+                        key={op.idOP}
                         item={op}
-                        details={mockOpDetails}
+                        details={seguimientoDetails}
                         stages={stages}
                         type="op"
                     />
                 ))}
 
-                {filteredData.length === 0 && (
+                {!loading && filteredData.length === 0 && (
                     <div className="p-20 text-center bg-white rounded-[3rem] border border-dashed border-gray-200 shadow-sm">
                         <Search className="w-12 h-12 text-gray-200 mx-auto mb-4" />
                         <p className="text-gray-400 font-bold uppercase tracking-widest text-xs">No se encontraron registros activos</p>

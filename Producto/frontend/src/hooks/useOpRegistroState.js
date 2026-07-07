@@ -1,103 +1,13 @@
-import React, { useState, useCallback, useEffect, useMemo } from 'react';
+import { useState, useCallback, useEffect, useMemo } from 'react';
 import { toast } from 'sonner';
-import { mockNVs } from '../data/mockData';
 import { validateNumericInput } from '../utils/validations';
 import { OrdenProduccionService } from '../remote/service/OrdenProduccionService';
-
-// Mapeo de field.key (frontend) → nombre del campo en ActualizarSeguimientoCommand (backend)
-const FIELD_KEY_TO_BACKEND = {
-    recepcionOP:    'fechaRecepcionOp',
-    finTizado:      'finTizado',
-    recepcionCompra: 'recepcionCompras',
-    inicioCorte:    'inicioCorte',
-    finCorte:       'finCorte',
-    inicioLogo:     'inicioLogo',
-    regresoLogo:    'regresoLogo',
-    estadoRecLogo:  'estadoRecLogo',
-    finTaller:      'finTallerExterno',
-    calidadTaller:  'calidadTaller',
-    obsTaller:      'obsTaller',
-    finPersonalizado: 'finPersonalizado',
-    finOP:          'finTerminacion',
-    estadoOcMP:     'estadoOcMp',
-    inicioTaller:   'inicioTallerExterno',
-    // cantidadCortes, entregaBodega — sin equivalente en backend, se omiten
-};
-
-// Campos de ActualizarSeguimientoCommand que el backend espera como LocalDate (ISO yyyy-MM-dd).
-const DATE_FIELDS = new Set([
-    'fechaRecepcionOp', 'finTizado', 'recepcionCompras', 'inicioCorte', 'finCorte',
-    'inicioLogo', 'regresoLogo', 'inicioTallerExterno', 'finTallerExterno',
-    'finTerminacion', 'finPersonalizado'
-]);
-
-// Normaliza cualquier formato de fecha común (ISO yyyy-MM-dd, DD-MM-YYYY, DD/MM/YYYY)
-// al formato ISO que espera el backend (java.time.LocalDate). El <input type="date">
-// nativo siempre entrega ISO, pero se normaliza igual por robustez ante datos que
-// hayan quedado guardados o pre-cargados en otro formato.
-const normalizeDateToISO = (value) => {
-    if (!value) return null;
-    const iso = /^\d{4}-\d{2}-\d{2}$/;
-    if (iso.test(value)) return value;
-    const dmy = /^(\d{1,2})[/-](\d{1,2})[/-](\d{4})$/;
-    const match = dmy.exec(value);
-    if (match) {
-        const [, day, month, year] = match;
-        return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
-    }
-    return value;
-};
-
-const mapEnumToBackend = (key, value) => {
-    if (!value) return null;
-    if (key === 'estadoRecLogo') {
-        if (value === 'Recep. completa') return 'RECEPCION_COMPLETA';
-        if (value === 'Recep. parcial') return 'RECEPCION_PARCIAL';
-        if (value === 'N/A') return 'NA';
-    }
-    if (key === 'calidadTaller') {
-        if (value === 'Aprobado') return 'APROBADO';
-        if (value === 'Rechazado') return 'RECHAZADO';
-        if (value === 'con Obs.') return 'CON_OBSERVACIONES';
-    }
-    if (key === 'estadoOcMP') {
-        if (value === 'sin tela en mercado') return 'SIN_TELA_EN_MERCADO';
-        if (value === 'OC emitida') return 'OC_EMITIDA';
-        if (value === 'tela en stock') return 'TELA_EN_STOCK';
-        if (value === 'en stock y OC emitida') return 'EN_STOCK_Y_OC_EMITIDA';
-        if (value === 'N/A') return 'NA';
-    }
-    return value;
-};
-
-// Construye el payload completo para ActualizarSeguimientoCommand a partir del DTO actual
-// aplicando el nuevo valor para el campo editado.
-const buildPayload = (seguimientoDTO, fieldKey, value) => {
-    const backendKey = FIELD_KEY_TO_BACKEND[fieldKey];
-    const mappedValue = DATE_FIELDS.has(backendKey) ? normalizeDateToISO(value) : mapEnumToBackend(fieldKey, value);
-    const base = {
-        fechaRecepcionOp:  normalizeDateToISO(seguimientoDTO?.fechaRecepcionOp),
-        finTizado:         normalizeDateToISO(seguimientoDTO?.finTizado),
-        estadoOcMp:        seguimientoDTO?.estadoOcMp         ?? null,
-        recepcionCompras:  normalizeDateToISO(seguimientoDTO?.recepcionCompras),
-        inicioCorte:       normalizeDateToISO(seguimientoDTO?.inicioCorte),
-        finCorte:          normalizeDateToISO(seguimientoDTO?.finCorte),
-        inicioLogo:        normalizeDateToISO(seguimientoDTO?.inicioLogo),
-        estadoIdaLogo:     seguimientoDTO?.estadoIdaLogo      ?? null,
-        regresoLogo:       normalizeDateToISO(seguimientoDTO?.regresoLogo),
-        estadoRecLogo:     seguimientoDTO?.estadoRecLogo      ?? null,
-        inicioTallerExterno: normalizeDateToISO(seguimientoDTO?.inicioTallerExterno),
-        finTallerExterno:  normalizeDateToISO(seguimientoDTO?.finTallerExterno),
-        calidadTaller:     seguimientoDTO?.calidadTaller      ?? null,
-        obsTaller:         seguimientoDTO?.obsTaller          ?? null,
-        finTerminacion:    normalizeDateToISO(seguimientoDTO?.finTerminacion),
-        finPersonalizado:  normalizeDateToISO(seguimientoDTO?.finPersonalizado),
-    };
-    if (backendKey) {
-        base[backendKey] = mappedValue;
-    }
-    return base;
-};
+import {
+    FIELD_KEY_TO_BACKEND,
+    normalizeDateToISO,
+    buildSeguimientoPayload,
+    mapSeguimientoToDetails,
+} from '../utils/seguimientoAdapter';
 
 export const useOpRegistroState = () => {
     const [selectedOP, setSelectedOP] = useState(null);
@@ -177,13 +87,8 @@ export const useOpRegistroState = () => {
 
     const calculateTotalQty = useCallback((opId) => {
         const op = ordenes.find(o => o.id === opId);
-        if (op?.items?.length) {
-            return op.items.reduce((acc, item) => acc + (item.cantidad || 0), 0);
-        }
-        if (!op || !op.notaVentaId) return 0;
-        const nv = mockNVs.find(n => (n.idNV || n.id) === op.notaVentaId);
-        if (!nv || !nv.items) return 0;
-        return nv.items.reduce((acc, item) => acc + (item.qty || item.quantity || item.cantidad || 0), 0);
+        if (!op?.items?.length) return 0;
+        return op.items.reduce((acc, item) => acc + (item.cantidad || 0), 0);
     }, [ordenes]);
 
     const handleModificarRegistro = () => {
@@ -221,7 +126,7 @@ export const useOpRegistroState = () => {
     };
 
     const handleSaveInline = (field) => {
-        const currentData = mockOpDetails[selectedOP?.id]?.[field.key];
+        const currentData = seguimientoDetails[selectedOP?.id]?.[field.key];
         const hasExistingData = !!currentData;
         
         if (hasExistingData) {
@@ -251,7 +156,7 @@ export const useOpRegistroState = () => {
 
             const results = await Promise.allSettled(
                 opIdsCopy.map(async (opId) => {
-                    const payload = buildPayload(seguimientos[opId], field.key, formattedValue);
+                    const payload = buildSeguimientoPayload(seguimientos[opId], field.key, formattedValue);
                     const dto = await OrdenProduccionService.actualizarSeguimiento(opId, payload);
                     return { opId, dto };
                 })
@@ -298,7 +203,7 @@ export const useOpRegistroState = () => {
             }
 
             try {
-                const payload = buildPayload(seguimientos[selectedOP.id], field.key, formattedValue);
+                const payload = buildSeguimientoPayload(seguimientos[selectedOP.id], field.key, formattedValue);
                 const dto = await OrdenProduccionService.actualizarSeguimiento(selectedOP.id, payload);
 
                 setSeguimientos(prev => ({ ...prev, [selectedOP.id]: dto }));
@@ -316,46 +221,10 @@ export const useOpRegistroState = () => {
         }
     };
 
-    const mapBackendToEnum = (key, value) => {
-        if (!value) return null;
-        if (key === 'estadoRecLogo') {
-            if (value === 'RECEPCION_COMPLETA') return 'Recep. completa';
-            if (value === 'RECEPCION_PARCIAL') return 'Recep. parcial';
-            if (value === 'NA') return 'N/A';
-        }
-        if (key === 'calidadTaller') {
-            if (value === 'APROBADO') return 'Aprobado';
-            if (value === 'RECHAZADO') return 'Rechazado';
-            if (value === 'CON_OBSERVACIONES') return 'con Obs.';
-        }
-        if (key === 'estadoOcMP') {
-            if (value === 'SIN_TELA_EN_MERCADO') return 'sin tela en mercado';
-            if (value === 'OC_EMITIDA') return 'OC emitida';
-            if (value === 'TELA_EN_STOCK') return 'tela en stock';
-            if (value === 'EN_STOCK_Y_OC_EMITIDA') return 'en stock y OC emitida';
-            if (value === 'NA') return 'N/A';
-        }
-        return value;
-    };
-
-    const mockOpDetails = React.useMemo(() => {
-        const result = {};
-        for (const [opId, dto] of Object.entries(seguimientos)) {
-            result[opId] = {};
-            for (const [frontKey, backKey] of Object.entries(FIELD_KEY_TO_BACKEND)) {
-                if (dto[backKey] !== undefined && dto[backKey] !== null) {
-                    let val = dto[backKey];
-                    // Formatear fechas para que se vean bien en la UI (YYYY-MM-DD a DD/MM/YYYY)
-                    if (typeof val === 'string' && val.match(/^\d{4}-\d{2}-\d{2}$/)) {
-                        const [y, m, d] = val.split('-');
-                        val = `${d}/${m}/${y}`;
-                    }
-                    result[opId][frontKey] = mapBackendToEnum(frontKey, val);
-                }
-            }
-        }
-        return result;
-    }, [seguimientos]);
+    const seguimientoDetails = useMemo(
+        () => mapSeguimientoToDetails(seguimientos),
+        [seguimientos]
+    );
 
     return {
         selectedOP, setSelectedOP,
@@ -381,7 +250,7 @@ export const useOpRegistroState = () => {
         ordenes,
         isLoadingOrdenes,
         seguimientos,
-        mockOpDetails,
+        seguimientoDetails,
         searchTerm, setSearchTerm,
         clientFilter, setClientFilter,
     };

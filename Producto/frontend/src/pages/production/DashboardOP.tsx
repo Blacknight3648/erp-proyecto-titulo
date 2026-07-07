@@ -1,8 +1,10 @@
 import { useState, useEffect, useCallback } from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts';
 import { AlertCircle, Zap, Activity, Calendar, RefreshCw, Hammer, Scissors, Palette, Truck, Box, Clock } from 'lucide-react';
-import { mockOPKPIs } from '../../data/mockData';
 import { api } from '../../remote/service/api';
+import { ReportesService } from '../../remote/service/ReportesService';
+import { OrdenProduccionService } from '../../remote/service/OrdenProduccionService';
+import AlertaOPModal from './AlertaOPModal';
 
 const DASHBOARD_DEFAULTS = {
     opAtrasada: 0,
@@ -13,15 +15,47 @@ const DASHBOARD_DEFAULTS = {
     entregas7d: 0,
 };
 
+const KPIS_DEFAULTS = {
+    tiemposPorEtapa: [],
+    promedioPorLote: [],
+    distribucionLote: [],
+};
+
+// Colores por etapa, en el mismo orden en que el backend entrega tiemposPorEtapa.
+const COLOR_POR_ETAPA = {
+    Corte: '#94a3b8',
+    Logotipo: '#f59e0b',
+    'Taller Externo': '#3b82f6',
+    Terminaciones: '#10b981',
+};
+
+// Promedio ponderado por cantidad de OPs, ignorando buckets sin dato para esa etapa.
+const promedioPonderado = (rows, campo) => {
+    const conDato = rows.filter(r => r[campo] !== null && r[campo] !== undefined && r.ops > 0);
+    const totalOps = conDato.reduce((acc, r) => acc + r.ops, 0);
+    if (totalOps === 0) return null;
+    const suma = conDato.reduce((acc, r) => acc + r[campo] * r.ops, 0);
+    return Math.round((suma / totalOps) * 10) / 10;
+};
+
 export default function DashboardOP() {
     const [alertas, setAlertas] = useState(DASHBOARD_DEFAULTS);
+    const [kpis, setKpis] = useState(KPIS_DEFAULTS);
+    const [ops, setOps] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [categoriaSeleccionada, setCategoriaSeleccionada] = useState(null);
 
     const fetchDashboard = useCallback(async () => {
         setLoading(true);
         try {
-            const { data } = await api.get('/reportes/dashboard-op');
-            setAlertas({ ...DASHBOARD_DEFAULTS, ...data });
+            const [{ data: alertasData }, kpisData, opsData] = await Promise.all([
+                api.get('/reportes/dashboard-op'),
+                ReportesService.dashboardOPKpis(),
+                OrdenProduccionService.getAll(),
+            ]);
+            setAlertas({ ...DASHBOARD_DEFAULTS, ...alertasData });
+            setKpis({ ...KPIS_DEFAULTS, ...kpisData });
+            setOps(opsData);
         } catch (err) {
             console.error('Error cargando dashboard operacional OP:', err);
         } finally {
@@ -32,7 +66,15 @@ export default function DashboardOP() {
     useEffect(() => { fetchDashboard(); }, [fetchDashboard]);
 
     const { opAtrasada, corteAtrasado, recepcionLogoAtrasado, envioAtrasado, devolucionTallerAtrasada, entregas7d } = alertas;
-    const { tiemposPorEtapa, promedioPorLote, distribucionLote } = mockOPKPIs;
+    const { promedioPorLote, distribucionLote } = kpis;
+    const tiemposPorEtapa = kpis.tiemposPorEtapa.map(e => ({ name: e.etapa, dias: e.dias ?? 0, fill: COLOR_POR_ETAPA[e.etapa] || '#94a3b8' }));
+    const promedioGeneral = {
+        corte: promedioPonderado(promedioPorLote, 'corte'),
+        logo: promedioPonderado(promedioPorLote, 'logo'),
+        taller: promedioPonderado(promedioPorLote, 'taller'),
+        term: promedioPonderado(promedioPorLote, 'term'),
+        total: promedioPonderado(promedioPorLote, 'total'),
+    };
 
     // Helper for table cell colors
     const getCellColor = (value) => {
@@ -57,26 +99,15 @@ export default function DashboardOP() {
                     </div>
                 </div>
 
-                <div className="flex items-center space-x-4 bg-white p-2 rounded-2xl shadow-sm border border-gray-100">
-                    <div className="flex bg-gray-50 rounded-xl p-1">
-                        <button className="px-4 py-1.5 text-xs font-bold text-gray-500 hover:text-gray-700">30D</button>
-                        <button className="px-4 py-1.5 text-xs font-bold text-gray-700 bg-white shadow-sm rounded-lg">Este Mes</button>
-                        <button className="px-4 py-1.5 text-xs font-bold text-gray-500 hover:text-gray-700">Mes Ant.</button>
-                    </div>
-                    <div className="h-8 w-px bg-gray-100 mx-2"></div>
-                    <div className="flex items-center space-x-2 text-xs font-bold text-gray-600">
-                        <Calendar className="w-4 h-4 text-gray-400" />
-                        <span>10/01/2026</span>
-                        <span className="text-gray-300">→</span>
-                        <span>10/02/2026</span>
-                        <button
-                            className="ml-2 p-1.5 bg-gray-900 text-white rounded-lg disabled:opacity-50"
-                            onClick={fetchDashboard}
-                            disabled={loading}
-                        >
-                            <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
-                        </button>
-                    </div>
+                <div className="flex items-center bg-white p-2 rounded-2xl shadow-sm border border-gray-100">
+                    <button
+                        className="flex items-center gap-2 px-4 py-1.5 bg-gray-900 text-white rounded-xl text-xs font-bold uppercase tracking-widest disabled:opacity-50"
+                        onClick={fetchDashboard}
+                        disabled={loading}
+                    >
+                        <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
+                        Actualizar
+                    </button>
                 </div>
             </div>
 
@@ -89,7 +120,10 @@ export default function DashboardOP() {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {/* Alerta OC */}
-                    <div className="bg-white p-6 rounded-[2rem] shadow-sm border-t-4 border-red-500 relative group hover:shadow-lg transition-all">
+                    <div
+                        onClick={() => setCategoriaSeleccionada('opAtrasada')}
+                        className="bg-white p-6 rounded-[2rem] shadow-sm border-t-4 border-red-500 relative group hover:shadow-lg transition-all cursor-pointer active:scale-[0.99]"
+                    >
                         <div className="flex justify-between items-start mb-4">
                             <div>
                                 <h3 className="text-gray-400 text-[10px] font-bold uppercase mb-1">Alerta OC (SIN OC &gt; 3D)</h3>
@@ -107,7 +141,10 @@ export default function DashboardOP() {
                     </div>
 
                     {/* Corte */}
-                    <div className="bg-white p-6 rounded-[2rem] shadow-sm border-t-4 border-slate-500 relative group hover:shadow-lg transition-all">
+                    <div
+                        onClick={() => setCategoriaSeleccionada('corteAtrasado')}
+                        className="bg-white p-6 rounded-[2rem] shadow-sm border-t-4 border-slate-500 relative group hover:shadow-lg transition-all cursor-pointer active:scale-[0.99]"
+                    >
                         <div className="flex justify-between items-start mb-4">
                             <div>
                                 <h3 className="text-gray-400 text-[10px] font-bold uppercase mb-1">Corte (Recepción vs Inicio Logo/Taller)</h3>
@@ -125,7 +162,10 @@ export default function DashboardOP() {
                     </div>
 
                     {/* Logo */}
-                    <div className="bg-white p-6 rounded-[2rem] shadow-sm border-t-4 border-orange-500 relative group hover:shadow-lg transition-all">
+                    <div
+                        onClick={() => setCategoriaSeleccionada('recepcionLogoAtrasado')}
+                        className="bg-white p-6 rounded-[2rem] shadow-sm border-t-4 border-orange-500 relative group hover:shadow-lg transition-all cursor-pointer active:scale-[0.99]"
+                    >
                         <div className="flex justify-between items-start mb-4">
                             <div>
                                 <h3 className="text-gray-400 text-[10px] font-bold uppercase mb-1">Logo (Salida vs Regreso Logo)</h3>
@@ -143,7 +183,10 @@ export default function DashboardOP() {
                     </div>
 
                     {/* Envío */}
-                    <div className="bg-white p-6 rounded-[2rem] shadow-sm border-t-4 border-blue-500 relative group hover:shadow-lg transition-all">
+                    <div
+                        onClick={() => setCategoriaSeleccionada('envioAtrasado')}
+                        className="bg-white p-6 rounded-[2rem] shadow-sm border-t-4 border-blue-500 relative group hover:shadow-lg transition-all cursor-pointer active:scale-[0.99]"
+                    >
                         <div className="flex justify-between items-start mb-4">
                             <div>
                                 <h3 className="text-gray-400 text-[10px] font-bold uppercase mb-1">Envío (Regreso Logo vs Inicio Taller)</h3>
@@ -161,7 +204,10 @@ export default function DashboardOP() {
                     </div>
 
                     {/* Recepción */}
-                    <div className="bg-white p-6 rounded-[2rem] shadow-sm border-t-4 border-red-500 relative group hover:shadow-lg transition-all">
+                    <div
+                        onClick={() => setCategoriaSeleccionada('devolucionTallerAtrasada')}
+                        className="bg-white p-6 rounded-[2rem] shadow-sm border-t-4 border-red-500 relative group hover:shadow-lg transition-all cursor-pointer active:scale-[0.99]"
+                    >
                         <div className="flex justify-between items-start mb-4">
                             <div>
                                 <h3 className="text-gray-400 text-[10px] font-bold uppercase mb-1">Recepción (Fin Taller vs Entrega)</h3>
@@ -179,7 +225,10 @@ export default function DashboardOP() {
                     </div>
 
                     {/* Proyección */}
-                    <div className="bg-white p-6 rounded-[2rem] shadow-sm border-t-4 border-purple-500 relative group hover:shadow-lg transition-all">
+                    <div
+                        onClick={() => setCategoriaSeleccionada('entregas7d')}
+                        className="bg-white p-6 rounded-[2rem] shadow-sm border-t-4 border-purple-500 relative group hover:shadow-lg transition-all cursor-pointer active:scale-[0.99]"
+                    >
                         <div className="flex justify-between items-start mb-4">
                             <div>
                                 <h3 className="text-gray-400 text-[10px] font-bold uppercase mb-1">Proyección (F. Entrega Solicitada)</h3>
@@ -271,11 +320,11 @@ export default function DashboardOP() {
                             <tfoot>
                                 <tr className="bg-gray-50 font-black">
                                     <td className="py-3 px-2 rounded-l-xl uppercase text-[8px] leading-tight">Promedio<br />General</td>
-                                    <td className="text-center text-orange-600">5.5</td>
-                                    <td className="text-center text-blue-600">3.6</td>
-                                    <td className="text-center text-orange-600">5.6</td>
-                                    <td className="text-center text-green-600">1.0</td>
-                                    <td className="text-center text-indigo-600 border-l border-gray-200">10.5</td>
+                                    <td className="text-center text-orange-600">{promedioGeneral.corte ?? '-'}</td>
+                                    <td className="text-center text-blue-600">{promedioGeneral.logo ?? '-'}</td>
+                                    <td className="text-center text-orange-600">{promedioGeneral.taller ?? '-'}</td>
+                                    <td className="text-center text-green-600">{promedioGeneral.term ?? '-'}</td>
+                                    <td className="text-center text-indigo-600 border-l border-gray-200">{promedioGeneral.total ?? '-'}</td>
                                 </tr>
                             </tfoot>
                         </table>
@@ -302,7 +351,7 @@ export default function DashboardOP() {
                         <BarChart data={distribucionLote} margin={{ top: 10, right: 10, left: -30, bottom: 20 }}>
                             <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f0f0f0" />
                             <XAxis
-                                dataKey="name"
+                                dataKey="rango"
                                 axisLine={false}
                                 tickLine={false}
                                 tick={{ fill: '#9ca3af', fontSize: 10 }}
@@ -318,6 +367,12 @@ export default function DashboardOP() {
                     </ResponsiveContainer>
                 </div>
             </div>
+
+            <AlertaOPModal
+                categoria={categoriaSeleccionada}
+                ops={ops}
+                onClose={() => setCategoriaSeleccionada(null)}
+            />
         </div>
     );
 }

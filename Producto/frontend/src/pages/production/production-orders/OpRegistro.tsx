@@ -35,7 +35,7 @@ export default function OpRegistro() {
         calculateTotalQty,
         ordenes,
         isLoadingOrdenes,
-        mockOpDetails,
+        seguimientoDetails,
         searchTerm, setSearchTerm,
         clientFilter, setClientFilter
     } = useOpRegistroState();
@@ -84,7 +84,7 @@ export default function OpRegistro() {
                     handleVerDetalles={handleVerDetalles}
                     handleBulkEdit={handleBulkEdit}
                     getClientName={getClientName}
-                    mockOpDetails={mockOpDetails}
+                    seguimientoDetails={seguimientoDetails}
                     searchTerm={searchTerm}
                     setSearchTerm={setSearchTerm}
                     clientFilter={clientFilter}
@@ -102,7 +102,7 @@ export default function OpRegistro() {
                     editingFieldIdx={editingFieldIdx}
                     handleSelectFieldInline={handleSelectFieldInline}
                     opFields={opFields}
-                    mockOpDetails={mockOpDetails}
+                    seguimientoDetails={seguimientoDetails}
                     tempValue={tempValue}
                     setTempValue={setTempValue}
                     isManualCutting={isManualCutting}
@@ -142,7 +142,7 @@ export default function OpRegistro() {
                 onClose={() => setShowSelectionModal(false)}
                 opFields={opFields}
                 selectedOPIds={selectedOPIds}
-                mockOpDetails={mockOpDetails}
+                seguimientoDetails={seguimientoDetails}
                 onSelectField={(idx) => {
                     setEditingFieldIdx(idx);
                     setTempValue('');

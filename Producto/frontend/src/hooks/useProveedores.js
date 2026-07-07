@@ -12,13 +12,19 @@ export const useProveedores = () => {
          const mapped = (response.data || []).map(p => {
             const id = p.proveedorId || p.id;
             const nombre = p.razonSocialProveedor || p.nombreProveedor || p.nombre || '';
+            const contacto = p.contactos?.[0];
+            const dir = p.direccion?.[0];
             return {
                ...p,
                id: id,
                proveedorId: id,
                nombreProveedor: nombre,
                nombre: nombre,
-               razonSocialProveedor: nombre
+               razonSocialProveedor: nombre,
+               emailProveedor: p.emailProveedor || contacto?.emailContacto || "",
+               telefonoProveedor: p.telefonoProveedor || contacto?.telefonoContacto || "",
+               contactoProveedor: p.contactoProveedor || contacto?.nombreContacto || "",
+               direccionProveedor: p.direccionProveedor || (dir ? `${dir.calle} ${dir.numero || ""}`.trim() : "")
             };
          });
          setProveedores(mapped);
@@ -30,15 +36,42 @@ export const useProveedores = () => {
       }
    };
 
-   const buildPayload = (proveedor) => ({
-      runProveedor: proveedor.runProveedor,
-      razonSocialProveedor: proveedor.razonSocialProveedor,
-      tipoProveedor: proveedor.tipoProveedor || "",
-      horarioAtencion: proveedor.horarioAtencion || "",
-      sigla: typeof proveedor.sigla === "string" ? proveedor.sigla : (proveedor.sigla?.nombre || ""),
-      activo: proveedor.activo ?? true,
-      giro: proveedor.giro?.giroId ? { giroId: proveedor.giro.giroId } : null,
-   });
+   const buildPayload = (proveedor) => {
+      const email = proveedor.emailProveedor || proveedor.email || "";
+      const telefono = proveedor.telefonoProveedor || proveedor.telefono || "";
+      const contactoNombre = proveedor.contactoProveedor || proveedor.contacto || "";
+      const calle = proveedor.direccionProveedor || "Sin dirección";
+      const existingContacto = proveedor.contactos?.[0];
+      const existingDireccion = proveedor.direccion?.[0];
+
+      return {
+         runProveedor: proveedor.runProveedor,
+         razonSocialProveedor: proveedor.razonSocialProveedor,
+         tipoProveedor: proveedor.tipoProveedor || "",
+         horarioAtencion: proveedor.horarioAtencion || "",
+         sigla: typeof proveedor.sigla === "string" ? proveedor.sigla : (proveedor.sigla?.nombre || ""),
+         activo: proveedor.activo ?? true,
+         giro: proveedor.giro?.giroId ? { giroId: proveedor.giro.giroId } : null,
+         contactos: [
+            {
+               ...(existingContacto?.idContacto ? { idContacto: existingContacto.idContacto } : {}),
+               nombreContacto: contactoNombre,
+               telefonoContacto: telefono,
+               emailContacto: email,
+               tipoContacto: existingContacto?.tipoContacto || { tipoContactoId: 1 }
+            }
+         ],
+         direccion: [
+            {
+               ...(existingDireccion?.direccionId ? { direccionId: existingDireccion.direccionId } : {}),
+               calle: calle,
+               numero: "S/N",
+               tipoDireccion: existingDireccion?.tipoDireccion || { tipoDireccionId: 1 },
+               comuna: existingDireccion?.comuna || { comunaId: 1 }
+            }
+         ]
+      };
+   };
 
    const createProveedor = async (proveedor) => {
       try {

@@ -49,6 +49,9 @@ class RoleControllerTest {
     private AreaRepository areaRepository;
 
     @MockitoBean
+    private backend.com.shared.infrastructure.persistence.repository.PermisoRepository permisoRepository;
+
+    @MockitoBean
     private backend.com.shared.infrastructure.persistence.repository.Jpa.IdempotencyTokenJpaRepository idempotencyTokenJpaRepository;
 
     private Role crearRoleMock(Long id, String nombre) {

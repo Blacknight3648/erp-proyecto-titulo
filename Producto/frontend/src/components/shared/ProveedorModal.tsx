@@ -11,6 +11,7 @@ import {
   Briefcase,
   FileText,
   AlertCircle,
+  CheckCircle,
 } from "lucide-react";
 import { toast } from "sonner";
 import { validateRUN, formatRUN } from "../../utils/validations";
@@ -34,7 +35,7 @@ export default function ProveedorModal({ onClose, onSave, proveedorToEdit = null
   };
 
   const [formData, setFormData] = useState(initialForm);
-  const [errors, setErrors] = useState({});
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
   useEffect(() => {
     if (proveedorToEdit) {
@@ -351,6 +352,29 @@ export default function ProveedorModal({ onClose, onSave, proveedorToEdit = null
                 />
               </div>
             </div>
+          </div>
+
+          {/* ESTADO */}
+          <div className="flex items-center justify-between p-4 bg-muted rounded-2xl border border-border">
+            <div className="flex items-center gap-3">
+              <div className={`w-9 h-9 rounded-lg flex items-center justify-center transition-all ${formData.activo ? 'bg-success/15 text-success' : 'bg-secondary text-muted-foreground'}`}>
+                <CheckCircle className="w-5 h-5" />
+              </div>
+              <div>
+                <h4 className="text-xs font-semibold text-foreground">Estado del Proveedor</h4>
+                <p className="text-[11px] text-muted-foreground">Permitir transacciones y operaciones del proveedor</p>
+              </div>
+            </div>
+            <label className="relative inline-flex items-center cursor-pointer">
+              <input
+                type="checkbox"
+                name="activo"
+                checked={formData.activo}
+                onChange={(e) => setFormData(prev => ({ ...prev, activo: e.target.checked }))}
+                className="sr-only peer"
+              />
+              <div className="w-11 h-6 bg-secondary rounded-full peer peer-checked:bg-success transition-all after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-card after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:after:translate-x-full"></div>
+            </label>
           </div>
 
           <button

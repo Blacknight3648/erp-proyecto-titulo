@@ -19,6 +19,7 @@ import backend.com.comercial.infrastructure.persistence.repository.SolicitudCoti
 import backend.com.shared.application.service.HistorialEstadoService;
 
 import org.springframework.lang.NonNull;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -41,13 +42,14 @@ public class UserServiceImpl implements UserService {
     private final SolicitudCostosJpaRepository solicitudCostosRepository;
     private final SolicitudCotizacionJpaRepository solicitudCotizacionRepository;
     private final HistorialEstadoService historialEstadoService;
+    private final PasswordEncoder passwordEncoder;
 
     public UserServiceImpl(UserRepository userRepository, RoleRepository roleRepository,
             AreaRepository areaRepository, UserMapper userMapper, UserValidator userValidator,
             VendedorRepository vendedorRepository, EvaluacionNegocioJpaRepository evaluacionNegocioRepository,
             NotaVentaJpaRepository notaVentaRepository, SolicitudCostosJpaRepository solicitudCostosRepository,
             SolicitudCotizacionJpaRepository solicitudCotizacionRepository,
-            HistorialEstadoService historialEstadoService) {
+            HistorialEstadoService historialEstadoService, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         this.areaRepository = areaRepository;
@@ -59,6 +61,7 @@ public class UserServiceImpl implements UserService {
         this.solicitudCostosRepository = solicitudCostosRepository;
         this.solicitudCotizacionRepository = solicitudCotizacionRepository;
         this.historialEstadoService = historialEstadoService;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
@@ -82,6 +85,10 @@ public class UserServiceImpl implements UserService {
     public User crearUsuario(User user, Set<Role> roles, Set<Area> areas) {
         userValidator.validateRun(user.getUsuarioRun());
         userValidator.validateUniqueness(user.getUsuarioEmail(), user.getUsuarioRun());
+
+        if (user.getUsuarioPassword() != null && !user.getUsuarioPassword().isBlank()) {
+            user.setUsuarioPassword(passwordEncoder.encode(user.getUsuarioPassword()));
+        }
 
         user.setRoles(roles != null ? roles : new HashSet<>());
         user.setAreas(areas != null ? areas : new HashSet<>());
@@ -130,7 +137,7 @@ public class UserServiceImpl implements UserService {
         if (userActualizado.getUsuarioEmail() != null && !userActualizado.getUsuarioEmail().isBlank()) 
             user.setUsuarioEmail(userActualizado.getUsuarioEmail());
         if (userActualizado.getUsuarioPassword() != null && !userActualizado.getUsuarioPassword().isBlank()) {
-            user.setUsuarioPassword(userActualizado.getUsuarioPassword());
+            user.setUsuarioPassword(passwordEncoder.encode(userActualizado.getUsuarioPassword()));
         }
         if (userActualizado.getTelefono() != null && !userActualizado.getTelefono().isBlank())
             user.setTelefono(userActualizado.getTelefono());
@@ -169,17 +176,24 @@ public class UserServiceImpl implements UserService {
                     "Debe confirmar que cuenta con el consentimiento del colaborador para cambiar la contraseña");
         }
 
+        // roles/areas quedan en null (no en un Set vacío) cuando el request no los incluye,
+        // para que actualizarUsuario(...) sepa que no debe tocar las asignaciones existentes.
         Set<Role> roles = dto.getRoles() != null ? dto.getRoles().stream()
                 .map(nombre -> roleRepository.findByNombre(nombre)
                         .orElseThrow(() -> new RuntimeException("Rol no encontrado: " + nombre)))
-                .collect(Collectors.toSet()) : new HashSet<>();
+                .collect(Collectors.toSet()) : null;
 
         Set<Area> areas = dto.getAreas() != null ? dto.getAreas().stream()
                 .map(nombre -> areaRepository.findByNombre(nombre)
                         .orElseThrow(() -> new RuntimeException("Área no encontrada: " + nombre)))
-                .collect(Collectors.toSet()) : new HashSet<>();
+                .collect(Collectors.toSet()) : null;
 
         User userToUpdate = userMapper.toUser(dto);
+        // El mapper no distingue "enabled omitido" de "enabled=true": si el request no
+        // trajo el campo, se preserva el valor actual en vez de reactivar la cuenta.
+        if (dto.getEnabled() == null) {
+            userToUpdate.setEnabled(obtenerUsuario(id).isEnabled());
+        }
         User actualizado = actualizarUsuario(id, userToUpdate, roles, areas);
 
         if (cambiandoPassword) {

@@ -92,6 +92,13 @@
 			<optional>true</optional>
 		</dependency>
 
+		<!-- Hashing de contraseñas (BCrypt) — solo el módulo de crypto, no activa
+		     el auto-config de seguridad de Spring (no requiere login en los endpoints) -->
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-crypto</artifactId>
+		</dependency>
+
 		<!-- DevTools -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>

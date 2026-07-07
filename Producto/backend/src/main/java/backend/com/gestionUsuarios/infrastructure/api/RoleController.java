@@ -6,14 +6,16 @@ import backend.com.gestionUsuarios.infrastructure.mapper.RoleMapper;
 import backend.com.gestionUsuarios.application.service.RoleService;
 import backend.com.gestionUsuarios.domain.model.Area;
 import backend.com.gestionUsuarios.domain.repository.AreaRepository;
+import backend.com.shared.domain.model.Permiso;
+import backend.com.shared.infrastructure.persistence.repository.PermisoRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/v1/roles")
@@ -23,6 +25,7 @@ public class RoleController {
     private final RoleService roleService;
     private final RoleMapper roleMapper;
     private final AreaRepository areaRepository;
+    private final PermisoRepository permisoRepository;
 
     @GetMapping
     public ResponseEntity<List<RoleDTO>> listarRoles() {
@@ -64,15 +67,16 @@ public class RoleController {
                     .orElseThrow(() -> new RuntimeException("Área no encontrada"));
             roleExistente.setArea(area);
         }
-        if (roleDTO.getPermisosIds() != null) {
-            Set<Long> ids = roleDTO.getPermisosIds();
-            roleExistente.setPermisos(
-                    roleExistente.getPermisos().stream()
-                            .filter(p -> ids.contains(p.getId()))
-                            .collect(Collectors.toSet()));
-        }
 
         Role actualizada = roleService.actualizarRole(id, roleExistente);
+
+        // Reemplazo completo (no un filtro sobre los permisos actuales) para que la
+        // operación pueda tanto agregar como quitar permisos del rol.
+        if (roleDTO.getPermisosIds() != null) {
+            Set<Permiso> nuevosPermisos = new HashSet<>(permisoRepository.findAllById(roleDTO.getPermisosIds()));
+            actualizada = roleService.actualizarPermisos(id, nuevosPermisos);
+        }
+
         return ResponseEntity.ok(roleMapper.toDTO(actualizada));
     }
 

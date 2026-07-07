@@ -1,11 +1,13 @@
 import React from 'react';
-import { Check, Info, Box, Truck, AlertCircle, ShoppingCart } from 'lucide-react';
+import { Check, Info, Box, Truck, AlertCircle, ShoppingCart, ClipboardList, Wrench } from 'lucide-react';
 import { useNotifications } from '@contexts/NotificationContext';
 
 const ICON_MAP = {
-  OC:   <ShoppingCart className="w-5 h-5 text-accent-foreground"  />,
-  LOGO: <Info          className="w-5 h-5 text-warning"/>,
-  MP:   <Box           className="w-5 h-5 text-success" />,
+  OC:   <ShoppingCart   className="w-5 h-5 text-accent-foreground"  />,
+  HC:   <ClipboardList  className="w-5 h-5 text-accent-foreground" />,
+  OS:   <Wrench         className="w-5 h-5 text-accent-foreground" />,
+  LOGO: <Info           className="w-5 h-5 text-warning"/>,
+  MP:   <Box            className="w-5 h-5 text-success" />,
 };
 
 function NotificationItem({ notification, onRead }) {

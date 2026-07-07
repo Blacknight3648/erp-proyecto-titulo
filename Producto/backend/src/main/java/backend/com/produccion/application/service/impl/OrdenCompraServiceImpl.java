@@ -14,6 +14,7 @@ import backend.com.produccion.domain.model.OrdenCompra;
 import backend.com.produccion.domain.model.OrdenCompraItem;
 import backend.com.produccion.domain.repository.HojaCompraRepository;
 import backend.com.produccion.domain.repository.OrdenCompraRepository;
+import backend.com.shared.application.service.NotificacionService;
 import backend.com.shared.exception.BusinessRuleException;
 import backend.com.shared.exception.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -35,38 +36,50 @@ public class OrdenCompraServiceImpl implements OrdenCompraService {
     private final GenerarOCConsolidadaUseCase generarOCConsolidadaUseCase;
     private final GenerarOCLoteUseCase generarOCLoteUseCase;
     private final HojaCompraRepository hojaCompraRepository;
+    private final NotificacionService notificacionService;
 
     @Override
     public OrdenCompraDTO generarConsolidada(GenerarOCConsolidadaRequest request) {
-        return toDTO(generarOCConsolidadaUseCase.ejecutar(request));
+        OrdenCompraDTO dto = toDTO(generarOCConsolidadaUseCase.ejecutar(request));
+        notificacionService.crear("OC", "Orden de Compra " + dto.getNumeroOC() + " generada", "COMPRAS", "normal");
+        return dto;
     }
 
     @Override
     public List<OrdenCompraDTO> generarLote(GenerarOCLoteRequest request) {
-        return generarOCLoteUseCase.ejecutar(request).stream()
+        List<OrdenCompraDTO> ocs = generarOCLoteUseCase.ejecutar(request).stream()
                 .map(this::toDTO)
                 .collect(Collectors.toList());
+        ocs.forEach(dto -> notificacionService.crear(
+                "OC", "Orden de Compra " + dto.getNumeroOC() + " generada", "COMPRAS", "normal"));
+        return ocs;
     }
 
     @Override
     public OrdenCompraDTO marcarEnviada(Long idOC) {
         OrdenCompra oc = cargar(idOC);
         oc.marcarEnviada();
-        return toDTO(ordenCompraRepository.save(oc));
+        OrdenCompraDTO dto = toDTO(ordenCompraRepository.save(oc));
+        notificacionService.crear("OC", "Orden de Compra " + dto.getNumeroOC() + " enviada al proveedor", "COMPRAS", "normal");
+        return dto;
     }
 
     @Override
     public OrdenCompraDTO marcarRecepcionada(Long idOC) {
         OrdenCompra oc = cargar(idOC);
         oc.marcarRecepcionada();
-        return toDTO(ordenCompraRepository.save(oc));
+        OrdenCompraDTO dto = toDTO(ordenCompraRepository.save(oc));
+        notificacionService.crear("OC", "Orden de Compra " + dto.getNumeroOC() + " recepcionada", "COMPRAS", "normal");
+        return dto;
     }
 
     @Override
     public OrdenCompraDTO cerrar(Long idOC) {
         OrdenCompra oc = cargar(idOC);
         oc.cerrar();
-        return toDTO(ordenCompraRepository.save(oc));
+        OrdenCompraDTO dto = toDTO(ordenCompraRepository.save(oc));
+        notificacionService.crear("OC", "Orden de Compra " + dto.getNumeroOC() + " cerrada", "COMPRAS", "normal");
+        return dto;
     }
 
     @Override

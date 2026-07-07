@@ -6,7 +6,9 @@ import backend.com.produccion.application.dto.RecepcionOCItemDTO;
 import backend.com.produccion.application.service.RecepcionOCService;
 import backend.com.produccion.domain.model.RecepcionOC;
 import backend.com.produccion.domain.model.RecepcionOCItem;
+import backend.com.produccion.domain.repository.OrdenCompraRepository;
 import backend.com.produccion.domain.repository.RecepcionOCRepository;
+import backend.com.shared.application.service.NotificacionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,10 +24,17 @@ public class RecepcionOCServiceImpl implements RecepcionOCService {
 
     private final RecepcionOCRepository recepcionOCRepository;
     private final RegistrarRecepcionOCUseCase registrarRecepcionOCUseCase;
+    private final OrdenCompraRepository ordenCompraRepository;
+    private final NotificacionService notificacionService;
 
     @Override
     public RecepcionOCDTO registrar(Long ocId, RecepcionOCDTO request) {
-        return toDTO(registrarRecepcionOCUseCase.ejecutar(ocId, request));
+        RecepcionOCDTO dto = toDTO(registrarRecepcionOCUseCase.ejecutar(ocId, request));
+        String numeroOC = ordenCompraRepository.findById(ocId)
+                .map(oc -> oc.getNumeroOC() != null ? oc.getNumeroOC().getValue() : ("#" + ocId))
+                .orElse("#" + ocId);
+        notificacionService.crear("OC", "Recepción registrada para Orden de Compra " + numeroOC, "BODEGA", "normal");
+        return dto;
     }
 
     @Override

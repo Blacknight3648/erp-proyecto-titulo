@@ -8,6 +8,7 @@ import backend.com.produccion.domain.enums.EstadoHC;
 import backend.com.produccion.domain.model.HojaCompra;
 import backend.com.produccion.domain.model.HojaCompraItem;
 import backend.com.produccion.domain.repository.HojaCompraRepository;
+import backend.com.shared.application.service.NotificacionService;
 import backend.com.shared.exception.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -25,10 +26,13 @@ public class HojaCompraServiceImpl implements HojaCompraService {
     private final HojaCompraRepository hojaCompraRepository;
     private final GenerarHCDesdeOPUseCase generarHCDesdeOPUseCase;
     private final backend.com.produccion.application.UseCase.ModificarHojaCompraItemUseCase modificarHojaCompraItemUseCase;
+    private final NotificacionService notificacionService;
 
     @Override
     public HojaCompraDTO generarDesdeOP(Long opId) {
-        return toDTO(generarHCDesdeOPUseCase.ejecutar(opId));
+        HojaCompraDTO dto = toDTO(generarHCDesdeOPUseCase.ejecutar(opId));
+        notificacionService.crear("HC", "Hoja de Compra " + dto.getNumeroHC() + " generada para OP #" + opId, "COMPRAS", "normal");
+        return dto;
     }
 
     @Override
@@ -41,7 +45,9 @@ public class HojaCompraServiceImpl implements HojaCompraService {
         HojaCompra hc = hojaCompraRepository.findById(idHC)
                 .orElseThrow(() -> new EntityNotFoundException("Hoja de Compra no encontrada: " + idHC));
         hc.aprobar();
-        return toDTO(hojaCompraRepository.save(hc));
+        HojaCompraDTO dto = toDTO(hojaCompraRepository.save(hc));
+        notificacionService.crear("HC", "Hoja de Compra " + dto.getNumeroHC() + " aprobada", "COMPRAS", "normal");
+        return dto;
     }
 
     @Override

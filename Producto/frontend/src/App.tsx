@@ -35,6 +35,7 @@ import GestionDatosMaestros from "./pages/master/GestionDatosMaestros";
 import GestionAreas from "./pages/admin/GestionAreas";
 import GestionRoles from "./pages/admin/GestionRoles";
 import GestionPermisosRol from "./pages/admin/GestionPermisosRol";
+import GestionPermisos from "./pages/admin/GestionPermisos";
 
 /* PRODUCCION */
 import DashboardOP from "./pages/production/DashboardOP";
@@ -300,6 +301,11 @@ function App() {
             <Route
               path="/admin/roles"
               element={<PrivateRoute><MainLayout><GestionRoles /></MainLayout></PrivateRoute>}
+            />
+
+            <Route
+              path="/admin/permisos"
+              element={<PrivateRoute><MainLayout><GestionPermisos /></MainLayout></PrivateRoute>}
             />
 
             <Route

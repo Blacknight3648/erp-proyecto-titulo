@@ -3,7 +3,7 @@ import {
   LayoutDashboard, DollarSign, Target, FileText,
   Briefcase, Settings, Scissors, ShoppingCart, ClipboardList,
   Factory, Users, Shield, Truck, BarChart3, Activity,
-  Home, ChevronRight,
+  Home, ChevronRight, KeyRound
 } from 'lucide-react';
 
 /* ─────────────────────────────────────────
@@ -58,7 +58,7 @@ const MODULE_TABS = {
   usuarios: {
     label: 'Gestión de Usuarios',
     homeRoute: '/gestion-usuarios/colaboradores',
-    matchPaths: ['/gestion-usuarios/', '/gestion-usuarios', '/admin/areas', '/admin/roles'],
+    matchPaths: ['/gestion-usuarios/', '/gestion-usuarios', '/admin/areas', '/admin/roles', '/admin/permisos'],
     tabs: [
       { path: '/gestion-usuarios/colaboradores', label: 'Colaboradores', icon: Users },
       { path: '/gestion-usuarios/clientes', label: 'Clientes', icon: Users },
@@ -66,6 +66,7 @@ const MODULE_TABS = {
       { path: '/gestion-usuarios/vendedores', label: 'Vendedores', icon: BarChart3 },
       { path: '/admin/areas', label: 'Áreas', icon: Briefcase },
       { path: '/admin/roles', label: 'Roles', icon: Shield },
+      { path: '/admin/permisos', label: 'Permisos', icon: KeyRound },
     ],
   },
   trazabilidad: {

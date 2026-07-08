@@ -5,7 +5,7 @@ import {
   ChevronLeft, ChevronRight, BarChart3, Wallet, Shield,
   LayoutDashboard, ClipboardList, Target, FileText,
   Briefcase, Truck, DollarSign, AlertCircle, History,
-  Settings, Scissors, Home,
+  Settings, Scissors, Home, KeyRound,
   FactoryIcon
 } from 'lucide-react';
 
@@ -81,6 +81,7 @@ const menuItems = [
       { path: '/gestion-usuarios/colaboradores', label: 'Colaboradores',     icon: Users },
       { path: '/admin/areas',                    label: 'Áreas y departamentos',  icon: Briefcase },
       { path: '/admin/roles',                    label: 'Gestión de Roles',  icon: Shield },
+      { path: '/admin/permisos',                 label: 'Gestión de Permisos', icon: KeyRound },
       { path: '/gestion-usuarios/clientes',      label: 'Clientes',     icon: Users },
       { path: '/gestion-usuarios/proveedores',   label: 'Proveedores',  icon: Truck },
       { path: '/gestion-usuarios/vendedores',    label: 'Vendedores (Comerciales)', icon: BarChart3 },

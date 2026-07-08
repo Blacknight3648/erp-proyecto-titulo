@@ -37,6 +37,12 @@ public class RoleController {
         return ResponseEntity.ok(roleMapper.toDTO(roleService.obtenerRole(id)));
     }
 
+    @GetMapping("/{id}/permisos")
+    public ResponseEntity<Set<Permiso>> obtenerPermisosPorRol(@PathVariable Long id) {
+        Role role = roleService.obtenerRole(id);
+        return ResponseEntity.ok(role.getPermisos());
+    }
+
     @PostMapping
     public ResponseEntity<RoleDTO> crear(@RequestBody RoleDTO roleDTO) {
         Role role = roleMapper.toDomain(roleDTO);

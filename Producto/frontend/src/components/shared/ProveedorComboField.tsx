@@ -3,9 +3,18 @@ import { createPortal } from 'react-dom';
 import { ChevronDown, Search, Check, X, Loader2 } from 'lucide-react';
 import { useProveedores } from '../../hooks/useProveedores';
 
+interface Proveedor {
+    proveedorId?: number | string;
+    id?: number | string;
+    nombreProveedor?: string;
+    nombre?: string;
+    [key: string]: unknown;
+}
+
 interface ProveedorComboFieldProps {
     value?: string;
     onChange: (val: string) => void;
+    onSelectProveedor?: (proveedor: Proveedor) => void;
     readOnly?: boolean;
     placeholder?: string;
     className?: string;
@@ -14,6 +23,7 @@ interface ProveedorComboFieldProps {
 export default function ProveedorComboField({
     value = '',
     onChange,
+    onSelectProveedor,
     readOnly = false,
     placeholder = 'Buscar proveedor...',
     className = '',
@@ -29,7 +39,7 @@ export default function ProveedorComboField({
 
     const { proveedores, loading } = useProveedores();
 
-    const filtered = proveedores.filter((p) =>
+    const filtered = proveedores.filter((p: Proveedor) =>
         (p.nombreProveedor || p.nombre || '').toUpperCase().includes(query.toUpperCase())
     );
 
@@ -52,15 +62,16 @@ export default function ProveedorComboField({
         if (readOnly) return;
         if (triggerRef.current) {
             const r = triggerRef.current.getBoundingClientRect();
-            setDropdownPos({ top: r.bottom + 4, left: r.left, width: Math.max(r.width, 240) });
+            setDropdownPos({ top: r.bottom + 6, left: r.left, width: Math.max(r.width, 240) });
         }
         setQuery('');
         setIsOpen(true);
         setTimeout(() => inputRef.current?.focus(), 50);
     };
 
-    const select = (nombre: string) => {
-        onChange(nombre);
+    const select = (proveedor: Proveedor) => {
+        onSelectProveedor?.(proveedor);
+        onChange(proveedor.nombreProveedor || proveedor.nombre || '');
         setIsOpen(false);
         setQuery('');
     };
@@ -81,14 +92,14 @@ export default function ProveedorComboField({
                     'w-full flex items-center justify-between gap-2 px-3 py-2 rounded-lg border text-left text-[11px] font-semibold transition-all outline-none',
                     readOnly
                         ? 'bg-muted border-border text-muted-foreground cursor-default'
-                        : 'bg-card border-border text-foreground hover:border-primary cursor-pointer focus:border-primary focus:ring-2 focus:ring-accent',
-                    isOpen ? 'border-primary ring-2 ring-accent' : '',
+                        : 'bg-card border-border text-foreground hover:border-primary/60 cursor-pointer focus:border-primary focus:ring-2 focus:ring-primary/20',
+                    isOpen ? 'border-primary ring-2 ring-primary/20 shadow-[0_0_0_1px_rgba(37,99,235,0.15)]' : '',
                 ].join(' ')}
             >
-                <span className={`truncate uppercase ${!value ? 'text-muted-foreground font-normal' : ''}`}>
+                <span className={`truncate ${value ? 'uppercase text-foreground' : 'text-muted-foreground font-normal'}`}>
                     {value || placeholder}
                 </span>
-                <div className="flex items-center gap-1 flex-shrink-0">
+                <div className="flex items-center gap-1.5 flex-shrink-0">
                     {value && !readOnly && (
                         <X
                             className="w-3 h-3 text-muted-foreground hover:text-destructive transition-colors"
@@ -112,12 +123,12 @@ export default function ProveedorComboField({
                         width: dropdownPos.width,
                         zIndex: 9999,
                     }}
-                    className="bg-card border border-border rounded-xl shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-150"
+                    className="bg-popover text-popover-foreground border border-border rounded-xl shadow-[0_8px_32px_rgba(0,0,0,0.25)] overflow-hidden animate-in fade-in slide-in-from-top-1 duration-150"
                 >
                     {/* Search input */}
-                    <div className="px-3 py-2.5 border-b border-border bg-muted/80">
+                    <div className="px-3 py-2.5 border-b border-border bg-muted">
                         <div className="flex items-center gap-2">
-                            <Search className="w-3.5 h-3.5 text-muted-foreground flex-shrink-0" />
+                            <Search className="w-3.5 h-3.5 text-primary flex-shrink-0" />
                             <input
                                 ref={inputRef}
                                 type="text"
@@ -126,7 +137,7 @@ export default function ProveedorComboField({
                                 onKeyDown={(e) => {
                                     if (e.key === 'Escape') { setIsOpen(false); setQuery(''); }
                                     if (e.key === 'Enter' && filtered.length === 1) {
-                                        select(filtered[0].nombreProveedor || filtered[0].nombre || '');
+                                        select(filtered[0]);
                                     }
                                 }}
                                 placeholder="Escribir para buscar..."
@@ -150,18 +161,18 @@ export default function ProveedorComboField({
                             </p>
                         )}
 
-                        {!loading && filtered.map((p) => {
+                        {!loading && filtered.map((p: Proveedor) => {
                             const nombre = p.nombreProveedor || p.nombre || '';
                             const isSelected = nombre.toUpperCase() === value.toUpperCase();
                             return (
                                 <button
                                     key={p.proveedorId || p.id}
                                     type="button"
-                                    onClick={() => select(nombre)}
+                                    onClick={() => select(p)}
                                     className={`w-full flex items-center gap-3 px-4 py-2.5 text-left transition-colors
-                                        ${isSelected ? 'bg-accent text-accent-foreground' : 'text-foreground hover:bg-muted'}`}
+                                        ${isSelected ? 'bg-primary/10 text-primary' : 'text-foreground hover:bg-accent/80'}`}
                                 >
-                                    <div className={`w-4 h-4 rounded-full flex-shrink-0 flex items-center justify-center border ${isSelected ? 'bg-primary border-primary' : 'border-border'}`}>
+                                    <div className={`w-4 h-4 rounded-full flex-shrink-0 flex items-center justify-center border ${isSelected ? 'bg-primary border-primary' : 'border-border-strong'}`}>
                                         {isSelected && <Check className="w-2.5 h-2.5 text-white stroke-[3]" />}
                                     </div>
                                     <span className="text-[11px] font-medium uppercase truncate">{nombre}</span>

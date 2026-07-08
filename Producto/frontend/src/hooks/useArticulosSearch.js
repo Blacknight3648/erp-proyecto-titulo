@@ -41,7 +41,7 @@ export function useArticulosSearch(tipo) {
         const nombreTrimmed = (nombre || '').trim().toUpperCase();
         if (!nombreTrimmed) return null;
 
-        const prefix = tipo === 'TELA' ? 'TL' : 'AC';
+        const prefix = tipo === 'TELA' ? 'TL' : tipo === 'PRENDA_CONFECCIONAR' ? 'PR' : 'AC';
         const codigo = `${prefix}${Date.now()}`.slice(0, 20);
 
         try {

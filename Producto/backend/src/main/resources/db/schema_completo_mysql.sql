@@ -284,6 +284,7 @@ CREATE TABLE IF NOT EXISTS contactos (
     email_contacto     VARCHAR(100),
     tipo_contacto_id   BIGINT,
     fk_provee_contacto BIGINT,
+    fk_cliente_contacto BIGINT,
     PRIMARY KEY (contacto_id),
     CONSTRAINT fk_contacto_tipo FOREIGN KEY (tipo_contacto_id) REFERENCES tipos_contacto (tipo_contacto_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

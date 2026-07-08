@@ -63,7 +63,8 @@ export const DEFAULT_OTROS_COSTOS = {
         { id: 1, etiqueta: 'PANTALON', costoCinta: 400, costoMO: 2600, mtsCinta: 2.4, total: 3560 },
         { id: 2, etiqueta: 'TOP', costoCinta: 400, costoMO: 2500, mtsCinta: 2.0, total: 3300 }
     ],
-    porcentajeComision: 5.0
+    // Comisión ejecutivo estandarizada: 20% fijo para todos los vendedores, no editable.
+    porcentajeComision: 20.0
 };
 
 export const parseId = (id) => {
@@ -87,7 +88,7 @@ export const useEVNState = (initialEval = null) => {
     // States
     const [items, setItems] = useState([{ ...DEFAULT_ITEM }]);
     const [otrosCostos, setOtrosCostos] = useState(DEFAULT_OTROS_COSTOS);
-    const [solicitud, setSolicitud] = useState({ clienteNombre: "" });
+    const [solicitud, setSolicitud] = useState({ clienteNombre: "", clienteId: null, vendedorId: null });
     const [evalData, setEvalData] = useState({
         referencia: "",
         condiciones: {

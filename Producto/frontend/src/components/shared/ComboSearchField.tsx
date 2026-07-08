@@ -1,9 +1,9 @@
 import { useState, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { Check, ChevronDown, Search, Plus, Loader2 } from 'lucide-react';
+import { Check, ChevronDown, Search, Plus, Loader2, X } from 'lucide-react';
 import { useArticulosSearch } from '../../hooks/useArticulosSearch';
 
-export default function ComboSearchField({ value = '', onChange, tipo, placeholder = 'Buscar...', readOnly = false, className = '' }) {
+export default function ComboSearchField({ value = '', onChange, onSelectArticulo = undefined, tipo, placeholder = 'Buscar...', readOnly = false, className = '' }) {
     const [isOpen, setIsOpen] = useState(false);
     const [query, setQuery] = useState('');
     const [dropdownPos, setDropdownPos] = useState(null);
@@ -35,23 +35,30 @@ export default function ComboSearchField({ value = '', onChange, tipo, placehold
         if (readOnly) return;
         if (triggerRef.current) {
             const r = triggerRef.current.getBoundingClientRect();
-            setDropdownPos({ top: r.bottom + 4, left: r.left, width: Math.max(r.width, 220) });
+            setDropdownPos({ top: r.bottom + 6, left: r.left, width: Math.max(r.width, 220) });
         }
         setQuery('');
         setIsOpen(true);
         setTimeout(() => inputRef.current?.focus(), 50);
     };
 
-    const select = (nombre) => {
-        onChange(nombre.toUpperCase());
+    const select = (articulo) => {
+        onSelectArticulo?.(articulo);
+        onChange(articulo.nombreArticulo.toUpperCase());
         setIsOpen(false);
         setQuery('');
+    };
+
+    const clear = (e) => {
+        e.stopPropagation();
+        onChange('');
     };
 
     const handleCreate = async () => {
         const nombre = query.trim();
         if (!nombre) return;
-        await createArticulo(nombre);
+        const creado = await createArticulo(nombre);
+        if (creado) onSelectArticulo?.(creado);
         onChange(nombre.toUpperCase());
         setIsOpen(false);
         setQuery('');
@@ -68,17 +75,25 @@ export default function ComboSearchField({ value = '', onChange, tipo, placehold
                     'w-full flex items-center justify-between gap-2 px-3 py-2 rounded-lg border text-left text-[11px] font-semibold transition-all outline-none',
                     readOnly
                         ? 'bg-muted border-border text-muted-foreground cursor-default'
-                        : 'bg-card border-border text-foreground hover:border-primary cursor-pointer focus:border-primary focus:ring-2 focus:ring-accent',
-                    isOpen ? 'border-primary ring-2 ring-accent' : '',
+                        : 'bg-card border-border text-foreground hover:border-primary/60 cursor-pointer focus:border-primary focus:ring-2 focus:ring-primary/20',
+                    isOpen ? 'border-primary ring-2 ring-primary/20 shadow-[0_0_0_1px_rgba(37,99,235,0.15)]' : '',
                 ].join(' ')}
             >
-                <span className={`truncate uppercase ${!value ? 'text-muted-foreground font-normal' : ''}`}>
+                <span className={`truncate ${value ? 'uppercase text-foreground' : 'text-muted-foreground font-normal'}`}>
                     {value || placeholder}
                 </span>
-                {loading
-                    ? <Loader2 className="w-3.5 h-3.5 text-muted-foreground animate-spin flex-shrink-0" />
-                    : <ChevronDown className={`w-3.5 h-3.5 text-muted-foreground flex-shrink-0 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
-                }
+                <div className="flex items-center gap-1.5 flex-shrink-0">
+                    {value && !readOnly && (
+                        <X
+                            className="w-3 h-3 text-muted-foreground hover:text-destructive transition-colors"
+                            onClick={clear}
+                        />
+                    )}
+                    {loading
+                        ? <Loader2 className="w-3.5 h-3.5 text-muted-foreground animate-spin" />
+                        : <ChevronDown className={`w-3.5 h-3.5 text-muted-foreground transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
+                    }
+                </div>
             </button>
 
             {isOpen && dropdownPos && createPortal(
@@ -91,11 +106,11 @@ export default function ComboSearchField({ value = '', onChange, tipo, placehold
                         width: dropdownPos.width,
                         zIndex: 9999,
                     }}
-                    className="bg-card border border-border rounded-xl shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-150"
+                    className="bg-popover text-popover-foreground border border-border rounded-xl shadow-[0_8px_32px_rgba(0,0,0,0.25)] overflow-hidden animate-in fade-in slide-in-from-top-1 duration-150"
                 >
-                    <div className="px-3 py-2.5 border-b border-border bg-muted/80">
+                    <div className="px-3 py-2.5 border-b border-border bg-muted">
                         <div className="flex items-center gap-2">
-                            <Search className="w-3.5 h-3.5 text-muted-foreground flex-shrink-0" />
+                            <Search className="w-3.5 h-3.5 text-primary flex-shrink-0" />
                             <input
                                 ref={inputRef}
                                 type="text"
@@ -104,7 +119,7 @@ export default function ComboSearchField({ value = '', onChange, tipo, placehold
                                 onKeyDown={(e) => {
                                     if (e.key === 'Escape') { setIsOpen(false); setQuery(''); }
                                     if (e.key === 'Enter') {
-                                        if (filtered.length === 1) { select(filtered[0].nombreArticulo); }
+                                        if (filtered.length === 1) { select(filtered[0]); }
                                         else if (showCreate) { handleCreate(); }
                                     }
                                 }}
@@ -134,9 +149,9 @@ export default function ComboSearchField({ value = '', onChange, tipo, placehold
                                 <button
                                     key={a.idArticulo}
                                     type="button"
-                                    onClick={() => select(a.nombreArticulo)}
+                                    onClick={() => select(a)}
                                     className={`w-full flex items-center gap-3 px-4 py-2.5 text-left transition-colors
-                                        ${isSelected ? 'bg-accent text-accent-foreground' : 'text-foreground hover:bg-muted'}`}
+                                        ${isSelected ? 'bg-primary/10 text-primary' : 'text-foreground hover:bg-accent/80'}`}
                                 >
                                     <div className={`w-4 h-4 rounded-full flex-shrink-0 flex items-center justify-center border ${isSelected ? 'bg-primary border-primary' : 'border-border-strong'}`}>
                                         {isSelected && <Check className="w-2.5 h-2.5 text-white stroke-[3]" />}

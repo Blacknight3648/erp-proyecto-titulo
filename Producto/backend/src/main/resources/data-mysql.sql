@@ -102,7 +102,7 @@ INSERT IGNORE INTO tipos_contacto (tipo_contacto_id, descripcion_tipo_contacto) 
     (2, 'COMERCIAL'),
     (3, 'FINANZAS');
 
-INSERT IGNORE INTO contactos (contacto_id, nombre_contacto, telefono_contacto, email_contacto, tipo_contacto_id, fk_contacto) VALUES
+INSERT IGNORE INTO contactos (contacto_id, nombre_contacto, telefono_contacto, email_contacto, tipo_contacto_id, fk_cliente_contacto) VALUES
     (1, 'CONTACTO HITES',          '+56227275000', 'CONTACTO.HITES@HITES.CL',       1, 1),
     (2, 'CONTACTO MEDCELL',        '+56224396000', 'COMPRAS@MEDCELL.CL',             1, 2),
     (3, 'CONTACTO GEODIS WILSON',  '+56223816500', 'INFO.CHILE@GEODIS.COM',          1, 3);
@@ -125,7 +125,7 @@ INSERT IGNORE INTO tipo_direccion (tipo_direccion_id, descripcion) VALUES
     (1, 'PRINCIPAL'),
     (2, 'SUCURSAL');
 
-INSERT IGNORE INTO direccion (direccion_id, calle, numero, depto, tipo_direccion_id, comuna_id, fk_direccion) VALUES
+INSERT IGNORE INTO direccion (direccion_id, calle, numero, depto, tipo_direccion_id, comuna_id, fk_cliente_direccion) VALUES
     (1, 'AV. KENNEDY',   '5413', 'OF. 201', 1, 2, 1),
     (2, 'HOLANDA',       '64',   NULL,       1, 2, 2),
     (3, 'LO BOZA',       '110',  NULL,       1, 3, 3);
@@ -417,6 +417,32 @@ INSERT IGNORE INTO articulo (id_articulo, codigo_articulo, nombre_articulo, desc
     (12, 'ART-PRC-005', 'PANTALÓN', 'Pantalón de trabajo o corporativo',             NULL, 4, true, NULL, NULL);
 
 -- ============================================================
+-- 7.1.1. DETALLE TELA (articulo_tela) — completa el maestro de
+--        Composición/Familia/Gramaje de los 3 artículos tipo TELA,
+--        requerido para que el combo de Tela en EVN/NV pueda
+--        autocompletar la Composición al seleccionarlos.
+--        IDs verificados contra el esquema "simple" de familia_tela/
+--        composicion/gramaje_tela que efectivamente persiste en este
+--        proyecto (hay un segundo bloque duplicado de esos maestros
+--        más abajo en este archivo con IDs iguales pero nombres
+--        distintos — ver nota en 7.12 — así que no asumir el bloque
+--        "PARAMETRÍA TEXTIL" de más arriba como ganador sin verificar).
+--        clasificacion_tecnica id=15 NO existe (choque de nombre único
+--        con el id=1 "TEJIDO DE PUNTO" al sembrar) — no referenciarlo.
+--        Usa ON DUPLICATE KEY UPDATE para que un ajuste futuro de estos
+--        valores sí se aplique en el próximo reinicio.
+-- ============================================================
+INSERT INTO articulo_tela (id_articulo, id_familia_tela, id_clasificacion_tecnica, id_composicion, id_gramaje) VALUES
+    (1, 5,  1, 2,  9),
+    (2, 16, 8, 10, 3),
+    (3, 7,  1, 1,  4)
+ON DUPLICATE KEY UPDATE
+    id_familia_tela          = VALUES(id_familia_tela),
+    id_clasificacion_tecnica = VALUES(id_clasificacion_tecnica),
+    id_composicion           = VALUES(id_composicion),
+    id_gramaje               = VALUES(id_gramaje);
+
+-- ============================================================
 -- 7.2. CATÁLOGO DE CAMPOS DE PLANTILLA
 -- ============================================================
 INSERT IGNORE INTO plantilla (id_plantilla, nombre_campo) VALUES
@@ -469,8 +495,8 @@ INSERT IGNORE INTO scos_telas (id_scos_tela, solicitud_costos_id, aplicacion, de
 -- 7.5. EVALUACIONES DE NEGOCIO (EVN)
 -- ============================================================
 INSERT IGNORE INTO evaluaciones_negocio (id_evn, numero, referencia, cliente_nombre, cliente_id, vendedor_id, estado, fecha_evaluacion, porcentaje_comision, created_at, updated_at) VALUES
-    (1, 'EVN-000001', 'COTIZACIÓN POLERAS CORPORATIVAS TEMPORADA 2024', 'HITES S.A.',          1, 1, 'ADJUDICADA', CURRENT_DATE, 5.00, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-    (2, 'EVN-000002', 'LICITACIÓN PANTALONES CARGO PERSONAL OPERATIVO',  'LABORATORIO MEDCELL', 2, 2, 'ADJUDICADA', CURRENT_DATE, 3.50, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+    (1, 'EVN-000001', 'COTIZACIÓN POLERAS CORPORATIVAS TEMPORADA 2024', 'HITES S.A.',          1, 1, 'ADJUDICADA', CURRENT_DATE, 20.00, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+    (2, 'EVN-000002', 'LICITACIÓN PANTALONES CARGO PERSONAL OPERATIVO',  'LABORATORIO MEDCELL', 2, 2, 'ADJUDICADA', CURRENT_DATE, 20.00, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
 -- Items de EVN-000001 (100 Poleras Piqué para HITES) — articulo_id=3: Jersey Piqué
 INSERT IGNORE INTO evaluacion_negocio_items (idevni, evaluacion_negocio_id, proveedor_id, articulo_id, nro_item, descripcion, modelo, tela, genero, cantidad, precio_unitario, moneda_precio_unitario, costo_unitario, moneda_costo_unitario, costo_producto, costo_logo, tipo_item) VALUES
@@ -734,12 +760,12 @@ VALUES
     (3, 'EVN-000003',
      'COTIZACIÓN POLERÓN CORPORATIVO CON CAPUCHA — GEODIS WILSON',
      'GEODIS WILSON', 3, 1,
-     'BORRADOR', CURRENT_DATE, 5.00, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+     'BORRADOR', CURRENT_DATE, 20.00, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
     (4, 'EVN-000004',
      'PROPUESTA CHALECO ACOLCHADO CORPORATIVO — HITES S.A.',
      'HITES S.A.', 1, 2,
-     'EVALUACION', CURRENT_DATE, 4.00, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
-ON DUPLICATE KEY UPDATE estado = VALUES(estado);
+     'EVALUACION', CURRENT_DATE, 20.00, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+ON DUPLICATE KEY UPDATE estado = VALUES(estado), porcentaje_comision = VALUES(porcentaje_comision);
 
 -- Items básicos EVN-000003 (Polerón para GEODIS)
 INSERT IGNORE INTO evaluacion_negocio_items

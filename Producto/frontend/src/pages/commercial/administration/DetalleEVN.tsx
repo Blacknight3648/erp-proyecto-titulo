@@ -23,6 +23,9 @@ import FirmaAprobacionModal from "./FirmaAprobacionModal";
 import { useEVNState, parseId, DEFAULT_ITEM } from '../../../hooks/useEVNState';
 import { EvaluacionNegocioService } from '../../../remote/service/EvaluacionNegocioService';
 import { useAuth } from '../../../contexts/AuthContext';
+import ComboSearchField from '../../../components/shared/ComboSearchField';
+import ProveedorComboField from '../../../components/shared/ProveedorComboField';
+import CustomSelectField from '../../../components/shared/CustomSelectField';
 
 export default function DetalleEVN({ initialEval, onBack, mode = 'create' }) {
     const isReadOnly = mode === 'view';
@@ -57,7 +60,6 @@ export default function DetalleEVN({ initialEval, onBack, mode = 'create' }) {
         toggleDocSelection,
         handleGenerarPropuesta,
 
-        proveedores,
         clientes,
         vendedores,
         solicitudesCostos
@@ -115,19 +117,17 @@ export default function DetalleEVN({ initialEval, onBack, mode = 'create' }) {
                             <Users className="w-4 h-4 text-brand-indigo mr-3" />
                             <div className="flex-1">
                                 <p className="text-[8px] font-black text-muted-foreground uppercase tracking-widest leading-none mb-1">Ejecutivo Comercial</p>
-                                <select
-                                    className="w-full bg-transparent border-none text-xs font-black text-brand-indigo uppercase italic p-0 focus:ring-0 outline-none cursor-pointer disabled:cursor-default disabled:opacity-70"
-                                    value={parseId(solicitud.vendedorId || initialEval?.vendedorId) || ''}
-                                    onChange={(e) => setSolicitud(prev => ({ ...prev, vendedorId: parseInt(e.target.value) }))}
-                                    disabled={isReadOnly}
-                                >
-                                    <option value="">Seleccionar...</option>
-                                    {vendedores.map(v => (
-                                        <option key={v.id} value={v.id}>
-                                            {v.nombreUsuario ? `${v.nombreUsuario} ${v.apellidosUsuario || ''}`.trim() : v.codigoVendedor}
-                                        </option>
-                                    ))}
-                                </select>
+                                <CustomSelectField
+                                    className="border-none shadow-none bg-transparent p-0 [&>button]:px-0 [&>button]:py-0 [&>button]:bg-transparent [&>button]:border-none"
+                                    value={String(parseId(solicitud.vendedorId || initialEval?.vendedorId) || '')}
+                                    onChange={(val) => setSolicitud(prev => ({ ...prev, vendedorId: parseInt(val) }))}
+                                    placeholder="Seleccionar..."
+                                    readOnly={isReadOnly}
+                                    options={vendedores.map(v => ({
+                                        value: String(v.id),
+                                        label: v.nombreUsuario ? `${v.nombreUsuario} ${v.apellidosUsuario || ''}`.trim() : v.codigoVendedor
+                                    }))}
+                                />
                             </div>
                         </div>
 
@@ -135,12 +135,13 @@ export default function DetalleEVN({ initialEval, onBack, mode = 'create' }) {
                             <Building2 className="w-4 h-4 text-muted-foreground mr-3" />
                             <div className="flex-1">
                                 <p className="text-[8px] font-black text-muted-foreground uppercase tracking-widest leading-none mb-1">Cliente Solicitante</p>
-                                <select
-                                    className="w-full bg-transparent border-none text-xs font-black text-foreground uppercase p-0 focus:ring-0 outline-none cursor-pointer disabled:cursor-default disabled:opacity-70"
-                                    value={parseId(solicitud.clienteId || initialEval?.clienteId) || ''}
-                                    disabled={isReadOnly}
-                                    onChange={(e) => {
-                                        const id = parseInt(e.target.value);
+                                <CustomSelectField
+                                    className="border-none shadow-none bg-transparent p-0 [&>button]:px-0 [&>button]:py-0 [&>button]:bg-transparent [&>button]:border-none"
+                                    value={String(parseId(solicitud.clienteId || initialEval?.clienteId) || '')}
+                                    readOnly={isReadOnly}
+                                    placeholder="Seleccionar Cliente..."
+                                    onChange={(val) => {
+                                        const id = parseInt(val);
                                         const c = clientes.find(cli => (cli.clienteId || cli.id) === id);
                                         setSolicitud(prev => ({
                                             ...prev,
@@ -148,12 +149,11 @@ export default function DetalleEVN({ initialEval, onBack, mode = 'create' }) {
                                             clienteNombre: c ? (c.razonSocial || `${c.nombreCliente} ${c.apellidoCliente || ''}`.trim()) : ''
                                         }));
                                     }}
-                                >
-                                    <option value="">Seleccionar Cliente...</option>
-                                    {clientes.map(c => (
-                                        <option key={c.clienteId || c.id} value={c.clienteId || c.id}>{c.razonSocial || `${c.nombreCliente} ${c.apellidoCliente || ''}`.trim()}</option>
-                                    ))}
-                                </select>
+                                    options={clientes.map(c => ({
+                                        value: String(c.clienteId || c.id),
+                                        label: c.razonSocial || `${c.nombreCliente} ${c.apellidoCliente || ''}`.trim()
+                                    }))}
+                                />
                             </div>
                         </div>
                     </div>
@@ -260,16 +260,18 @@ export default function DetalleEVN({ initialEval, onBack, mode = 'create' }) {
                                             ${(item.precioVentaTotal || 0).toLocaleString('es-CL')}
                                         </td>
                                         <td className="px-4 py-4">
-                                            <select
-                                                className="px-2.5 py-2 bg-card border border-border hover:border-border-strong focus:border-brand-indigo focus:ring-2 focus:ring-brand-indigo/10 rounded-xl text-[11px] font-bold text-foreground uppercase outline-none transition-all cursor-pointer disabled:cursor-default disabled:opacity-60"
-                                                value={item.tipo}
-                                                onChange={(e) => handleUpdateItem(item.id, 'tipo', e.target.value)}
-                                                disabled={isReadOnly}
-                                            >
-                                                <option value="SC">SC</option>
-                                                <option value="SCI">SCI</option>
-                                                <option value="OP">OP</option>
-                                            </select>
+                                            <CustomSelectField
+                                                className="min-w-[80px]"
+                                                value={item.tipo || ''}
+                                                onChange={(val) => handleUpdateItem(item.id, 'tipo', val)}
+                                                readOnly={isReadOnly}
+                                                placeholder="Tipo"
+                                                options={[
+                                                    { value: 'SC', label: 'SC' },
+                                                    { value: 'SCI', label: 'SCI' },
+                                                    { value: 'OP', label: 'OP' }
+                                                ]}
+                                            />
                                         </td>
                                         <td className="px-4 py-4">
                                             <input
@@ -304,39 +306,32 @@ export default function DetalleEVN({ initialEval, onBack, mode = 'create' }) {
                                             )}
                                         </td>
                                         <td className="px-4 py-4">
-                                            <select
-                                                className="px-2.5 py-2 bg-card border border-border hover:border-border-strong focus:border-brand-indigo focus:ring-2 focus:ring-brand-indigo/10 rounded-xl text-[11px] font-bold text-foreground uppercase outline-none transition-all cursor-pointer disabled:cursor-default disabled:opacity-60"
-                                                value={item.proveedorId || ''}
-                                                onChange={(e) => {
-                                                    const pId = e.target.value;
-                                                    const p = proveedores.find(prov => String(prov.proveedorId || prov.id) === String(pId));
-                                                    handleUpdateItem(item.id, 'proveedorId', pId);
-                                                    handleUpdateItem(item.id, 'proveedor', p ? (p.nombreProveedor || p.nombre) : '');
+                                            <ProveedorComboField
+                                                className="min-w-[140px]"
+                                                value={item.proveedor || ''}
+                                                onChange={(nombre) => handleUpdateItem(item.id, 'proveedor', nombre)}
+                                                onSelectProveedor={(p) => {
+                                                    handleUpdateItem(item.id, 'proveedorId', p.proveedorId ?? p.id ?? '');
+                                                    handleUpdateItem(item.id, 'proveedor', p.nombreProveedor || p.nombre || '');
                                                 }}
-                                                disabled={isReadOnly}
-                                            >
-                                                <option value="">Prov.</option>
-                                                {proveedores.map(p => (
-                                                    <option key={p.proveedorId || p.id} value={p.proveedorId || p.id}>
-                                                        {p.nombreProveedor || p.nombre}
-                                                    </option>
-                                                ))}
-                                            </select>
+                                                placeholder="Prov."
+                                                readOnly={isReadOnly}
+                                            />
                                         </td>
                                         <td className="px-4 py-4">
-                                            <input
-                                                type="text"
-                                                className="w-36 px-2.5 py-2 bg-card border border-border hover:border-border-strong focus:border-brand-indigo focus:ring-2 focus:ring-brand-indigo/10 rounded-xl text-[11px] font-medium text-foreground uppercase outline-none transition-all disabled:opacity-60 disabled:cursor-default"
-                                                value={item.producto}
-                                                onChange={(e) => handleUpdateItem(item.id, 'producto', e.target.value)}
+                                            <ComboSearchField
+                                                className="min-w-[160px]"
+                                                tipo="PRENDA_CONFECCIONAR"
+                                                value={item.producto || ''}
+                                                onChange={(v) => handleUpdateItem(item.id, 'producto', v)}
                                                 placeholder="Producto"
-                                                disabled={isReadOnly}
+                                                readOnly={isReadOnly}
                                             />
                                         </td>
                                         <td className="px-4 py-4">
                                             <input
                                                 type="text"
-                                                className="w-28 px-2.5 py-2 bg-card border border-border hover:border-border-strong focus:border-brand-indigo focus:ring-2 focus:ring-brand-indigo/10 rounded-xl text-[11px] font-medium text-foreground uppercase outline-none transition-all disabled:opacity-60 disabled:cursor-default"
+                                                className="w-28 px-2.5 py-2 bg-card border border-border hover:border-primary/60 focus:border-primary focus:ring-2 focus:ring-primary/20 rounded-lg text-[11px] font-medium text-foreground uppercase outline-none transition-all disabled:opacity-60 disabled:cursor-default"
                                                 value={item.codigoProveedor}
                                                 onChange={(e) => handleUpdateItem(item.id, 'codigoProveedor', e.target.value)}
                                                 placeholder="Cod. Prov"
@@ -346,7 +341,7 @@ export default function DetalleEVN({ initialEval, onBack, mode = 'create' }) {
                                         <td className="px-4 py-4">
                                             <input
                                                 type="text"
-                                                className="w-32 px-2.5 py-2 bg-card border border-border hover:border-border-strong focus:border-brand-indigo focus:ring-2 focus:ring-brand-indigo/10 rounded-xl text-[11px] font-medium text-foreground uppercase outline-none transition-all disabled:opacity-60 disabled:cursor-default"
+                                                className="w-32 px-2.5 py-2 bg-card border border-border hover:border-primary/60 focus:border-primary focus:ring-2 focus:ring-primary/20 rounded-lg text-[11px] font-medium text-foreground uppercase outline-none transition-all disabled:opacity-60 disabled:cursor-default"
                                                 value={item.modelo}
                                                 onChange={(e) => handleUpdateItem(item.id, 'modelo', e.target.value)}
                                                 placeholder="Modelo"
@@ -354,32 +349,37 @@ export default function DetalleEVN({ initialEval, onBack, mode = 'create' }) {
                                             />
                                         </td>
                                         <td className="px-4 py-4">
-                                            <select
-                                                className="px-2.5 py-2 bg-card border border-border hover:border-border-strong focus:border-brand-indigo focus:ring-2 focus:ring-brand-indigo/10 rounded-xl text-[11px] font-bold text-foreground uppercase outline-none transition-all cursor-pointer disabled:cursor-default disabled:opacity-60"
-                                                value={item.genero}
-                                                onChange={(e) => handleUpdateItem(item.id, 'genero', e.target.value)}
-                                                disabled={isReadOnly}
-                                            >
-                                                <option value="">Gén.</option>
-                                                <option value="Masculino">Masc</option>
-                                                <option value="Femenino">Fem</option>
-                                                <option value="Unisex">Unis</option>
-                                            </select>
+                                            <CustomSelectField
+                                                className="min-w-[90px]"
+                                                value={item.genero || ''}
+                                                onChange={(val) => handleUpdateItem(item.id, 'genero', val)}
+                                                readOnly={isReadOnly}
+                                                placeholder="Gén."
+                                                options={[
+                                                    { value: 'Masculino', label: 'Masc' },
+                                                    { value: 'Femenino', label: 'Fem' },
+                                                    { value: 'Unisex', label: 'Unis' }
+                                                ]}
+                                            />
                                         </td>
                                         <td className="px-4 py-4">
-                                            <input
-                                                type="text"
-                                                className="w-28 px-2.5 py-2 bg-card border border-border hover:border-border-strong focus:border-brand-indigo focus:ring-2 focus:ring-brand-indigo/10 rounded-xl text-[11px] font-medium text-foreground uppercase outline-none transition-all disabled:opacity-60 disabled:cursor-default"
-                                                value={item.tela}
-                                                onChange={(e) => handleUpdateItem(item.id, 'tela', e.target.value)}
+                                            <ComboSearchField
+                                                className="min-w-[140px]"
+                                                tipo="TELA"
+                                                value={item.tela || ''}
+                                                onChange={(v) => handleUpdateItem(item.id, 'tela', v)}
+                                                onSelectArticulo={(articulo) => {
+                                                    const comp = articulo?.detalleTela?.composicion?.descripcionComposicion;
+                                                    if (comp) handleUpdateItem(item.id, 'composicion', comp);
+                                                }}
                                                 placeholder="Tela"
-                                                disabled={isReadOnly}
+                                                readOnly={isReadOnly}
                                             />
                                         </td>
                                         <td className="px-4 py-4">
                                             <input
                                                 type="text"
-                                                className="w-36 px-2.5 py-2 bg-card border border-border hover:border-border-strong focus:border-brand-indigo focus:ring-2 focus:ring-brand-indigo/10 rounded-xl text-[11px] font-medium text-foreground uppercase outline-none transition-all disabled:opacity-60 disabled:cursor-default"
+                                                className="w-36 px-2.5 py-2 bg-card border border-border hover:border-primary/60 focus:border-primary focus:ring-2 focus:ring-primary/20 rounded-lg text-[11px] font-medium text-foreground uppercase outline-none transition-all disabled:opacity-60 disabled:cursor-default"
                                                 value={item.composicion}
                                                 onChange={(e) => handleUpdateItem(item.id, 'composicion', e.target.value)}
                                                 placeholder="Comp."
@@ -455,15 +455,15 @@ export default function DetalleEVN({ initialEval, onBack, mode = 'create' }) {
                             </tbody>
                             <tfoot className="sticky bottom-0">
                                 <tr className="bg-sidebar text-sidebar-foreground font-extrabold text-[11px] uppercase tracking-wider border-t border-sidebar-border">
-                                    <td className="px-4 py-5 italic border-r border-sidebar-border" colSpan="1">TOTAL</td>
+                                    <td className="px-4 py-5 italic border-r border-sidebar-border" colSpan={1}>TOTAL</td>
                                     <td className="px-4 py-5 border-r border-sidebar-border text-white font-black">
                                         {totals.itemsConCostos.reduce((sum, item) => sum + (item.cant || 0), 0)}
                                     </td>
-                                    <td colSpan="2" className="border-r border-sidebar-border"></td>
+                                    <td colSpan={2} className="border-r border-sidebar-border"></td>
                                     <td className="px-4 py-5 border-r border-sidebar-border text-base font-black text-success bg-black/20">
                                         ${(totals.subtotalVenta || 0).toLocaleString('es-CL')}
                                     </td>
-                                    <td colSpan="9" className="border-r border-sidebar-border"></td>
+                                    <td colSpan={9} className="border-r border-sidebar-border"></td>
                                     <td className="px-4 py-5 border-r border-sidebar-border bg-black/35 text-center font-bold text-white">
                                         ${(totals.itemsConCostos.reduce((sum, item) => sum + ((item.costoProducto || 0) * (item.cant || 0)), 0)).toLocaleString('es-CL')}
                                     </td>
@@ -479,11 +479,11 @@ export default function DetalleEVN({ initialEval, onBack, mode = 'create' }) {
                                     <td className="px-4 py-5 border-r border-sidebar-border bg-black/35 text-center font-bold text-primary">
                                         ${(totals.prorrateoLineal || 0).toLocaleString('es-CL', { maximumFractionDigits: 0 })}/u
                                     </td>
-                                    <td colSpan="1" className="border-r border-sidebar-border"></td>
+                                    <td colSpan={1} className="border-r border-sidebar-border"></td>
                                     <td className="px-4 py-5 border-r border-sidebar-border bg-black/50 text-base font-black text-white">
                                         ${(totals.totalCostoGeneral || 0).toLocaleString('es-CL')}
                                     </td>
-                                    <td className="px-4 py-5 bg-black/40 text-center font-black border-l border-sidebar-border" colSpan="3">
+                                    <td className="px-4 py-5 bg-black/40 text-center font-black border-l border-sidebar-border" colSpan={3}>
                                         <div className="flex flex-col gap-0.5">
                                             <span className="text-warning text-xs">MARGEN: <span className="text-warning text-base">{totals.margenPorc}%</span></span>
                                             <span className="text-warning text-xs">NETO: <span className="text-white font-black">${(totals.margenPesos || 0).toLocaleString('es-CL')}</span></span>
@@ -533,7 +533,8 @@ export default function DetalleEVN({ initialEval, onBack, mode = 'create' }) {
                                                 className="w-full pl-6 pr-3 py-2.5 bg-muted border border-border rounded-xl text-xs font-black text-foreground focus:ring-2 focus:ring-brand-indigo/20 focus:border-brand-indigo/40 outline-none transition-all disabled:opacity-60 disabled:cursor-default"
                                                 value={otrosCostos[key] ?? 0}
                                                 onChange={(e) => setOtrosCostos({ ...otrosCostos, [key]: parseFloat(e.target.value) || 0 })}
-                                                disabled={isReadOnly}
+                                                disabled={isReadOnly || key === 'porcentajeComision'}
+                                                title={key === 'porcentajeComision' ? 'Comisión estándar, no modificable' : undefined}
                                             />
                                         </div>
                                     </div>
@@ -580,8 +581,8 @@ export default function DetalleEVN({ initialEval, onBack, mode = 'create' }) {
                                                 <p className="font-black text-brand-indigo/60 uppercase">Recintos x viaje: ${totals.costoRecintosTT.toLocaleString('es-CL')}</p>
                                             </div>
                                             <div className="bg-brand-indigo text-white px-4 py-2 rounded-xl text-center shadow-lg shadow-brand-indigo/20">
-                                                <p className="text-[7px] font-black uppercase opacity-80">Total TT</p>
-                                                <p className="text-sm font-black">${totals.totalTT.toLocaleString('es-CL')}</p>
+                                                <p className="text-[7px] font-black uppercase opacity-80 text-white">Total TT</p>
+                                                <p className="text-sm font-black text-white">${totals.totalTT.toLocaleString('es-CL')}</p>
                                             </div>
                                         </div>
                                     </div>
@@ -653,8 +654,8 @@ export default function DetalleEVN({ initialEval, onBack, mode = 'create' }) {
                                                 <p className="text-[8px] text-brand-violet/50 italic font-bold">Sumado a costos OT</p>
                                             </div>
                                             <div className="bg-brand-violet text-white px-4 py-2 rounded-xl text-center shadow-lg shadow-brand-violet/20">
-                                                <p className="text-[7px] font-black uppercase opacity-80 leading-none mb-1">Subtotal</p>
-                                                <p className="text-sm font-black">${totals.totalPC.toLocaleString('es-CL')}</p>
+                                                <p className="text-[7px] font-black uppercase opacity-80 leading-none mb-1 text-white">Subtotal</p>
+                                                <p className="text-sm font-black text-white">${totals.totalPC.toLocaleString('es-CL')}</p>
                                             </div>
                                         </div>
                                     </div>

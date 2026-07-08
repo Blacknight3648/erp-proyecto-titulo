@@ -191,6 +191,7 @@ export default function Sidebar({ isOpen, setIsOpen }) {
       {isOpen && (
         <div
           onClick={() => setIsOpen(false)}
+          className="md:hidden"
           style={{
             position: 'fixed', inset: 0, zIndex: 40,
             background: 'rgba(0,0,0,0.3)',

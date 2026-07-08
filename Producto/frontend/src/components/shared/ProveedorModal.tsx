@@ -9,7 +9,7 @@ import {
   Phone,
   MapPin,
   Briefcase,
-  FileText,
+  Save,
   AlertCircle,
   CheckCircle,
 } from "lucide-react";
@@ -141,223 +141,214 @@ export default function ProveedorModal({ onClose, onSave, proveedorToEdit = null
     toast.success("Datos procesados correctamente");
   };
 
-  const ErrorMsg = ({ name }) =>
+  const FieldError = ({ name }) =>
     errors[name] ? (
-      <div className="flex items-center gap-1 mt-2 ml-2 text-destructive">
-        <AlertCircle size={12} />
-        <span className="text-[10px] font-bold uppercase tracking-wider">
-          {errors[name]}
-        </span>
+      <div className="flex items-center gap-1.5 mt-1.5 text-xs font-medium text-destructive">
+        <AlertCircle className="w-3.5 h-3.5 shrink-0" />
+        <span>{errors[name]}</span>
       </div>
     ) : null;
 
   const inputClass = (err) =>
-    `w-full pl-14 pr-6 py-5 bg-muted rounded-[1.5rem] border-2 transition-all outline-none font-bold text-sm ${
+    `w-full pl-10 pr-4 py-2.5 bg-muted border rounded-xl text-sm transition-all outline-none focus:ring-2 focus:ring-brand-indigo/20 ${
       err
-        ? "border-destructive bg-destructive/10"
-        : "border-transparent focus:bg-card focus:border-brand-indigo"
+        ? "border-destructive focus:border-destructive"
+        : "border-border focus:border-brand-indigo"
     }`;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-foreground/60 backdrop-blur-md">
-      <div className="bg-card w-full max-w-2xl rounded-[3rem] p-10 shadow-2xl relative max-h-[90vh] overflow-y-auto">
-        <button
-          onClick={onClose}
-          className="absolute top-8 right-8 p-3 bg-muted rounded-2xl hover:bg-foreground hover:text-white transition"
-        >
-          <X size={20} />
-        </button>
-
-        <div className="mb-10">
-          <h2 className="text-4xl font-black text-foreground mb-3">
-            {proveedorToEdit ? "Editar Proveedor" : "Nuevo Proveedor"}
-          </h2>
-          <div className="text-[10px] font-black text-brand-indigo uppercase tracking-[0.2em] flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-brand-indigo animate-pulse"></span>
-            Gestión de Registro de Proveedores
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 overlay-backdrop">
+      <div className="bg-card w-full max-w-2xl rounded-2xl shadow-xl border border-border relative max-h-[90vh] overflow-y-auto">
+        <div className="flex items-center justify-between p-6 border-b border-border">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-brand-indigo/10 rounded-xl text-brand-indigo">
+              <Briefcase size={20} />
+            </div>
+            <div>
+              <h2 className="text-lg font-bold text-foreground">
+                {proveedorToEdit ? "Editar Proveedor" : "Nuevo Proveedor"}
+              </h2>
+              <p className="text-xs text-brand-indigo font-semibold uppercase tracking-wider">
+                Gestión de Registro de Proveedores
+              </p>
+            </div>
           </div>
+          <button
+            onClick={onClose}
+            className="p-2 text-muted-foreground hover:text-foreground hover:bg-muted rounded-xl transition-all"
+          >
+            <X className="w-5 h-5" />
+          </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-8">
-          <div className="grid grid-cols-2 gap-6">
-            {/* Razón Social */}
-            <div className="col-span-2 space-y-2">
-              <label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest ml-1">
-                Razón Social *
-              </label>
-              <div className="relative">
-                <User className={`absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 ${errors.razonSocialProveedor ? "text-destructive" : "text-muted-foreground"}`} />
-                <input
-                  name="razonSocialProveedor"
-                  value={formData.razonSocialProveedor}
-                  onChange={handleChange}
-                  className={inputClass(errors.razonSocialProveedor)}
-                  placeholder="Ej: Transportes Integral SPA"
-                />
-              </div>
-              <ErrorMsg name="razonSocialProveedor" />
+        <form onSubmit={handleSubmit} className="p-6 space-y-6">
+          {/* SECCIÓN 1: Identificación */}
+          <div className="space-y-4">
+            <div className="flex items-center gap-3">
+              <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Identificación</span>
+              <div className="h-px flex-1 bg-muted"></div>
             </div>
 
-            {/* RUN */}
-            <div className="space-y-2">
-              <label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest ml-1">
-                RUN *
-              </label>
-              <div className="relative">
-                <span className={`absolute left-5 top-1/2 -translate-y-1/2 text-sm font-black ${errors.runProveedor ? "text-destructive" : "text-muted-foreground"}`}>
-                  ID
-                </span>
-                <input
-                  name="runProveedor"
-                  value={formData.runProveedor}
-                  onChange={handleChange}
-                  disabled={!!proveedorToEdit}
-                  className={inputClass(errors.runProveedor)}
-                  placeholder="12.345.678-9"
-                />
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="sm:col-span-2">
+                <label className="block text-xs font-semibold text-muted-foreground mb-1.5">Razón Social *</label>
+                <div className="relative">
+                  <User className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                  <input
+                    name="razonSocialProveedor"
+                    value={formData.razonSocialProveedor}
+                    onChange={handleChange}
+                    className={inputClass(errors.razonSocialProveedor)}
+                    placeholder="Ej: Transportes Integral SPA"
+                  />
+                </div>
+                <FieldError name="razonSocialProveedor" />
               </div>
-              <ErrorMsg name="runProveedor" />
-            </div>
 
-            <div className="space-y-2">
-              <label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest ml-1">
-                Sigla *
-              </label>
-              <div className="relative">
-                <Tag className="absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                <input
-                  name="sigla"
-                  value={formData.sigla}
-                  onChange={handleChange}
-                  className={inputClass(false)}
-                  placeholder="Ej: LTDA."
-                />
+              <div>
+                <label className="block text-xs font-semibold text-muted-foreground mb-1.5">RUN *</label>
+                <div className="relative">
+                  <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-xs font-bold text-muted-foreground">ID</span>
+                  <input
+                    name="runProveedor"
+                    value={formData.runProveedor}
+                    onChange={handleChange}
+                    disabled={!!proveedorToEdit}
+                    className={`${inputClass(errors.runProveedor)} disabled:opacity-60 disabled:cursor-not-allowed`}
+                    placeholder="12.345.678-9"
+                  />
+                </div>
+                <FieldError name="runProveedor" />
               </div>
-            </div>
 
-            {/* Giro */}
-            <div className="col-span-2 space-y-2">
-              <label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest ml-1">
-                Giro *
-              </label>
-              <div className="relative">
-                <Briefcase className="absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                <select
-                  name="giroId"
-                  value={formData.giroId}
-                  onChange={handleChange}
-                  className={inputClass(false)}
-                >
-                  <option value="">Seleccionar giro...</option>
-                  {giros.map((g) => (
-                    <option key={g.giroId} value={g.giroId}>
-                      {g.descripcionGiro}
-                    </option>
-                  ))}
-                </select>
+              <div>
+                <label className="block text-xs font-semibold text-muted-foreground mb-1.5">Sigla *</label>
+                <div className="relative">
+                  <Tag className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                  <input
+                    name="sigla"
+                    value={formData.sigla}
+                    onChange={handleChange}
+                    className={inputClass(false)}
+                    placeholder="Ej: LTDA."
+                  />
+                </div>
               </div>
-            </div>
 
-            {/* Tipo de Proveedor */}
-            <div className="space-y-2">
-              <label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest ml-1">
-                Tipo de Proveedor
-              </label>
-              <div className="relative">
-                <Tag className="absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                <input
-                  name="tipoProveedor"
-                  value={formData.tipoProveedor}
-                  onChange={handleChange}
-                  className={inputClass(false)}
-                  placeholder="Ej: Logística, Insumos..."
-                />
+              <div className="sm:col-span-2">
+                <label className="block text-xs font-semibold text-muted-foreground mb-1.5">Giro *</label>
+                <div className="relative">
+                  <Briefcase className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
+                  <select
+                    name="giroId"
+                    value={formData.giroId}
+                    onChange={handleChange}
+                    className={`${inputClass(false)} appearance-none cursor-pointer`}
+                  >
+                    <option value="">Seleccionar giro...</option>
+                    {giros.map((g) => (
+                      <option key={g.giroId} value={g.giroId}>
+                        {g.descripcionGiro}
+                      </option>
+                    ))}
+                  </select>
+                </div>
               </div>
-            </div>
 
-            {/* Email */}
-            <div className="space-y-2">
-              <label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest ml-1">
-                Email
-              </label>
-              <div className="relative">
-                <Mail className={`absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 ${errors.emailProveedor ? "text-destructive" : "text-muted-foreground"}`} />
-                <input
-                  name="emailProveedor"
-                  type="email"
-                  value={formData.emailProveedor}
-                  onChange={handleChange}
-                  className={inputClass(errors.emailProveedor)}
-                  placeholder="mail@ejemplo.cl"
-                />
-              </div>
-              <ErrorMsg name="emailProveedor" />
-            </div>
-
-            {/* Teléfono */}
-            <div className="space-y-2">
-              <label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest ml-1">
-                Teléfono Móvil
-              </label>
-              <div className="relative">
-                <Phone className={`absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 ${errors.telefonoProveedor ? "text-destructive" : "text-muted-foreground"}`} />
-                <span className="absolute left-12 top-1/2 -translate-y-1/2 text-sm font-black text-muted-foreground select-none">
-                  +56
-                </span>
-                <input
-                  name="telefonoProveedor"
-                  value={formData.telefonoProveedor}
-                  onChange={handleChange}
-                  className={`w-full pl-24 pr-6 py-5 bg-muted rounded-[1.5rem] border-2 transition-all outline-none font-bold text-sm ${
-                    errors.telefonoProveedor
-                      ? "border-destructive bg-destructive/10"
-                      : "border-transparent focus:bg-card focus:border-brand-indigo"
-                  }`}
-                  placeholder="9 1234 5678"
-                />
-              </div>
-              <ErrorMsg name="telefonoProveedor" />
-            </div>
-
-            {/* Contacto */}
-            <div className="space-y-2">
-              <label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest ml-1">
-                Persona de Contacto
-              </label>
-              <div className="relative">
-                <Briefcase className="absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                <input
-                  name="contactoProveedor"
-                  value={formData.contactoProveedor}
-                  onChange={handleChange}
-                  className={inputClass(false)}
-                  placeholder="Nombre del ejecutivo"
-                />
+              <div className="sm:col-span-2">
+                <label className="block text-xs font-semibold text-muted-foreground mb-1.5">Tipo de Proveedor</label>
+                <div className="relative">
+                  <Tag className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                  <input
+                    name="tipoProveedor"
+                    value={formData.tipoProveedor}
+                    onChange={handleChange}
+                    className={inputClass(false)}
+                    placeholder="Ej: Logística, Insumos..."
+                  />
+                </div>
               </div>
             </div>
+          </div>
 
-            {/* Dirección */}
-            <div className="space-y-2">
-              <label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest ml-1">
-                Dirección
-              </label>
-              <div className="relative">
-                <MapPin className="absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                <input
-                  name="direccionProveedor"
-                  value={formData.direccionProveedor}
-                  onChange={handleChange}
-                  className={inputClass(false)}
-                  placeholder="Ciudad, Calle #123"
-                />
+          {/* SECCIÓN 2: Contacto */}
+          <div className="space-y-4">
+            <div className="flex items-center gap-3">
+              <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Contacto</span>
+              <div className="h-px flex-1 bg-muted"></div>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-xs font-semibold text-muted-foreground mb-1.5">Email</label>
+                <div className="relative">
+                  <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                  <input
+                    name="emailProveedor"
+                    type="email"
+                    value={formData.emailProveedor}
+                    onChange={handleChange}
+                    className={inputClass(errors.emailProveedor)}
+                    placeholder="mail@ejemplo.cl"
+                  />
+                </div>
+                <FieldError name="emailProveedor" />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-muted-foreground mb-1.5">Teléfono Móvil</label>
+                <div className="relative">
+                  <Phone className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                  <span className="absolute left-10 top-1/2 -translate-y-1/2 text-sm font-semibold text-muted-foreground select-none">+56</span>
+                  <input
+                    name="telefonoProveedor"
+                    value={formData.telefonoProveedor}
+                    onChange={handleChange}
+                    className={`w-full pl-18 pr-4 py-2.5 bg-muted border rounded-xl text-sm transition-all outline-none focus:ring-2 focus:ring-brand-indigo/20 ${
+                      errors.telefonoProveedor
+                        ? "border-destructive focus:border-destructive"
+                        : "border-border focus:border-brand-indigo"
+                    }`}
+                    placeholder="9 1234 5678"
+                  />
+                </div>
+                <FieldError name="telefonoProveedor" />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-muted-foreground mb-1.5">Persona de Contacto</label>
+                <div className="relative">
+                  <Briefcase className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                  <input
+                    name="contactoProveedor"
+                    value={formData.contactoProveedor}
+                    onChange={handleChange}
+                    className={inputClass(false)}
+                    placeholder="Nombre del ejecutivo"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-muted-foreground mb-1.5">Dirección</label>
+                <div className="relative">
+                  <MapPin className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                  <input
+                    name="direccionProveedor"
+                    value={formData.direccionProveedor}
+                    onChange={handleChange}
+                    className={inputClass(false)}
+                    placeholder="Ciudad, Calle #123"
+                  />
+                </div>
               </div>
             </div>
           </div>
 
           {/* ESTADO */}
-          <div className="flex items-center justify-between p-4 bg-muted rounded-2xl border border-border">
+          <div className="flex items-center justify-between p-4 bg-muted rounded-xl border border-border">
             <div className="flex items-center gap-3">
-              <div className={`w-9 h-9 rounded-lg flex items-center justify-center transition-all ${formData.activo ? 'bg-success/15 text-success' : 'bg-secondary text-muted-foreground'}`}>
+              <div className={`w-9 h-9 rounded-lg flex items-center justify-center transition-all ${formData.activo ? 'bg-success-bg text-success' : 'bg-secondary text-muted-foreground'}`}>
                 <CheckCircle className="w-5 h-5" />
               </div>
               <div>
@@ -380,11 +371,11 @@ export default function ProveedorModal({ onClose, onSave, proveedorToEdit = null
           <button
             type="submit"
             disabled={!isValid}
-            className={`w-full py-6 bg-foreground text-white rounded-[2rem] text-xs font-black uppercase tracking-[0.3em] flex items-center justify-center transition shadow-xl ${
-              !isValid ? "opacity-30 cursor-not-allowed" : "hover:bg-brand-indigo hover:-translate-y-1 active:scale-95"
+            className={`w-full py-3 bg-brand-indigo hover:opacity-90 text-white rounded-xl text-sm font-semibold flex items-center justify-center gap-2 transition-all shadow-sm ${
+              !isValid ? "opacity-40 cursor-not-allowed" : "hover:shadow-md active:scale-[0.98]"
             }`}
           >
-            <FileText className="w-5 h-5 mr-3" />
+            <Save className="w-4 h-4" />
             {proveedorToEdit ? "Actualizar Proveedor" : "Guardar Nuevo Proveedor"}
           </button>
         </form>

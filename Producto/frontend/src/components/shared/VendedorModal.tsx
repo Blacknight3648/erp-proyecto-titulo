@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { X, UserCheck } from "lucide-react";
+import { X, UserCheck, Save } from "lucide-react";
 import { useColaboradores } from "../../hooks/useColaboradores";
 
 const VendedorModal = ({ isOpen, onClose, onSave, vendedorToEdit }) => {
@@ -29,21 +29,21 @@ const VendedorModal = ({ isOpen, onClose, onSave, vendedorToEdit }) => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-foreground/60 backdrop-blur-sm animate-in fade-in duration-300">
-      <div className="bg-card rounded-3xl shadow-2xl w-full max-w-md overflow-hidden animate-in zoom-in-95 duration-300">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 overlay-backdrop">
+      <div className="bg-card w-full max-w-md rounded-2xl shadow-xl border border-border overflow-hidden">
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-border">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-success-bg rounded-xl text-success">
+            <div className="p-2 bg-brand-indigo/10 rounded-xl text-brand-indigo">
               <UserCheck size={20} />
             </div>
-            <h2 className="text-xl font-bold text-foreground">
+            <h2 className="text-lg font-bold text-foreground">
               {vendedorToEdit ? "Editar Vendedor" : "Registrar Nuevo Vendedor"}
             </h2>
           </div>
           <button
             onClick={onClose}
-            className="p-2 hover:bg-muted rounded-full transition-colors text-muted-foreground"
+            className="p-2 text-muted-foreground hover:text-foreground hover:bg-muted rounded-xl transition-all"
           >
             <X size={20} />
           </button>
@@ -52,7 +52,7 @@ const VendedorModal = ({ isOpen, onClose, onSave, vendedorToEdit }) => {
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
           {/* Usuario */}
           <div>
-            <label className="block text-sm font-semibold text-foreground mb-2">
+            <label className="block text-xs font-semibold text-muted-foreground mb-1.5">
               Colaborador <span className="text-destructive">*</span>
             </label>
             <select
@@ -60,7 +60,7 @@ const VendedorModal = ({ isOpen, onClose, onSave, vendedorToEdit }) => {
               value={usuarioId}
               onChange={(e) => setUsuarioId(e.target.value)}
               disabled={loadingColaboradores}
-              className="w-full px-4 py-3 bg-muted border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-success/20 focus:border-success transition-all disabled:opacity-60"
+              className="w-full px-4 py-2.5 bg-muted border border-border rounded-xl text-sm outline-none focus:ring-2 focus:ring-brand-indigo/20 focus:border-brand-indigo transition-all disabled:opacity-60 disabled:cursor-not-allowed"
             >
               <option value="">
                 {loadingColaboradores ? "Cargando colaboradores..." : "— Seleccionar colaborador —"}
@@ -75,7 +75,7 @@ const VendedorModal = ({ isOpen, onClose, onSave, vendedorToEdit }) => {
 
           {/* Código Vendedor */}
           <div>
-            <label className="block text-sm font-semibold text-foreground mb-2">
+            <label className="block text-xs font-semibold text-muted-foreground mb-1.5">
               Código de Vendedor <span className="text-destructive">*</span>
             </label>
             <input
@@ -84,26 +84,17 @@ const VendedorModal = ({ isOpen, onClose, onSave, vendedorToEdit }) => {
               value={codigoVendedor}
               onChange={(e) => setCodigoVendedor(e.target.value)}
               placeholder="Ej: VND-001, V-100..."
-              className="w-full px-4 py-3 bg-muted border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-success/20 focus:border-success transition-all"
+              className="w-full px-4 py-2.5 bg-muted border border-border rounded-xl text-sm outline-none focus:ring-2 focus:ring-brand-indigo/20 focus:border-brand-indigo transition-all"
             />
           </div>
 
-          {/* Botones */}
-          <div className="mt-6 flex gap-3">
-            <button
-              type="button"
-              onClick={onClose}
-              className="flex-1 px-4 py-3 border border-border text-muted-foreground font-semibold rounded-xl hover:bg-muted transition-all"
-            >
-              Cancelar
-            </button>
-            <button
-              type="submit"
-              className="flex-1 px-4 py-3 bg-success text-white font-semibold rounded-xl hover:bg-success shadow-lg shadow-success/30 transition-all"
-            >
-              {vendedorToEdit ? "Guardar Cambios" : "Registrar Vendedor"}
-            </button>
-          </div>
+          <button
+            type="submit"
+            className="w-full py-3 bg-brand-indigo hover:opacity-90 text-white rounded-xl text-sm font-semibold flex items-center justify-center gap-2 transition-all shadow-sm hover:shadow-md active:scale-[0.98]"
+          >
+            <Save className="w-4 h-4" />
+            {vendedorToEdit ? "Guardar Cambios" : "Registrar Vendedor"}
+          </button>
         </form>
       </div>
     </div>

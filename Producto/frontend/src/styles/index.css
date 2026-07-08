@@ -895,7 +895,7 @@ a:hover { color: var(--primary); }
 
 /* =========================================================
    OVERLAY / MODAL BACKDROP
-   (usado por PlantillasPanel.tsx)
+   (usado por los modales de components/shared)
 ========================================================= */
 
 .overlay-backdrop {

@@ -1,39 +1,30 @@
 import React, { useState, useMemo } from "react";
-import { Search, Plus, Edit2, Trash2, Layout, Briefcase, FileText } from "lucide-react";
+import { Search, Plus, Edit2, Trash2, Layout, Briefcase, FileText, Loader2 } from "lucide-react";
 import { Toaster, toast } from "sonner";
 import { confirmDelete } from "../../utils/confirmDelete";
 import { useAreas } from "../../hooks/useAreas";
 
-import { Card, CardHeader, CardTitle, CardContent } from "../../ui/card";
-import { Input } from "../../ui/input";
-import { Textarea } from "../../ui/textarea";
-import { Button } from "../../ui/button";
-
 const GestionAreas = () => {
   const { areas, loading, createArea, updateArea, deleteArea } = useAreas();
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedArea, setSelectedArea] = useState(null);
+  const [selectedArea, setSelectedArea] = useState<any>(null);
   
-  // Estado para el formulario (siempre visible en el panel lateral)
   const [formData, setFormData] = useState({ nombre: "", descripcion: "" });
 
-  // Filtrado optimizado para el buscador
   const filteredAreas = useMemo(() => {
     return areas.filter((area) =>
       area.nombre?.toLowerCase().includes(searchTerm.toLowerCase())
     );
   }, [areas, searchTerm]);
 
-  // Manejar el cambio en los inputs asegurando el formateo a UPPERCASE
-  const handleInputChange = (field, value) => {
+  const handleInputChange = (field: string, value: string) => {
     setFormData((prev) => ({
       ...prev,
-      [field]: value.toUpperCase() // Forzar almacenamiento en Mayúsculas
+      [field]: value.toUpperCase() 
     }));
   };
 
-  // Manejar la selección para edición
-  const handleSelectArea = (area) => {
+  const handleSelectArea = (area: any) => {
     setSelectedArea(area);
     setFormData({
       nombre: (area.nombre || "").toUpperCase(),
@@ -41,13 +32,12 @@ const GestionAreas = () => {
     });
   };
 
-  // Limpiar el formulario para crear uno nuevo
   const handleResetForm = () => {
     setSelectedArea(null);
     setFormData({ nombre: "", descripcion: "" });
   };
 
-  const handleDelete = (id) => {
+  const handleDelete = (id: number) => {
     confirmDelete("¿Está seguro de eliminar esta área?", async () => {
       try {
         await deleteArea(id);
@@ -60,14 +50,13 @@ const GestionAreas = () => {
     });
   };
 
-  const handleSave = async (e) => {
+  const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.nombre.trim()) {
       toast.error("El nombre del área es requerido");
       return;
     }
 
-    // Asegurar envío en Mayúsculas limpiando espacios extras
     const finalData = {
       nombre: formData.nombre.trim().toUpperCase(),
       descripcion: formData.descripcion.trim().toUpperCase()
@@ -90,22 +79,22 @@ const GestionAreas = () => {
   };
 
   return (
-    <div className="min-h-[calc(100vh-72px)] bg-background p-6 lg:p-8 font-sans antialiased text-foreground">
+    <div className="min-h-screen bg-zinc-50/50 px-4 py-8 sm:px-8 font-sans antialiased text-zinc-900 selection:bg-zinc-200">
       <Toaster position="top-right" richColors closeButton />
 
       <div className="max-w-7xl mx-auto space-y-6">
         
         {/* ENCABEZADO EMPRESARIAL */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between border-b border-border pb-5 gap-4">
-          <div className="flex items-center gap-4">
-            <div className="w-12 h-12 bg-sidebar rounded-xl flex items-center justify-center text-white shadow-sm">
-              <Layout size={24} />
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-4 border-b border-zinc-200/60">
+          <div className="flex items-center gap-3.5">
+            <div className="p-2.5 bg-white border border-zinc-200 shadow-sm rounded-xl text-zinc-700">
+              <Layout className="w-5 h-5 stroke-[1.75]" />
             </div>
             <div>
-              <h1 className="text-2xl font-bold text-foreground tracking-tight">
+              <h1 className="text-xl font-semibold tracking-tight text-zinc-900">
                 Gestión de Áreas
               </h1>
-              <p className="text-xs text-muted-foreground font-medium uppercase tracking-wider mt-0.5">
+              <p className="text-xs text-zinc-500 font-medium mt-0.5">
                 Administración de departamentos y áreas funcionales de la organización
               </p>
             </div>
@@ -116,188 +105,176 @@ const GestionAreas = () => {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
           
           {/* PANEL IZQUIERDO: FORMULARIO REGISTRO/EDICIÓN */}
-          <Card className="lg:col-span-4 sticky top-6 overflow-hidden">
-            <CardHeader className="flex flex-row justify-between items-center bg-muted/50 border-b border-border py-4 px-6">
-              <CardTitle className="text-sm font-bold text-foreground uppercase tracking-wider">
+          <div className="lg:col-span-4 sticky top-6 bg-white rounded-2xl border border-zinc-200/80 shadow-[0_2px_8px_-3px_rgba(0,0,0,0.05)] overflow-hidden">
+            <div className="flex flex-row justify-between items-center bg-zinc-50/50 border-b border-zinc-100 py-4 px-6">
+              <h2 className="text-[11px] font-bold text-zinc-400 uppercase tracking-widest">
                 {selectedArea ? "Editar Área" : "Registrar Nueva Área"}
-              </CardTitle>
+              </h2>
               {selectedArea && (
-                <Button
-                  variant="link"
-                  size="sm"
+                <button
+                  type="button"
                   onClick={handleResetForm}
-                  className="text-xs text-primary hover:underline font-medium uppercase p-0 h-auto"
+                  className="text-[10px] text-zinc-500 hover:text-zinc-900 font-bold uppercase tracking-wider transition-colors"
                 >
                   Cancelar edición
-                </Button>
+                </button>
               )}
-            </CardHeader>
+            </div>
             
-            <form onSubmit={handleSave}>
-              <CardContent className="p-6 space-y-5">
-                <div>
-                  <label className="block text-xs font-bold text-muted-foreground uppercase mb-2 tracking-wide">
-                    Nombre del Área <span className="text-destructive">*</span>
-                  </label>
-                  <Input
-                    type="text"
-                    placeholder="EJ: MARKETING, FINANZAS, SISTEMAS..."
-                    value={formData.nombre}
-                    onChange={(e) => handleInputChange("nombre", e.target.value)}
-                    className="uppercase"
-                    required
-                  />
-                </div>
+            <form onSubmit={handleSave} className="p-6 space-y-5">
+              <div>
+                <label className="block text-[11px] font-bold text-zinc-500 uppercase mb-2 tracking-wider">
+                  Nombre del Área <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  placeholder="EJ: MARKETING, FINANZAS..."
+                  value={formData.nombre}
+                  onChange={(e) => handleInputChange("nombre", e.target.value)}
+                  className="w-full bg-zinc-50/50 border border-zinc-200 rounded-xl px-3 py-2 text-xs font-semibold uppercase placeholder:text-zinc-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-zinc-900/5 focus:border-zinc-500 transition-all"
+                  required
+                />
+              </div>
 
-                <div>
-                  <label className="block text-xs font-bold text-muted-foreground uppercase mb-2 tracking-wide">
-                    Descripción
-                  </label>
-                  <Textarea
-                    rows={4}
-                    placeholder="ESCRIBA LOS DETALLES O PROPÓSITOS DEL ÁREA..."
-                    value={formData.descripcion}
-                    onChange={(e) => handleInputChange("descripcion", e.target.value)}
-                    className="uppercase resize-none"
-                  />
-                </div>
+              <div>
+                <label className="block text-[11px] font-bold text-zinc-500 uppercase mb-2 tracking-wider">
+                  Descripción
+                </label>
+                <textarea
+                  rows={4}
+                  placeholder="ESCRIBA LOS DETALLES O PROPÓSITOS DEL ÁREA..."
+                  value={formData.descripcion}
+                  onChange={(e) => handleInputChange("descripcion", e.target.value)}
+                  className="w-full bg-zinc-50/50 border border-zinc-200 rounded-xl px-3 py-2 text-xs font-medium uppercase placeholder:text-zinc-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-zinc-900/5 focus:border-zinc-500 transition-all resize-none"
+                />
+              </div>
 
-                <div className="pt-2 flex gap-3">
-                  {!selectedArea && (
-                    <Button
-                      type="button"
-                      variant="secondary"
-                      onClick={() => setFormData({ nombre: "", descripcion: "" })}
-                      className="w-1/3 uppercase text-xs"
-                    >
-                      Limpiar
-                    </Button>
-                  )}
-                  <Button
-                    type="submit"
-                    className={`flex-1 uppercase text-xs text-white ${
-                      selectedArea
-                        ? "bg-warning hover:bg-warning/90"
-                        : "bg-primary hover:bg-primary-hover"
-                    }`}
+              <div className="pt-2 flex gap-3">
+                {!selectedArea && (
+                  <button
+                    type="button"
+                    onClick={() => setFormData({ nombre: "", descripcion: "" })}
+                    className="w-1/3 py-2.5 rounded-xl font-bold uppercase tracking-wide text-[10px] text-zinc-500 bg-zinc-100 hover:bg-zinc-200 transition-colors"
                   >
-                    {selectedArea ? <Edit2 size={16} /> : <Plus size={16} />}
-                    {selectedArea ? "Guardar Cambios" : "Crear Área"}
-                  </Button>
-                </div>
-              </CardContent>
+                    Limpiar
+                  </button>
+                )}
+                <button
+                  type="submit"
+                  className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl font-bold uppercase tracking-wide text-[10px] text-white shadow-sm transition-all active:scale-[0.98] ${
+                    selectedArea
+                      ? "bg-amber-500 hover:bg-amber-600 shadow-amber-500/20"
+                      : "bg-zinc-900 hover:bg-zinc-800"
+                  }`}
+                >
+                  {selectedArea ? <Edit2 size={14} /> : <Plus size={14} />}
+                  {selectedArea ? "Guardar Cambios" : "Crear Área"}
+                </button>
+              </div>
             </form>
-          </Card>
+          </div>
 
           {/* PANEL DERECHO: BUSCADOR Y LISTA NAVEGABLE */}
           <div className="lg:col-span-8 space-y-4">
             
-            {/* Buscador Limpio de una Sola Línea */}
-            <div className="bg-card rounded-xl border border-border shadow-sm flex items-center px-4 py-1 focus-within:ring-2 focus-within:ring-primary/25 transition-all">
-              <Search size={18} className="text-muted-foreground mr-3 shrink-0" />
+            {/* Buscador */}
+            <div className="bg-white rounded-2xl border border-zinc-200/80 shadow-[0_2px_8px_-3px_rgba(0,0,0,0.05)] flex items-center px-4 focus-within:ring-2 focus-within:ring-zinc-900/5 focus-within:border-zinc-500 transition-all overflow-hidden h-12">
+              <Search size={16} className="text-zinc-400 mr-3 shrink-0 stroke-[2]" />
               <input
                 type="text"
                 placeholder="Filtro rápido por nombre de área..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full bg-transparent border-none outline-none py-3 text-sm text-foreground placeholder-muted-foreground uppercase"
+                className="w-full bg-transparent border-none outline-none py-2 text-xs font-medium text-zinc-900 placeholder:text-zinc-400 uppercase"
               />
               {searchTerm && (
-                <Button 
-                  variant="ghost"
-                  size="sm"
+                <button 
                   onClick={() => setSearchTerm("")}
-                  className="text-xs text-muted-foreground hover:text-foreground font-medium px-2 uppercase"
+                  className="text-[10px] text-zinc-400 hover:text-zinc-900 font-bold px-2 uppercase tracking-wider"
                 >
                   Limpiar
-                </Button>
+                </button>
               )}
             </div>
 
             {/* Contenedor del listado */}
-            <Card className="overflow-hidden">
-              <CardHeader className="px-6 py-4 bg-muted border-b border-border flex flex-row items-center gap-2">
-                <Briefcase size={16} className="text-muted-foreground" />
-                <CardTitle className="text-sm font-bold text-foreground uppercase tracking-wider">
-                  Listado de Áreas Activas
-                </CardTitle>
-                <span className="ml-auto bg-muted-foreground/20 text-foreground text-xs font-bold px-2.5 py-0.5 rounded-full">
+            <div className="bg-white rounded-2xl border border-zinc-200/80 shadow-[0_2px_8px_-3px_rgba(0,0,0,0.05)] overflow-hidden flex flex-col">
+              <div className="px-6 py-4 bg-zinc-50/50 border-b border-zinc-100 flex flex-row items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Briefcase size={14} className="text-zinc-400 stroke-[2]" />
+                  <h2 className="text-[11px] font-bold text-zinc-400 uppercase tracking-widest">
+                    Listado de Áreas Activas
+                  </h2>
+                </div>
+                <span className="bg-zinc-200/50 text-zinc-500 text-[10px] font-bold px-2.5 py-0.5 rounded-full">
                   {filteredAreas.length}
                 </span>
-              </CardHeader>
+              </div>
 
-              <CardContent className="p-0 divide-y divide-border max-h-[500px] overflow-y-auto custom-scrollbar">
+              <div className="divide-y divide-zinc-100 max-h-[500px] overflow-y-auto custom-scrollbar">
                 {loading ? (
-                  <div className="p-12 text-center text-muted-foreground">
-                    <div className="flex flex-col items-center gap-3">
-                      <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
-                      <p className="text-sm font-medium uppercase">Cargando registros empresariales...</p>
-                    </div>
+                  <div className="p-16 flex flex-col items-center justify-center gap-3 text-zinc-400">
+                    <Loader2 className="w-6 h-6 animate-spin text-zinc-300" />
+                    <p className="text-[11px] font-bold uppercase tracking-widest">Cargando registros empresariales...</p>
                   </div>
                 ) : filteredAreas.length === 0 ? (
-                  <div className="p-12 text-center text-muted-foreground">
-                    <div className="flex flex-col items-center gap-2">
-                      <FileText size={32} className="text-muted-foreground/40" strokeWidth={1.5} />
-                      <p className="font-medium text-sm text-muted-foreground uppercase">No se encontraron resultados</p>
-                      <p className="text-xs text-muted-foreground/70 uppercase">Prueba con otro término o añade una nueva área a la izquierda.</p>
-                    </div>
+                  <div className="p-16 flex flex-col items-center gap-2 text-center">
+                    <FileText size={28} className="text-zinc-300 stroke-[1.5] mb-2" />
+                    <p className="font-bold text-[11px] text-zinc-400 uppercase tracking-widest">No se encontraron resultados</p>
+                    <p className="text-[10px] text-zinc-400/80 uppercase font-medium">Prueba con otro término o añade una nueva área.</p>
                   </div>
                 ) : (
-                  filteredAreas.map((area) => {
+                  filteredAreas.map((area: any) => {
                     const id = area.areaId || area.id;
                     const isSelected = selectedArea?.id === id || selectedArea?.areaId === id;
                     
                     return (
                       <div 
                         key={id} 
-                        className={`group p-5 flex items-start justify-between gap-4 transition-all hover:bg-muted cursor-pointer ${
-                          isSelected ? "bg-primary/5 border-l-4 border-primary pl-4" : ""
+                        className={`group p-5 flex items-start justify-between gap-4 transition-colors hover:bg-zinc-50/80 cursor-pointer ${
+                          isSelected ? "bg-zinc-50 border-l-4 border-l-zinc-900 pl-4" : "border-l-4 border-l-transparent"
                         }`}
                         onClick={() => handleSelectArea(area)}
                       >
                         <div className="space-y-1 min-w-0 flex-1">
                           <div className="flex items-center gap-2.5">
-                            <span className="text-[10px] font-mono font-bold text-muted-foreground bg-muted border border-border px-2 py-0.5 rounded tracking-wider uppercase">
+                            <span className="text-[9px] font-mono font-bold text-zinc-500 bg-zinc-100 border border-zinc-200/60 px-1.5 py-0.5 rounded tracking-widest uppercase">
                               ID: {id}
                             </span>
-                            <h3 className="font-bold text-foreground text-base group-hover:text-primary transition-colors truncate uppercase">
+                            <h3 className="font-bold text-zinc-900 text-sm group-hover:text-black transition-colors truncate uppercase">
                               {area.nombre}
                             </h3>
                           </div>
-                          <p className="text-sm text-muted-foreground line-clamp-2 pr-4 uppercase">
+                          <p className="text-xs text-zinc-500 line-clamp-2 pr-4 font-medium uppercase mt-1">
                             {area.descripcion || (
-                              <span className="italic text-muted-foreground/60 text-xs normal-case">Sin descripción asignada</span>
+                              <span className="text-[10px] text-zinc-400 font-medium">SIN DESCRIPCIÓN ASIGNADA</span>
                             )}
                           </p>
                         </div>
 
-                        {/* Botones de acción minimalistas */}
-                        <div className="flex items-center gap-1 opacity-60 group-hover:opacity-100 transition-opacity shrink-0" onClick={(e) => e.stopPropagation()}>
-                          <Button
-                            variant="ghost"
-                            size="sm"
+                        {/* Botones de acción */}
+                        <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity shrink-0" onClick={(e) => e.stopPropagation()}>
+                          <button
                             onClick={() => handleSelectArea(area)}
-                            className="p-2 text-muted-foreground hover:text-foreground hover:bg-muted rounded-lg transition-all"
+                            className="p-2 text-zinc-400 hover:text-zinc-900 hover:bg-zinc-100 rounded-lg transition-all"
                             title="Editar"
                           >
-                            <Edit2 size={15} />
-                          </Button>
-                          <Button
-                            variant="ghost"
-                            size="sm"
+                            <Edit2 size={16} strokeWidth={2} />
+                          </button>
+                          <button
                             onClick={() => handleDelete(id)}
-                            className="p-2 text-destructive hover:bg-destructive/10 rounded-lg transition-all"
+                            className="p-2 text-zinc-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all"
                             title="Eliminar"
                           >
-                            <Trash2 size={15} />
-                          </Button>
+                            <Trash2 size={16} strokeWidth={2} />
+                          </button>
                         </div>
                       </div>
                     );
                   })
                 )}
-              </CardContent>
-            </Card>
+              </div>
+            </div>
 
           </div>
         </div>

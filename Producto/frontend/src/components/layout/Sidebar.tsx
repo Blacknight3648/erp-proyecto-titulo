@@ -6,7 +6,7 @@ import {
   LayoutDashboard, ClipboardList, Target, FileText,
   Briefcase, Truck, DollarSign, AlertCircle, History,
   Settings, Scissors, Home, KeyRound,
-  FactoryIcon
+  FactoryIcon, Landmark, MapPin, Network, Phone, CreditCard, Box, Layers
 } from 'lucide-react';
 
 /* ─────────────────────────────────────────
@@ -101,10 +101,17 @@ const menuItems = [
     id: 'datos-maestros', label: 'Datos Maestros', icon: Package,
     homeRoute: '/admin/datos-maestros',
     submenu: [
-      { path: '/admin/datos-maestros',           label: 'Datos Maestros', icon: Settings },
-      { path: '/gestion-usuarios/clientes',      label: 'Clientes',     icon: Users },
-      { path: '/gestion-usuarios/proveedores',   label: 'Proveedores',  icon: Truck },
-      { path: '/gestion-usuarios/vendedores',    label: 'Vendedores (Comerciales)', icon: BarChart3 },
+      { path: '/admin/datos-maestros/bancos', label: 'BANCOS', icon: Landmark },
+      { path: '/admin/datos-maestros/paises', label: 'PAÍSES', icon: MapPin },
+      { path: '/admin/datos-maestros/regiones', label: 'REGIONES', icon: MapPin },
+      { path: '/admin/datos-maestros/comunas', label: 'COMUNAS', icon: MapPin },
+      { path: '/admin/datos-maestros/rubros', label: 'RUBROS', icon: Briefcase },
+      { path: '/admin/datos-maestros/giros', label: 'GIROS', icon: Network },
+      { path: '/admin/datos-maestros/tipos-contacto', label: 'TIPOS DE CONTACTO', icon: Phone },
+      { path: '/admin/datos-maestros/tipos-cuenta-bancaria', label: 'TIPOS CUENTA BANCARIA', icon: CreditCard },
+      { path: '/admin/datos-maestros/tipos-direccion', label: 'TIPOS DIRECCIÓN', icon: Box },
+      { path: '/admin/datos-maestros/categorias-tela', label: 'CATEGORÍAS DE TELA', icon: Box },
+      { path: '/admin/datos-maestros/administrador-articulos', label: 'ADMINISTRADOR DE ARTÍCULOS', icon: Package },
     ],
   },
 ];
@@ -205,7 +212,7 @@ export default function Sidebar({ isOpen, setIsOpen }) {
         {/* ── Cabecera ── */}
         <div style={{
           padding: '0 16px',
-          display: 'flex', alignItems: 'center', justifyBox: 'space-between', justifyContent: 'space-between',
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
           height: '72px', flexShrink: 0,
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px', overflow: 'hidden' }}>
@@ -283,7 +290,7 @@ export default function Sidebar({ isOpen, setIsOpen }) {
                 (hasSubmenu && item.submenu.some((s) => location.pathname === s.path));
 
               const itemStyle = {
-                width: '100%', boxSizing: 'border-box',
+                width: '100%', boxSizing: 'border-box' as const,
                 display: 'flex', alignItems: 'center', gap: '12px',
                 padding: '10px 12px', borderRadius: '8px',
                 background: isActive ? C.bgActive : isSubmenuOpen ? C.bgHover : 'transparent',

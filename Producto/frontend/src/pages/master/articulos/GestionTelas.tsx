@@ -1,13 +1,146 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { api } from '../../../remote/service/api';
 import { Toaster, toast } from 'sonner';
-import { Layers, Plus, Edit, Trash2, Save, Search, RefreshCw, X, Eye, Palette } from 'lucide-react';
+import { Layers, Plus, Edit, Trash2, Save, Search, RefreshCw, X, Eye, Palette, Check } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardContent } from "../../../ui/card";
 import { Input } from "../../../ui/input";
 import { Button } from "../../../ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../../../ui/dialog";
 import { Checkbox } from "../../../ui/checkbox";
 import { confirmDelete } from '../../../utils/confirmDelete';
+
+/**
+ * Combobox multi-selección de colores: lista ordenada alfabéticamente,
+ * filtrado por búsqueda y opción de crear un color nuevo cuando no existe.
+ */
+function ColorMultiCombobox({
+  options,
+  selectedIds,
+  onChange,
+  onCreate,
+}: {
+  options: any[];
+  selectedIds: number[];
+  onChange: (ids: number[]) => void;
+  onCreate: (nombre: string) => Promise<any>;
+}) {
+  const [query, setQuery] = useState('');
+  const [open, setOpen] = useState(false);
+  const [creating, setCreating] = useState(false);
+  const wrapRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!open) return;
+    const handler = (e: MouseEvent) => {
+      if (wrapRef.current && !wrapRef.current.contains(e.target as Node)) setOpen(false);
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, [open]);
+
+  const sorted = [...options].sort((a, b) =>
+    (a.descripcionColor || '').localeCompare(b.descripcionColor || '')
+  );
+  const term = query.trim().toLowerCase();
+  const filtered = sorted.filter(c => (c.descripcionColor || '').toLowerCase().includes(term));
+  const exactMatch = sorted.some(c => (c.descripcionColor || '').toLowerCase() === term);
+  const canCreate = term.length > 0 && !exactMatch;
+  const selected = options.filter(c => selectedIds.includes(c.idColor));
+
+  const toggle = (id: number) => {
+    onChange(selectedIds.includes(id) ? selectedIds.filter(x => x !== id) : [...selectedIds, id]);
+  };
+
+  const handleCreate = async () => {
+    const nombre = query.trim();
+    if (!nombre || creating) return;
+    setCreating(true);
+    try {
+      const created = await onCreate(nombre);
+      if (created?.idColor) {
+        onChange([...selectedIds, created.idColor]);
+        setQuery('');
+      }
+    } finally {
+      setCreating(false);
+    }
+  };
+
+  return (
+    <div ref={wrapRef} className="relative w-full">
+      <div className="flex flex-wrap gap-2 mb-2 min-h-[1.75rem]">
+        {selected.length === 0 && (
+          <span className="text-xs text-zinc-400 italic">Ningún color seleccionado</span>
+        )}
+        {selected.map(c => (
+          <span key={c.idColor} className="flex items-center gap-1.5 pl-2.5 pr-1.5 py-1 bg-zinc-900 text-white text-[11px] font-bold rounded-lg uppercase">
+            {c.descripcionColor}
+            <button type="button" onClick={() => toggle(c.idColor)} className="hover:text-zinc-300 rounded-full">
+              <X size={11} />
+            </button>
+          </span>
+        ))}
+      </div>
+
+      <div className="relative">
+        <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-400" size={14} />
+        <input
+          type="text"
+          value={query}
+          onChange={(e) => { setQuery(e.target.value); setOpen(true); }}
+          onFocus={() => setOpen(true)}
+          placeholder="Buscar un color o escribir uno nuevo..."
+          className="w-full h-10 pl-9 pr-3 rounded-xl border border-zinc-200 bg-zinc-50 text-xs font-semibold uppercase focus:ring-2 focus:ring-zinc-900 outline-none"
+        />
+      </div>
+
+      {open && (
+        <div className="absolute z-20 mt-1 w-full bg-white border border-zinc-200 rounded-xl shadow-xl overflow-hidden">
+          <div className="max-h-52 overflow-y-auto divide-y divide-zinc-100">
+            {filtered.length > 0 ? (
+              filtered.map(c => {
+                const isChecked = selectedIds.includes(c.idColor);
+                return (
+                  <div
+                    role="option"
+                    aria-selected={isChecked}
+                    key={c.idColor}
+                    onMouseDown={(e) => { e.preventDefault(); toggle(c.idColor); }}
+                    className={`w-full flex items-center gap-3 px-3.5 py-2.5 text-left text-xs font-semibold transition-colors cursor-pointer ${
+                      isChecked ? 'bg-zinc-100 text-zinc-900' : 'text-zinc-600 hover:bg-zinc-50'
+                    }`}
+                  >
+                    <div className={`w-4 h-4 shrink-0 rounded border flex items-center justify-center ${isChecked ? 'bg-zinc-900 border-zinc-900' : 'border-zinc-300'}`}>
+                      {isChecked && <Check size={10} className="text-white" strokeWidth={3} />}
+                    </div>
+                    <span className="flex-1 uppercase">{c.descripcionColor}</span>
+                    <span className="text-[10px] text-zinc-400">{c.codigoColor}</span>
+                  </div>
+                );
+              })
+            ) : (
+              <p className="text-center text-xs text-zinc-400 py-4">Sin colores coincidentes</p>
+            )}
+          </div>
+
+          {canCreate && (
+            <button
+              type="button"
+              disabled={creating}
+              onMouseDown={(e) => { e.preventDefault(); handleCreate(); }}
+              className="w-full flex items-center gap-2 px-3.5 py-3 bg-zinc-900 text-white text-left transition-colors hover:bg-zinc-800 disabled:opacity-60"
+            >
+              <Plus size={14} />
+              <span className="text-xs font-bold uppercase">
+                {creating ? 'Creando...' : `Agregar nuevo color "${query.trim()}"`}
+              </span>
+            </button>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
 
 export default function GestionTelas() {
   const [telas, setTelas] = useState<any[]>([]);
@@ -136,16 +269,18 @@ export default function GestionTelas() {
     setIsDetailsModalOpen(true);
   };
 
-  const toggleColor = (id: number) => {
-    const current = formData.detalleTela.colores;
-    const isSelected = current.includes(id);
-    setFormData({
-      ...formData,
-      detalleTela: {
-        ...formData.detalleTela,
-        colores: isSelected ? current.filter((x: number) => x !== id) : [...current, id]
-      }
-    });
+  const handleCreateColor = async (nombre: string) => {
+    try {
+      const res = await api.post('/maestros/colores-tela', { descripcionColor: nombre.toUpperCase() });
+      const created = res.data as any;
+      setColores(prev => [...prev, created]);
+      toast.success(`Color "${created.descripcionColor}" agregado al catálogo`);
+      return created;
+    } catch (error) {
+      console.error(error);
+      toast.error('No se pudo crear el color');
+      return null;
+    }
   };
 
   const toggleAtributo = (id: number) => {
@@ -215,8 +350,8 @@ export default function GestionTelas() {
     const term = searchTerm.toLowerCase();
     return item.nombreArticulo.toLowerCase().includes(term) ||
            item.codigoArticulo.toLowerCase().includes(term) ||
-           (item.detalleTela?.familiaTela?.nombreFamiliaTela || '').toLowerCase().includes(term) ||
-           (item.detalleTela?.composicion?.nombreComposicion || '').toLowerCase().includes(term);
+           (item.detalleTela?.familiaTela?.nombreFamilia || '').toLowerCase().includes(term) ||
+           (item.detalleTela?.composicion?.descripcionComposicion || '').toLowerCase().includes(term);
   });
 
   return (
@@ -443,49 +578,14 @@ export default function GestionTelas() {
             {/* Sección 4: Colores Disponibles */}
             <div>
               <h3 className="text-xs font-bold text-zinc-400 uppercase tracking-widest mb-4 flex items-center gap-2">
-                <div className="w-1.5 h-1.5 rounded-full bg-pink-300" /> Colores Disponibles
-              </h3>
-              <div className="grid grid-cols-3 gap-3 bg-zinc-50 p-4 rounded-xl border border-zinc-200">
-                {colores.map(color => {
-                  const isChecked = formData.detalleTela.colores.includes(color.idColor);
-                  return (
-                    <label key={color.idColor} className={`flex items-start gap-3 p-3 rounded-lg border cursor-pointer transition-colors ${isChecked ? 'bg-white border-zinc-300 shadow-sm' : 'border-transparent hover:bg-zinc-100'}`}>
-                      <div className="mt-0.5">
-                        <Checkbox checked={isChecked} onCheckedChange={() => toggleColor(color.idColor)} className={isChecked ? 'border-zinc-900 bg-zinc-900' : ''} />
-                      </div>
-                      <div className="flex-1">
-                        <div className="text-[11px] font-bold text-zinc-900 uppercase">{color.descripcionColor}</div>
-                        <div className="text-[9px] text-zinc-400 uppercase font-medium mt-0.5">{color.codigoColor}</div>
-                      </div>
-                    </label>
-                  );
-                })}
-              </div>
-            </div>
-
-            <div className="h-px bg-zinc-100" />
-
-            {/* Sección 4: Colores Disponibles */}
-            <div>
-              <h3 className="text-xs font-bold text-zinc-400 uppercase tracking-widest mb-4 flex items-center gap-2">
                 <div className="w-1.5 h-1.5 rounded-full bg-pink-300" /> Colores Disponibles para esta Tela
               </h3>
-              <div className="grid grid-cols-3 gap-3 bg-zinc-50 p-4 rounded-xl border border-zinc-200">
-                {colores.map(color => {
-                  const isChecked = formData.detalleTela.colores.includes(color.idColor);
-                  return (
-                    <label key={color.idColor} className={`flex items-start gap-3 p-3 rounded-lg border cursor-pointer transition-colors ${isChecked ? 'bg-white border-zinc-300 shadow-sm' : 'border-transparent hover:bg-zinc-100'}`}>
-                      <div className="mt-0.5">
-                        <Checkbox checked={isChecked} onCheckedChange={() => toggleColor(color.idColor)} className={isChecked ? 'border-zinc-900 bg-zinc-900' : ''} />
-                      </div>
-                      <div className="flex-1">
-                        <div className="text-[11px] font-bold text-zinc-900 uppercase">{color.nombreColor}</div>
-                        <div className="text-[9px] text-zinc-400 uppercase font-medium mt-0.5">{color.codigoColor}</div>
-                      </div>
-                    </label>
-                  );
-                })}
-              </div>
+              <ColorMultiCombobox
+                options={colores}
+                selectedIds={formData.detalleTela.colores}
+                onChange={(ids) => setFormData({...formData, detalleTela: {...formData.detalleTela, colores: ids}})}
+                onCreate={handleCreateColor}
+              />
             </div>
 
             {/* Modal Footer */}
@@ -520,11 +620,11 @@ export default function GestionTelas() {
                 <div className="grid grid-cols-2 gap-4">
                   <div className="bg-zinc-50 p-4 rounded-xl border border-zinc-200">
                     <p className="text-[10px] text-zinc-400 font-bold uppercase tracking-wider mb-1">Familia</p>
-                    <p className="text-sm font-bold text-zinc-900 uppercase">{viewingItem.detalleTela?.familiaTela?.nombreFamiliaTela || 'N/A'}</p>
+                    <p className="text-sm font-bold text-zinc-900 uppercase">{viewingItem.detalleTela?.familiaTela?.nombreFamilia || 'N/A'}</p>
                   </div>
                   <div className="bg-zinc-50 p-4 rounded-xl border border-zinc-200">
                     <p className="text-[10px] text-zinc-400 font-bold uppercase tracking-wider mb-1">Composición</p>
-                    <p className="text-sm font-bold text-zinc-900 uppercase">{viewingItem.detalleTela?.composicion?.nombreComposicion || 'N/A'}</p>
+                    <p className="text-sm font-bold text-zinc-900 uppercase">{viewingItem.detalleTela?.composicion?.descripcionComposicion || 'N/A'}</p>
                   </div>
                   <div className="bg-zinc-50 p-4 rounded-xl border border-zinc-200">
                     <p className="text-[10px] text-zinc-400 font-bold uppercase tracking-wider mb-1">Gramaje / Peso</p>
@@ -544,7 +644,7 @@ export default function GestionTelas() {
                     {viewingItem.detalleTela?.colores?.length > 0 ? (
                       viewingItem.detalleTela.colores.map((c: any) => (
                         <span key={c.idColor} className="px-3 py-1.5 bg-zinc-100 border border-zinc-200 text-zinc-700 text-xs font-bold rounded-lg uppercase">
-                          {c.nombreColor} <span className="text-[10px] text-zinc-400 ml-1">({c.codigoColor})</span>
+                          {c.descripcionColor} <span className="text-[10px] text-zinc-400 ml-1">({c.codigoColor})</span>
                         </span>
                       ))
                     ) : (
@@ -561,7 +661,7 @@ export default function GestionTelas() {
                     {viewingItem.detalleTela?.atributosTecnicos?.length > 0 ? (
                       viewingItem.detalleTela.atributosTecnicos.map((a: any) => (
                         <span key={a.idAtributo} className="px-3 py-1.5 bg-amber-50 border border-amber-200 text-amber-700 text-xs font-bold rounded-lg uppercase">
-                          {a.descripcionAtributo}
+                          {a.descripcionTecnica}
                         </span>
                       ))
                     ) : (

@@ -116,7 +116,7 @@ MERGE INTO tipos_contacto (tipo_contacto_id, descripcion_tipo_contacto)
     (2, 'COMERCIAL'),
     (3, 'FINANZAS');
 
-MERGE INTO contactos (contacto_id, nombre_contacto, telefono_contacto, email_contacto, tipo_contacto_id, fk_contacto)
+MERGE INTO contactos (contacto_id, nombre_contacto, telefono_contacto, email_contacto, tipo_contacto_id, fk_cliente_contacto)
     KEY (contacto_id)
     VALUES
     (1, 'CONTACTO HITES', '+56227275000', 'contacto.hites@hites.cl', 1, 1),
@@ -147,7 +147,7 @@ MERGE INTO tipo_direccion (tipo_direccion_id, descripcion)
     (1, 'PRINCIPAL'),
     (2, 'SUCURSAL');
 
-MERGE INTO direccion (direccion_id, calle, numero, depto, tipo_direccion_id, comuna_id, fk_direccion)
+MERGE INTO direccion (direccion_id, calle, numero, depto, tipo_direccion_id, comuna_id, fk_cliente_direccion)
     KEY (direccion_id)
     VALUES
     (1, 'AV. KENNEDY', '5413', 'OF. 201', 1, 1, 1),
@@ -487,6 +487,22 @@ MERGE INTO articulo (id_articulo, codigo_articulo, nombre_articulo, descripcion_
     (5, 'ART-ACC-002',  'Botón Snap 15mm Nácar',       'Botón tipo snap nacarado 15 mm',        NULL, 3, true, NULL, NULL);
 
 -- ============================================================
+-- 7.1.1. DETALLE TELA (articulo_tela) — completa el maestro de
+--        Composición/Familia/Gramaje de los 3 artículos tipo TELA,
+--        requerido para que el combo de Tela en EVN/NV pueda
+--        autocompletar la Composición al seleccionarlos.
+--        IDs referencian el bloque de familia_tela/clasificacion_tecnica/
+--        composicion/gramaje_tela que gana en H2 (el segundo MERGE, más
+--        abajo en este archivo, sobrescribe al primero por compartir KEY).
+-- ============================================================
+MERGE INTO articulo_tela (id_articulo, id_familia_tela, id_clasificacion_tecnica, id_composicion, id_gramaje)
+    KEY (id_articulo)
+    VALUES
+    (1, 5,  1, 2,  9),
+    (2, 16, 4, 10, 3),
+    (3, 7,  1, 1,  4);
+
+-- ============================================================
 -- 7.2. CATÁLOGO DE CAMPOS DE PLANTILLA
 -- ============================================================
 MERGE INTO plantilla (id_plantilla, nombre_campo)
@@ -517,8 +533,8 @@ MERGE INTO modelo_plantilla (id_modelo_plantilla, id_articulo, campos)
 -- ============================================================
 -- 7.4. SOLICITUDES DE COSTOS (SCOS)
 -- ============================================================
-MERGE INTO solicitudes_costos (idscos, numero, estado, tipo, cliente_id, vendedor_id, articulo_descripcion, nombre_prenda, genero, tallaje, es_muestra, has_logo, cantidad, fecha, costo_total)
-    KEY (idscos)
+MERGE INTO solicitudes_costos (id_scos, numero, estado, tipo, cliente_id, vendedor_id, articulo_descripcion, nombre_prenda, genero, tallaje, es_muestra, has_logo, cantidad, fecha, costo_total)
+    KEY (id_scos)
     VALUES
     (1, 'SCOS-000001', 'PENDIENTE', 'SCOS', 1, 1, 'POLERA', 'Polera Piqué Corporativa', 'UNISEX', 'Antuan SA', false, true,  100, CURRENT_DATE, 150000.00),
     (2, 'SCOS-000002', 'APROBADA',  'SCOS', 2, 2, 'PANTALON', 'Pantalón Cargo Operario', 'MASCULINO', 'Cliente', false, false, 50, CURRENT_DATE, 250000.00);
@@ -526,11 +542,11 @@ MERGE INTO solicitudes_costos (idscos, numero, estado, tipo, cliente_id, vendedo
 -- ============================================================
 -- 7.5. EVALUACIONES DE NEGOCIO (EVN)
 -- ============================================================
-MERGE INTO evaluaciones_negocio (idevn, numero, referencia, cliente_nombre, cliente_id, vendedor_id, estado, fecha_evaluacion, porcentaje_comision, created_at, updated_at)
-    KEY (idevn)
+MERGE INTO evaluaciones_negocio (id_evn, numero, referencia, cliente_nombre, cliente_id, vendedor_id, estado, fecha_evaluacion, porcentaje_comision, created_at, updated_at)
+    KEY (id_evn)
     VALUES
-    (1, 'EVN-000001', 'Cotización Poleras Hites', 'HITES S.A.', 1, 1, 'EVALUACION', CURRENT_DATE, 5.00, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-    (2, 'EVN-000002', 'Licitación Pantalones', 'LABORATORIO MEDCELL', 2, 2, 'APROBADA', CURRENT_DATE, 3.50, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+    (1, 'EVN-000001', 'Cotización Poleras Hites', 'HITES S.A.', 1, 1, 'EVALUACION', CURRENT_DATE, 20.00, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+    (2, 'EVN-000002', 'Licitación Pantalones', 'LABORATORIO MEDCELL', 2, 2, 'APROBADA', CURRENT_DATE, 20.00, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
 -- ============================================================
 -- 7.6. NOTAS DE VENTA (NV)
@@ -761,17 +777,17 @@ ALTER TABLE modelo_plantilla ALTER COLUMN id_modelo_plantilla RESTART WITH 1000;
 ALTER TABLE descripcion_plantilla ALTER COLUMN id_descripcion_plantilla RESTART WITH 5000;
 
 -- SCOS / Costeos
-ALTER TABLE solicitudes_costos ALTER COLUMN idscos RESTART WITH 2000;
-ALTER TABLE scos_telas ALTER COLUMN idscostela RESTART WITH 2000;
-ALTER TABLE scos_logotipos ALTER COLUMN id RESTART WITH 2000;
-ALTER TABLE scos_plantilla_material_vinculo ALTER COLUMN id RESTART WITH 5000;
+ALTER TABLE solicitudes_costos ALTER COLUMN id_scos RESTART WITH 2000;
+ALTER TABLE scos_telas ALTER COLUMN id_scos_tela RESTART WITH 2000;
+ALTER TABLE scos_logotipos ALTER COLUMN id_scos_logotipo RESTART WITH 2000;
+ALTER TABLE scos_plantilla_material_vinculo ALTER COLUMN id_scos_plantilla_material_vinculo RESTART WITH 5000;
 ALTER TABLE produccion_costeos ALTER COLUMN id_costeo RESTART WITH 100;
 ALTER TABLE produccion_costeo_versiones ALTER COLUMN id_costeo_version RESTART WITH 100;
 ALTER TABLE produccion_costeo_items ALTER COLUMN id_costeo_item RESTART WITH 5000;
 
 -- EVN / NV / OP
-ALTER TABLE evaluaciones_negocio ALTER COLUMN idevn RESTART WITH 1000;
-ALTER TABLE notas_venta ALTER COLUMN idnv RESTART WITH 1000;
+ALTER TABLE evaluaciones_negocio ALTER COLUMN id_evn RESTART WITH 1000;
+ALTER TABLE notas_venta ALTER COLUMN id_nv RESTART WITH 1000;
 ALTER TABLE orden_produccion ALTER COLUMN id_op RESTART WITH 100;
 ALTER TABLE produccion_orden_items ALTER COLUMN id_op_item RESTART WITH 1000;
 ALTER TABLE produccion_hojas_compra ALTER COLUMN id_hc RESTART WITH 100;

@@ -12,5 +12,6 @@ public class Rubro {
     private Long rubroId;
     private String nombreRubro;
     private String descripcionRubro;
+    private String siglaRubro;
 
 }

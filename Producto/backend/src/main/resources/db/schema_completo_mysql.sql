@@ -56,7 +56,9 @@ CREATE TABLE IF NOT EXISTS rubros (
     rubro_id          BIGINT       NOT NULL AUTO_INCREMENT,
     nombre_rubro      VARCHAR(255),
     descripcion_rubro VARCHAR(255),
-    PRIMARY KEY (rubro_id)
+    sigla_rubro       VARCHAR(10),
+    PRIMARY KEY (rubro_id),
+    UNIQUE KEY uk_rubros_sigla_rubro (sigla_rubro)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Materias primas (extienden BaseEntity: creado_en, actualizado_en, activo)

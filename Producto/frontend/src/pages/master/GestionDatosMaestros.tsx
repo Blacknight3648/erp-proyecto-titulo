@@ -52,9 +52,11 @@ const MASTER_DATA_ENTITIES = [
   {
     id: 'rubros', name: 'Rubros', icon: Briefcase, endpoint: '/rubros', idField: 'rubroId',
     labelField: 'nombreRubro',
+    badgeField: 'siglaRubro',
     formFields: [
       { label: 'Nombre Rubro', field: 'nombreRubro' },
       { label: 'Descripción', field: 'descripcionRubro' },
+      { label: 'Sigla', field: 'siglaRubro', maxLength: 10, required: true },
     ],
   },
   {
@@ -182,9 +184,11 @@ export default function GestionDatosMaestros() {
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
-    const firstField = activeEntity.formFields?.[0]?.field;
-    if (firstField && !String(formData[firstField] ?? '').trim()) {
-      return toast.error(`El campo "${activeEntity.formFields[0].label}" es requerido`);
+    const requiredFields = (activeEntity.formFields || []).filter((f: any, i: number) => i === 0 || f.required);
+    for (const rf of requiredFields) {
+      if (!String(formData[rf.field] ?? '').trim()) {
+        return toast.error(`El campo "${rf.label}" es requerido`);
+      }
     }
 
     const payload: any = { ...formData };
@@ -371,7 +375,9 @@ export default function GestionDatosMaestros() {
                 {filteredData.map((item, index) => {
                   const itemId = item[activeEntity.idField] || (index + 1);
                   const itemLabel = getLabel(item);
-                  const secondaryRelation = activeEntity.relationField ? getNestedValue(item, activeEntity.relationField) : null;
+                  const secondaryRelation = activeEntity.relationField
+                    ? getNestedValue(item, activeEntity.relationField)
+                    : (activeEntity.badgeField ? item[activeEntity.badgeField] : null);
 
                   return (
                     <div key={itemId} className="flex items-center justify-between px-6 py-4 hover:bg-muted/30 transition-colors bg-card group">
@@ -464,6 +470,7 @@ export default function GestionDatosMaestros() {
                       placeholder={`Ingresar ${f.label.toLowerCase()}...`}
                       className="uppercase rounded-xl h-11 text-xs font-semibold bg-background"
                       autoFocus={i === 0}
+                      maxLength={f.maxLength}
                     />
                   )}
                 </div>

@@ -49,7 +49,7 @@ export default function GestionPrendas() {
         api.get('/maestros/articulos/tipo/PRENDA_LISTA'),
         api.get('/maestros/articulos/tipo/PRENDA_CONFECCIONAR'),
       ]);
-      setPrendas([...(resLista.data as any[]), ...(resConfeccionar.data as any[])]);
+      setPrendas([...(resLista.data as any[]), ...(resConfeccionar.data as any[])].filter((p: any) => p.activo !== false));
     } catch (error) {
       console.error(error);
       toast.error("Error al cargar prendas");

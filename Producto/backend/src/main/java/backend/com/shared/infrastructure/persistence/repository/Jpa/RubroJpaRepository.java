@@ -12,4 +12,6 @@ public interface RubroJpaRepository extends JpaRepository<RubroJpaEntity, Long> 
 
     Optional<RubroJpaEntity> findByNombreRubro(String nombreRubro);
 
+    Optional<RubroJpaEntity> findBySiglaRubro(String siglaRubro);
+
 }

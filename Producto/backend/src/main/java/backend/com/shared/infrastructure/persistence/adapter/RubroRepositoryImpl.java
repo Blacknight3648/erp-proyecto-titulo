@@ -38,6 +38,13 @@ public class RubroRepositoryImpl implements RubroRepository {
     }
 
     @Override
+    public Optional<Rubro> findBySiglaRubro(String siglaRubro) {
+        if (siglaRubro == null)
+            return Optional.empty();
+        return jpaRepository.findBySiglaRubro(siglaRubro).map(mapper::toDomain);
+    }
+
+    @Override
     public Rubro save(Rubro rubro) {
         RubroJpaEntity entity = mapper.toEntity(rubro);
         RubroJpaEntity saved = jpaRepository.save(entity);

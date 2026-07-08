@@ -17,7 +17,7 @@ MERGE INTO areas (id_area, nombre_area, descripcion)
     VALUES
     (1, 'GERENCIA COMERCIAL', 'Planificación estratégica de ventas y marketing'),
     (2, 'ADMINISTRACIÓN', 'Gestión de recursos y procesos internos'),
-    (3, 'VENTAS', 'Ejecución de fuerza de venta y captación'),
+    (3, 'COMERCIAL', 'Ejecución de fuerza de venta y captación'),
     (4, 'PRODUCCIÓN', 'Operaciones de manufactura y transformación'),
     (5, 'LOGÍSTICA Y BODEGA', 'Control de existencias y despacho'),
     (6, 'ADQUISICIONES', 'Gestión de compras y cadena de suministro'),
@@ -68,13 +68,34 @@ MERGE INTO vendedores (id_vendedor, id_usuario, codigo_vendedor, activo, creado_
 -- ============================================================
 -- 4.1. RUBROS
 -- ============================================================
-MERGE INTO rubros (rubro_id, nombre_rubro, descripcion_rubro)
+MERGE INTO rubros (rubro_id, nombre_rubro, descripcion_rubro, sigla_rubro)
     KEY (rubro_id)
     VALUES
-    (1, 'COMERCIO', 'Empresas dedicadas a la compra y venta de bienes y servicios'),
-    (2, 'SALUD', 'Empresas del sector salud, farmacéutico y laboratorio'),
-    (3, 'LOGÍSTICA', 'Empresas de transporte, almacenamiento y distribución'),
-    (4, 'CONSTRUCCIÓN', 'Empresas del rubro inmobiliario, infraestructura y ferretería');
+    (1, 'COMERCIO', 'Empresas dedicadas a la compra y venta de bienes y servicios', 'COM'),
+    (2, 'SALUD', 'Empresas del sector salud, farmacéutico y laboratorio', 'SAL'),
+    (3, 'LOGÍSTICA', 'Empresas de transporte, almacenamiento y distribución', 'LOG'),
+    (4, 'CONSTRUCCIÓN', 'Empresas del rubro inmobiliario, infraestructura y ferretería', 'CONS'),
+    (5, 'MINERÍA', 'Extracción y procesamiento de cobre, litio y otros minerales y servicios afines', 'MIN'),
+    (6, 'AGRICULTURA Y FRUTICULTURA', 'Cultivo, producción y exportación de frutas, hortalizas y productos agrícolas', 'AGRI'),
+    (7, 'ACUICULTURA Y PESCA', 'Crianza y captura de recursos del mar, producción de salmón y procesamiento de mariscos', 'PESCA'),
+    (8, 'FORESTAL', 'Silvicultura, explotación de maderas, producción de celulosa y derivados', 'FOR'),
+    (9, 'VITIVINÍCOLA', 'Cultivo de la vid, producción, embotellado y exportación de vinos', 'VITI'),
+    (10, 'TECNOLOGÍA Y SOFTWARE', 'Desarrollo de software, consultoría TI, servicios en la nube y ciberseguridad', 'TECH'),
+    (11, 'EDUCACIÓN', 'Instituciones de educación básica, media, técnica, universitaria y capacitación', 'EDUC'),
+    (12, 'TURISMO Y HOTELERÍA', 'Servicios de alojamiento, agencias de viaje, guías turísticos y gastronomía', 'TUR'),
+    (13, 'ENERGÍA Y SERVICIOS BÁSICOS', 'Generación, transmisión y distribución de energía eléctrica, gas, agua y energías renovables', 'ENER'),
+    (14, 'FINANCIERO Y SEGUROS', 'Bancos, instituciones financieras, corredoras de seguros y administradoras de fondos', 'FIN'),
+    (15, 'ALIMENTOS Y BEBIDAS', 'Fabricación, procesamiento y envasado de productos alimenticios y bebidas no alcohólicas', 'ALIM'),
+    (16, 'MANUFACTURA E INDUSTRIA', 'Fabricación de productos metálicos, plásticos, químicos y bienes de consumo industrial', 'MANU'),
+    (17, 'TELECOMUNICACIONES', 'Proveedores de telefonía e internet, infraestructura de redes y servicios de conectividad', 'TELE'),
+    (18, 'SERVICIOS PROFESIONALES', 'Consultorías legales, contables, auditorías, arquitectura, ingeniería y recursos humanos', 'SERV'),
+    (19, 'GASTRONOMÍA Y RESTAURANTES', 'Establecimientos de preparación y venta de alimentos y bebidas para consumo inmediato', 'GASTR'),
+    (20, 'ENTRETENIMIENTO Y CULTURA', 'Cines, teatros, productoras de eventos, museos, gimnasios y centros recreativos', 'ENTR'),
+    (21, 'MEDIOS DE COMUNICACIÓN Y PUBLICIDAD', 'Prensa escrita, televisión, radio, agencias de marketing digital y publicidad', 'MCOM'),
+    (22, 'SEGURIDAD', 'Servicios de vigilancia privada, transporte de valores y sistemas de seguridad electrónica', 'SEG'),
+    (23, 'AUTOMOTRIZ', 'Venta de vehículos, repuestos, talleres mecánicos y servicios de mantención automotriz', 'AUTO'),
+    (24, 'GANADERÍA', 'Crianza y producción de ganado bovino, porcino, ovino, avícola y derivados lácteos', 'GAN'),
+    (25, 'MEDIO AMBIENTE Y RECICLAJE', 'Gestión de residuos, reciclaje industrial, plantas de tratamiento y consultoría ambiental', 'MEDA');
 
 -- ============================================================
 -- 4.2. GIROS (referenciando el rubro correspondiente)
@@ -82,10 +103,45 @@ MERGE INTO rubros (rubro_id, nombre_rubro, descripcion_rubro)
 MERGE INTO giros (giro_id, codigo_sii, nombre_giro, descripcion_giro, rubro_id)
     KEY (giro_id)
     VALUES
-    (1, '521000', 'RETAIL',          'RETAIL Y VENTAS POR MENOR',         1),
-    (2, '861000', 'SALUD',           'SERVICIOS MÉDICOS Y LABORATORIO',   2),
-    (3, '492200', 'LOGÍSTICA',       'LOGÍSTICA Y TRANSPORTE',            3),
-    (4, '410000', 'CONSTRUCCIÓN',    'CONSTRUCCIÓN Y FERRETERÍA',         4);
+    (1, '521000', 'RETAIL', 'RETAIL Y VENTAS POR MENOR', 1),
+    (2, '861000', 'SALUD', 'SERVICIOS MÉDICOS Y LABORATORIO', 2),
+    (3, '492200', 'LOGÍSTICA', 'LOGÍSTICA Y TRANSPORTE', 3),
+    (4, '410000', 'CONSTRUCCIÓN', 'CONSTRUCCIÓN Y FERRETERÍA', 4),
+    -- MINERÍA (Rubro 5)
+    (5, '071000', 'EXTRACCIÓN DE MINERÁLES DE HIERRO', 'Extracción de minerales de hierro y concentrados', 5),
+    (6, '040000', 'EXTRACCIÓN DE COBRE', 'Extracción de minerales de cobre y sus concentrados', 5),
+    (7, '099002', 'SERVICIOS DE MINERÍA', 'Actividades de apoyo para la explotación de otras minas y canteras', 5),
+    -- AGRICULTURA Y FRUTICULTURA (Rubro 6)
+    (8, '011301', 'CULTIVO DE FRUTALES', 'Cultivo de frutas pomáceas y de carozo (manzanas, uvas, etc.)', 6),
+    (9, '016100', 'SERVICIOS AGRÍCOLAS', 'Actividades de apoyo a la agricultura y postcosecha', 6),
+    -- ACUICULTURA Y PESCA (Rubro 7)
+    (10, '032101', 'ACUICULTURA DE SALMÓNIDOS', 'Cultivo y crianza de salmones y truchas', 7),
+    (11, '031110', 'PESCA INDUSTRIAL', 'Pesca marítima de altura y costera a gran escala', 7),
+    -- FORESTAL (Rubro 8)
+    (12, '021001', 'SILVICULTURA Y EXPLOTACIÓN', 'Plantación, manejo de bosques y explotación de madera', 8),
+    -- VITIVINÍCOLA (Rubro 9)
+    (13, '110200', 'ELABORACIÓN DE VINOS', 'Producción de mostos, vinos y chicha a partir de uvas', 9),
+    -- TECNOLOGÍA Y SOFTWARE (Rubro 10)
+    (14, '620100', 'DESARROLLO DE SOFTWARE', 'Actividades de programación informática y desarrollo de apps', 10),
+    (15, '620200', 'CONSULTORÍA TI', 'Consultoría en informática y gestión de instalaciones informáticas', 10),
+    -- EDUCACIÓN (Rubro 11)
+    (16, '854200', 'EDUCACIÓN UNIVERSITARIA', 'Enseñanza superior universitaria y técnica de pre y postgrado', 11),
+    -- TURISMO Y HOTELERÍA (Rubro 12)
+    (17, '551001', 'HOTELES Y ALOJAMIENTO', 'Servicios de hospedaje en hoteles, moteles y cabañas', 12),
+    -- ENERGÍA (Rubro 13)
+    (18, '351011', 'GENERACIÓN ELÉCTRICA', 'Generación de energía eléctrica en centrales hidráulicas, solares o eólicas', 13),
+    -- FINANCIERO (Rubro 14)
+    (19, '641900', 'BANCA E INTERMEDIACIÓN', 'Otros tipos de intermediación monetaria y actividades bancarias', 14),
+    -- ALIMENTOS Y BEBIDAS (Rubro 15)
+    (20, '107100', 'PANADERÍA Y PASTELERÍA', 'Fabricación de productos de panadería, pasteles y masas', 15),
+    -- TELECOMUNICACIONES (Rubro 17)
+    (21, '611000', 'TELECOMUNICACIONES ALÁMBRICAS', 'Proveedores de internet fibra óptica y telefonía fija', 17),
+    (22, '612000', 'TELECOMUNICACIONES INALÁMBRICAS', 'Operadores de telefonía móvil y redes de datos inalámbricas', 17),
+    -- SERVICIOS PROFESIONALES (Rubro 18)
+    (23, '692000', 'CONTABILIDAD Y AUDITORÍA', 'Actividades de contabilidad, teneduría de libros y auditoría fiscal', 18),
+    (24, '711001', 'SERVICIOS DE ARQUITECTURA', 'Diseño de edificios, planificación urbana y dibujo de planos', 18),
+    -- GASTRONOMÍA (Rubro 19)
+    (25, '561000', 'RESTAURANTES Y SANGUCHERÍAS', 'Actividades de restaurantes y de servicio móvil de comidas', 19);
 
 -- ============================================================
 -- 4.3. PRODUCTOS

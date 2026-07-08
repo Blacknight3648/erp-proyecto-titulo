@@ -344,11 +344,29 @@ export function useCosteosOPState() {
         // "Solicitud de costos" (ver handleAddItemFromSCOS).
 
         if (savedCosteo && savedCosteo.items && savedCosteo.items.length > 0) {
+            // Indexar las telas y accesorios de la SCOS por nombre para poder
+            // recuperar el proveedorReferencia (que producción no persiste).
+            const scosTelas = (record.telas || []);
+            const scosAccesorios = (record.accesorios || []);
+
             savedCosteo.items.forEach(savedItem => {
                 const matchIndex = initialInsumos.findIndex(i =>
                     i.producto === savedItem.nombreInsumo &&
                     i.categoryId.toLowerCase() === (savedItem.tipoInsumo?.toLowerCase() || '')
                 );
+
+                // Buscar proveedorReferencia en la SCOS por nombre de producto
+                let provRefFromSCOS = savedItem.proveedorReferencia || null;
+                if (!provRefFromSCOS) {
+                    const tipo = savedItem.tipoInsumo?.toLowerCase();
+                    if (tipo === 'telas') {
+                        const scosMatch = scosTelas.find(t => (t.nombre || '').toUpperCase() === (savedItem.nombreInsumo || '').toUpperCase());
+                        provRefFromSCOS = scosMatch?.proveedorReferencia || null;
+                    } else if (tipo === 'accesorios') {
+                        const scosMatch = scosAccesorios.find(a => (a.nombreAccesorio || '').toUpperCase() === (savedItem.nombreInsumo || '').toUpperCase());
+                        provRefFromSCOS = scosMatch?.proveedorReferencia || null;
+                    }
+                }
 
                 if (matchIndex !== -1) {
                     initialInsumos[matchIndex].costo = savedItem.precioUnitario || 0;
@@ -356,6 +374,7 @@ export function useCosteosOPState() {
                     // Preservar ID de la base de datos
                     initialInsumos[matchIndex].idCosteoItem = savedItem.idCosteoItem;
                     initialInsumos[matchIndex].insumoId = savedItem.insumoId ?? savedItem.articuloId ?? null;
+                    if (provRefFromSCOS) initialInsumos[matchIndex].proveedorReferencia = provRefFromSCOS;
                 } else {
                     initialInsumos.push({
                         id: `EXTRA-${savedItem.idCosteoItem}`,
@@ -365,6 +384,7 @@ export function useCosteosOPState() {
                         costo: savedItem.precioUnitario || 0,
                         cantidad: savedItem.consumo || 0,
                         unidad: 'un',
+                        proveedorReferencia: provRefFromSCOS,
                         categoryId: savedItem.tipoInsumo?.toLowerCase() || 'insumos'
                     });
                 }
@@ -452,9 +472,10 @@ export function useCosteosOPState() {
                 nombre: i.producto,
                 unidadMedida: i.unidad,
                 consumo: parseFloat(i.cantidad) || 0,
-                precioUnitario: 0,
+                precioUnitario: parseFloat(i.costo) || 0,
                 color: i.color,
-                composicion: i.composicion
+                composicion: i.composicion,
+                proveedorReferencia: i.proveedorReferencia || null
             }));
 
             const updatedAccesorios = insumos.filter(i => i.categoryId === 'accesorios').map(i => ({
@@ -464,7 +485,8 @@ export function useCosteosOPState() {
                 nombreAccesorio: i.producto,
                 unidadMedida: i.unidad,
                 consumo: parseFloat(i.cantidad) || 0,
-                precioUnitario: 0
+                precioUnitario: parseFloat(i.costo) || 0,
+                proveedorReferencia: i.proveedorReferencia || null
             }));
 
             const updatedLogotipos = insumos.filter(i => i.categoryId === 'logotipo').map(i => ({

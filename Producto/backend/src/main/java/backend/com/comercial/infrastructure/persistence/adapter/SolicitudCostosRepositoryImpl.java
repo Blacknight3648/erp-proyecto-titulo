@@ -130,6 +130,7 @@ public class SolicitudCostosRepositoryImpl implements SolicitudCostosRepository 
                 }
                 ae.setTipo(a.getTipo());
                 ae.setDescripcion(a.getDescripcion());
+                ae.setProveedorReferencia(a.getProveedorReferencia());
                 ae.setCantidad(a.getCantidad());
                 ae.setTempId(a.getTempId());
                 entity.addAccesorio(ae);

@@ -96,6 +96,7 @@ public class SolicitudCostosMapper {
                 entity.getArticulo() != null ? entity.getArticulo().getIdArticulo() : null,
                 entity.getTipo(),
                 nombre,
+                entity.getProveedorReferencia(),
                 entity.getCantidad(),
                 null);
     }
@@ -192,6 +193,7 @@ public class SolicitudCostosMapper {
             }
             ae.setTipo(a.getTipo());
             ae.setDescripcion(a.getDescripcion());
+            ae.setProveedorReferencia(a.getProveedorReferencia());
             ae.setCantidad(a.getCantidad());
             ae.setTempId(a.getTempId());
             entity.addAccesorio(ae);

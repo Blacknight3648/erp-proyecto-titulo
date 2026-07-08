@@ -160,6 +160,7 @@ public class SolicitudCostosServiceImpl implements SolicitudCostosService {
                         idArticulo,
                         a.getTipo(),
                         a.getNombreAccesorio(),
+                        a.getProveedorReferencia(),
                         a.getCantidad(),
                         a.getTempId()));
             });
@@ -221,6 +222,7 @@ public class SolicitudCostosServiceImpl implements SolicitudCostosService {
                 .accesorios(domain.getAccesorios().stream().map(a -> SCOSAccesorioDTO.builder()
                         .tipo(a.getTipo())
                         .nombreAccesorio(a.getDescripcion())
+                        .proveedorReferencia(a.getProveedorReferencia())
                         .cantidad(a.getCantidad())
                         .build()).collect(Collectors.toList()))
                 .logotipos(domain.getLogotipos().stream()

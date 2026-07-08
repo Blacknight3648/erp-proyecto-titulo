@@ -62,7 +62,9 @@ export default function FormularioCosteo({
 
     const { articulos: telasAutocomplete, search: searchTelas } = useArticulosSearch('TELA');
     const { articulos: accesoriosAutocomplete, search: searchAccesorios } = useArticulosSearch('ACCESORIO');
-    const { articulos: insumosAutocomplete, search: searchInsumos } = useArticulosSearch('INSUMO');
+    // No existe un TipoArticulo "INSUMO" en el backend (solo TELA, PRENDA_LISTA,
+    // PRENDA_CONFECCIONAR, ACCESORIO) — el catálogo de insumos usa el mismo tipo ACCESORIO.
+    const { articulos: insumosAutocomplete, search: searchInsumos } = useArticulosSearch('ACCESORIO');
 
     const handleViewHistorial = async () => {
         const idCosteo = currentSolicitud?.costeoId || selectedRecord?.idCosteo || selectedRecord?.costeoId;

@@ -17,7 +17,7 @@ import Welcome from "./pages/home/Welcome";
 
 /* COMERCIAL */
 import NotaDeVenta from "./pages/commercial/sales-notes/NotaDeVenta";
-import SolicitudCostosContainer from "./pages/commercial/costing/SolicitudCostosContainer.tsx";
+import SolicitudCostosContainer from "./pages/commercial/costing/SolicitudCostosContainer";
 import AdministracionNegocios from "./pages/commercial/administration/AdministracionNegocios";
 import GestionPlantillas from "./pages/commercial/templates/GestionPlantillas";
 import TableroComercial from "./pages/commercial/TableroComercial";
@@ -31,7 +31,7 @@ import GestionUsuariosColaboradores from "./pages/users/GestionUsuariosColaborad
 import GestionVendedores from "./pages/users/GestionVendedores";
 
 /* ADMIN */
-import GestionDatosMaestros from "./pages/admin/GestionDatosMaestros";
+import GestionDatosMaestros from "./pages/master/GestionDatosMaestros";
 import GestionAreas from "./pages/admin/GestionAreas";
 import GestionRoles from "./pages/admin/GestionRoles";
 import GestionPermisosRol from "./pages/admin/GestionPermisosRol";

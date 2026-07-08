@@ -574,16 +574,55 @@ CREATE TABLE IF NOT EXISTS articulo_prenda (
     CONSTRAINT fk_aprenda_art FOREIGN KEY (id_articulo) REFERENCES articulo (id_articulo)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- Catálogo de Tipos de Accesorio (Cierre, Botón, Broche, Velcro, ...)
+CREATE TABLE IF NOT EXISTS tipo_accesorio (
+    id_tipo_accesorio INT         NOT NULL AUTO_INCREMENT,
+    codigo            VARCHAR(10) NOT NULL,
+    nombre            VARCHAR(60) NOT NULL,
+    PRIMARY KEY (id_tipo_accesorio),
+    UNIQUE KEY uk_tipoacc_codigo (codigo),
+    UNIQUE KEY uk_tipoacc_nombre (nombre)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Definición de los campos/atributos dinámicos que aplican a cada Tipo de
+-- Accesorio (ej. Cierre: Tipo/N°/Terminal/Carro/Medida/Color). "opciones" es
+-- una lista separada por "|" cuando tipo_dato = LISTA.
+CREATE TABLE IF NOT EXISTS atributo_accesorio_definicion (
+    id_definicion     INT          NOT NULL AUTO_INCREMENT,
+    id_tipo_accesorio INT          NOT NULL,
+    nombre_campo      VARCHAR(40)  NOT NULL,
+    tipo_dato         VARCHAR(20)  NOT NULL, -- LISTA | TEXTO | NUMERO | REFERENCIA_COLOR
+    opciones          VARCHAR(500),
+    orden             INT          NOT NULL DEFAULT 0,
+    requerido         TINYINT(1)   NOT NULL DEFAULT 0,
+    PRIMARY KEY (id_definicion),
+    CONSTRAINT fk_atrdef_tipo FOREIGN KEY (id_tipo_accesorio) REFERENCES tipo_accesorio (id_tipo_accesorio)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 -- Detalle de artículo tipo ACCESORIO
 CREATE TABLE IF NOT EXISTS articulo_accesorio (
     id_articulo           INT         NOT NULL,
-    subtipo_accesorio     VARCHAR(20),
-    tallas_disponibles    VARCHAR(100),
+    id_tipo_accesorio     INT,
     proveedor             VARCHAR(100),
     codigo_proveedor      VARCHAR(30),
     requiere_logo_cliente TINYINT(1)  NOT NULL DEFAULT 0,
     PRIMARY KEY (id_articulo),
-    CONSTRAINT fk_aacc_art FOREIGN KEY (id_articulo) REFERENCES articulo (id_articulo)
+    CONSTRAINT fk_aacc_art  FOREIGN KEY (id_articulo)       REFERENCES articulo       (id_articulo),
+    CONSTRAINT fk_aacc_tipo FOREIGN KEY (id_tipo_accesorio) REFERENCES tipo_accesorio (id_tipo_accesorio)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Valor concreto de un atributo dinámico para un accesorio puntual
+-- (ej. para el Cierre "CIE-004": Tipo=DP, Terminal=Fijo, Medida=15cm, Color=Blanco).
+CREATE TABLE IF NOT EXISTS articulo_accesorio_atributo_valor (
+    id_valor            INT         NOT NULL AUTO_INCREMENT,
+    id_articulo         INT         NOT NULL,
+    id_definicion       INT         NOT NULL,
+    valor_texto         VARCHAR(100),
+    id_color_referencia INT,
+    PRIMARY KEY (id_valor),
+    CONSTRAINT fk_atrval_art   FOREIGN KEY (id_articulo)         REFERENCES articulo_accesorio             (id_articulo),
+    CONSTRAINT fk_atrval_def   FOREIGN KEY (id_definicion)       REFERENCES atributo_accesorio_definicion  (id_definicion),
+    CONSTRAINT fk_atrval_color FOREIGN KEY (id_color_referencia) REFERENCES color_tela                     (id_color)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Precios por artículo y moneda

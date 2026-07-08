@@ -1,9 +1,9 @@
 package backend.com.shared.service;
 
 import backend.com.shared.application.dto.ColorTelaDTO;
+import backend.com.shared.application.service.CodigoGeneratorService;
 import backend.com.shared.application.service.impl.ColorTelaServiceImpl;
 import backend.com.shared.domain.model.ColorTela;
-import backend.com.shared.exception.DuplicadoException;
 import backend.com.shared.exception.EntityNotFoundException;
 import backend.com.shared.infrastructure.mapper.ColorTelaMapper;
 import backend.com.shared.infrastructure.persistence.repository.ColorTelaRepository;
@@ -20,6 +20,7 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -31,6 +32,9 @@ class ColorTelaServiceImplTest {
 
     @Mock
     private ColorTelaMapper mapper;
+
+    @Mock
+    private CodigoGeneratorService codigoGeneratorService;
 
     @InjectMocks
     private ColorTelaServiceImpl colorTelaServiceImpl;
@@ -65,7 +69,7 @@ class ColorTelaServiceImplTest {
                 .esPantone(true)
                 .build();
 
-        when(colorTelaRepository.existsByCodigoColor("ROJ")).thenReturn(false);
+        when(codigoGeneratorService.generarPorAbreviatura(eq("PANT-"), eq("Rojo"), any())).thenReturn("ROJ");
         when(colorTelaRepository.save(any(ColorTela.class))).thenReturn(guardado);
         when(mapper.toDTO(guardado)).thenReturn(esperado);
 
@@ -94,7 +98,7 @@ class ColorTelaServiceImplTest {
                 .esPantone(false)
                 .build();
 
-        when(colorTelaRepository.existsByCodigoColor("AZL")).thenReturn(false);
+        when(codigoGeneratorService.generarPorAbreviatura(eq(""), eq("Azul"), any())).thenReturn("AZL");
         when(colorTelaRepository.save(any(ColorTela.class))).thenReturn(guardado);
         when(mapper.toDTO(guardado)).thenReturn(esperado);
 
@@ -102,22 +106,6 @@ class ColorTelaServiceImplTest {
 
         assertThat(resultado).isEqualTo(esperado);
         verify(colorTelaRepository).save(argThat(c -> c.getEsPantone().equals(false)));
-    }
-
-    @Test
-    @DisplayName("crear lanza excepción si el código de color ya existe")
-    void crear_duplicado() {
-        ColorTelaDTO dto = ColorTelaDTO.builder()
-                .codigoColor("ROJ")
-                .descripcionColor("Rojo")
-                .build();
-
-        when(colorTelaRepository.existsByCodigoColor("ROJ")).thenReturn(true);
-
-        assertThatThrownBy(() -> colorTelaServiceImpl.crear(dto))
-                .isInstanceOf(DuplicadoException.class);
-
-        verify(colorTelaRepository, never()).save(any());
     }
 
     // ---------------- actualizar ----------------

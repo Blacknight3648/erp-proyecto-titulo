@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.List;
+
 /**
  * Detalle específico para artículos tipo ACCESORIO.
  * Relación @OneToOne con Articulo usando PK compartida (@MapsId).
@@ -27,11 +29,12 @@ public class ArticuloAccesorioJpaEntity {
     @JoinColumn(name = "id_articulo")
     private ArticuloJpaEntity articulo;
 
-    @Column(name = "subtipo_accesorio", length = 20)
-    private String subtipoAccesorio;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "id_tipo_accesorio")
+    private TipoAccesorioJpaEntity tipoAccesorio;
 
-    @Column(name = "tallas_disponibles", length = 100)
-    private String tallasDisponibles;
+    @OneToMany(mappedBy = "articuloAccesorio", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    private List<ArticuloAccesorioAtributoValorJpaEntity> atributos;
 
     @Column(name = "proveedor", length = 100)
     private String proveedor;

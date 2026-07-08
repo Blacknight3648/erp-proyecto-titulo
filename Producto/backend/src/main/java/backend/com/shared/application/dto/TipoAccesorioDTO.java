@@ -8,16 +8,14 @@ import lombok.*;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ColorTelaDTO {
+public class TipoAccesorioDTO {
 
-    private Integer idColor;
+    private Integer idTipoAccesorio;
 
     @Size(max = 10, message = "El código no puede superar 10 caracteres")
-    private String codigoColor;
+    private String codigo;
 
-    @NotBlank(message = "La descripción del color es obligatoria")
-    @Size(max = 40)
-    private String descripcionColor;
-
-    private Boolean esPantone;
+    @NotBlank(message = "El nombre del tipo de accesorio es obligatorio")
+    @Size(max = 60, message = "El nombre no puede superar 60 caracteres")
+    private String nombre;
 }

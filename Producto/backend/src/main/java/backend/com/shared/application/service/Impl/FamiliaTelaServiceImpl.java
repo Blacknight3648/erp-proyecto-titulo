@@ -1,9 +1,9 @@
 package backend.com.shared.application.service.impl;
 
 import backend.com.shared.application.dto.FamiliaTelaDTO;
+import backend.com.shared.application.service.CodigoGeneratorService;
 import backend.com.shared.application.service.FamiliaTelaService;
 import backend.com.shared.domain.model.FamiliaTela;
-import backend.com.shared.exception.DuplicadoException;
 import backend.com.shared.exception.EntityNotFoundException;
 import backend.com.shared.infrastructure.mapper.FamiliaTelaMapper;
 import backend.com.shared.infrastructure.persistence.repository.FamiliaTelaRepository;
@@ -18,16 +18,18 @@ import java.util.List;
 @Transactional
 public class FamiliaTelaServiceImpl implements FamiliaTelaService {
 
+    private static final String PREFIJO_CODIGO = "T-";
+
     private final FamiliaTelaRepository familiaTelaRepository;
     private final FamiliaTelaMapper mapper;
+    private final CodigoGeneratorService codigoGeneratorService;
 
     @Override
     public FamiliaTelaDTO crear(FamiliaTelaDTO dto) {
-        if (familiaTelaRepository.existsByCodigoFamilia(dto.getCodigoFamilia())) {
-            throw new DuplicadoException("código de familia", dto.getCodigoFamilia());
-        }
+        String codigo = codigoGeneratorService.generarPorAbreviatura(
+                PREFIJO_CODIGO, dto.getNombreFamilia(), familiaTelaRepository::existsByCodigoFamilia);
         FamiliaTela nueva = FamiliaTela.builder()
-                .codigoFamilia(dto.getCodigoFamilia())
+                .codigoFamilia(codigo)
                 .nombreFamilia(dto.getNombreFamilia())
                 .build();
         return mapper.toDTO(familiaTelaRepository.save(nueva));

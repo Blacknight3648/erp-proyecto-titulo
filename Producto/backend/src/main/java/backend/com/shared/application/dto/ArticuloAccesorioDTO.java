@@ -2,6 +2,8 @@ package backend.com.shared.application.dto;
 
 import lombok.*;
 
+import java.util.List;
+
 @Data
 @Builder
 @NoArgsConstructor
@@ -9,8 +11,8 @@ import lombok.*;
 public class ArticuloAccesorioDTO {
 
     private Integer id;
-    private String subtipoAccesorio;
-    private String tallasDisponibles;
+    private TipoAccesorioDTO tipoAccesorio;
+    private List<AtributoAccesorioValorDTO> atributos;
     private String proveedor;
     private String codigoProveedor;
     private Boolean requiereLogoCliente;

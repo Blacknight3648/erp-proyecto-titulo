@@ -2,6 +2,7 @@ package backend.com.shared.application.service.impl;
 
 import backend.com.shared.application.dto.CategoriaTelaDTO;
 import backend.com.shared.application.service.CategoriaTelaService;
+import backend.com.shared.application.service.CodigoGeneratorService;
 import backend.com.shared.domain.model.CategoriaTela;
 import backend.com.shared.exception.DuplicadoException;
 import backend.com.shared.exception.EntityNotFoundException;
@@ -18,19 +19,21 @@ import java.util.List;
 @Transactional
 public class CategoriaTelaServiceImpl implements CategoriaTelaService {
 
+    private static final String PREFIJO_CODIGO = "CAT-";
+
     private final CategoriaTelaRepository categoriaTelaRepository;
     private final CategoriaTelaMapper mapper;
+    private final CodigoGeneratorService codigoGeneratorService;
 
     @Override
     public CategoriaTelaDTO crear(CategoriaTelaDTO dto) {
-        if (categoriaTelaRepository.existsByCodigoCategoriaTela(dto.getCodigoCategoriaTela())) {
-            throw new DuplicadoException("código de categoría tela", dto.getCodigoCategoriaTela());
-        }
         if (categoriaTelaRepository.existsByNombreCategoriaTela(dto.getNombreCategoriaTela())) {
             throw new DuplicadoException("nombre de categoría tela", dto.getNombreCategoriaTela());
         }
+        String codigo = codigoGeneratorService.generarPorAbreviatura(
+                PREFIJO_CODIGO, dto.getNombreCategoriaTela(), categoriaTelaRepository::existsByCodigoCategoriaTela);
         CategoriaTela nueva = CategoriaTela.builder()
-                .codigoCategoriaTela(dto.getCodigoCategoriaTela())
+                .codigoCategoriaTela(codigo)
                 .nombreCategoriaTela(dto.getNombreCategoriaTela())
                 .build();
         return mapper.toDTO(categoriaTelaRepository.save(nueva));

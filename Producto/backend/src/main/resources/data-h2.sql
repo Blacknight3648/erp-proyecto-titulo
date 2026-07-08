@@ -4,9 +4,10 @@
 MERGE INTO tipo_articulo (id_tipo_articulo, codigo, nombre)
     KEY (id_tipo_articulo)
     VALUES
-    (1, 'TELA',         'Tela'),
-    (2, 'PRENDA_LISTA', 'Prenda Lista'),
-    (3, 'ACCESORIO',    'Accesorio');
+    (1, 'TELA',                'Tela'),
+    (2, 'PRENDA_LISTA',        'Prenda Lista'),
+    (3, 'ACCESORIO',           'Accesorio'),
+    (4, 'PRENDA_CONFECCIONAR', 'Prenda a Confeccionar');
 
 -- ============================================================
 -- 1. ÁREAS
@@ -216,6 +217,262 @@ MERGE INTO subcategoria_tela (id_subcategoria_tela, codigo_subcategoria_tela, no
     (3, 'PNT-FLEE', 'Fleece / Polar',    2),
     (4, 'PNT-JRSY', 'Jersey',            2),
     (5, 'TEC-IMPR', 'Impermeable Tech',  3);
+
+-- ============================================================
+-- 7.0.1 PARAMETRÍA TEXTIL (Familias, Clasificaciones, Composiciones,
+-- Gramajes, Colores, Atributos Técnicos) — catálogo de referencia de
+-- negocio para telas. Los códigos aquí son los oficiales de la empresa;
+-- desde la UI, cualquier registro NUEVO se codifica solo (CodigoGeneratorService).
+-- ============================================================
+
+MERGE INTO familia_tela (id_familia_tela, codigo_familia, nombre_familia)
+    KEY (id_familia_tela)
+    VALUES
+    (1,  'T-GAB', 'Gabardina'),
+    (2,  'T-POP', 'Popelina'),
+    (3,  'T-OXF', 'Oxford'),
+    (4,  'T-MEZ', 'Mezclilla / Denim'),
+    (5,  'T-TAF', 'Tafeta'),
+    (6,  'T-TSL', 'Taslan'),
+    (7,  'T-NYL', 'Nylon'),
+    (8,  'T-HIP', 'Hipora'),
+    (9,  'T-MAL', 'Malla'),
+    (10, 'T-SOF', 'Softshell'),
+    (11, 'T-POL', 'Polar'),
+    (12, 'T-MIC', 'Micropolar'),
+    (13, 'T-CHI', 'Chiporro'),
+    (14, 'T-FRA', 'Franela'),
+    (15, 'T-PIQ', 'Piqué'),
+    (16, 'T-RIB', 'Rib / Puño'),
+    (17, 'T-BIO', 'Bio Stretch / Bistrech'),
+    (18, 'T-CUE', 'Cuello (Tejido)'),
+    (19, 'T-AIS', 'Aislante Termico'),
+    (20, 'T-ENT', 'Entretela Fusible'),
+    (21, 'T-COR', 'Cordura'),
+    (22, 'T-QDR', 'DryFit'),
+    (23, 'T-JEY', 'Jersey'),
+    (24, 'T-TRV', 'Trevira');
+
+MERGE INTO clasificacion_tecnica (id_clasificacion_tecnica, nombre_clasificacion)
+    KEY (id_clasificacion_tecnica)
+    VALUES
+    (1,  'Tejido Plano Estándar'),
+    (2,  'Tejido Plano Liviano'),
+    (3,  'Tejido Plano Camisería'),
+    (4,  'Tejido Plano Pesado'),
+    (5,  'Forrería / Tejido Plano'),
+    (6,  'Sintético / Cortavientos'),
+    (7,  'Sintético Liviano'),
+    (8,  'Técnico Impermeable'),
+    (9,  'Sintético Perforado / Forro'),
+    (10, 'Técnico Multicapa'),
+    (11, 'Térmico Sintético'),
+    (12, 'Térmico Sintético Liviano'),
+    (13, 'Térmico Aislante'),
+    (14, 'Térmico Base / Punto'),
+    (15, 'Tejido de Punto'),
+    (16, 'Tejido de Punto Elástico'),
+    (17, 'Componente Tejido'),
+    (18, 'Aislante / Relleno'),
+    (19, 'Insumo Estructural'),
+    (20, 'Mochilas'),
+    (21, 'Tela Deportiva'),
+    (22, 'Poleras');
+
+MERGE INTO composicion (id_composicion, codigo_composicion, descripcion_composicion, clasificacion, uso_tipico)
+    KEY (id_composicion)
+    VALUES
+    (1,  'C-100AL',  '100% Algodón',                                'Pura',                'Ignífugo base, Franela pura'),
+    (2,  'C-100DE',  '100% Algodón (14oz)',                         'Denim',               'Mezclilla Industrial Pesada'),
+    (3,  'C-100NY',  '100% Nylon',                                  'Pura',                'Taslan, Cortavientos'),
+    (4,  'C-100PA',  '100% Poliamida',                              'Refuerzo Técnico',    'Cordura / Refuerzo de rodillas y codos'),
+    (5,  'C-100PO',  '100% Poliéster',                              'Pura',                'Polar, Oxford Económico, Malla'),
+    (6,  'C-NPA',    '100% Poliéster ("Napa")',                     'Aislante Base',       '"Napa" Estándar. Relleno económico.'),
+    (7,  'C-5050',   '50% Algodón / 50% Poliéster',                 'Tejido de Punto',     'Piqué de alta durabilidad'),
+    (8,  'C-544303', '54% Poliéster / 43% Algodón / 3% Elastano',   'Mezcla Elástica',     'Popelina / Gabardina Stretch'),
+    (9,  'C-593506', '59% Poliéster / 35% Viscosa / 6% Elastano',   'Mezcla Elástica',     'Popelina / Gabardina Stretch'),
+    (10, 'C-6040',   '60% Algodón / 40% Poliéster',                 'Mezcla Confort',      'Ropa de trabajo premium'),
+    (11, 'C-653302', '65% Poliéster / 33% Algodón / 2% Elastano',   'Mezcla Elástica',     'Popelina / Gabardina Stretch'),
+    (12, 'C-6535',   '65% Poliéster / 35% Algodón',                 'Mezcla Estándar',     'Popelina, Gabardina (Workwear)'),
+    (13, 'C-702802', '70% Algodón / 28% Poliéster / 2% Elastano',   'Denim Elástico',      'Mezclilla Flex'),
+    (14, 'C-8020AL', '80% Algodón / 20% Poliéster',                 'Alta Respirabilidad', 'Franelas de alto gramaje o Canvas'),
+    (15, 'C-8020PO', '80% Poliéster / 20% Algodón',                 'Mezcla Económica',    'Popelina promocional'),
+    (16, 'C-9010',   '90% Poliéster / 10% Elastano',                'Elástica',            'Softshell, Ropa técnica'),
+    (17, 'C-9208',   '92% Poliéster / 8% Elastano',                 'Mezcla Elástica',     'Popelina / Gabardina Stretch'),
+    (18, 'C-9505',   '95% Poliéster / 5% Elastano',                 'Mezcla Elástica',     'Popelina / Gabardina Stretch'),
+    (19, 'C-9703',   '97% Poliéster / 3% Elastano',                 'Mezcla Elástica',     'Popelina / Gabardina Stretch'),
+    (20, 'C-9802',   '98% Algodón / 2% Elastano',                   'Elástica',            'Bio Stretch, Gabardina Flex'),
+    (21, 'C-FLP',    'Fibra Hueca Siliconada ("Flopy")',            'Aislante Volumen',    'Alto volumen (loft), tacto pluma, parkas gruesas.'),
+    (22, 'C-TRM',    'Microfibra Térmica ("Termaloft")',            'Aislante Técnico',    'Retención de calor premium, bajo volumen, alta densidad.'),
+    (23, 'C-ARAM',   'Modacrílico / Algodón / Aramida',             'Antiarco Eléctrico',  'Ropa ignífuga certificada');
+
+MERGE INTO gramaje_tela (id_gramaje, codigo_gramaje, valor_gramos_m2, categoria_vestuario)
+    KEY (id_gramaje)
+    VALUES
+    (1,  'G-100',  100.00, NULL),
+    (2,  'G-115',  115.00, 'Popelina / Microfibra (Liviana)'),
+    (3,  'G-120',  120.00, 'Relleno Termico'),
+    (4,  'G-150',  150.00, 'Oxford / Popelina (Estándar) / Relleno termico'),
+    (5,  'G-165',  165.00, 'Hipora / Oxford / Popelina (pesadas)'),
+    (6,  'G-175',  175.00, 'Relleno Termico'),
+    (7,  'G-190',  190.00, 'Gabardina Liviana (Verano / Salud)'),
+    (8,  'G-210',  210.00, 'Piqué / Poleras Base'),
+    (9,  'G-300',  300.00, 'Softshell / Polar'),
+    (10, 'G-7OZ',  237.00, 'Gabardina / Twill Estándar'),
+    (11, 'G-8OZ',  271.00, 'Gabardina Pesada / Pantalón Cargo'),
+    (12, 'G-9OZ',  305.00, 'Gabardina Alta Resistencia'),
+    (13, 'G-10OZ', 339.00, 'Mezclilla Liviana / Gabardina Extrema'),
+    (14, 'G-14OZ', 475.00, 'Mezclilla Industrial Pesada (Minería)');
+
+MERGE INTO color_tela (id_color, codigo_color, descripcion_color, es_pantone)
+    KEY (id_color)
+    VALUES
+    (1,  '0',    'Crudo / Base / Sin Color',    false),
+    (2,  'BCO',  'Blanco',                      false),
+    (3,  'NEG',  'Negro',                       false),
+    (4,  'AZMA', 'Azul Marino',                 false),
+    (5,  'AZFR', 'Azul Francia',                false),
+    (6,  'AZRE', 'Azul Rey / Azulino',          false),
+    (7,  'AZVI', 'Azul Vigilante / Guardia',    false),
+    (8,  'AZCL', 'Celeste / Azul Claro',        false),
+    (9,  'ROJ',  'Rojo',                        false),
+    (10, 'BEO',  'Burdeo',                      false),
+    (11, 'GRCL', 'Gris Claro',                  false),
+    (12, 'GRME', 'Gris Medio',                  false),
+    (13, 'GROS', 'Gris Oscuro',                 false),
+    (14, 'MELG', 'Melange (Gris/Mixto)',        false),
+    (15, 'VEBO', 'Verde Botella / Oscuro',      false),
+    (16, 'VEES', 'Verde Esmeralda',             false),
+    (17, 'CALP', 'Calipso',                     false),
+    (18, 'TURQ', 'Turquesa',                    false),
+    (19, 'BGE',  'Beige / Caqui',               false),
+    (20, 'CAF',  'Café / Marrón',               false),
+    (21, 'AMA',  'Amarillo',                    false),
+    (22, 'NAR',  'Naranja',                     false),
+    (23, 'PET',  'Petróleo',                    false),
+    (24, 'AMFL', 'Amarillo Flúor',              false),
+    (25, 'NAFL', 'Naranja Flúor',               false),
+    (26, 'ROFL', 'Rojo Flúor',                  false),
+    (27, 'EST',  'Estampado (Varios)',          false);
+-- Nota: "GRME" se repetía en la tabla de origen para "Gris Medio" y "Melange";
+-- se desambiguó a "MELG" para Melange (misma regla que aplica el generador de códigos ante colisiones).
+
+MERGE INTO atributo_tecnico (id_atributo, codigo_atributo, clasificacion, descripcion_tecnica, impacto_erp)
+    KEY (id_atributo)
+    VALUES
+    (1,  'A-000',   'Estándar', 'Sin tratamientos especiales',         'Tela base por defecto.'),
+    (2,  'A-RIP',   'Construcción', 'Ripstop (Antidesgarro)',          'Modifica la cuadrícula del tejido plano.'),
+    (3,  'A-UV',    'Químico',  'Protección UV (UPF 50+)',             'Baño protector corporativo estándar.'),
+    (4,  'A-WR',    'Físico',   'Repelencia al Agua',                  'Acabado superficial (resistencia al rocío).'),
+    (5,  'A-BRT',   'Fisico',   'Respirabilidad',                      'Membrana interna respirable'),
+    (6,  'A-WP',    'Físico',   'Impermeabilidad',                     'Membrana interna o recubrimiento (Ej. PU).'),
+    (7,  'A-FR',    'Químico',  'Fire Retardant (Ignífugo)',           'Certificación de seguridad. Multiplica el costo.'),
+    (8,  'A-100FR', 'Quimico',  'Tratamiento FR',                      'Ropa ignífuga básica'),
+    (9,  'A-ACI',   'Químico',  'Antiácido',                           'Requisito minero o de laboratorio.'),
+    (10, 'A-AFLUD', 'Químico',  'Antifluido',                          'Acabado de fácil lavado (ropa clínica/gastronómica).'),
+    (11, 'A-ANT',   'Físico',   'Antiestático',                        'Inserción de hilo de carbono para disipación.'),
+    (12, 'A-ALU',   'Fisico',   'Reflectivo Aluminizado (Forro)',      'Para termicidad interna'),
+    (13, 'A-ACOL',  'Fisico',   'Acolchado especial',                  'Para rellenos termicos + Forro'),
+    (14, 'A-ABACT', 'Fisico',   'Antibacteriano',                      'Ropa clínica');
+
+-- ============================================================
+-- 7.0.2 INSUMOS Y ACCESORIOS — Tipos y sus atributos dinámicos
+-- (reglas de negocio: Cierre, Broche, Botón, Tanka, Ojetillos, Tirador,
+-- Velcro, Chaveta, Tip-Top, Escalerilla, Elástico, Cordón, Vivo, Sesgo,
+-- Cintas). El formulario de "Nuevo Insumo" dibuja estos campos según el
+-- Tipo de Accesorio elegido; el color "REFERENCIA_COLOR" reutiliza el
+-- catálogo de Colores de arriba en vez de duplicarlo.
+-- ============================================================
+
+MERGE INTO tipo_accesorio (id_tipo_accesorio, codigo, nombre)
+    KEY (id_tipo_accesorio)
+    VALUES
+    (1,  'CIE', 'Cierre'),
+    (2,  'BRO', 'Broche'),
+    (3,  'BOT', 'Botón'),
+    (4,  'TAN', 'Tanka'),
+    (5,  'OJE', 'Ojetillos'),
+    (6,  'TIR', 'Tirador'),
+    (7,  'VEL', 'Velcro'),
+    (8,  'CHV', 'Chaveta de Ajuste'),
+    (9,  'TTP', 'Tip-Top'),
+    (10, 'ESC', 'Escalerilla Reguladora'),
+    (11, 'ELA', 'Elástico'),
+    (12, 'COR', 'Cordón'),
+    (13, 'VIV', 'Vivo'),
+    (14, 'SES', 'Sesgo'),
+    (15, 'CNE', 'Cinta Espiga'),
+    (16, 'CNF', 'Cinta Falla (Mochila)'),
+    (17, 'CNR', 'Cinta Reflectante'),
+    (18, 'CSC', 'Cinta Sellado de Costura');
+
+MERGE INTO atributo_accesorio_definicion (id_definicion, id_tipo_accesorio, nombre_campo, tipo_dato, opciones, orden, requerido)
+    KEY (id_definicion)
+    VALUES
+    -- Cierre
+    (1,  1,  'Tipo',             'LISTA',            'DP|NY|NY Invertido|Impermeable|Bronce|Ignífugo', 1, true),
+    (2,  1,  'N°',               'LISTA',            '3|5|7', 2, false),
+    (3,  1,  'Terminal',         'LISTA',            'Fijo|Separable', 3, true),
+    (4,  1,  'Carro',            'LISTA',            'Simple|Doble|Reversible', 4, true),
+    (5,  1,  'Medida',           'LISTA',            '12cm|15cm|18cm|20cm|50cm|55cm|60cm|65cm|70cm|75cm|80cm|85cm|90cm|95cm|100cm', 5, true),
+    (6,  1,  'Color',            'REFERENCIA_COLOR', NULL, 6, true),
+    -- Broche
+    (7,  2,  'Material',         'LISTA',            'Plástico|Metálico', 1, true),
+    (8,  2,  'Tipo',             'LISTA',            'Corriente|Punta de bola|Envejecido', 2, true),
+    (9,  2,  'Color',            'REFERENCIA_COLOR', NULL, 3, true),
+    -- Botón
+    (10, 3,  'Material',         'LISTA',            'Plástico', 1, true),
+    (11, 3,  'Diámetro (Línea)', 'LISTA',            '18|24|28', 2, true),
+    (12, 3,  'Color',            'REFERENCIA_COLOR', NULL, 3, true),
+    -- Tanka
+    (13, 4,  'Material',         'LISTA',            'Plástico|Metálica', 1, true),
+    (14, 4,  'Tipo',             'LISTA',            'Simple|Doble|Envejecido', 2, true),
+    (15, 4,  'Color',            'REFERENCIA_COLOR', NULL, 3, true),
+    -- Ojetillos
+    (16, 5,  'Material',         'LISTA',            'Plástico|Metálico', 1, true),
+    (17, 5,  'Color',            'LISTA',            'Mismos colores que las telas|Metal|Envejecido', 2, true),
+    -- Tirador
+    (18, 6,  'Tipo',             'LISTA',            'Corriente|Marca de Cliente|Logo Antuan', 1, true),
+    (19, 6,  'Color',            'REFERENCIA_COLOR', NULL, 2, true),
+    -- Velcro
+    (20, 7,  'Medida (Ancho)',   'LISTA',            '1.0cm|1.5cm|2.0cm|2.5cm|4.0cm|5.0cm', 1, true),
+    (21, 7,  'Color',            'REFERENCIA_COLOR', NULL, 2, true),
+    -- Chaveta de Ajuste
+    (22, 8,  'Material',         'LISTA',            'Plástica', 1, true),
+    (23, 8,  'Color',            'LISTA',            'Negro', 2, true),
+    -- Tip-Top
+    (24, 9,  'Material',         'LISTA',            'Plástico', 1, true),
+    (25, 9,  'Color',            'LISTA',            'Negro', 2, true),
+    -- Escalerilla Reguladora
+    (26, 10, 'Material',         'LISTA',            'Plástica|Metálica', 1, true),
+    (27, 10, 'Color',            'LISTA',            'Negro|Metal', 2, true),
+    -- Elástico
+    (28, 11, 'Medida (Ancho)',   'LISTA',            '1.0cm|1.5cm|2.0cm|2.5cm|3.0cm|4.0cm|5.0cm', 1, true),
+    (29, 11, 'Color',            'LISTA',            'Blanco|Negro', 2, true),
+    -- Cordón
+    (30, 12, 'Material',         'LISTA',            'Elasticado|Rígido', 1, true),
+    (31, 12, 'Color',            'REFERENCIA_COLOR', NULL, 2, true),
+    -- Vivo
+    (32, 13, 'Material',         'LISTA',            'Tela|Reflectante', 1, true),
+    (33, 13, 'Color',            'LISTA',            'Gris|Día y Noche', 2, true),
+    -- Sesgo
+    (34, 14, 'Material',         'LISTA',            'Elasticado|Rígido', 1, true),
+    (35, 14, 'Color',            'REFERENCIA_COLOR', NULL, 2, true),
+    -- Cinta Espiga
+    (36, 15, 'Composición',      'LISTA',            '50% Poliéster - 50% Algodón|100% Poliéster|100% Algodón', 1, true),
+    (37, 15, 'Medida (Ancho)',   'LISTA',            '1.0cm|1.5cm|2.0cm', 2, true),
+    (38, 15, 'Color',            'REFERENCIA_COLOR', NULL, 3, true),
+    -- Cinta Falla (Mochila)
+    (39, 16, 'Composición',      'LISTA',            '50% Poliéster - 50% Algodón|100% Poliéster|100% Algodón', 1, true),
+    (40, 16, 'Medida (Ancho)',   'LISTA',            '1.0cm|1.5cm|2.0cm|2.5cm|3.0cm|4.0cm', 2, true),
+    -- Cinta Reflectante
+    (41, 17, 'Material',         'LISTA',            'Tela|PET - Poliéster', 1, true),
+    (42, 17, 'Diseño',           'LISTA',            'Lisa|Segmentada', 2, true),
+    (43, 17, 'Color',            'LISTA',            'Gris|Día y Noche', 3, true),
+    (44, 17, 'Medida (Ancho)',   'LISTA',            '1"|2"', 4, true),
+    (45, 17, 'Pegado',           'LISTA',            'Cosida|Termofusionada|Corriente', 5, true),
+    (46, 17, 'Observaciones',    'TEXTO',            NULL, 6, false);
+    -- Cinta Sellado de Costura (tipo 18) no tiene atributos dinámicos propios.
 
 -- ============================================================
 -- 7.1. ARTÍCULOS (Catálogo Base)
@@ -542,3 +799,5 @@ ALTER TABLE composicion ALTER COLUMN id_composicion RESTART WITH 50;
 ALTER TABLE gramaje_tela ALTER COLUMN id_gramaje RESTART WITH 50;
 ALTER TABLE color_tela ALTER COLUMN id_color RESTART WITH 50;
 ALTER TABLE atributo_tecnico ALTER COLUMN id_atributo RESTART WITH 50;
+ALTER TABLE tipo_accesorio ALTER COLUMN id_tipo_accesorio RESTART WITH 50;
+ALTER TABLE atributo_accesorio_definicion ALTER COLUMN id_definicion RESTART WITH 100;

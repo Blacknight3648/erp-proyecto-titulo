@@ -1,9 +1,9 @@
 package backend.com.shared.service;
 
 import backend.com.shared.application.dto.ComposicionDTO;
+import backend.com.shared.application.service.CodigoGeneratorService;
 import backend.com.shared.application.service.impl.ComposicionServiceImpl;
 import backend.com.shared.domain.model.Composicion;
-import backend.com.shared.exception.DuplicadoException;
 import backend.com.shared.exception.EntityNotFoundException;
 import backend.com.shared.infrastructure.mapper.ComposicionMapper;
 import backend.com.shared.infrastructure.persistence.repository.ComposicionRepository;
@@ -20,6 +20,7 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -31,6 +32,9 @@ class ComposicionServiceImplTest {
 
     @Mock
     private ComposicionMapper mapper;
+
+    @Mock
+    private CodigoGeneratorService codigoGeneratorService;
 
     @InjectMocks
     private ComposicionServiceImpl composicionServiceImpl;
@@ -68,7 +72,7 @@ class ComposicionServiceImplTest {
                 .usoTipico("Prendas de verano")
                 .build();
 
-        when(composicionRepository.existsByCodigoComposicion("COMP-01")).thenReturn(false);
+        when(codigoGeneratorService.generarComposicion(eq("C-"), eq("Algodón 100%"), any())).thenReturn("COMP-01");
         when(composicionRepository.save(any(Composicion.class))).thenReturn(guardada);
         when(mapper.toDTO(guardada)).thenReturn(esperado);
 
@@ -80,22 +84,6 @@ class ComposicionServiceImplTest {
                         && c.getDescripcionComposicion().equals("Algodón 100%")
                         && c.getClasificacion().equals("Natural")
                         && c.getUsoTipico().equals("Prendas de verano")));
-    }
-
-    @Test
-    @DisplayName("crear lanza excepción si el código de composición ya existe")
-    void crear_duplicado() {
-        ComposicionDTO dto = ComposicionDTO.builder()
-                .codigoComposicion("COMP-01")
-                .descripcionComposicion("Algodón 100%")
-                .build();
-
-        when(composicionRepository.existsByCodigoComposicion("COMP-01")).thenReturn(true);
-
-        assertThatThrownBy(() -> composicionServiceImpl.crear(dto))
-                .isInstanceOf(DuplicadoException.class);
-
-        verify(composicionRepository, never()).save(any());
     }
 
     // ---------------- actualizar ----------------

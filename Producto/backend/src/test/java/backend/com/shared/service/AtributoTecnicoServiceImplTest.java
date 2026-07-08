@@ -1,9 +1,9 @@
 package backend.com.shared.service;
 
 import backend.com.shared.application.dto.AtributoTecnicoDTO;
+import backend.com.shared.application.service.CodigoGeneratorService;
 import backend.com.shared.application.service.impl.AtributoTecnicoServiceImpl;
 import backend.com.shared.domain.model.AtributoTecnico;
-import backend.com.shared.exception.DuplicadoException;
 import backend.com.shared.exception.EntityNotFoundException;
 import backend.com.shared.infrastructure.mapper.AtributoTecnicoMapper;
 import backend.com.shared.infrastructure.persistence.repository.AtributoTecnicoRepository;
@@ -20,6 +20,7 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -31,6 +32,9 @@ class AtributoTecnicoServiceImplTest {
 
     @Mock
     private AtributoTecnicoMapper mapper;
+
+    @Mock
+    private CodigoGeneratorService codigoGeneratorService;
 
     @InjectMocks
     private AtributoTecnicoServiceImpl atributoTecnicoServiceImpl;
@@ -68,7 +72,7 @@ class AtributoTecnicoServiceImplTest {
                 .impactoErp("Afecta el costo de producción")
                 .build();
 
-        when(atributoRepository.existsByCodigoAtributo("ATR-01")).thenReturn(false);
+        when(codigoGeneratorService.generarPorAbreviatura(eq("A-"), eq("Resistencia a la tracción"), any())).thenReturn("ATR-01");
         when(atributoRepository.save(any(AtributoTecnico.class))).thenReturn(guardado);
         when(mapper.toDTO(guardado)).thenReturn(esperado);
 
@@ -80,22 +84,6 @@ class AtributoTecnicoServiceImplTest {
                         && a.getClasificacion().equals("Físico")
                         && a.getDescripcionTecnica().equals("Resistencia a la tracción")
                         && a.getImpactoErp().equals("Afecta el costo de producción")));
-    }
-
-    @Test
-    @DisplayName("crear lanza excepción si el código de atributo ya existe")
-    void crear_duplicado() {
-        AtributoTecnicoDTO dto = AtributoTecnicoDTO.builder()
-                .codigoAtributo("ATR-01")
-                .descripcionTecnica("Resistencia a la tracción")
-                .build();
-
-        when(atributoRepository.existsByCodigoAtributo("ATR-01")).thenReturn(true);
-
-        assertThatThrownBy(() -> atributoTecnicoServiceImpl.crear(dto))
-                .isInstanceOf(DuplicadoException.class);
-
-        verify(atributoRepository, never()).save(any());
     }
 
     // ---------------- actualizar ----------------

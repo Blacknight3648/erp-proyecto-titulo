@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { 
   Database, Search, Plus, Edit, Trash2, Save, X, 
   RefreshCw, MapPin, Building2, Briefcase, Network, 
-  Phone, CreditCard, Box, AlertCircle 
+  Phone, CreditCard, Box, AlertCircle, ShoppingBag
 } from 'lucide-react';
 import { api } from '../../remote/service/api';
 import { Toaster, toast } from 'sonner';
@@ -13,6 +13,7 @@ import { Input } from "../../ui/input";
 import { Button } from "../../ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../../ui/dialog";
 import { Badge } from "../../ui/badge";
+import GestionArticulosHub from './articulos/GestionArticulosHub';
 
 const MASTER_DATA_ENTITIES = [
   {
@@ -82,6 +83,18 @@ const MASTER_DATA_ENTITIES = [
     labelField: 'descripcion',
     formFields: [{ label: 'Descripción', field: 'descripcion' }],
   },
+  {
+    id: 'categorias-tela', name: 'Categorías de Tela', icon: Box, endpoint: '/maestros/categorias-tela', idField: 'idCategoriaTela',
+    labelField: 'nombreCategoriaTela',
+    formFields: [
+      { label: 'Nombre de Categoría', field: 'nombreCategoriaTela' }
+    ],
+  },
+  {
+    id: 'articulos', name: 'Administrador de Artículos', icon: ShoppingBag, endpoint: '', idField: '',
+    labelField: '',
+    formFields: [], 
+  },
 ];
 
 export default function GestionDatosMaestros() {
@@ -104,6 +117,7 @@ export default function GestionDatosMaestros() {
   }, [activeEntity]);
 
   const loadData = async () => {
+    if (activeEntity.id === 'articulos') return; // El Hub de artículos carga sus propios datos
     setLoading(true);
     try {
       const res = await api.get(activeEntity.endpoint);
@@ -118,20 +132,26 @@ export default function GestionDatosMaestros() {
   };
 
   const loadSelectOptions = async () => {
+    let endpointsToLoad = new Set<string>();
+
     const selectFields: any[] = activeEntity.formFields?.filter((f: any) => f.type === 'select') || [];
-    if (selectFields.length === 0) return;
+    selectFields.forEach(f => {
+      if (f.optionsEndpoint) endpointsToLoad.add(f.optionsEndpoint);
+    });
+
+    if (endpointsToLoad.size === 0) return;
     
     const newOptions: Record<string, any[]> = { ...optionsData };
     let hasChanges = false;
     
-    for (const field of selectFields) {
-      if (field.optionsEndpoint && !newOptions[field.optionsEndpoint]) {
+    for (const endpoint of endpointsToLoad) {
+      if (!newOptions[endpoint]) {
         try {
-          const res = await api.get(field.optionsEndpoint);
-          newOptions[field.optionsEndpoint] = res.data as any[];
+          const res = await api.get(endpoint);
+          newOptions[endpoint] = res.data as any[];
           hasChanges = true;
         } catch (error) {
-          console.error("Error loading options for", field.optionsEndpoint, error);
+          console.error("Error loading options for", endpoint, error);
         }
       }
     }
@@ -168,7 +188,7 @@ export default function GestionDatosMaestros() {
     }
 
     const payload: any = { ...formData };
-    
+
     if (activeEntity.id === 'regiones' && payload.paisId) {
       payload.pais = { idPais: Number(payload.paisId) };
       delete payload.paisId;
@@ -271,6 +291,8 @@ export default function GestionDatosMaestros() {
 
       {/* Main Content Workspace */}
       <Card className="flex-1 flex flex-col shadow-md border-border rounded-2xl overflow-hidden">
+        {activeEntity.id !== 'articulos' && (
+        <>
         {/* Header section */}
         <CardHeader className="p-6 border-b flex flex-row items-center justify-between bg-card shrink-0 gap-4">
           <div>
@@ -279,8 +301,8 @@ export default function GestionDatosMaestros() {
               Visualiza, crea y modifica los registros de {activeEntity.name.toLowerCase()} del ecosistema.
             </CardDescription>
           </div>
-          
-          <Button 
+
+          <Button
             onClick={handleOpenNew}
             className="flex items-center gap-2 px-5 py-5 rounded-xl font-bold uppercase tracking-wider text-xs shadow-sm shrink-0"
           >
@@ -293,7 +315,7 @@ export default function GestionDatosMaestros() {
         <div className="px-6 py-4 flex gap-3 border-b bg-muted/10 shrink-0">
           <div className="relative flex-1 max-w-md">
             <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground" size={16} />
-            <Input 
+            <Input
               type="text"
               placeholder={`Buscar por nombre o relaciones...`}
               value={searchTerm}
@@ -301,7 +323,7 @@ export default function GestionDatosMaestros() {
               className="pl-10 uppercase bg-card rounded-xl border-muted-foreground/20 focus-visible:ring-primary h-10 text-xs font-semibold"
             />
           </div>
-          <Button 
+          <Button
             variant="outline"
             size="icon"
             onClick={loadData}
@@ -311,10 +333,16 @@ export default function GestionDatosMaestros() {
             <RefreshCw size={16} className={loading ? "animate-spin" : ""} />
           </Button>
         </div>
+        </>
+        )}
 
         {/* Workspace List/Table View */}
-        <CardContent className="flex-1 overflow-y-auto p-6 custom-scrollbar bg-muted/5">
-          {loading ? (
+        <CardContent className={`flex-1 overflow-y-auto custom-scrollbar bg-muted/5 ${activeEntity.id === 'articulos' ? 'p-0' : 'p-6'}`}>
+          {activeEntity.id === 'articulos' ? (
+             <div className="h-full">
+                <GestionArticulosHub />
+             </div>
+          ) : loading ? (
             <div className="flex flex-col items-center justify-center h-64 text-muted-foreground space-y-3">
               <RefreshCw size={28} className="animate-spin text-primary" />
               <span className="text-xs font-bold uppercase tracking-wider">Cargando información...</span>
@@ -395,6 +423,7 @@ export default function GestionDatosMaestros() {
         </CardContent>
 
         {/* Dialog Form Template */}
+        {activeEntity.id !== 'articulos' && (
         <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
           <DialogContent className="max-w-md p-6 rounded-2xl border-border bg-card shadow-2xl">
             <DialogHeader className="mb-4">
@@ -426,11 +455,11 @@ export default function GestionDatosMaestros() {
                     <Input
                       type={f.type || 'text'}
                       value={formData[f.field] ?? ''}
-                      onChange={(e) => setFormData({ 
-                        ...formData, 
-                        [f.field]: f.type === 'number' 
-                          ? (e.target.value === '' ? '' : Number(e.target.value)) 
-                          : e.target.value.toUpperCase() 
+                      onChange={(e) => setFormData({
+                        ...formData,
+                        [f.field]: f.type === 'number'
+                          ? (e.target.value === '' ? '' : Number(e.target.value))
+                          : e.target.value.toUpperCase()
                       })}
                       placeholder={`Ingresar ${f.label.toLowerCase()}...`}
                       className="uppercase rounded-xl h-11 text-xs font-semibold bg-background"
@@ -460,6 +489,7 @@ export default function GestionDatosMaestros() {
             </form>
           </DialogContent>
         </Dialog>
+        )}
       </Card>
     </div>
   );

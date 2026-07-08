@@ -12,8 +12,7 @@ public class AtributoTecnicoDTO {
 
     private Integer idAtributo;
 
-    @NotBlank(message = "El código de atributo es obligatorio")
-    @Size(max = 10)
+    @Size(max = 10, message = "El código no puede superar 10 caracteres")
     private String codigoAtributo;
 
     @Size(max = 20)

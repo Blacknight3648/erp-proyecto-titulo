@@ -1,9 +1,9 @@
 package backend.com.shared.application.service.impl;
 
 import backend.com.shared.application.dto.ComposicionDTO;
+import backend.com.shared.application.service.CodigoGeneratorService;
 import backend.com.shared.application.service.ComposicionService;
 import backend.com.shared.domain.model.Composicion;
-import backend.com.shared.exception.DuplicadoException;
 import backend.com.shared.exception.EntityNotFoundException;
 import backend.com.shared.infrastructure.mapper.ComposicionMapper;
 import backend.com.shared.infrastructure.persistence.repository.ComposicionRepository;
@@ -18,16 +18,18 @@ import java.util.List;
 @Transactional
 public class ComposicionServiceImpl implements ComposicionService {
 
+    private static final String PREFIJO_CODIGO = "C-";
+
     private final ComposicionRepository composicionRepository;
     private final ComposicionMapper mapper;
+    private final CodigoGeneratorService codigoGeneratorService;
 
     @Override
     public ComposicionDTO crear(ComposicionDTO dto) {
-        if (composicionRepository.existsByCodigoComposicion(dto.getCodigoComposicion())) {
-            throw new DuplicadoException("código de composición", dto.getCodigoComposicion());
-        }
+        String codigo = codigoGeneratorService.generarComposicion(
+                PREFIJO_CODIGO, dto.getDescripcionComposicion(), composicionRepository::existsByCodigoComposicion);
         Composicion nueva = Composicion.builder()
-                .codigoComposicion(dto.getCodigoComposicion())
+                .codigoComposicion(codigo)
                 .descripcionComposicion(dto.getDescripcionComposicion())
                 .clasificacion(dto.getClasificacion())
                 .usoTipico(dto.getUsoTipico())

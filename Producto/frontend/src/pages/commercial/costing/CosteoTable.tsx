@@ -3,6 +3,7 @@ import { Trash2, Plus, ChevronsUpDown, Check } from 'lucide-react';
 import { Popover, PopoverTrigger, PopoverContent } from '../../../ui/popover';
 import { Command, CommandInput, CommandList, CommandEmpty, CommandGroup, CommandItem } from '../../../ui/command';
 import { cn } from '../../../ui/utils';
+import ProveedorComboField from '../../../components/shared/ProveedorComboField';
 
 function AutocompleteInput({ value, onChange, disabled, opcionesAutocomplete, placeholder = "Producto..." }) {
     const [open, setOpen] = React.useState(false);
@@ -160,13 +161,12 @@ export default function CosteoTable({ title, insumos, onUpdateItem, onRemoveItem
                                             />
                                         </td>
                                         <td className="px-6 py-4">
-                                            <input
-                                                type="text"
-                                                disabled={disabled}
-                                                className={`w-full bg-transparent border-none text-xs font-bold ${disabled ? 'text-muted-foreground' : 'text-foreground'} focus:ring-0`}
+                                            <ProveedorComboField
                                                 value={item.proveedorReferencia || ''}
-                                                onChange={(e) => onUpdateItem(item.id, 'proveedorReferencia', e.target.value)}
+                                                onChange={(val) => onUpdateItem(item.id, 'proveedorReferencia', val)}
+                                                readOnly={disabled}
                                                 placeholder="Prov. Ref..."
+                                                className="min-w-[180px]"
                                             />
                                         </td>
                                         <td className="px-6 py-4 text-center">

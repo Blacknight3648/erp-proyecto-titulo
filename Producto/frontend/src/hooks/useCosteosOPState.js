@@ -410,13 +410,23 @@ export function useCosteosOPState() {
             return isNaN(num) ? 0 : num;
         })) + 1 : 1;
 
+        // Normaliza la unidad de medida del formato SCOS al formato de CosteoTable
+        const normalizarUnidad = (unidad) => {
+            if (!unidad) return null;
+            const u = unidad.toUpperCase();
+            if (u === 'MTRS' || u === 'MTS' || u === 'M') return 'm';
+            if (u === 'KG' || u === 'KILOS') return 'kg';
+            if (u === 'UNIDADES' || u === 'UN' || u === 'UND') return 'und';
+            return u.toLowerCase();
+        };
+
         const nuevoItem = categoryId === 'telas'
             ? {
                 id: `NEW-${nextId}`,
                 producto: item.nombre || item.aplicacion || 'Tela',
                 costo: 0,
-                cantidad: item.consumo || 0,
-                unidad: item.unidadMedida || 'm',
+                cantidad: item.peso || item.consumo || 0,
+                unidad: normalizarUnidad(item.unidadMedida) || 'm',
                 categoryId: 'telas',
                 composicion: item.composicion,
                 color: item.color
@@ -425,13 +435,14 @@ export function useCosteosOPState() {
                 id: `NEW-${nextId}`,
                 producto: item.nombreAccesorio || item.tipo || 'Accesorio',
                 costo: 0,
-                cantidad: item.consumo || item.cantidad || 0,
-                unidad: item.unidadMedida || 'un',
+                cantidad: item.cantidad || item.consumo || 0,
+                unidad: normalizarUnidad(item.unidadMedida) || 'und',
                 categoryId: 'accesorios'
             };
 
         setInsumos(prev => [...prev, nuevoItem]);
     };
+
 
     const handleValidateCostos = async () => {
         try {

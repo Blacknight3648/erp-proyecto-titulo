@@ -1,4 +1,5 @@
 import { Plus, Trash2 } from 'lucide-react';
+import ProveedorComboField from '../shared/ProveedorComboField';
 
 export default function DetailTable({ title, data, onAdd, onUpdate, onRemove, readOnly = false }) {
     return (
@@ -56,13 +57,12 @@ export default function DetailTable({ title, data, onAdd, onUpdate, onRemove, re
                                 </td>
 
                                 <td className="px-4 py-4">
-                                    <input
-                                        type="text"
+                                    <ProveedorComboField
+                                        value={item.proveedorReferencia || ''}
+                                        onChange={(val) => !readOnly && onUpdate(item.id, 'proveedorReferencia', val)}
                                         readOnly={readOnly}
-                                        className={`w-full bg-accent/30 p-2 rounded-lg font-bold text-[10px] text-accent-foreground outline-none border border-accent focus:border-accent placeholder:text-accent-foreground ${readOnly ? 'cursor-default' : ''}`}
-                                        value={item.proveedorReferencia || ""}
-                                        onChange={(e) => !readOnly && onUpdate(item.id, 'proveedorReferencia', e.target.value)}
                                         placeholder="Proveedor ref..."
+                                        className="min-w-[180px]"
                                     />
                                 </td>
 

@@ -120,14 +120,14 @@ class CrearOrdenProduccionUseCaseTest {
 
     private ItemEVN itemEvnConCosteo(Integer nroItem, Long costeoId) {
         return new ItemEVN(1, 5L, nroItem, "Polera", "Polera Basica", "Algodón", "100% Algodón", "Unisex",
-                "COD-INT", "COD-PROV", "Proveedor", 50, new Money(new BigDecimal("5000"), "CLP"),
+                "COD-INT", "COD-PROV", "Proveedor", "Azul", 50, new Money(new BigDecimal("5000"), "CLP"),
                 new Money(new BigDecimal("3000"), "CLP"), BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO,
                 TipoItem.OP, List.of(), costeoId, 30L);
     }
 
     private ItemEVN itemEvnSinCosteo(Integer nroItem) {
         return new ItemEVN(1, 5L, nroItem, "Polera", "Polera Basica", "Algodón", "100% Algodón", "Unisex",
-                "COD-INT", "COD-PROV", "Proveedor", 50, new Money(new BigDecimal("5000"), "CLP"),
+                "COD-INT", "COD-PROV", "Proveedor", "Rojo", 50, new Money(new BigDecimal("5000"), "CLP"),
                 new Money(new BigDecimal("3000"), "CLP"), BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO,
                 TipoItem.OP, List.of(), null, 30L);
     }

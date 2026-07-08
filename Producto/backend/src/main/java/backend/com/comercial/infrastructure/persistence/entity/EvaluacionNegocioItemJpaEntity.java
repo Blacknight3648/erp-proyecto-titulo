@@ -59,6 +59,9 @@ public class EvaluacionNegocioItemJpaEntity {
     @Column(name = "proveedor_nombre", length = 200)
     private String proveedorNombre;
 
+    @Column(name = "color", length = 100)
+    private String color;
+
     // === Cantidades y precios ===
     @Column(nullable = false)
     private Integer cantidad;

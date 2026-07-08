@@ -26,6 +26,7 @@ import { useAuth } from '../../../contexts/AuthContext';
 import ComboSearchField from '../../../components/shared/ComboSearchField';
 import ProveedorComboField from '../../../components/shared/ProveedorComboField';
 import CustomSelectField from '../../../components/shared/CustomSelectField';
+import ComboField from '../../../components/shared/ComboField';
 
 export default function DetalleEVN({ initialEval, onBack, mode = 'create' }) {
     const isReadOnly = mode === 'view';
@@ -215,7 +216,8 @@ export default function DetalleEVN({ initialEval, onBack, mode = 'create' }) {
                                     <th className="px-4 py-4 text-[10px] font-black uppercase tracking-wider text-sidebar-foreground">Modelo</th>
                                     <th className="px-4 py-4 text-[10px] font-black uppercase tracking-wider text-sidebar-muted">Género</th>
                                     <th className="px-4 py-4 text-[10px] font-black uppercase tracking-wider text-sidebar-foreground">Tela</th>
-                                    <th className="px-4 py-4 text-[10px] font-black uppercase tracking-wider text-sidebar-muted">Composición</th>
+                                    <th className="px-4 py-4 text-[10px] font-black uppercase tracking-wider text-sidebar-muted">Color</th>
+                                    <th className="px-4 py-4 text-[10px] font-black uppercase tracking-wider text-sidebar-foreground">Composición</th>
                                     <th className="px-4 py-4 text-[10px] font-black uppercase tracking-wider text-sidebar-foreground bg-black/10">Costo Prod</th>
                                     <th className="px-4 py-4 text-[10px] font-black uppercase tracking-wider text-sidebar-foreground bg-black/10">Costo Logo</th>
                                     <th className="px-4 py-4 text-[10px] font-black uppercase tracking-wider text-sidebar-foreground bg-black/10">Costo OT</th>
@@ -371,8 +373,25 @@ export default function DetalleEVN({ initialEval, onBack, mode = 'create' }) {
                                                 onSelectArticulo={(articulo) => {
                                                     const comp = articulo?.detalleTela?.composicion?.descripcionComposicion;
                                                     if (comp) handleUpdateItem(item.id, 'composicion', comp);
+                                                    const colores = articulo?.detalleTela?.colores;
+                                                    handleUpdateItem(item.id, 'coloresDisponibles', colores || []);
                                                 }}
                                                 placeholder="Tela"
+                                                readOnly={isReadOnly}
+                                            />
+                                        </td>
+                                        <td className="px-4 py-4">
+                                            <ComboField
+                                                className="min-w-[100px]"
+                                                portal
+                                                allowCustom
+                                                value={item.color || ''}
+                                                onChange={(val) => handleUpdateItem(item.id, 'color', val)}
+                                                options={(item.coloresDisponibles || []).map(c => ({
+                                                    value: c.descripcionColor,
+                                                    label: c.descripcionColor
+                                                }))}
+                                                placeholder="Color"
                                                 readOnly={isReadOnly}
                                             />
                                         </td>

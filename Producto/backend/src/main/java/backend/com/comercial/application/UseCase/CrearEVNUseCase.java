@@ -104,6 +104,7 @@ public class CrearEVNUseCase {
                 dto.getCodigoInterno(),
                 dto.getCodigoProveedor(),
                 dto.getProveedorNombre(),
+                dto.getColor(),
                 cantidad,
                 precio,
                 costo,

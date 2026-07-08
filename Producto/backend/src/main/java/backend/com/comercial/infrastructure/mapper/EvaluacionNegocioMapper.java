@@ -105,6 +105,7 @@ public class EvaluacionNegocioMapper {
                 entity.getCodigoInterno(),
                 entity.getCodigoProveedor(),
                 entity.getProveedorNombre(),
+                entity.getColor(),
                 entity.getCantidad(),
                 new Money(entity.getPrecioUnitario(), entity.getMonedaPrecioUnitario()),
                 new Money(entity.getCostoUnitario(), entity.getMonedaCostoUnitario()),
@@ -206,6 +207,7 @@ public class EvaluacionNegocioMapper {
             itemEntity.setCodigoInterno(itemDomain.getCodigoInterno());
             itemEntity.setCodigoProveedor(itemDomain.getCodigoProveedor());
             itemEntity.setProveedorNombre(itemDomain.getProveedorNombre());
+            itemEntity.setColor(itemDomain.getColor());
             itemEntity.setCantidad(itemDomain.getCantidad());
             if (itemDomain.getPrecioUnitario() != null) {
                 itemEntity.setPrecioUnitario(itemDomain.getPrecioUnitario().getAmount());

@@ -23,6 +23,8 @@ export const DEFAULT_ITEM = {
     genero: "",
     tela: "",
     composicion: "",
+    color: "",
+    coloresDisponibles: [],
     costeoId: null,
     solicitudCostosId: null,
     costoProducto: 0,
@@ -146,6 +148,7 @@ export const useEVNState = (initialEval = null) => {
                 modelo: it.modelo || "",
                 tela: it.tela || "",
                 composicion: it.composicion || "",
+                color: it.color || "",
                 genero: it.genero || "",
                 codigoInterno: it.codigoInterno || "",
                 codigoProveedor: it.codigoProveedor || "",
@@ -391,7 +394,7 @@ export const useEVNState = (initialEval = null) => {
                 return;
             }
         }
-        setItems(prev => prev.map(item => item.id === id ? { ...item, [field]: (typeof value === 'string' && field !== 'tipo' && field !== 'producto' && field !== 'modelo' && field !== 'tela' && field !== 'composicion' && field !== 'genero' && field !== 'codigoInterno' && field !== 'codigoProveedor' && field !== 'proveedor') ? (parseFloat(value) || 0) : value } : item));
+        setItems(prev => prev.map(item => item.id === id ? { ...item, [field]: (typeof value === 'string' && field !== 'tipo' && field !== 'producto' && field !== 'modelo' && field !== 'tela' && field !== 'composicion' && field !== 'color' && field !== 'genero' && field !== 'codigoInterno' && field !== 'codigoProveedor' && field !== 'proveedor') ? (parseFloat(value) || 0) : value } : item));
     }, []);
 
     /**

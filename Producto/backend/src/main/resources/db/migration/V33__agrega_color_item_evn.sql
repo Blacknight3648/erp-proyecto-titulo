@@ -1,0 +1,1 @@
+ALTER TABLE evaluacion_negocio_items ADD COLUMN color VARCHAR(100);

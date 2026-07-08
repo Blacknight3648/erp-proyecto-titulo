@@ -308,7 +308,7 @@ export default function ParametriaTextil() {
 
         {/* Dialog Form Template */}
         <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-          <DialogContent className="max-w-md p-6 rounded-2xl border-border bg-card shadow-2xl">
+          <DialogContent aria-describedby={undefined} className="max-w-md p-6 rounded-2xl border-border bg-card shadow-2xl">
             <DialogHeader className="mb-4">
               <DialogTitle className="text-xl font-extrabold tracking-tight text-foreground">
                 {editingItem ? 'Editar' : 'Nuevo'} {activeEntity.name}

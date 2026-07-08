@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { api } from '../../../remote/service/api';
 import { Toaster, toast } from 'sonner';
-import { Layers, Plus, Edit, Trash2, Save, Search, RefreshCw, X } from 'lucide-react';
+import { Layers, Plus, Edit, Trash2, Save, Search, RefreshCw, X, Eye, Palette } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardContent } from "../../../ui/card";
 import { Input } from "../../../ui/input";
 import { Button } from "../../../ui/button";
@@ -23,7 +23,9 @@ export default function GestionTelas() {
   const [categorias, setCategorias] = useState<any[]>([]);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<any>(null);
+  const [viewingItem, setViewingItem] = useState<any>(null);
 
   // Base Article fields + Tela fields
   const [formData, setFormData] = useState<any>({
@@ -74,9 +76,8 @@ export default function GestionTelas() {
   const loadTelas = async () => {
     setLoading(true);
     try {
-      // Assuming articles endpoint supports filtering by type
       const res = await api.get('/maestros/articulos/tipo/TELA');
-      setTelas(res.data as any[]);
+      setTelas((res.data as any[]).filter((t: any) => t.activo !== false));
     } catch (error) {
       console.error(error);
       toast.error("Error al cargar telas");
@@ -92,7 +93,7 @@ export default function GestionTelas() {
       descripcionArticulo: '',
       stockActual: 0,
       tipoArticulo: 'TELA',
-      idCategoriaTela: '',
+      idCategoriaTela: 1,
       detalleTela: {
         familiaTela: { idFamiliaTela: '' },
         composicion: { idComposicion: '' },
@@ -130,6 +131,11 @@ export default function GestionTelas() {
     setIsModalOpen(true);
   };
 
+  const handleOpenDetails = (item: any) => {
+    setViewingItem(item);
+    setIsDetailsModalOpen(true);
+  };
+
   const toggleColor = (id: number) => {
     const current = formData.detalleTela.colores;
     const isSelected = current.includes(id);
@@ -163,7 +169,6 @@ export default function GestionTelas() {
       return toast.error("La categoría de tela es obligatoria");
     }
 
-    // Prepare payload exactly as DTO expects. El código (SKU) lo genera el backend solo.
     const payload = {
       ...formData,
       idCategoriaTela: Number(formData.idCategoriaTela),
@@ -206,10 +211,13 @@ export default function GestionTelas() {
     });
   };
 
-  const filteredData = telas.filter(item => 
-    item.nombreArticulo.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    item.codigoArticulo.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredData = telas.filter(item => {
+    const term = searchTerm.toLowerCase();
+    return item.nombreArticulo.toLowerCase().includes(term) ||
+           item.codigoArticulo.toLowerCase().includes(term) ||
+           (item.detalleTela?.familiaTela?.nombreFamiliaTela || '').toLowerCase().includes(term) ||
+           (item.detalleTela?.composicion?.nombreComposicion || '').toLowerCase().includes(term);
+  });
 
   return (
     <div className="flex flex-col h-full bg-white rounded-2xl border border-zinc-200 overflow-hidden shadow-sm">
@@ -230,14 +238,14 @@ export default function GestionTelas() {
       <div className="px-6 py-4 flex gap-3 border-b border-zinc-100 bg-white">
         <div className="relative flex-1 max-w-md">
           <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-400" size={16} />
-          <Input 
-            placeholder="Buscar por código o nombre..."
+        <Input 
+            placeholder="Buscar código, nombre, familia o comp..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-10 h-10 rounded-xl bg-zinc-50 border-zinc-200 text-xs font-medium uppercase"
+            className="pl-10 h-10 rounded-xl bg-zinc-50 border-zinc-200 text-xs font-medium uppercase w-full"
           />
         </div>
-        <Button variant="outline" size="icon" onClick={loadTelas} className="h-10 w-10 rounded-xl border-zinc-200 text-zinc-500 hover:text-zinc-900">
+        <Button variant="outline" size="icon" onClick={loadTelas} className="h-10 w-10 shrink-0 rounded-xl border-zinc-200 text-zinc-500 hover:text-zinc-900">
           <RefreshCw size={16} className={loading ? "animate-spin" : ""} />
         </Button>
       </div>
@@ -282,6 +290,9 @@ export default function GestionTelas() {
                   </div>
                 </div>
                 <div className="flex gap-2">
+                  <Button variant="ghost" size="icon" onClick={() => handleOpenDetails(item)} className="h-8 w-8 text-blue-500 hover:bg-blue-50 rounded-lg">
+                    <Eye size={14} />
+                  </Button>
                   <Button variant="ghost" size="icon" onClick={() => handleOpenEdit(item)} className="h-8 w-8 text-zinc-500 hover:bg-zinc-100 rounded-lg">
                     <Edit size={14} />
                   </Button>
@@ -297,7 +308,7 @@ export default function GestionTelas() {
 
       {/* Modal CRUD Telas */}
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-        <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto p-0 rounded-2xl border-zinc-200 bg-white shadow-2xl">
+        <DialogContent aria-describedby={undefined} className="max-w-3xl max-h-[90vh] overflow-y-auto p-0 rounded-2xl border-zinc-200 bg-white shadow-2xl">
           <div className="sticky top-0 z-10 bg-white/80 backdrop-blur-md border-b border-zinc-200 px-6 py-4 flex justify-between items-center">
             <DialogTitle className="text-lg font-extrabold tracking-tight text-zinc-900 uppercase">
               {editingItem ? 'Editar Tela' : 'Registrar Nueva Tela'}
@@ -452,6 +463,31 @@ export default function GestionTelas() {
               </div>
             </div>
 
+            <div className="h-px bg-zinc-100" />
+
+            {/* Sección 4: Colores Disponibles */}
+            <div>
+              <h3 className="text-xs font-bold text-zinc-400 uppercase tracking-widest mb-4 flex items-center gap-2">
+                <div className="w-1.5 h-1.5 rounded-full bg-pink-300" /> Colores Disponibles para esta Tela
+              </h3>
+              <div className="grid grid-cols-3 gap-3 bg-zinc-50 p-4 rounded-xl border border-zinc-200">
+                {colores.map(color => {
+                  const isChecked = formData.detalleTela.colores.includes(color.idColor);
+                  return (
+                    <label key={color.idColor} className={`flex items-start gap-3 p-3 rounded-lg border cursor-pointer transition-colors ${isChecked ? 'bg-white border-zinc-300 shadow-sm' : 'border-transparent hover:bg-zinc-100'}`}>
+                      <div className="mt-0.5">
+                        <Checkbox checked={isChecked} onCheckedChange={() => toggleColor(color.idColor)} className={isChecked ? 'border-zinc-900 bg-zinc-900' : ''} />
+                      </div>
+                      <div className="flex-1">
+                        <div className="text-[11px] font-bold text-zinc-900 uppercase">{color.nombreColor}</div>
+                        <div className="text-[9px] text-zinc-400 uppercase font-medium mt-0.5">{color.codigoColor}</div>
+                      </div>
+                    </label>
+                  );
+                })}
+              </div>
+            </div>
+
             {/* Modal Footer */}
             <div className="sticky bottom-0 bg-white/90 backdrop-blur-sm border-t border-zinc-200 pt-4 flex gap-3 pb-2">
               <Button type="button" variant="outline" onClick={() => setIsModalOpen(false)} className="flex-1 h-12 rounded-xl text-xs font-bold uppercase tracking-widest">
@@ -462,6 +498,80 @@ export default function GestionTelas() {
               </Button>
             </div>
           </form>
+        </DialogContent>
+      </Dialog>
+
+      {/* Modal DETALLES Tela */}
+      <Dialog open={isDetailsModalOpen} onOpenChange={setIsDetailsModalOpen}>
+        <DialogContent aria-describedby={undefined} className="max-w-2xl max-h-[85vh] overflow-y-auto p-0 rounded-2xl border-zinc-200 bg-white shadow-2xl">
+          {viewingItem && (
+            <>
+              <div className="sticky top-0 z-10 bg-white/80 backdrop-blur-md border-b border-zinc-200 px-6 py-5 flex justify-between items-center">
+                <div>
+                  <DialogTitle className="text-xl font-extrabold tracking-tight text-zinc-900 uppercase">
+                    Ficha Técnica: {viewingItem.nombreArticulo}
+                  </DialogTitle>
+                  <p className="text-xs font-bold text-zinc-400 mt-1 uppercase">SKU: {viewingItem.codigoArticulo}</p>
+                </div>
+                <button onClick={() => setIsDetailsModalOpen(false)} className="text-zinc-400 hover:text-zinc-600 bg-zinc-100 p-2 rounded-full"><X size={18}/></button>
+              </div>
+
+              <div className="p-6 space-y-6">
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="bg-zinc-50 p-4 rounded-xl border border-zinc-200">
+                    <p className="text-[10px] text-zinc-400 font-bold uppercase tracking-wider mb-1">Familia</p>
+                    <p className="text-sm font-bold text-zinc-900 uppercase">{viewingItem.detalleTela?.familiaTela?.nombreFamiliaTela || 'N/A'}</p>
+                  </div>
+                  <div className="bg-zinc-50 p-4 rounded-xl border border-zinc-200">
+                    <p className="text-[10px] text-zinc-400 font-bold uppercase tracking-wider mb-1">Composición</p>
+                    <p className="text-sm font-bold text-zinc-900 uppercase">{viewingItem.detalleTela?.composicion?.nombreComposicion || 'N/A'}</p>
+                  </div>
+                  <div className="bg-zinc-50 p-4 rounded-xl border border-zinc-200">
+                    <p className="text-[10px] text-zinc-400 font-bold uppercase tracking-wider mb-1">Gramaje / Peso</p>
+                    <p className="text-sm font-bold text-zinc-900 uppercase">{viewingItem.detalleTela?.gramaje?.codigoGramaje || 'N/A'}</p>
+                  </div>
+                  <div className="bg-zinc-50 p-4 rounded-xl border border-zinc-200">
+                    <p className="text-[10px] text-zinc-400 font-bold uppercase tracking-wider mb-1">Uso Típico Industrial</p>
+                    <p className="text-sm font-bold text-zinc-900 uppercase">{viewingItem.detalleTela?.usoTipico || 'N/A'}</p>
+                  </div>
+                </div>
+
+                <div>
+                  <h4 className="text-xs font-bold text-zinc-400 uppercase tracking-widest flex items-center gap-2 mb-3">
+                    <Palette size={14} className="text-pink-400"/> Colores Disponibles
+                  </h4>
+                  <div className="flex flex-wrap gap-2">
+                    {viewingItem.detalleTela?.colores?.length > 0 ? (
+                      viewingItem.detalleTela.colores.map((c: any) => (
+                        <span key={c.idColor} className="px-3 py-1.5 bg-zinc-100 border border-zinc-200 text-zinc-700 text-xs font-bold rounded-lg uppercase">
+                          {c.nombreColor} <span className="text-[10px] text-zinc-400 ml-1">({c.codigoColor})</span>
+                        </span>
+                      ))
+                    ) : (
+                      <span className="text-xs text-zinc-400 italic">No hay colores registrados.</span>
+                    )}
+                  </div>
+                </div>
+
+                <div>
+                  <h4 className="text-xs font-bold text-zinc-400 uppercase tracking-widest flex items-center gap-2 mb-3">
+                    <Layers size={14} className="text-amber-400"/> Tratamientos Técnicos
+                  </h4>
+                  <div className="flex flex-wrap gap-2">
+                    {viewingItem.detalleTela?.atributosTecnicos?.length > 0 ? (
+                      viewingItem.detalleTela.atributosTecnicos.map((a: any) => (
+                        <span key={a.idAtributo} className="px-3 py-1.5 bg-amber-50 border border-amber-200 text-amber-700 text-xs font-bold rounded-lg uppercase">
+                          {a.descripcionAtributo}
+                        </span>
+                      ))
+                    ) : (
+                      <span className="text-xs text-zinc-400 italic">Sin tratamientos especiales.</span>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </>
+          )}
         </DialogContent>
       </Dialog>
     </div>

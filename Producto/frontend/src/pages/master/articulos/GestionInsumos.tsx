@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { api } from '../../../remote/service/api';
 import { Toaster, toast } from 'sonner';
-import { Scissors, Plus, Edit, Trash2, Save, Search, RefreshCw, X } from 'lucide-react';
+import { Scissors, Plus, Edit, Trash2, Save, Search, RefreshCw, X, Eye } from 'lucide-react';
+import { Card, CardHeader, CardTitle, CardContent } from "../../../ui/card";
 import { Button } from "../../../ui/button";
 import { Input } from "../../../ui/input";
 import { Dialog, DialogContent, DialogTitle } from "../../../ui/dialog";
@@ -29,7 +30,9 @@ export default function GestionInsumos() {
   const [loadingDefiniciones, setLoadingDefiniciones] = useState(false);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<any>(null);
+  const [viewingItem, setViewingItem] = useState<any>(null);
 
   const [formData, setFormData] = useState<any>({
     nombreArticulo: '',
@@ -81,7 +84,7 @@ export default function GestionInsumos() {
     setLoading(true);
     try {
       const res = await api.get('/maestros/articulos/tipo/ACCESORIO');
-      setInsumos(res.data as any[]);
+      setInsumos((res.data as any[]).filter((t: any) => t.activo !== false));
     } catch (error) {
       console.error(error);
       toast.error("Error al cargar insumos");
@@ -128,6 +131,11 @@ export default function GestionInsumos() {
       },
     });
     setIsModalOpen(true);
+  };
+
+  const handleOpenDetails = (item: any) => {
+    setViewingItem(item);
+    setIsDetailsModalOpen(true);
   };
 
   const handleTipoAccesorioChange = async (idTipoAccesorio: string) => {
@@ -220,10 +228,13 @@ export default function GestionInsumos() {
     });
   };
 
-  const filteredData = insumos.filter(item =>
-    item.nombreArticulo.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    item.codigoArticulo.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredData = insumos.filter(item => {
+    const term = searchTerm.toLowerCase();
+    return item.nombreArticulo.toLowerCase().includes(term) ||
+           item.codigoArticulo.toLowerCase().includes(term) ||
+           (item.detalleAccesorio?.tipoAccesorio?.nombre || '').toLowerCase().includes(term) ||
+           (item.detalleAccesorio?.proveedor || '').toLowerCase().includes(term);
+  });
 
   return (
     <div className="flex flex-col h-full bg-white rounded-2xl border border-zinc-200 overflow-hidden shadow-sm">
@@ -245,13 +256,13 @@ export default function GestionInsumos() {
         <div className="relative flex-1 max-w-md">
           <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-400" size={16} />
           <Input
-            placeholder="Buscar por código o nombre..."
+            placeholder="Buscar por código, nombre, tipo o prov..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-10 h-10 rounded-xl bg-zinc-50 border-zinc-200 text-xs font-medium uppercase"
+            className="pl-10 h-10 rounded-xl bg-zinc-50 border-zinc-200 text-xs font-medium uppercase w-full"
           />
         </div>
-        <Button variant="outline" size="icon" onClick={loadInsumos} className="h-10 w-10 rounded-xl border-zinc-200 text-zinc-500 hover:text-zinc-900">
+        <Button variant="outline" size="icon" onClick={loadInsumos} className="h-10 w-10 shrink-0 rounded-xl border-zinc-200 text-zinc-500 hover:text-zinc-900">
           <RefreshCw size={16} className={loading ? "animate-spin" : ""} />
         </Button>
       </div>
@@ -296,6 +307,9 @@ export default function GestionInsumos() {
                   </div>
                 </div>
                 <div className="flex gap-2">
+                  <Button variant="ghost" size="icon" onClick={() => handleOpenDetails(item)} className="h-8 w-8 text-blue-500 hover:bg-blue-50 rounded-lg">
+                    <Eye size={14} />
+                  </Button>
                   <Button variant="ghost" size="icon" onClick={() => handleOpenEdit(item)} className="h-8 w-8 text-zinc-500 hover:bg-zinc-100 rounded-lg">
                     <Edit size={14} />
                   </Button>
@@ -311,7 +325,7 @@ export default function GestionInsumos() {
 
       {/* Modal CRUD Insumos */}
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto p-0 rounded-2xl border-zinc-200 bg-white shadow-2xl">
+        <DialogContent aria-describedby={undefined} className="max-w-2xl max-h-[90vh] overflow-y-auto p-0 rounded-2xl border-zinc-200 bg-white shadow-2xl">
           <div className="sticky top-0 z-10 bg-white/80 backdrop-blur-md border-b border-zinc-200 px-6 py-4 flex justify-between items-center">
             <DialogTitle className="text-lg font-extrabold tracking-tight text-zinc-900 uppercase">
               {editingItem ? 'Editar Insumo' : 'Registrar Nuevo Insumo'}
@@ -454,6 +468,59 @@ export default function GestionInsumos() {
               </Button>
             </div>
           </form>
+        </DialogContent>
+      </Dialog>
+
+      {/* Modal DETALLES Insumo */}
+      <Dialog open={isDetailsModalOpen} onOpenChange={setIsDetailsModalOpen}>
+        <DialogContent aria-describedby={undefined} className="max-w-md max-h-[85vh] overflow-y-auto p-0 rounded-2xl border-zinc-200 bg-white shadow-2xl">
+          {viewingItem && (
+            <>
+              <div className="sticky top-0 z-10 bg-white/80 backdrop-blur-md border-b border-zinc-200 px-6 py-5 flex justify-between items-center">
+                <div>
+                  <DialogTitle className="text-xl font-extrabold tracking-tight text-zinc-900 uppercase">
+                    Ficha Técnica: {viewingItem.nombreArticulo}
+                  </DialogTitle>
+                  <p className="text-xs font-bold text-zinc-400 mt-1 uppercase">SKU: {viewingItem.codigoArticulo}</p>
+                </div>
+                <button onClick={() => setIsDetailsModalOpen(false)} className="text-zinc-400 hover:text-zinc-600 bg-zinc-100 p-2 rounded-full"><X size={18}/></button>
+              </div>
+
+              <div className="p-6 space-y-4">
+                <div className="bg-zinc-50 p-4 rounded-xl border border-zinc-200 flex justify-between items-center">
+                  <div>
+                    <p className="text-[10px] text-zinc-400 font-bold uppercase tracking-wider mb-1">Subtipo Accesorio</p>
+                    <p className="text-sm font-bold text-zinc-900 uppercase">{viewingItem.detalleAccesorio?.subtipoAccesorio || 'N/A'}</p>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-[10px] text-zinc-400 font-bold uppercase tracking-wider mb-1">Talla / Medida</p>
+                    <p className="text-sm font-bold text-zinc-900 uppercase">{viewingItem.detalleAccesorio?.tallasDisponibles || 'N/A'}</p>
+                  </div>
+                </div>
+                
+                <div className="bg-zinc-50 p-4 rounded-xl border border-zinc-200 flex justify-between items-center">
+                  <div>
+                    <p className="text-[10px] text-zinc-400 font-bold uppercase tracking-wider mb-1">Proveedor Recomendado</p>
+                    <p className="text-sm font-bold text-zinc-900 uppercase">{viewingItem.detalleAccesorio?.proveedor || 'No Especificado'}</p>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-[10px] text-zinc-400 font-bold uppercase tracking-wider mb-1">Cód. Proveedor</p>
+                    <p className="text-sm font-bold text-zinc-900 uppercase">{viewingItem.detalleAccesorio?.codigoProveedor || 'N/A'}</p>
+                  </div>
+                </div>
+
+                <div className="bg-zinc-50 p-4 rounded-xl border border-zinc-200 flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-bold text-zinc-900 uppercase">Logo Cliente Requerido</p>
+                    <p className="text-[10px] text-zinc-400 font-bold uppercase tracking-wider mt-0.5">¿Lleva grabación láser o estampado?</p>
+                  </div>
+                  <span className={`px-3 py-1 rounded-lg text-xs font-bold uppercase ${viewingItem.detalleAccesorio?.requiereLogoCliente ? 'bg-zinc-900 text-white' : 'bg-zinc-200 text-zinc-600'}`}>
+                    {viewingItem.detalleAccesorio?.requiereLogoCliente ? 'Sí' : 'No'}
+                  </span>
+                </div>
+              </div>
+            </>
+          )}
         </DialogContent>
       </Dialog>
     </div>

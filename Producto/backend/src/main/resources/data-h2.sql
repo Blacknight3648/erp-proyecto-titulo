@@ -158,9 +158,9 @@ MERGE INTO producto (producto_id, codigo_producto, nombre, descripcion, genero, 
 MERGE INTO clientes (cliente_id, activo, razon_social, run_cliente, sigla, fk_giro)
     KEY (cliente_id)
     VALUES
-    (1, true, 'HITES S.A.', '96947020-9', 'S.A.', 1),
-    (2, true, 'LABORATORIO MEDCELL', '96706320-7', 'LTDA.', 2),
-    (3, true, 'GEODIS WILSON', '79699520-3', 'S.A.', 3);
+    (1, true, 'HITES S.A.', '96947020-9', 'HITES', 1),
+    (2, true, 'LABORATORIO MEDCELL', '96706320-7', 'MEDCELL', 2),
+    (3, true, 'GEODIS WILSON', '79699520-3', 'GEODIS', 3);
 
 -- ============================================================
 -- 5.1. TIPOS DE CONTACTO Y CONTACTOS

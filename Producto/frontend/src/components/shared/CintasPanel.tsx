@@ -1,6 +1,18 @@
 import { Plus, Trash2 } from 'lucide-react';
 
-export default function CintasPanel({ data, onAdd, onUpdate, onRemove }) {
+export default function CintasPanel({ 
+  data, 
+  onAdd, 
+  onUpdate, 
+  onRemove,
+  readOnly = false
+}: {
+  data?: any;
+  onAdd?: any;
+  onUpdate?: any;
+  onRemove?: any;
+  readOnly?: boolean;
+}) {
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center mb-6">
@@ -9,14 +21,16 @@ export default function CintasPanel({ data, onAdd, onUpdate, onRemove }) {
           Cintas
         </h4>
 
-        <button
-          type="button"
-          onClick={onAdd}
-          className="flex items-center px-4 py-2 bg-foreground text-white rounded-xl text-[9px] font-black uppercase tracking-widest hover:bg-primary transition-all"
-        >
-          <Plus className="w-3.5 h-3.5 mr-2" />
-          Agregar Cinta
-        </button>
+        {!readOnly && (
+          <button
+            type="button"
+            onClick={onAdd}
+            className="flex items-center px-4 py-2 bg-foreground text-white rounded-xl text-[9px] font-black uppercase tracking-widest hover:bg-primary transition-all"
+          >
+            <Plus className="w-3.5 h-3.5 mr-2" />
+            Agregar Cinta
+          </button>
+        )}
       </div>
 
       <div className="overflow-x-auto">
@@ -38,8 +52,9 @@ export default function CintasPanel({ data, onAdd, onUpdate, onRemove }) {
                     type="text"
                     value={item.tipo || ""}
                     onChange={(e) => onUpdate(item.id, 'tipo', e.target.value)}
+                    disabled={readOnly}
                     placeholder="Reflectante..."
-                    className="w-full bg-transparent font-bold text-xs text-foreground outline-none"
+                    className={`w-full bg-transparent font-bold text-xs text-foreground outline-none ${readOnly ? 'cursor-not-allowed text-muted-foreground' : ''}`}
                   />
                 </td>
                 <td className="px-4 py-3 border-y border-transparent group-hover:border-border">
@@ -47,8 +62,9 @@ export default function CintasPanel({ data, onAdd, onUpdate, onRemove }) {
                     type="text"
                     value={item.marca || ""}
                     onChange={(e) => onUpdate(item.id, 'marca', e.target.value)}
+                    disabled={readOnly}
                     placeholder="3M..."
-                    className="w-full bg-transparent font-bold text-xs text-accent-foreground outline-none"
+                    className={`w-full bg-transparent font-bold text-xs text-accent-foreground outline-none ${readOnly ? 'cursor-not-allowed opacity-70' : ''}`}
                   />
                 </td>
                 <td className="px-4 py-3 border-y border-transparent group-hover:border-border text-center">
@@ -57,7 +73,8 @@ export default function CintasPanel({ data, onAdd, onUpdate, onRemove }) {
                     step="0.1"
                     value={item.medida || 0}
                     onChange={(e) => onUpdate(item.id, 'medida', parseFloat(e.target.value) || 0)}
-                    className="w-20 bg-muted p-2 rounded-lg text-center font-black text-xs text-foreground outline-none border border-transparent focus:border-accent"
+                    disabled={readOnly}
+                    className={`w-20 bg-muted p-2 rounded-lg text-center font-black text-xs text-foreground outline-none border border-transparent focus:border-accent ${readOnly ? 'cursor-not-allowed opacity-70' : ''}`}
                   />
                 </td>
                 <td className="px-4 py-3 border-y border-transparent group-hover:border-border text-center">
@@ -65,16 +82,19 @@ export default function CintasPanel({ data, onAdd, onUpdate, onRemove }) {
                     type="number"
                     value={item.consumo || 0}
                     onChange={(e) => onUpdate(item.id, 'consumo', parseInt(e.target.value) || 0)}
-                    className="w-16 bg-accent/50 p-2 rounded-lg text-center font-black text-xs text-accent-foreground outline-none border border-accent"
+                    disabled={readOnly}
+                    className={`w-16 bg-accent/50 p-2 rounded-lg text-center font-black text-xs text-accent-foreground outline-none border border-accent ${readOnly ? 'cursor-not-allowed opacity-70' : ''}`}
                   />
                 </td>
                 <td className="px-4 py-3 last:rounded-r-2xl border-y border-r border-transparent group-hover:border-border text-right">
-                  <button
-                    onClick={() => onRemove(item.id)}
-                    className="p-2 text-muted-foreground hover:text-destructive transition-colors"
-                  >
-                    <Trash2 className="w-3.5 h-3.5" />
-                  </button>
+                  {!readOnly && (
+                    <button
+                      onClick={() => onRemove(item.id)}
+                      className="p-2 text-muted-foreground hover:text-destructive transition-colors"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
+                  )}
                 </td>
               </tr>
             ))}

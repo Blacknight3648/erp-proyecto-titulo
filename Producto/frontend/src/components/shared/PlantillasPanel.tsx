@@ -3,7 +3,27 @@ import { useState, useEffect } from 'react';
 import { usePlantillas, FIELD_LABELS, FIELD_DESCRIPTIONS, FIELD_CATALOGS, ALL_FIELDS } from '../../hooks/usePlantillas';
 import { toast } from 'sonner';
 
-export default function PlantillasPanel({ title = "Especificaciones Técnicas", data, onUpdate, articuloDescripcion = "", readOnly = false, telas = [], accesorios = [] }) {
+export default function PlantillasPanel({ 
+    title = "Especificaciones Técnicas", 
+    data, 
+    onAdd,
+    onUpdate, 
+    onRemove,
+    articuloDescripcion = "", 
+    readOnly = false, 
+    telas = [], 
+    accesorios = [] 
+}: {
+    title?: string;
+    data?: any;
+    onAdd?: any;
+    onUpdate?: any;
+    onRemove?: any;
+    articuloDescripcion?: string;
+    readOnly?: boolean;
+    telas?: any[];
+    accesorios?: any[];
+}) {
     const [isExpanded, setIsExpanded] = useState(true);
     const [showFieldSelector, setShowFieldSelector] = useState(false);
     const [activeFields, setActiveFields] = useState(new Set(ALL_FIELDS));
@@ -45,9 +65,9 @@ export default function PlantillasPanel({ title = "Especificaciones Técnicas", 
         }
     };
 
-    const handleAddVinculo = (fieldKey, type, materialId, qty = 1) => {
+    const handleAddVinculo = (fieldKey: any, type: any, materialId: any, qty: any = 1) => {
         if (readOnly) return;
-        const amount = parseInt(qty);
+        const amount = parseInt(String(qty), 10);
         if (isNaN(amount) || amount <= 0) { toast.error("Ingrese una cantidad válida"); return; }
 
         if (type === 'ACCESORIO') {

@@ -12,7 +12,16 @@ export default function Articulos({
   onRemove,
   // Props antiguos para compatibilidad si fuera necesario
   formData, 
-  setFormData 
+  setFormData,
+  readOnly = false
+}: {
+  data?: any;
+  onAdd?: any;
+  onUpdate?: any;
+  onRemove?: any;
+  formData?: any;
+  setFormData?: any;
+  readOnly?: boolean;
 }) {
 
   // Normalizar datos (usar 'data' de FormTabs o 'formData.articulos' antiguo)
@@ -53,14 +62,16 @@ export default function Articulos({
           Productos / Artículos
         </h4>
 
-        <button
-          type="button"
-          onClick={onAdd}
-          className="flex items-center px-4 py-2 bg-foreground text-background rounded-xl text-[9px] font-black uppercase tracking-widest hover:bg-primary hover:text-primary-foreground transition-all shadow-sm"
-        >
-          <Plus className="w-3.5 h-3.5 mr-2" />
-          Agregar Artículo
-        </button>
+        {!readOnly && (
+          <button
+            type="button"
+            onClick={onAdd}
+            className="flex items-center px-4 py-2 bg-foreground text-background rounded-xl text-[9px] font-black uppercase tracking-widest hover:bg-primary hover:text-primary-foreground transition-all shadow-sm"
+          >
+            <Plus className="w-3.5 h-3.5 mr-2" />
+            Agregar Artículo
+          </button>
+        )}
       </div>
 
       {/* LISTA VACÍA */}

@@ -8,6 +8,7 @@ import { OrdenCompraService } from '../../remote/service/OrdenCompraService';
 import { OrdenServicioService } from '../../remote/service/OrdenServicioService';
 import { ProveedorService } from '../../remote/service/ProveedorService';
 import { pdfService } from '../../remote/service/pdfService';
+import { clampNonNegative } from '../../utils/validations';
 
 const ESTADOS_ACTIVOS = new Set(['PENDIENTE', 'EN_PROCESO', 'DETENIDA']);
 const TIPOS_SERVICIO = ['BORDADO', 'ESTAMPADO', 'LAVADO', 'SUBLIMADO', 'OTRO'];
@@ -398,7 +399,7 @@ export default function EmitirOC_OP() {
                                 <input
                                     type="number" min={1}
                                     value={osForm.cantidadPactada}
-                                    onChange={(e) => setOsForm(f => ({ ...f, cantidadPactada: e.target.value }))}
+                                    onChange={(e) => setOsForm(f => ({ ...f, cantidadPactada: String(clampNonNegative(e.target.value)) }))}
                                     className="w-full p-4 bg-gray-50 border border-gray-200 rounded-2xl font-black text-xs outline-none"
                                 />
                             </div>
@@ -407,7 +408,7 @@ export default function EmitirOC_OP() {
                                 <input
                                     type="number" min={0} step="0.01"
                                     value={osForm.precioUnitario}
-                                    onChange={(e) => setOsForm(f => ({ ...f, precioUnitario: e.target.value }))}
+                                    onChange={(e) => setOsForm(f => ({ ...f, precioUnitario: String(clampNonNegative(e.target.value)) }))}
                                     className="w-full p-4 bg-gray-50 border border-gray-200 rounded-2xl font-black text-xs outline-none"
                                 />
                             </div>

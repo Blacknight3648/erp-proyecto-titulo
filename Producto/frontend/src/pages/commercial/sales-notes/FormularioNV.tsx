@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { FileText, ChevronRight, Save, Plus, Trash2, Wrench, CheckCircle2, AlertCircle, Calculator } from 'lucide-react';
 import { pdfService } from '../../../remote/service/pdfService';
 import CosteoSelectionModal from '../administration/CosteoSelectionModal';
+import { clampNonNegative } from '../../../utils/validations';
 
 export default function FormularioNV({
     formData,
@@ -260,7 +261,7 @@ export default function FormularioNV({
                                                 {['XS', 'S', 'M', 'L', 'XL'].map(size => (
                                                     <div key={size} className="flex items-center justify-between mb-2">
                                                         <span className="text-[10px] font-bold text-muted-foreground w-6">{size}</span>
-                                                        <input type="number" value={item.sizes[size]} onChange={(e) => updateSize(item.id, size, e.target.value)} className="w-16 p-1 bg-muted border-none rounded-lg text-xs font-black text-center" />
+                                                        <input type="number" min="0" value={item.sizes[size]} onChange={(e) => updateSize(item.id, size, clampNonNegative(e.target.value))} className="w-16 p-1 bg-muted border-none rounded-lg text-xs font-black text-center" />
                                                     </div>
                                                 ))}
                                             </div>
@@ -270,7 +271,7 @@ export default function FormularioNV({
                                         <label className="text-[9px] font-black text-muted-foreground uppercase tracking-widest mb-2 block">P. Unitario</label>
                                         <div className="relative">
                                             <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-xs font-bold">$</span>
-                                            <input type="number" value={item.unitPrice} onChange={(e) => updateItem(item.id, 'unitPrice', parseFloat(e.target.value) || 0)} className="w-full pl-6 pr-3 py-3 bg-primary/5 border-none rounded-xl text-xs font-black text-primary outline-none" readOnly={isReadOnly} />
+                                            <input type="number" min="0" value={item.unitPrice} onChange={(e) => updateItem(item.id, 'unitPrice', Math.max(0, parseFloat(e.target.value) || 0))} className="w-full pl-6 pr-3 py-3 bg-primary/5 border-none rounded-xl text-xs font-black text-primary outline-none" readOnly={isReadOnly} />
                                         </div>
                                     </div>
                                 </div>

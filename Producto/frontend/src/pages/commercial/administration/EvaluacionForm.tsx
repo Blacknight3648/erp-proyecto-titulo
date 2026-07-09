@@ -224,7 +224,7 @@ export default function EvaluacionForm({ data, onChange, porcentajeComision, onC
                                     className="pl-10"
                                     placeholder="5"
                                     value={porcentajeComision !== undefined ? porcentajeComision : ''}
-                                    onChange={(e) => onComisionChange(parseFloat(e.target.value || 0))}
+                                    onChange={(e) => onComisionChange(Math.min(100, Math.max(0, parseFloat(e.target.value) || 0)))}
                                     disabled={disabled}
                                 />
                             </div>

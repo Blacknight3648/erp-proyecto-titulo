@@ -1,5 +1,6 @@
 import { Plus, Trash2 } from 'lucide-react';
 import ProveedorComboField from '../shared/ProveedorComboField';
+import { clampNonNegative } from '../../utils/validations';
 
 export default function DetailTable({ title, data, onAdd, onUpdate, onRemove, readOnly = false }) {
     return (
@@ -69,10 +70,11 @@ export default function DetailTable({ title, data, onAdd, onUpdate, onRemove, re
                                 <td className="px-4 py-4 text-center">
                                     <input
                                         type="number"
+                                        min="0"
                                         readOnly={readOnly}
                                         className="w-16 bg-accent/50 p-2 rounded-lg text-center font-black text-xs text-accent-foreground outline-none border border-accent"
                                         value={item.consumo}
-                                        onChange={(e) => !readOnly && onUpdate(item.id, 'consumo', parseFloat(e.target.value) || 0)}
+                                        onChange={(e) => !readOnly && onUpdate(item.id, 'consumo', clampNonNegative(e.target.value))}
                                     />
                                 </td>
 

@@ -219,9 +219,10 @@ export default function OPSolicitudForm({
                                                 <label className="text-[8px] font-black text-brand-indigo uppercase tracking-widest text-center block italic underline underline-offset-4 decoration-brand-indigo/30">Cantidad</label>
                                                 <Input
                                                     type="number"
+                                                    min="0"
                                                     className="h-11 bg-brand-indigo/10 border-none rounded-xl px-2 text-xs font-black text-center text-brand-indigo focus-visible:ring-brand-indigo/30"
                                                     value={item.cantidad}
-                                                    onChange={(e) => updateItem(index, 'cantidad', parseInt(e.target.value) || 0)}
+                                                    onChange={(e) => updateItem(index, 'cantidad', Math.max(0, parseInt(e.target.value) || 0))}
                                                 />
                                             </div>
                                             <div className="col-span-1 flex justify-center pb-1">

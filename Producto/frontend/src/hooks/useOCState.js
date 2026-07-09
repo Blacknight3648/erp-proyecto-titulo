@@ -28,6 +28,22 @@ export function useOCState() {
             .catch(e => console.error('Error cargando proveedores:', e));
     }, []);
 
+    // Identidad del actor (firma). El proyecto no persiste el usuario actual de forma
+    // fiable; se intenta leer de localStorage y, si no hay, se usa un actor por defecto
+    // con un rol autorizado (entorno sin RBAC real). Mismo patrón que useCosteosOPState.js.
+    const getActor = () => {
+        try {
+            const raw = localStorage.getItem('user');
+            if (raw) {
+                const u = JSON.parse(raw);
+                const rol = u.rol || u.roles?.[0]?.nombre || u.roles?.[0];
+                const aprobador = u.nombre || u.email || 'JEFE_PRODUCCION';
+                if (rol) return { aprobador, rol };
+            }
+        } catch (_) { /* noop */ }
+        return { aprobador: 'JEFE_PRODUCCION', rol: 'JEFE_PRODUCCION' };
+    };
+
     const refresh = useCallback(async () => {
         setLoading(true);
         setError(null);
@@ -148,6 +164,74 @@ export function useOCState() {
         }
     }, [refresh, selectedOC]);
 
+    const rechazar = useCallback(async (idOC, motivo) => {
+        setSubmitting(true);
+        setError(null);
+        try {
+            const oc = await OrdenCompraService.rechazar(idOC, { ...getActor(), motivo });
+            await refresh();
+            if (oc && selectedOC?.idOC === idOC) setSelectedOC(oc);
+            return oc;
+        } catch (e) {
+            setError(e?.response?.data?.message || e?.message || 'Error rechazando OC');
+            return null;
+        } finally {
+            setSubmitting(false);
+        }
+    }, [refresh, selectedOC]);
+
+    const reingresar = useCallback(async (idOC, proveedorId, itemsCambiados) => {
+        setSubmitting(true);
+        setError(null);
+        try {
+            const oc = await OrdenCompraService.reingresar(idOC, { ...getActor(), proveedorId, itemsCambiados });
+            await refresh();
+            if (oc && selectedOC?.idOC === idOC) setSelectedOC(oc);
+            return oc;
+        } catch (e) {
+            setError(e?.response?.data?.message || e?.message || 'Error reingresando OC');
+            return null;
+        } finally {
+            setSubmitting(false);
+        }
+    }, [refresh, selectedOC]);
+
+    const agregarItem = useCallback(async (idOC, itemPayload) => {
+        try {
+            const oc = await OrdenCompraService.agregarItem(idOC, itemPayload);
+            await refresh();
+            if (oc && selectedOC?.idOC === idOC) setSelectedOC(oc);
+            return oc;
+        } catch (e) {
+            setError(e?.response?.data?.message || e?.message || 'Error agregando ítem');
+            return null;
+        }
+    }, [refresh, selectedOC]);
+
+    const actualizarItem = useCallback(async (idOC, idOCItem, itemPayload) => {
+        try {
+            const oc = await OrdenCompraService.actualizarItem(idOC, idOCItem, itemPayload);
+            await refresh();
+            if (oc && selectedOC?.idOC === idOC) setSelectedOC(oc);
+            return oc;
+        } catch (e) {
+            setError(e?.response?.data?.message || e?.message || 'Error actualizando ítem');
+            return null;
+        }
+    }, [refresh, selectedOC]);
+
+    const eliminarItem = useCallback(async (idOC, idOCItem) => {
+        try {
+            const oc = await OrdenCompraService.eliminarItem(idOC, idOCItem);
+            await refresh();
+            if (oc && selectedOC?.idOC === idOC) setSelectedOC(oc);
+            return oc;
+        } catch (e) {
+            setError(e?.response?.data?.message || e?.message || 'Error eliminando ítem');
+            return null;
+        }
+    }, [refresh, selectedOC]);
+
     /**
      * Registra una recepción para la OC seleccionada y recarga su estado.
      */
@@ -205,6 +289,11 @@ export function useOCState() {
         marcarEnviada,
         marcarRecepcionada,
         cerrar,
+        rechazar,
+        reingresar,
+        agregarItem,
+        actualizarItem,
+        eliminarItem,
         actualizarPrecioItem,
         registrarRecepcion,
         formatCLP,

@@ -33,4 +33,7 @@ public class HojaCompraItemDTO {
     private String proveedorNombre;
     private Long ocId;
     private String numeroOC;
+
+    /** false si el ítem fue agregado manualmente ("no presupuestado"). */
+    private Boolean presupuestado;
 }

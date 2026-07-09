@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { ChevronLeft, Save, Factory, Info } from 'lucide-react';
+import { clampNonNegative } from '../../../utils/validations';
 
 const TIPOS = ['BORDADO', 'ESTAMPADO', 'LAVADO', 'SUBLIMADO', 'OTRO'];
 
@@ -75,12 +76,12 @@ export default function CrearOS({ back, crear, submitting, error, formatCLP }) {
                         </div>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <Field label="ID Orden de Producción (opId)">
-                                <input type="number" min={1} value={form.opId} onChange={(e) => set('opId', e.target.value)}
+                                <input type="number" min={1} value={form.opId} onChange={(e) => set('opId', clampNonNegative(e.target.value))}
                                     placeholder="Ej: 42"
                                     className="w-full h-12 px-4 bg-muted border border-border rounded-2xl text-sm font-black text-foreground focus:outline-none focus:ring-2 focus:ring-brand-indigo" />
                             </Field>
                             <Field label="ID Proveedor (taller)">
-                                <input type="number" min={1} value={form.proveedorId} onChange={(e) => set('proveedorId', e.target.value)}
+                                <input type="number" min={1} value={form.proveedorId} onChange={(e) => set('proveedorId', clampNonNegative(e.target.value))}
                                     placeholder="Ej: 5"
                                     className="w-full h-12 px-4 bg-muted border border-border rounded-2xl text-sm font-black text-foreground focus:outline-none focus:ring-2 focus:ring-brand-indigo" />
                             </Field>
@@ -95,12 +96,12 @@ export default function CrearOS({ back, crear, submitting, error, formatCLP }) {
                                     className="w-full h-12 px-4 bg-muted border border-border rounded-2xl text-xs font-bold text-foreground focus:outline-none focus:ring-2 focus:ring-brand-indigo" />
                             </Field>
                             <Field label="Cantidad Pactada">
-                                <input type="number" min={1} value={form.cantidadPactada} onChange={(e) => set('cantidadPactada', e.target.value)}
+                                <input type="number" min={1} value={form.cantidadPactada} onChange={(e) => set('cantidadPactada', clampNonNegative(e.target.value))}
                                     placeholder="Unidades"
                                     className="w-full h-12 px-4 bg-muted border border-border rounded-2xl text-sm font-black text-foreground focus:outline-none focus:ring-2 focus:ring-brand-indigo" />
                             </Field>
                             <Field label="Precio Unitario">
-                                <input type="number" min={0} step="0.01" value={form.precioUnitario} onChange={(e) => set('precioUnitario', e.target.value)}
+                                <input type="number" min={0} step="0.01" value={form.precioUnitario} onChange={(e) => set('precioUnitario', clampNonNegative(e.target.value))}
                                     placeholder="0"
                                     className="w-full h-12 px-4 bg-muted border border-border rounded-2xl text-sm font-black text-foreground focus:outline-none focus:ring-2 focus:ring-brand-indigo" />
                             </Field>

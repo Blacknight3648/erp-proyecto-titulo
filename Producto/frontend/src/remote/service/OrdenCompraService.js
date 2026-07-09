@@ -110,4 +110,76 @@ export const OrdenCompraService = {
             throw error;
         }
     },
+
+    /**
+     * Rechaza la OC (solo desde EMITIDA). Requiere firma del actor + rol
+     * autorizado (403 si no) y motivo obligatorio.
+     */
+    rechazar: async (idOC, { aprobador, rol, motivo } = {}) => {
+        try {
+            const response = await api.patch(`/ordenes-compra/${idOC}/rechazar`, { aprobador, rol, motivo });
+            return OrdenCompraDTO.fromResponse(response);
+        } catch (error) {
+            console.error(`Error rechazando OC ${idOC}:`, error);
+            throw error;
+        }
+    },
+
+    /**
+     * Reingresa una OC RECHAZADA: vuelve a EMITIDA con el mismo número de
+     * documento e incrementa la versión. Requiere firma del actor + rol autorizado.
+     * `proveedorId` e `itemsCambiados` son opcionales: permiten corregir el
+     * proveedor y editar cantidad/precio de ítems en el mismo paso, todo en
+     * una sola transacción atómica en el backend (si algo falla, no se
+     * persiste nada y la OC queda intacta en RECHAZADA).
+     */
+    reingresar: async (idOC, { aprobador, rol, proveedorId, itemsCambiados } = {}) => {
+        try {
+            const response = await api.patch(`/ordenes-compra/${idOC}/reingresar`, { aprobador, rol, proveedorId, itemsCambiados });
+            return OrdenCompraDTO.fromResponse(response);
+        } catch (error) {
+            console.error(`Error reingresando OC ${idOC}:`, error);
+            throw error;
+        }
+    },
+
+    /**
+     * Agrega un ítem nuevo a una OC EMITIDA.
+     * Payload: { tipoInsumo, articuloId?, nombreInsumo, cantidadRequerida, cantidadStock?, cantidadComprada?, precioUnitario, hcLinks? }
+     */
+    agregarItem: async (idOC, itemPayload) => {
+        try {
+            const response = await api.post(`/ordenes-compra/${idOC}/items`, itemPayload);
+            return OrdenCompraDTO.fromResponse(response);
+        } catch (error) {
+            console.error(`Error agregando ítem a OC ${idOC}:`, error);
+            throw error;
+        }
+    },
+
+    /**
+     * Actualiza un ítem existente de una OC EMITIDA (cantidad, precio, insumo, etc.).
+     */
+    actualizarItem: async (idOC, idOCItem, itemPayload) => {
+        try {
+            const response = await api.put(`/ordenes-compra/${idOC}/items/${idOCItem}`, itemPayload);
+            return OrdenCompraDTO.fromResponse(response);
+        } catch (error) {
+            console.error(`Error actualizando OCItem ${idOCItem}:`, error);
+            throw error;
+        }
+    },
+
+    /**
+     * Elimina un ítem de una OC EMITIDA.
+     */
+    eliminarItem: async (idOC, idOCItem) => {
+        try {
+            const response = await api.delete(`/ordenes-compra/${idOC}/items/${idOCItem}`);
+            return OrdenCompraDTO.fromResponse(response);
+        } catch (error) {
+            console.error(`Error eliminando OCItem ${idOCItem}:`, error);
+            throw error;
+        }
+    },
 };

@@ -89,7 +89,8 @@ INSERT IGNORE INTO rubros (rubro_id, nombre_rubro, descripcion_rubro, sigla_rubr
     (22, 'SEGURIDAD', 'Servicios de vigilancia privada, transporte de valores y sistemas de seguridad electrónica', 'SEG'),
     (23, 'AUTOMOTRIZ', 'Venta de vehículos, repuestos, talleres mecánicos y servicios de mantención automotriz', 'AUTO'),
     (24, 'GANADERÍA', 'Crianza y producción de ganado bovino, porcino, ovino, avícola y derivados lácteos', 'GAN'),
-    (25, 'MEDIO AMBIENTE Y RECICLAJE', 'Gestión de residuos, reciclaje industrial, plantas de tratamiento y consultoría ambiental', 'MEDA');
+    (25, 'MEDIO AMBIENTE Y RECICLAJE', 'Gestión de residuos, reciclaje industrial, plantas de tratamiento y consultoría ambiental', 'MEDA'),
+    (26, 'TEXTILE', 'Empresas del rubro textil, confección y diseño de vestuario', 'TEXT');
 
 
 -- ============================================================
@@ -100,41 +101,42 @@ INSERT IGNORE INTO giros (giro_id, codigo_sii, nombre_giro, descripcion_giro, ru
     (2, '861000', 'SALUD', 'SERVICIOS MÉDICOS Y LABORATORIO', 2),
     (3, '492200', 'LOGÍSTICA', 'LOGÍSTICA Y TRANSPORTE', 3),
     (4, '410000', 'CONSTRUCCIÓN', 'CONSTRUCCIÓN Y FERRETERÍA', 4),
+    (5, '13920', 'FABRICACION DE ARTICULOS CONFECCIONADOS DE MATERIALES TEXTILES',', EXCEPT, FABRICACION DE PRENDA DE VE',26 ),
     -- MINERÍA (Rubro 5)
-    (5, '071000', 'EXTRACCIÓN DE MINERÁLES DE HIERRO', 'Extracción de minerales de hierro y concentrados', 5),
-    (6, '040000', 'EXTRACCIÓN DE COBRE', 'Extracción de minerales de cobre y sus concentrados', 5),
-    (7, '099002', 'SERVICIOS DE MINERÍA', 'Actividades de apoyo para la explotación de otras minas y canteras', 5),
+    (6, '071000', 'EXTRACCIÓN DE MINERÁLES DE HIERRO', 'Extracción de minerales de hierro y concentrados', 5),
+    (7, '040000', 'EXTRACCIÓN DE COBRE', 'Extracción de minerales de cobre y sus concentrados', 5),
+    (8, '099002', 'SERVICIOS DE MINERÍA', 'Actividades de apoyo para la explotación de otras minas y canteras', 5),
     -- AGRICULTURA Y FRUTICULTURA (Rubro 6)
-    (8, '011301', 'CULTIVO DE FRUTALES', 'Cultivo de frutas pomáceas y de carozo (manzanas, uvas, etc.)', 6),
-    (9, '016100', 'SERVICIOS AGRÍCOLAS', 'Actividades de apoyo a la agricultura y postcosecha', 6),
+    (9, '011301', 'CULTIVO DE FRUTALES', 'Cultivo de frutas pomáceas y de carozo (manzanas, uvas, etc.)', 6),
+    (10, '016100', 'SERVICIOS AGRÍCOLAS', 'Actividades de apoyo a la agricultura y postcosecha', 6),
     -- ACUICULTURA Y PESCA (Rubro 7)
-    (10, '032101', 'ACUICULTURA DE SALMÓNIDOS', 'Cultivo y crianza de salmones y truchas', 7),
-    (11, '031110', 'PESCA INDUSTRIAL', 'Pesca marítima de altura y costera a gran escala', 7),
+    (11, '032101', 'ACUICULTURA DE SALMÓNIDOS', 'Cultivo y crianza de salmones y truchas', 7),
+    (12, '031110', 'PESCA INDUSTRIAL', 'Pesca marítima de altura y costera a gran escala', 7),
     -- FORESTAL (Rubro 8)
-    (12, '021001', 'SILVICULTURA Y EXPLOTACIÓN', 'Plantación, manejo de bosques y explotación de madera', 8),
+    (13, '021001', 'SILVICULTURA Y EXPLOTACIÓN', 'Plantación, manejo de bosques y explotación de madera', 8),
     -- VITIVINÍCOLA (Rubro 9)
-    (13, '110200', 'ELABORACIÓN DE VINOS', 'Producción de mostos, vinos y chicha a partir de uvas', 9),
+    (14, '110200', 'ELABORACIÓN DE VINOS', 'Producción de mostos, vinos y chicha a partir de uvas', 9),
     -- TECNOLOGÍA Y SOFTWARE (Rubro 10)
-    (14, '620100', 'DESARROLLO DE SOFTWARE', 'Actividades de programación informática y desarrollo de apps', 10),
-    (15, '620200', 'CONSULTORÍA TI', 'Consultoría en informática y gestión de instalaciones informáticas', 10),
+    (15, '620100', 'DESARROLLO DE SOFTWARE', 'Actividades de programación informática y desarrollo de apps', 10),
+    (16, '620200', 'CONSULTORÍA TI', 'Consultoría en informática y gestión de instalaciones informáticas', 10),
     -- EDUCACIÓN (Rubro 11)
-    (16, '854200', 'EDUCACIÓN UNIVERSITARIA', 'Enseñanza superior universitaria y técnica de pre y postgrado', 11),
+    (17, '854200', 'EDUCACIÓN UNIVERSITARIA', 'Enseñanza superior universitaria y técnica de pre y postgrado', 11),
     -- TURISMO Y HOTELERÍA (Rubro 12)
-    (17, '551001', 'HOTELES Y ALOJAMIENTO', 'Servicios de hospedaje en hoteles, moteles y cabañas', 12),
+    (18, '551001', 'HOTELES Y ALOJAMIENTO', 'Servicios de hospedaje en hoteles, moteles y cabañas', 12),
     -- ENERGÍA (Rubro 13)
-    (18, '351011', 'GENERACIÓN ELÉCTRICA', 'Generación de energía eléctrica en centrales hidráulicas, solares o eólicas', 13),
+    (19, '351011', 'GENERACIÓN ELÉCTRICA', 'Generación de energía eléctrica en centrales hidráulicas, solares o eólicas', 13),
     -- FINANCIERO (Rubro 14)
-    (19, '641900', 'BANCA E INTERMEDIACIÓN', 'Otros tipos de intermediación monetaria y actividades bancarias', 14),
+    (20, '641900', 'BANCA E INTERMEDIACIÓN', 'Otros tipos de intermediación monetaria y actividades bancarias', 14),
     -- ALIMENTOS Y BEBIDAS (Rubro 15)
-    (20, '107100', 'PANADERÍA Y PASTELERÍA', 'Fabricación de productos de panadería, pasteles y masas', 15),
+    (21, '107100', 'PANADERÍA Y PASTELERÍA', 'Fabricación de productos de panadería, pasteles y masas', 15),
     -- TELECOMUNICACIONES (Rubro 17)
-    (21, '611000', 'TELECOMUNICACIONES ALÁMBRICAS', 'Proveedores de internet fibra óptica y telefonía fija', 17),
-    (22, '612000', 'TELECOMUNICACIONES INALÁMBRICAS', 'Operadores de telefonía móvil y redes de datos inalámbricas', 17),
+    (22, '611000', 'TELECOMUNICACIONES ALÁMBRICAS', 'Proveedores de internet fibra óptica y telefonía fija', 17),
+    (23, '612000', 'TELECOMUNICACIONES INALÁMBRICAS', 'Operadores de telefonía móvil y redes de datos inalámbricas', 17),
     -- SERVICIOS PROFESIONALES (Rubro 18)
-    (23, '692000', 'CONTABILIDAD Y AUDITORÍA', 'Actividades de contabilidad, teneduría de libros y auditoría fiscal', 18),
-    (24, '711001', 'SERVICIOS DE ARQUITECTURA', 'Diseño de edificios, planificación urbana y dibujo de planos', 18),
+    (24, '692000', 'CONTABILIDAD Y AUDITORÍA', 'Actividades de contabilidad, teneduría de libros y auditoría fiscal', 18),
+    (25, '711001', 'SERVICIOS DE ARQUITECTURA', 'Diseño de edificios, planificación urbana y dibujo de planos', 18),
     -- GASTRONOMÍA (Rubro 19)
-    (25, '561000', 'RESTAURANTES Y SANGUCHERÍAS', 'Actividades de restaurantes y de servicio móvil de comidas', 19);
+    (26, '561000', 'RESTAURANTES Y SANGUCHERÍAS', 'Actividades de restaurantes y de servicio móvil de comidas', 19);
 -- ============================================================
 -- 4.3. PRODUCTOS
 -- ============================================================
@@ -1079,7 +1081,8 @@ INSERT IGNORE INTO proveedores (proveedor_id, activo, creado_en, actualizado_en,
     (379, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'TECH GRAN SOLUTION SPA', '76006999-K', 'TECH GRAN SOL', 'NACIONAL', 10),
     (380, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'INGENIERIA Y CONSTRUCCIONES JF SPA', '50092210-9', 'INGENIERIA JF PROV', 'NACIONAL', 4),
     (381, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'SOCIEDAD DE INVERSIONES NICOMA SPA', '76451351-7', 'INVERSIONES NICOMA', 'NACIONAL', 1),
-    (382, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'CM IMPRESIONES SPA', '93049000-8', 'CM IMPRESIONES', 'NACIONAL', 16);
+    (382, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'CM IMPRESIONES SPA', '93049000-8', 'CM IMPRESIONES', 'NACIONAL', 16),
+    (383, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'Antuan Jury S.A.', '79724060-5', 'S.A.', 'NACIONAL', 5);
 
 -- ============================================================
 -- 6.1. BANCOS Y ENTIDADES FINANCIERAS

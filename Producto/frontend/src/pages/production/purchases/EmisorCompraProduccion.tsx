@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react';
 import { ChevronLeft, Save, AlertCircle, Package, Layers, Truck } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../../ui/select';
 
 /**
  * Pantalla para generar una OC consolidada desde HCs aprobadas.
@@ -170,16 +171,19 @@ export default function EmisorCompraProduccion({
                         </div>
                         <div className="space-y-2">
                             <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Proveedor</label>
-                            <select
+                            <Select
                                 value={proveedorId}
-                                onChange={(e) => setProveedorId(e.target.value)}
-                                className="w-full h-12 px-4 bg-slate-50 border border-slate-100 rounded-2xl text-xs font-black text-slate-700 uppercase focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                                onValueChange={setProveedorId}
                             >
-                                <option value="">Seleccione un proveedor...</option>
-                                {proveedores.map((p) => (
-                                    <option key={p.id} value={p.id}>{p.nombre}</option>
-                                ))}
-                            </select>
+                                <SelectTrigger className="w-full h-12 px-4 bg-slate-50 border border-slate-100 rounded-2xl text-xs font-black text-slate-700 uppercase focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                                    <SelectValue placeholder="Seleccione un proveedor..." />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    {proveedores.map((p) => (
+                                        <SelectItem key={p.id} value={String(p.id)}>{p.nombre}</SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
                         </div>
                         <div className="space-y-2">
                             <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest">ID Proveedor</label>

@@ -27,6 +27,10 @@ export default function HojaCompra() {
         modificarItemHC,
         handleOpenModificacion,
         consolidarOCLote,
+        agregarItemManual,
+        rechazarOC,
+        reingresarOC,
+        ocsById,
         formatCLP,
         totalItems,
         totalBudget,
@@ -89,6 +93,10 @@ export default function HojaCompra() {
                     setView={setView}
                     formatCLP={formatCLP}
                     consolidarOCLote={consolidarOCLote}
+                    agregarItemManual={agregarItemManual}
+                    rechazarOC={rechazarOC}
+                    reingresarOC={reingresarOC}
+                    ocsById={ocsById}
                 />
             )}
         </div>

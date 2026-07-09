@@ -3,6 +3,7 @@ import { useClientes } from "../../../hooks/useClientes.js";
 import { useVendedores } from "../../../hooks/useVendedores.js";
 import { usePlantillas, FIELD_LABELS } from "../../../hooks/usePlantillas.js";
 import ComboField from "../../../components/shared/ComboField";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../../ui/select";
 
 const generateId = () => {
     try { return crypto.randomUUID(); }
@@ -168,32 +169,38 @@ export default function InformacionSolicitudPanel({ formData, setFormData, readO
 
                     <div>
                         <label className={labelStyles}>Género</label>
-                        <select
+                        <Select
                             value={formData.genero || ""}
+                            onValueChange={(val) => setFormData(prev => ({ ...prev, genero: val }))}
                             disabled={readOnly}
-                            onChange={(e) => setFormData(prev => ({ ...prev, genero: e.target.value }))}
-                            className={inputStyles}
                         >
-                            <option value="">Seleccionar género</option>
-                            <option value="FEMENINO">Femenino</option>
-                            <option value="MASCULINO">Masculino</option>
-                            <option value="UNISEX">Unisex</option>
-                        </select>
+                            <SelectTrigger className={inputStyles}>
+                                <SelectValue placeholder="Seleccionar género" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="FEMENINO">Femenino</SelectItem>
+                                <SelectItem value="MASCULINO">Masculino</SelectItem>
+                                <SelectItem value="UNISEX">Unisex</SelectItem>
+                            </SelectContent>
+                        </Select>
                     </div>
 
                     <div>
                         <label className={labelStyles}>Tallaje</label>
-                        <select
+                        <Select
                             value={formData.tallaje || ""}
+                            onValueChange={(val) => setFormData(prev => ({ ...prev, tallaje: val }))}
                             disabled={readOnly}
-                            onChange={(e) => setFormData(prev => ({ ...prev, tallaje: e.target.value }))}
-                            className={inputStyles}
                         >
-                            <option value="">Sin seleccionar</option>
-                            <option value="Antuan SA">Antuan SA</option>
-                            <option value="Cliente">Cliente</option>
-                            <option value="Proveedor SC">Proveedor SC</option>
-                        </select>
+                            <SelectTrigger className={inputStyles}>
+                                <SelectValue placeholder="Seleccionar tallaje" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="Antuan SA">Antuan SA</SelectItem>
+                                <SelectItem value="Cliente">Cliente</SelectItem>
+                                <SelectItem value="Proveedor SC">Proveedor SC</SelectItem>
+                            </SelectContent>
+                        </Select>
                     </div>
                 </div>
 

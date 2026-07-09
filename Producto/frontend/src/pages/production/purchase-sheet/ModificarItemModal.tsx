@@ -11,6 +11,7 @@ import {
 } from 'lucide-react';
 import { Button } from "../../../ui/button";
 import { Badge } from "../../../ui/badge";
+import { clampNonNegative } from "../../../utils/validations";
 
 interface ModificarItemModalProps {
     isOpen: boolean;
@@ -195,7 +196,7 @@ export const ModificarItemModal: React.FC<ModificarItemModalProps> = ({
                                             step="0.01"
                                             min="0"
                                             value={cantidadStock}
-                                            onChange={(e) => handleStockChange(e.target.value)}
+                                            onChange={(e) => handleStockChange(String(clampNonNegative(e.target.value)))}
                                             className="w-full bg-sidebar-popup border border-success/30 rounded-xl px-4 py-3 text-success font-mono text-base focus:outline-none focus:border-success focus:ring-1 focus:ring-success transition-all"
                                             placeholder="0"
                                         />
@@ -211,7 +212,7 @@ export const ModificarItemModal: React.FC<ModificarItemModalProps> = ({
                                             step="0.01"
                                             min="0"
                                             value={cantidadAComprar}
-                                            onChange={(e) => setCantidadAComprar(e.target.value)}
+                                            onChange={(e) => setCantidadAComprar(clampNonNegative(e.target.value))}
                                             className="w-full bg-sidebar-popup border border-sidebar-border rounded-xl px-4 py-3 text-white font-mono text-base focus:outline-none focus:border-sidebar-muted transition-all"
                                             required
                                         />
@@ -230,7 +231,7 @@ export const ModificarItemModal: React.FC<ModificarItemModalProps> = ({
                                             step="0.01"
                                             min="0"
                                             value={precioUnitarioRef}
-                                            onChange={(e) => setPrecioUnitarioRef(e.target.value)}
+                                            onChange={(e) => setPrecioUnitarioRef(clampNonNegative(e.target.value))}
                                             className="w-full bg-sidebar-popup border border-sidebar-border rounded-xl px-4 py-3 text-white font-mono text-base focus:outline-none focus:border-sidebar-muted transition-all"
                                             required
                                         />

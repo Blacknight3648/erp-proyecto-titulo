@@ -39,7 +39,9 @@ public class OrdenCompraMapper {
                 entity.getFechaEntregaEstimada(),
                 entity.getObservaciones(),
                 entity.getTotalNeto(),
-                items);
+                items,
+                entity.getMotivoRechazo(),
+                entity.getVersion());
     }
 
     public OrdenCompraJpaEntity toJpaEntity(OrdenCompra domain) {
@@ -58,6 +60,8 @@ public class OrdenCompraMapper {
         entity.setFechaEntregaEstimada(domain.getFechaEntregaEstimada());
         entity.setObservaciones(domain.getObservaciones());
         entity.setTotalNeto(domain.getTotalNeto());
+        entity.setMotivoRechazo(domain.getMotivoRechazo());
+        entity.setVersion(domain.getVersion());
 
         if (domain.getItems() != null) {
             List<OrdenCompraItemJpaEntity> itemsEntity = domain.getItems().stream()

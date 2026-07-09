@@ -26,4 +26,6 @@ public class OrdenCompraDTO {
     private String observaciones;
     private BigDecimal totalNeto;
     private List<OrdenCompraItemDTO> items;
+    private String motivoRechazo;
+    private Integer version;
 }

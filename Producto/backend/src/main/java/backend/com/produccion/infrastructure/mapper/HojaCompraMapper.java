@@ -104,7 +104,8 @@ public class HojaCompraMapper {
                 proveedorId,
                 proveedorNombre,
                 ocId,
-                numeroOC);
+                numeroOC,
+                entity.getPresupuestado());
     }
 
     private HojaCompraItemJpaEntity itemToJpaEntity(HojaCompraItem domain) {
@@ -125,6 +126,7 @@ public class HojaCompraMapper {
         entity.setProveedorId(domain.getProveedorId());
         entity.setOcId(domain.getOcId());
         entity.setNumeroOC(domain.getNumeroOC());
+        entity.setPresupuestado(domain.getPresupuestado() != null ? domain.getPresupuestado() : true);
         return entity;
     }
 }

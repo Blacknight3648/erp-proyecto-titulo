@@ -22,5 +22,6 @@ export class HojaCompraItemDTO {
         this.proveedorNombre = data.proveedorNombre ?? '';
         this.ocId = data.ocId ?? null;
         this.numeroOC = data.numeroOC ?? '';
+        this.presupuestado = data.presupuestado ?? true;
     }
 }

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { ChevronLeft, Lock, Truck, Inbox, Plus, X, Check } from 'lucide-react';
+import { clampNonNegative } from '../../../utils/validations';
 
 const STATUS_BADGE = {
     EMITIDA:      'bg-warning/10 text-warning border-warning/20',
@@ -253,7 +254,7 @@ function DespachoForm({ maxCantidad, onCancel, onSave }) {
             <div className="grid grid-cols-2 gap-3">
                 <input type="date" value={form.fechaDespacho} onChange={(e) => set('fechaDespacho', e.target.value)}
                     className="h-10 px-3 bg-card border border-border rounded-xl text-xs font-bold" />
-                <input type="number" min={1} max={maxCantidad} value={form.cantidadDespachada} onChange={(e) => set('cantidadDespachada', e.target.value)}
+                <input type="number" min={1} max={maxCantidad} value={form.cantidadDespachada} onChange={(e) => set('cantidadDespachada', clampNonNegative(e.target.value))}
                     placeholder="Cantidad"
                     className="h-10 px-3 bg-card border border-border rounded-xl text-xs font-black" />
                 <input value={form.responsable} onChange={(e) => set('responsable', e.target.value)} placeholder="Responsable"
@@ -301,13 +302,13 @@ function RecepcionForm({ maxCantidad, onCancel, onSave }) {
             <div className="grid grid-cols-3 gap-3">
                 <input type="date" value={form.fechaRecepcion} onChange={(e) => set('fechaRecepcion', e.target.value)}
                     className="h-10 px-3 bg-card border border-border rounded-xl text-xs font-bold col-span-3" />
-                <input type="number" min={1} max={maxCantidad} value={form.cantidadRecibida} onChange={(e) => set('cantidadRecibida', e.target.value)}
+                <input type="number" min={1} max={maxCantidad} value={form.cantidadRecibida} onChange={(e) => set('cantidadRecibida', clampNonNegative(e.target.value))}
                     placeholder="Recibida"
                     className="h-10 px-3 bg-card border border-border rounded-xl text-xs font-black" />
-                <input type="number" min={0} value={form.cantidadConforme} onChange={(e) => set('cantidadConforme', e.target.value)}
+                <input type="number" min={0} value={form.cantidadConforme} onChange={(e) => set('cantidadConforme', clampNonNegative(e.target.value))}
                     placeholder="Conforme"
                     className="h-10 px-3 bg-card border border-border rounded-xl text-xs font-black" />
-                <input type="number" min={0} value={form.cantidadDefectuosa} onChange={(e) => set('cantidadDefectuosa', e.target.value)}
+                <input type="number" min={0} value={form.cantidadDefectuosa} onChange={(e) => set('cantidadDefectuosa', clampNonNegative(e.target.value))}
                     placeholder="Defectuosa"
                     className="h-10 px-3 bg-card border border-border rounded-xl text-xs font-black" />
                 <input value={form.responsable} onChange={(e) => set('responsable', e.target.value)} placeholder="Responsable"

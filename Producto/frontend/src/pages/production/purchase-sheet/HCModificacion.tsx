@@ -31,9 +31,17 @@ import {
     Loader2,
     Plus,
     X,
-    PackageCheck
+    PackageCheck,
+    XCircle,
+    RotateCcw
 } from 'lucide-react';
 import { useProveedores } from '../../../hooks/useProveedores';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../../ui/select';
+import ComboSearchField from '../../../components/shared/ComboSearchField';
+import CustomSelectField from '../../../components/shared/CustomSelectField';
+import ReingresoOCModal from '../../../components/shared/ReingresoOCModal';
+import { OrdenCompraService } from '../../../remote/service/OrdenCompraService';
+import { clampNonNegative } from '../../../utils/validations';
 
 const STATUS_BADGE = {
     BORRADOR: 'bg-warning/10 text-warning border-warning/20',
@@ -41,7 +49,14 @@ const STATUS_BADGE = {
     CERRADA:  'bg-muted text-muted-foreground border-border',
 };
 
-export default function HCModificacion({ hc, onBack, onConsolidarLote, formatCLP }) {
+const TIPO_INSUMO_OPCIONES = [
+    { value: 'TELA', label: 'Tela' },
+    { value: 'ACCESORIO', label: 'Accesorio' },
+];
+
+const NUEVO_ITEM_VACIO = { tipoInsumo: 'ACCESORIO', articuloId: null, nombreInsumo: '', cantidadRequerida: '', precioUnitarioRef: '' };
+
+export default function HCModificacion({ hc, onBack, onConsolidarLote, onAgregarItemManual, onRechazarOC, onReingresarOC, ocsById, formatCLP }) {
     const { proveedores, loading: loadingProveedores } = useProveedores();
     const [proveedorId, setProveedorId] = useState('');
     const [fechaEntrega, setFechaEntrega] = useState('');
@@ -51,6 +66,16 @@ export default function HCModificacion({ hc, onBack, onConsolidarLote, formatCLP
     const [submitting, setSubmitting] = useState(false);
     const [localError, setLocalError] = useState(null);
     const [successMsg, setSuccessMsg] = useState(null);
+    const [showAddInsumoForm, setShowAddInsumoForm] = useState(false);
+    const [nuevoItem, setNuevoItem] = useState(NUEVO_ITEM_VACIO);
+    const [addingInsumo, setAddingInsumo] = useState(false);
+    const [rechazoTarget, setRechazoTarget] = useState(null);
+    const [motivoRechazo, setMotivoRechazo] = useState('');
+    const [rechazandoOC, setRechazandoOC] = useState(false);
+    const [reingresandoOCId, setReingresandoOCId] = useState(null);
+    const [reingresoOC, setReingresoOC] = useState(null);
+    const [cargandoReingreso, setCargandoReingreso] = useState(false);
+    const [reingresoError, setReingresoError] = useState(null);
 
     if (!hc) return (
         <div className="p-10 text-center bg-card/50 backdrop-blur-md rounded-3xl border border-dashed border-border">
@@ -133,6 +158,93 @@ export default function HCModificacion({ hc, onBack, onConsolidarLote, formatCLP
         }
     };
 
+    const puedeAgregarInsumo = hc.status === 'APROBADA'
+        && nuevoItem.nombreInsumo.trim().length > 0
+        && Number(nuevoItem.cantidadRequerida) > 0
+        && Number(nuevoItem.precioUnitarioRef) >= 0
+        && !addingInsumo;
+
+    const handleAgregarInsumo = async () => {
+        if (!puedeAgregarInsumo) return;
+        setAddingInsumo(true);
+        setLocalError(null);
+        try {
+            await onAgregarItemManual(hc.id, {
+                tipoInsumo: nuevoItem.tipoInsumo,
+                articuloId: nuevoItem.articuloId,
+                nombreInsumo: nuevoItem.nombreInsumo.trim().toUpperCase(),
+                cantidadRequerida: Number(nuevoItem.cantidadRequerida),
+                precioUnitarioRef: Number(nuevoItem.precioUnitarioRef),
+            });
+            setNuevoItem(NUEVO_ITEM_VACIO);
+            setShowAddInsumoForm(false);
+        } catch (e) {
+            setLocalError(e?.response?.data?.message || e?.message || 'Error agregando el insumo no presupuestado');
+        } finally {
+            setAddingInsumo(false);
+        }
+    };
+
+    const confirmarRechazoOC = async () => {
+        if (!rechazoTarget || !motivoRechazo.trim()) return;
+        setRechazandoOC(true);
+        setLocalError(null);
+        try {
+            await onRechazarOC(rechazoTarget.ocId, motivoRechazo.trim());
+            setSuccessMsg(`Orden de Compra ${rechazoTarget.numeroOC || ''} rechazada correctamente.`);
+            setRechazoTarget(null);
+            setMotivoRechazo('');
+        } catch (e) {
+            setLocalError(e?.response?.data?.message || e?.message || 'Error rechazando la Orden de Compra');
+        } finally {
+            setRechazandoOC(false);
+        }
+    };
+
+    const handleAbrirReingreso = async (ocId) => {
+        setLocalError(null);
+        setReingresoError(null);
+        setCargandoReingreso(true);
+        setReingresandoOCId(ocId);
+        try {
+            const oc = await OrdenCompraService.getById(ocId);
+            setReingresoOC(oc);
+        } catch (e) {
+            setLocalError(e?.response?.data?.message || e?.message || 'Error cargando la Orden de Compra');
+        } finally {
+            setCargandoReingreso(false);
+            setReingresandoOCId(null);
+        }
+    };
+
+    /**
+     * Resuelve el estado "vivo" de un ítem ya vinculado a OC: proveedor, cantidad
+     * comprada y precio unitario reales, leídos desde la OC actual (ocsById) en vez
+     * de los campos snapshot del HCItem (que solo se escriben una vez al consolidar
+     * y no se actualizan cuando la OC se reingresa con cambios).
+     */
+    const resolveVinculoOC = (item) => {
+        const ocInfo = ocsById?.[item.ocId];
+        const ocItem = ocInfo?.items?.find(oi => (oi.hcLinks || []).some(l => l.hcItemId === item.id));
+        const proveedorNombre = proveedores.find(p => String(p.proveedorId) === String(ocInfo?.proveedorId))?.nombreProveedor
+            || item.proveedorNombre;
+        return { ocInfo, ocItem, proveedorNombre };
+    };
+
+    const confirmarReingreso = async (payload) => {
+        setReingresandoOCId(reingresoOC.idOC);
+        setReingresoError(null);
+        try {
+            await onReingresarOC(reingresoOC.idOC, payload.proveedorId, payload.itemsCambiados);
+            setSuccessMsg(`Orden de Compra ${reingresoOC.numeroOC || ''} reingresada correctamente.`);
+            setReingresoOC(null);
+        } catch (e) {
+            setReingresoError(e?.response?.data?.message || e?.message || 'Error reingresando la Orden de Compra');
+        } finally {
+            setReingresandoOCId(null);
+        }
+    };
+
     return (
         <motion.div
             initial={{ opacity: 0, x: 20 }}
@@ -189,15 +301,71 @@ export default function HCModificacion({ hc, onBack, onConsolidarLote, formatCLP
                     {/* Items disponibles */}
                     <Card className="rounded-[2.5rem] border-border bg-card/60 backdrop-blur-md shadow-2xl shadow-foreground/5 overflow-hidden border">
                         <CardHeader className="p-10 pb-4 border-b border-border">
-                            <div className="flex items-center gap-4">
-                                <div className="bg-success/10 p-2 rounded-xl">
-                                    <ShoppingCart className="w-5 h-5 text-success" />
+                            <div className="flex items-center justify-between gap-4">
+                                <div className="flex items-center gap-4">
+                                    <div className="bg-success/10 p-2 rounded-xl">
+                                        <ShoppingCart className="w-5 h-5 text-success" />
+                                    </div>
+                                    <div>
+                                        <CardTitle className="text-sm font-black text-foreground uppercase tracking-widest">Insumos Disponibles para Compra</CardTitle>
+                                        <CardDescription className="text-[9px] font-bold uppercase tracking-widest text-muted-foreground mt-1">Selecciona los insumos y asigna un proveedor para agregarlos a la tanda</CardDescription>
+                                    </div>
                                 </div>
-                                <div>
-                                    <CardTitle className="text-sm font-black text-foreground uppercase tracking-widest">Insumos Disponibles para Compra</CardTitle>
-                                    <CardDescription className="text-[9px] font-bold uppercase tracking-widest text-muted-foreground mt-1">Selecciona los insumos y asigna un proveedor para agregarlos a la tanda</CardDescription>
-                                </div>
+                                {hc.status === 'APROBADA' && (
+                                    <Button
+                                        variant="outline"
+                                        onClick={() => setShowAddInsumoForm(s => !s)}
+                                        className="rounded-xl h-10 px-4 text-[10px] font-black uppercase tracking-widest border-border text-muted-foreground hover:text-brand-indigo hover:border-brand-indigo/40 flex items-center gap-1.5 shrink-0"
+                                    >
+                                        <Plus className="w-3.5 h-3.5" /> Insumo no presupuestado
+                                    </Button>
+                                )}
                             </div>
+
+                            {showAddInsumoForm && (
+                                <div className="mt-6 p-5 bg-muted/60 border border-border rounded-2xl grid grid-cols-1 md:grid-cols-12 gap-3 items-end">
+                                    <div className="md:col-span-2">
+                                        <label className="text-[8px] font-black text-muted-foreground uppercase tracking-widest block mb-1.5">Tipo</label>
+                                        <CustomSelectField
+                                            value={nuevoItem.tipoInsumo}
+                                            onChange={(val) => setNuevoItem(p => ({ ...p, tipoInsumo: val, articuloId: null, nombreInsumo: '' }))}
+                                            options={TIPO_INSUMO_OPCIONES}
+                                        />
+                                    </div>
+                                    <div className="md:col-span-4">
+                                        <label className="text-[8px] font-black text-muted-foreground uppercase tracking-widest block mb-1.5">Insumo</label>
+                                        <ComboSearchField
+                                            tipo={nuevoItem.tipoInsumo}
+                                            value={nuevoItem.nombreInsumo}
+                                            onChange={(val) => setNuevoItem(p => ({ ...p, nombreInsumo: val }))}
+                                            onSelectArticulo={(articulo) => setNuevoItem(p => ({ ...p, articuloId: articulo?.idArticulo ?? null }))}
+                                            placeholder="Buscar o crear insumo..."
+                                        />
+                                    </div>
+                                    <div className="md:col-span-2">
+                                        <label className="text-[8px] font-black text-muted-foreground uppercase tracking-widest block mb-1.5">Cantidad</label>
+                                        <Input type="number" min={0} value={nuevoItem.cantidadRequerida}
+                                            onChange={(e) => setNuevoItem(p => ({ ...p, cantidadRequerida: String(clampNonNegative(e.target.value)) }))}
+                                            className="h-10 bg-card border-border rounded-xl text-xs font-black text-right tabular-nums" />
+                                    </div>
+                                    <div className="md:col-span-2">
+                                        <label className="text-[8px] font-black text-muted-foreground uppercase tracking-widest block mb-1.5">Precio Ref.</label>
+                                        <Input type="number" min={0} value={nuevoItem.precioUnitarioRef}
+                                            onChange={(e) => setNuevoItem(p => ({ ...p, precioUnitarioRef: String(clampNonNegative(e.target.value)) }))}
+                                            className="h-10 bg-card border-border rounded-xl text-xs font-black text-right tabular-nums" />
+                                    </div>
+                                    <div className="md:col-span-2 flex gap-1.5">
+                                        <Button onClick={handleAgregarInsumo} disabled={!puedeAgregarInsumo}
+                                            className="flex-1 h-10 rounded-xl text-[10px] font-black uppercase tracking-widest bg-brand-indigo hover:bg-brand-indigo/90 text-white disabled:opacity-40">
+                                            {addingInsumo ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : 'Agregar'}
+                                        </Button>
+                                        <Button variant="ghost" onClick={() => { setShowAddInsumoForm(false); setNuevoItem(NUEVO_ITEM_VACIO); }}
+                                            className="h-10 w-10 p-0 rounded-xl text-muted-foreground hover:text-destructive">
+                                            <X className="w-4 h-4" />
+                                        </Button>
+                                    </div>
+                                </div>
+                            )}
                         </CardHeader>
                         <CardContent className="p-0">
                             <Table>
@@ -229,6 +397,9 @@ export default function HCModificacion({ hc, onBack, onConsolidarLote, formatCLP
                                                     <span className="font-bold text-foreground text-xs uppercase tracking-tight group-hover:text-brand-indigo transition-colors">{item.insumo || '—'}</span>
                                                     {isMod && (
                                                         <Badge className="bg-warning text-white text-[8px] px-1.5 py-0">MOD</Badge>
+                                                    )}
+                                                    {item.presupuestado === false && (
+                                                        <Badge className="bg-brand-indigo text-white text-[8px] px-1.5 py-0">NO PRESUP.</Badge>
                                                     )}
                                                 </div>
                                             </TableCell>
@@ -292,29 +463,80 @@ export default function HCModificacion({ hc, onBack, onConsolidarLote, formatCLP
                                         <TableRow className="border-border hover:bg-transparent">
                                             <TableHead className="pl-10 font-black text-[9px] uppercase tracking-widest text-muted-foreground py-5">Insumo</TableHead>
                                             <TableHead className="font-black text-[9px] uppercase tracking-widest text-muted-foreground text-center">Cant. Requerida</TableHead>
+                                            <TableHead className="font-black text-[9px] uppercase tracking-widest text-muted-foreground text-center">Cant. Comprada</TableHead>
+                                            <TableHead className="font-black text-[9px] uppercase tracking-widest text-muted-foreground text-right">Valor de Venta</TableHead>
                                             <TableHead className="font-black text-[9px] uppercase tracking-widest text-muted-foreground">Proveedor</TableHead>
                                             <TableHead className="font-black text-[9px] uppercase tracking-widest text-muted-foreground text-right pr-10">Orden de Compra</TableHead>
                                         </TableRow>
                                     </TableHeader>
                                     <TableBody>
-                                        {itemsAsignados.map((item) => (
+                                        {itemsAsignados.map((item) => {
+                                            const { ocItem, proveedorNombre } = resolveVinculoOC(item);
+                                            return (
                                             <TableRow key={item.id} className="border-border hover:bg-card transition-all">
                                                 <TableCell className="pl-10 py-6 font-bold text-foreground text-xs uppercase tracking-tight">
-                                                    {item.insumo || '—'}
+                                                    <div className="flex items-center gap-2">
+                                                        <span>{item.insumo || '—'}</span>
+                                                        {item.presupuestado === false && (
+                                                            <Badge className="bg-brand-indigo text-white text-[8px] px-1.5 py-0">NO PRESUP.</Badge>
+                                                        )}
+                                                    </div>
                                                 </TableCell>
                                                 <TableCell className="text-center font-black text-xs text-foreground tabular-nums">
                                                     {item.cantidadRequerida ?? '—'}
                                                 </TableCell>
+                                                <TableCell className="text-center font-black text-xs text-foreground tabular-nums">
+                                                    {ocItem?.cantidadComprada ?? '—'}
+                                                </TableCell>
+                                                <TableCell className="text-right font-black text-xs text-brand-indigo tabular-nums">
+                                                    {ocItem?.precioUnitario != null
+                                                        ? (formatCLP ? formatCLP(ocItem.precioUnitario) : ocItem.precioUnitario)
+                                                        : '—'}
+                                                </TableCell>
                                                 <TableCell className="font-bold text-[10px] uppercase tracking-widest text-muted-foreground">
-                                                    {item.proveedorNombre || '—'}
+                                                    {proveedorNombre || '—'}
                                                 </TableCell>
                                                 <TableCell className="text-right pr-10">
-                                                    <Badge className="px-3 h-7 rounded-full font-black text-[9px] uppercase tracking-widest border-2 bg-brand-indigo/10 text-brand-indigo border-brand-indigo/20">
-                                                        {item.numeroOC || `OC #${item.ocId}`}
-                                                    </Badge>
+                                                    {(() => {
+                                                        const ocInfo = ocsById?.[item.ocId];
+                                                        const estadoOC = ocInfo?.estado;
+                                                        return (
+                                                            <div className="flex items-center justify-end gap-2">
+                                                                <Badge className={`px-3 h-7 rounded-full font-black text-[9px] uppercase tracking-widest border-2 ${
+                                                                    estadoOC === 'RECHAZADA'
+                                                                        ? 'bg-destructive/10 text-destructive border-destructive/20'
+                                                                        : 'bg-brand-indigo/10 text-brand-indigo border-brand-indigo/20'
+                                                                }`}>
+                                                                    {item.numeroOC || `OC #${item.ocId}`}
+                                                                </Badge>
+                                                                {estadoOC === 'EMITIDA' && (
+                                                                    <button
+                                                                        onClick={() => setRechazoTarget({ ocId: item.ocId, numeroOC: item.numeroOC })}
+                                                                        title="Rechazar Orden de Compra"
+                                                                        className="shrink-0 p-1.5 rounded-lg text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-all"
+                                                                    >
+                                                                        <XCircle className="w-4 h-4" />
+                                                                    </button>
+                                                                )}
+                                                                {estadoOC === 'RECHAZADA' && (
+                                                                    <button
+                                                                        onClick={() => handleAbrirReingreso(item.ocId)}
+                                                                        disabled={cargandoReingreso && reingresandoOCId === item.ocId}
+                                                                        title="Reingresar Orden de Compra"
+                                                                        className="shrink-0 p-1.5 rounded-lg text-muted-foreground hover:text-brand-indigo hover:bg-brand-indigo/10 transition-all disabled:opacity-40"
+                                                                    >
+                                                                        {cargandoReingreso && reingresandoOCId === item.ocId
+                                                                            ? <Loader2 className="w-4 h-4 animate-spin" />
+                                                                            : <RotateCcw className="w-4 h-4" />}
+                                                                    </button>
+                                                                )}
+                                                            </div>
+                                                        );
+                                                    })()}
                                                 </TableCell>
                                             </TableRow>
-                                        ))}
+                                            );
+                                        })}
                                     </TableBody>
                                 </Table>
                             </CardContent>
@@ -337,17 +559,20 @@ export default function HCModificacion({ hc, onBack, onConsolidarLote, formatCLP
                         <CardContent className="p-8 pt-0 space-y-6">
                             <div className="space-y-3">
                                 <label className="text-[9px] font-black text-sidebar-muted uppercase tracking-[0.2em]">Proveedor</label>
-                                <select
+                                <Select
                                     value={proveedorId}
-                                    onChange={(e) => setProveedorId(e.target.value)}
+                                    onValueChange={setProveedorId}
                                     disabled={hc.status !== 'APROBADA' || loadingProveedores}
-                                    className="w-full h-12 bg-sidebar-popup border border-sidebar-border rounded-2xl px-4 font-bold text-xs text-white focus:outline-none focus:ring-2 focus:ring-brand-indigo disabled:opacity-50"
                                 >
-                                    <option value="">{loadingProveedores ? 'Cargando proveedores...' : 'Selecciona un proveedor'}</option>
-                                    {proveedores.map((p) => (
-                                        <option key={p.proveedorId} value={p.proveedorId}>{p.nombreProveedor}</option>
-                                    ))}
-                                </select>
+                                    <SelectTrigger className="w-full h-12 bg-sidebar-popup border border-sidebar-border rounded-2xl px-4 font-bold text-xs text-white focus:outline-none focus:ring-2 focus:ring-brand-indigo disabled:opacity-50">
+                                        <SelectValue placeholder={loadingProveedores ? 'Cargando proveedores...' : 'Selecciona un proveedor'} />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {proveedores.map((p) => (
+                                            <SelectItem key={p.proveedorId} value={String(p.proveedorId)}>{p.nombreProveedor}</SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
                             </div>
 
                             <div className="space-y-3">
@@ -454,6 +679,54 @@ export default function HCModificacion({ hc, onBack, onConsolidarLote, formatCLP
                     </Card>
                 </div>
             </div>
+
+            {rechazoTarget && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4"
+                    onClick={() => { setRechazoTarget(null); setMotivoRechazo(''); }}>
+                    <div className="bg-white w-full max-w-md rounded-[2rem] p-6 shadow-2xl animate-in zoom-in-95 duration-200"
+                        onClick={(e) => e.stopPropagation()}>
+                        <div className="flex items-center gap-3 mb-4">
+                            <div className="bg-rose-100 p-2 rounded-xl">
+                                <XCircle className="w-5 h-5 text-rose-600" />
+                            </div>
+                            <div>
+                                <h3 className="text-sm font-black text-slate-800 uppercase tracking-tight">Rechazar Orden de Compra</h3>
+                                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                                    {rechazoTarget.numeroOC || `OC #${rechazoTarget.ocId}`}
+                                </p>
+                            </div>
+                        </div>
+                        <Textarea
+                            rows={4}
+                            value={motivoRechazo}
+                            onChange={(e) => setMotivoRechazo(e.target.value)}
+                            placeholder="Motivo del rechazo (obligatorio)..."
+                            className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-xs font-medium text-slate-700 outline-none focus:ring-2 focus:ring-rose-400 resize-none mb-4"
+                        />
+                        <div className="flex justify-end gap-2">
+                            <button onClick={() => { setRechazoTarget(null); setMotivoRechazo(''); }}
+                                className="px-4 h-10 rounded-xl text-[10px] font-black text-slate-500 hover:text-slate-700 uppercase tracking-widest">
+                                Cancelar
+                            </button>
+                            <button onClick={confirmarRechazoOC} disabled={!motivoRechazo.trim() || rechazandoOC}
+                                className="px-5 h-10 rounded-xl text-[10px] font-black text-white bg-rose-600 hover:bg-rose-700 uppercase tracking-widest flex items-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed">
+                                <XCircle className="w-3.5 h-3.5" /> {rechazandoOC ? 'Rechazando...' : 'Confirmar Rechazo'}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {reingresoOC && (
+                <ReingresoOCModal
+                    oc={reingresoOC}
+                    proveedores={proveedores}
+                    submitting={reingresandoOCId === reingresoOC.idOC}
+                    error={reingresoError}
+                    onClose={() => { setReingresoOC(null); setReingresoError(null); }}
+                    onConfirm={confirmarReingreso}
+                />
+            )}
         </motion.div>
     );
 }

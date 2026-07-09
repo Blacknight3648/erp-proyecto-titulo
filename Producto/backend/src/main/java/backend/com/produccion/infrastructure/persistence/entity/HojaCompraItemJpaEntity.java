@@ -78,6 +78,9 @@ public class HojaCompraItemJpaEntity {
     @Column(name = "numero_oc", length = 100)
     private String numeroOC;
 
+    @Column(name = "presupuestado", nullable = false)
+    private Boolean presupuestado = true;
+
     @OneToMany(mappedBy = "hcItem", cascade = CascadeType.ALL)
     private List<HCItemOCItemLinkJpaEntity> ocLinks = new ArrayList<>();
 }

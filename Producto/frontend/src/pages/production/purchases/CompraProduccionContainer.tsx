@@ -26,6 +26,7 @@ export default function CompraProduccionContainer() {
         activeTab, setActiveTab, searchTerm, setSearchTerm,
         selectedOC, openCreate, openDetail, back,
         generarConsolidada, marcarEnviada, marcarRecepcionada, cerrar, actualizarPrecioItem,
+        rechazar, reingresar, agregarItem, actualizarItem, eliminarItem,
         registrarRecepcion,
         formatCLP,
     } = useOCState();
@@ -63,8 +64,14 @@ export default function CompraProduccionContainer() {
                 onMarcarRecepcionada={marcarRecepcionada}
                 onCerrar={cerrar}
                 onActualizarPrecio={actualizarPrecioItem}
+                onRechazar={rechazar}
+                onReingresar={reingresar}
+                onAgregarItem={agregarItem}
+                onActualizarItem={actualizarItem}
+                onEliminarItem={eliminarItem}
                 onRegistrarRecepcion={registrarRecepcion}
                 submitting={submitting}
+                error={error}
                 formatCLP={formatCLP}
             />
         );

@@ -26,6 +26,22 @@ public interface OrdenCompraService {
 
     OrdenCompraDTO cerrar(Long idOC);
 
+    /**
+     * Rechaza la OC (solo desde EMITIDA), exige motivo y actor con rol autorizado.
+     */
+    OrdenCompraDTO rechazar(Long idOC, String motivo, String usuario, String rol);
+
+    /**
+     * Reingresa una OC RECHAZADA: vuelve a EMITIDA con el mismo número de
+     * documento e incrementa la versión. Exige actor con rol autorizado.
+     * Permite corregir el proveedor y editar cantidad/precio de ítems en el
+     * mismo paso (ambos opcionales), todo dentro de la misma transacción:
+     * si la edición de algún ítem falla la validación, no se persiste nada
+     * y la OC queda intacta en RECHAZADA.
+     */
+    OrdenCompraDTO reingresar(Long idOC, String usuario, String rol, Long nuevoProveedorId,
+            List<OrdenCompraItemDTO> itemsCambiados);
+
     void eliminar(Long idOC);
 
     OrdenCompraDTO agregarItem(Long idOC, OrdenCompraItemDTO itemDTO);

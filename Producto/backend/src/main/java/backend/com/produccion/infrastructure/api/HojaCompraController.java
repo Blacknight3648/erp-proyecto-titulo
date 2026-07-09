@@ -67,4 +67,16 @@ public class HojaCompraController {
             @jakarta.validation.Valid @RequestBody backend.com.produccion.application.dto.ActualizarHojaCompraItemRequest request) {
         return ResponseEntity.ok(hojaCompraService.modificarItem(idHC, idHCItem, request));
     }
+
+    /**
+     * Agrega un insumo "no presupuestado" (no vino del cálculo automático
+     * desde el Costeo/OP) a una HC ya APROBADA.
+     */
+    @PostMapping("/{idHC}/items")
+    public ResponseEntity<HojaCompraDTO> agregarItemManual(
+            @PathVariable Long idHC,
+            @RequestBody backend.com.produccion.application.dto.HojaCompraItemDTO itemDTO) {
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(hojaCompraService.agregarItemManual(idHC, itemDTO));
+    }
 }

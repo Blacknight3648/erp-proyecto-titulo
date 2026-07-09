@@ -8,6 +8,7 @@ import { Input } from "../../../ui/input";
 import { Dialog, DialogContent, DialogTitle } from "../../../ui/dialog";
 import { Checkbox } from "../../../ui/checkbox";
 import { confirmDelete } from '../../../utils/confirmDelete';
+import { clampNonNegative } from '../../../utils/validations';
 
 type AtributoValor = string | number | '';
 
@@ -418,8 +419,9 @@ export default function GestionInsumos() {
                         ) : def.tipoDato === 'NUMERO' ? (
                           <Input
                             type="number"
+                            min="0"
                             value={valor}
-                            onChange={(e) => setAtributoValor(def.idDefinicion, e.target.value)}
+                            onChange={(e) => setAtributoValor(def.idDefinicion, clampNonNegative(e.target.value))}
                             className="h-10 text-xs bg-zinc-50 font-medium"
                           />
                         ) : (

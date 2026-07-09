@@ -342,7 +342,7 @@ export default function PlantillasPanel({ title = "Especificaciones Técnicas", 
                                                         <input
                                                             type="number" min="1" placeholder="Cant."
                                                             value={linkQuantities[a.id] || ""}
-                                                            onChange={(e) => setLinkQuantities(prev => ({ ...prev, [a.id]: parseInt(e.target.value) || 0 }))}
+                                                            onChange={(e) => setLinkQuantities(prev => ({ ...prev, [a.id]: Math.max(0, parseInt(e.target.value) || 0) }))}
                                                             className="flex-1 bg-card border border-border rounded px-2 py-1 text-[10px] font-bold text-accent-foreground outline-none focus:border-primary"
                                                         />
                                                         <button

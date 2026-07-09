@@ -1,5 +1,7 @@
 package backend.com.produccion.application.UseCase;
 
+import backend.com.gestionUsuarios.domain.model.Proveedor;
+import backend.com.gestionUsuarios.infrastructure.persistence.repository.ProveedorRepository;
 import backend.com.produccion.application.dto.GenerarOCConsolidadaRequest;
 import backend.com.produccion.domain.enums.EstadoHC;
 import backend.com.produccion.domain.model.HCItemOCItemLink;
@@ -9,9 +11,9 @@ import backend.com.produccion.domain.model.OrdenCompra;
 import backend.com.produccion.domain.model.OrdenCompraItem;
 import backend.com.produccion.domain.repository.HojaCompraRepository;
 import backend.com.produccion.domain.repository.OrdenCompraRepository;
+import backend.com.shared.application.service.NumeroDocumentoService;
 import backend.com.shared.exception.BusinessRuleException;
 import backend.com.shared.exception.ValidationException;
-import backend.com.shared.valueobjects.DocumentNumber;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,6 +32,8 @@ public class GenerarOCConsolidadaUseCase {
 
     private final HojaCompraRepository hojaCompraRepository;
     private final OrdenCompraRepository ordenCompraRepository;
+    private final ProveedorRepository proveedorRepository;
+    private final NumeroDocumentoService numeroDocumentoService;
 
     @Transactional
     public OrdenCompra ejecutar(GenerarOCConsolidadaRequest request) {
@@ -46,11 +50,19 @@ public class GenerarOCConsolidadaUseCase {
         List<HojaCompra> hcs = hojaCompraRepository.findAllByItemIds(hcItemIds);
         String numOC = oc.getNumeroOC() != null ? oc.getNumeroOC().getValue() : String.valueOf(oc.getIdOC());
 
+        // El proveedor real con el que se compra es el de la OC recién creada,
+        // no el "proveedor de referencia" que el HCItem heredó del artículo al
+        // generarse desde el Costeo (que suele venir vacío).
+        String proveedorNombre = proveedorRepository.findById(oc.getProveedorId())
+                .map(Proveedor::getRazonSocialProveedor)
+                .orElse(null);
+
         for (HojaCompra hc : hcs) {
             boolean modificado = false;
             for (HojaCompraItem item : hc.getItems()) {
                 if (idsSet.contains(item.getIdHCItem())) {
                     item.vincularOC(oc.getIdOC(), numOC);
+                    item.asignarProveedor(oc.getProveedorId(), proveedorNombre);
                     modificado = true;
                 }
             }
@@ -116,7 +128,7 @@ public class GenerarOCConsolidadaUseCase {
 
         // Construir OC
         OrdenCompra oc = OrdenCompra.emitir(
-                construirNumeroOC(request.getProveedorId()),
+                numeroDocumentoService.siguienteFormateado("OC"),
                 request.getProveedorId(),
                 request.getFechaEntregaEstimada(),
                 request.getObservaciones());
@@ -173,9 +185,5 @@ public class GenerarOCConsolidadaUseCase {
         if (request.getHcItemIds() == null || request.getHcItemIds().isEmpty()) {
             throw new ValidationException("Debe enviar al menos un hcItemId");
         }
-    }
-
-    private DocumentNumber construirNumeroOC(Long proveedorId) {
-        return new DocumentNumber("OC-" + proveedorId + "-" + System.currentTimeMillis());
     }
 }

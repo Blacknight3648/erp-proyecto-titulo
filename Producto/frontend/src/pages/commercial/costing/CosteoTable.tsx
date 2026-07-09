@@ -4,6 +4,7 @@ import { Popover, PopoverTrigger, PopoverContent } from '../../../ui/popover';
 import { Command, CommandInput, CommandList, CommandEmpty, CommandGroup, CommandItem } from '../../../ui/command';
 import { cn } from '../../../ui/utils';
 import ProveedorComboField from '../../../components/shared/ProveedorComboField';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../../ui/select';
 
 function AutocompleteInput({ value, onChange, disabled, opcionesAutocomplete, placeholder = "Producto..." }) {
     const [open, setOpen] = React.useState(false);
@@ -182,19 +183,23 @@ export default function CosteoTable({ title, insumos, onUpdateItem, onRemoveItem
                                             />
                                         </td>
                                         <td className="px-6 py-4 text-center">
-                                            <select
+                                            <Select
                                                 disabled={disabled}
-                                                className={`w-full bg-transparent border-none text-xs font-bold ${disabled ? 'text-muted-foreground' : 'text-foreground'} text-center focus:ring-0 appearance-none cursor-pointer`}
                                                 value={item.unidad || 'und'}
-                                                onChange={(e) => onUpdateItem(item.id, 'unidad', e.target.value)}
+                                                onValueChange={(val) => onUpdateItem(item.id, 'unidad', val)}
                                             >
-                                                <option value="m">m</option>
-                                                <option value="kg">kg</option>
-                                                <option value="und">und</option>
-                                                <option value="paq">paq</option>
-                                                <option value="caja">caja</option>
-                                                <option value="lt">lt</option>
-                                            </select>
+                                                <SelectTrigger className={`w-full bg-transparent border-none text-xs font-bold ${disabled ? 'text-muted-foreground' : 'text-foreground'} text-center justify-center focus:ring-0 [&>svg]:hidden shadow-none h-auto p-0`}>
+                                                    <SelectValue />
+                                                </SelectTrigger>
+                                                <SelectContent>
+                                                    <SelectItem value="m">m</SelectItem>
+                                                    <SelectItem value="kg">kg</SelectItem>
+                                                    <SelectItem value="und">und</SelectItem>
+                                                    <SelectItem value="paq">paq</SelectItem>
+                                                    <SelectItem value="caja">caja</SelectItem>
+                                                    <SelectItem value="lt">lt</SelectItem>
+                                                </SelectContent>
+                                            </Select>
                                         </td>
                                         <td className="px-6 py-4">
                                             <div className="flex items-center justify-end">
@@ -304,7 +309,7 @@ export default function CosteoTable({ title, insumos, onUpdateItem, onRemoveItem
                         })}
                         {insumos.length === 0 && (
                             <tr>
-                                <td colSpan="9" className="px-6 py-12 text-center text-muted-foreground font-bold text-sm uppercase">
+                                <td colSpan={9} className="px-6 py-12 text-center text-muted-foreground font-bold text-sm uppercase">
                                     No hay insumos registrados
                                 </td>
                             </tr>

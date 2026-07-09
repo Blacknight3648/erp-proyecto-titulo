@@ -1,5 +1,6 @@
 import React from 'react';
 import { useTrazabilidad } from '../../hooks/useTrazabilidad';
+import { clampNonNegative } from '../../utils/validations';
 import {
     Search, Loader2, Package, GitBranch, ShoppingBag, ShoppingCart,
     Inbox, Factory, X, Hash, Calendar
@@ -49,7 +50,7 @@ export default function TrazabilidadOP() {
                             type="number"
                             min={1}
                             value={opIdInput}
-                            onChange={(e) => setOpIdInput(e.target.value)}
+                            onChange={(e) => setOpIdInput(String(clampNonNegative(e.target.value)))}
                             onKeyDown={(e) => e.key === 'Enter' && buscar()}
                             placeholder="ID Orden de Producción"
                             className="pl-12 h-12 w-[280px] bg-card border border-border rounded-2xl text-xs font-bold focus:outline-none focus:ring-2 focus:ring-brand-indigo"

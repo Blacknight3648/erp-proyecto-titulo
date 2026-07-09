@@ -25,4 +25,11 @@ public interface HojaCompraService {
     List<HojaCompraDTO> listarPorEstado(EstadoHC estado);
 
     HojaCompraDTO modificarItem(Long idHC, Long idHCItem, backend.com.produccion.application.dto.ActualizarHojaCompraItemRequest request);
+
+    /**
+     * Agrega un ítem manual ("no presupuestado") a una HC ya existente. Solo
+     * permitido si la HC está APROBADA (mismo gate que la selección de ítems
+     * existentes al consolidar OC).
+     */
+    HojaCompraDTO agregarItemManual(Long idHC, backend.com.produccion.application.dto.HojaCompraItemDTO itemDTO);
 }

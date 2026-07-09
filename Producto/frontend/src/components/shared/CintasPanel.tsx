@@ -1,4 +1,5 @@
 import { Plus, Trash2 } from 'lucide-react';
+import { clampNonNegative } from '../../utils/validations';
 
 export default function CintasPanel({ data, onAdd, onUpdate, onRemove }) {
   return (
@@ -55,16 +56,18 @@ export default function CintasPanel({ data, onAdd, onUpdate, onRemove }) {
                   <input
                     type="number"
                     step="0.1"
+                    min="0"
                     value={item.medida || 0}
-                    onChange={(e) => onUpdate(item.id, 'medida', parseFloat(e.target.value) || 0)}
+                    onChange={(e) => onUpdate(item.id, 'medida', Math.max(0, parseFloat(e.target.value) || 0))}
                     className="w-20 bg-muted p-2 rounded-lg text-center font-black text-xs text-foreground outline-none border border-transparent focus:border-accent"
                   />
                 </td>
                 <td className="px-4 py-3 border-y border-transparent group-hover:border-border text-center">
                   <input
                     type="number"
+                    min="0"
                     value={item.consumo || 0}
-                    onChange={(e) => onUpdate(item.id, 'consumo', parseInt(e.target.value) || 0)}
+                    onChange={(e) => onUpdate(item.id, 'consumo', Math.max(0, parseInt(e.target.value) || 0))}
                     className="w-16 bg-accent/50 p-2 rounded-lg text-center font-black text-xs text-accent-foreground outline-none border border-accent"
                   />
                 </td>

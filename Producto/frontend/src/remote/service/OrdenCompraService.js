@@ -24,6 +24,20 @@ export const OrdenCompraService = {
         }
     },
 
+    /**
+     * Historial de versiones de la OC (snapshots congelados en cada rechazo),
+     * más reciente primero.
+     */
+    obtenerHistorialVersiones: async (idOC) => {
+        try {
+            const response = await api.get(`/ordenes-compra/${idOC}/versiones`);
+            return response.data || [];
+        } catch (error) {
+            console.error(`Error obteniendo historial de versiones de OC ${idOC}:`, error);
+            throw error;
+        }
+    },
+
     getById: async (idOC) => {
         try {
             const response = await api.get(`/ordenes-compra/${idOC}`);

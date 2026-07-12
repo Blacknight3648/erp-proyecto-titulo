@@ -2,6 +2,7 @@ package backend.com.produccion.application.service;
 
 import backend.com.produccion.application.dto.GenerarOCConsolidadaRequest;
 import backend.com.produccion.application.dto.GenerarOCLoteRequest;
+import backend.com.produccion.application.dto.HistorialVersionOCDTO;
 import backend.com.produccion.application.dto.OrdenCompraDTO;
 import backend.com.produccion.application.dto.OrdenCompraItemDTO;
 import backend.com.produccion.domain.enums.EstadoOC;
@@ -65,4 +66,10 @@ public interface OrdenCompraService {
     List<OrdenCompraDTO> listarPorProveedor(Long proveedorId);
 
     List<OrdenCompraDTO> listarPorHCItem(Long hcItemId);
+
+    /**
+     * Historial de versiones (snapshots congelados en cada rechazo) más el
+     * estado activo actual, más reciente primero.
+     */
+    List<HistorialVersionOCDTO> obtenerHistorialVersiones(Long idOC);
 }

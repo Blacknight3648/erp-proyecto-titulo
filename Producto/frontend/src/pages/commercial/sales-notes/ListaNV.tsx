@@ -217,15 +217,16 @@ export default function ListaNV({
                                     Cancelar
                                 </button>
                                 <button
-                                    disabled={evnModal.selectedIds.size === 0}
                                     onClick={() => {
                                         const selectedItems = (evnModal.evn.items || []).filter((_, idx) => evnModal.selectedIds.has(idx));
                                         handleOpenForm({ ...evnModal.evn, items: selectedItems }, 'template');
                                         setEvnModal({ open: false, evn: null, selectedIds: new Set() });
                                     }}
-                                    className="px-5 py-2.5 bg-primary hover:bg-primary-hover text-primary-foreground rounded-xl text-[10px] font-black uppercase tracking-widest transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+                                    className="px-5 py-2.5 bg-primary hover:bg-primary-hover text-primary-foreground rounded-xl text-[10px] font-black uppercase tracking-widest transition-all"
                                 >
-                                    Cargar {evnModal.selectedIds.size} Ítems →
+                                    {evnModal.selectedIds.size === 0
+                                        ? 'Continuar sin ítems →'
+                                        : `Cargar ${evnModal.selectedIds.size} Ítems →`}
                                 </button>
                             </div>
                         </div>
@@ -233,15 +234,11 @@ export default function ListaNV({
                 </div>
             )}
 
-            {/* Modal inicial: elegir crear desde cero o desde plantilla EVN */}
+            {/* Modal inicial: toda NV se origina desde una EVN adjudicada */}
             <NuevaNVModal
                 open={nuevaModalOpen}
                 onClose={() => setNuevaModalOpen(false)}
                 evaluaciones={evnPlantillas}
-                onDesdeCero={() => {
-                    setNuevaModalOpen(false);
-                    handleOpenForm(null, 'new');
-                }}
                 onSelectEVN={(evn) => {
                     setNuevaModalOpen(false);
                     setEvnModal({ open: true, evn, selectedIds: new Set() });

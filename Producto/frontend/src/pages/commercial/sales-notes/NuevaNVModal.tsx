@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { X, FileText, Copy, ChevronRight, ChevronLeft, Search, Target, Plus } from 'lucide-react';
+import { X, Search, Target, ChevronRight } from 'lucide-react';
 
 /** Normaliza el número de EVN a "EVN-####" */
 const formatNumeroEVN = (raw) => {
@@ -9,32 +9,28 @@ const formatNumeroEVN = (raw) => {
 };
 
 /**
- * Modal inicial de creación de Nota de Venta.
- * Obliga a elegir entre crear desde cero o desde una plantilla de Evaluación de
- * Negocio (EVN) antes de entrar al formulario.
+ * Modal de creación de Nota de Venta.
+ * Toda NV debe originarse desde una Evaluación de Negocio (EVN) ADJUDICADA:
+ * el dominio NotaVenta exige un evaluacionNegocioId no nulo, por lo que ya
+ * no existe la opción de crear una NV "en blanco".
  *
  * Props:
  *  - open: boolean
  *  - onClose(): cerrar/cancelar
- *  - onDesdeCero(): iniciar NV en blanco
  *  - evaluaciones: EVN aplicables (ya filtradas a ADJUDICADA)
  *  - onSelectEVN(evn): EVN elegida como plantilla
  */
-export default function NuevaNVModal({ open, onClose, onDesdeCero, evaluaciones = [], onSelectEVN }) {
-    const [step, setStep] = useState('choice');
+export default function NuevaNVModal({ open, onClose, evaluaciones = [], onSelectEVN }) {
     const [search, setSearch] = useState('');
 
-    // Cada apertura arranca en el paso de elección y sin búsqueda previa.
+    // Cada apertura arranca sin búsqueda previa.
     useEffect(() => {
         if (open) {
-            setStep('choice');
             setSearch('');
         }
     }, [open]);
 
     if (!open) return null;
-
-    const hayPlantillas = evaluaciones.length > 0;
 
     const q = search.trim().toLowerCase();
     const filtradas = !q
@@ -57,26 +53,13 @@ export default function NuevaNVModal({ open, onClose, onDesdeCero, evaluaciones 
 
                 {/* Header */}
                 <div className="flex items-center justify-between p-6 border-b border-border">
-                    <div className="flex items-center gap-3">
-                        {step === 'template' && (
-                            <button
-                                onClick={() => setStep('choice')}
-                                className="w-9 h-9 bg-muted rounded-xl flex items-center justify-center hover:bg-muted/70 transition-all"
-                                aria-label="Volver"
-                            >
-                                <ChevronLeft className="w-4 h-4 text-muted-foreground" />
-                            </button>
-                        )}
-                        <div>
-                            <h2 className="text-lg font-black text-foreground uppercase tracking-tight">
-                                {step === 'choice' ? 'Nueva Nota de Venta' : 'Elegir Evaluación de Negocio'}
-                            </h2>
-                            <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mt-0.5">
-                                {step === 'choice'
-                                    ? '¿Cómo quieres iniciar la NV?'
-                                    : 'Selecciona la EVN adjudicada que usarás como plantilla'}
-                            </p>
-                        </div>
+                    <div>
+                        <h2 className="text-lg font-black text-foreground uppercase tracking-tight">
+                            Elegir Evaluación de Negocio
+                        </h2>
+                        <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mt-0.5">
+                            Selecciona la EVN adjudicada que usarás para crear la NV
+                        </p>
                     </div>
                     <button
                         onClick={onClose}
@@ -87,116 +70,60 @@ export default function NuevaNVModal({ open, onClose, onDesdeCero, evaluaciones 
                     </button>
                 </div>
 
-                {/* Paso 1: elección */}
-                {step === 'choice' && (
-                    <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-5">
-                        {/* Desde cero */}
-                        <button
-                            onClick={onDesdeCero}
-                            className="group text-left p-6 rounded-[2rem] border-2 border-border hover:border-primary hover:shadow-xl transition-all flex flex-col gap-4"
-                        >
-                            <div className="w-12 h-12 bg-primary/10 rounded-2xl flex items-center justify-center group-hover:bg-primary transition-colors">
-                                <Plus className="w-6 h-6 text-primary group-hover:text-primary-foreground transition-colors" />
-                            </div>
-                            <div>
-                                <h3 className="text-sm font-black text-foreground uppercase tracking-wide mb-1">Crear desde cero</h3>
-                                <p className="text-xs font-bold text-muted-foreground">Formulario en blanco para capturar manualmente cliente e ítems.</p>
-                            </div>
-                            <span className="mt-auto flex items-center gap-1 text-[10px] font-black text-primary uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-all">
-                                Comenzar <ChevronRight className="w-3.5 h-3.5" />
-                            </span>
-                        </button>
-
-                        {/* Desde plantilla EVN */}
-                        <button
-                            onClick={() => hayPlantillas && setStep('template')}
-                            disabled={!hayPlantillas}
-                            className={`group text-left p-6 rounded-[2rem] border-2 transition-all flex flex-col gap-4 ${
-                                hayPlantillas
-                                    ? 'border-border hover:border-success hover:shadow-xl cursor-pointer'
-                                    : 'border-border opacity-60 cursor-not-allowed'
-                            }`}
-                        >
-                            <div className={`w-12 h-12 rounded-2xl flex items-center justify-center transition-colors ${
-                                hayPlantillas ? 'bg-success/10 group-hover:bg-success' : 'bg-muted'
-                            }`}>
-                                <Copy className={`w-6 h-6 transition-colors ${hayPlantillas ? 'text-success group-hover:text-white' : 'text-muted-foreground'}`} />
-                            </div>
-                            <div>
-                                <h3 className="text-sm font-black text-foreground uppercase tracking-wide mb-1">Desde plantilla EVN</h3>
-                                <p className="text-xs font-bold text-muted-foreground">
-                                    {hayPlantillas
-                                        ? 'Precarga cliente e ítems desde una Evaluación de Negocio adjudicada.'
-                                        : 'No hay evaluaciones adjudicadas disponibles.'}
-                                </p>
-                            </div>
-                            {hayPlantillas && (
-                                <span className="mt-auto flex items-center gap-1 text-[10px] font-black text-success uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-all">
-                                    Elegir EVN <ChevronRight className="w-3.5 h-3.5" />
-                                </span>
-                            )}
-                        </button>
+                <div className="px-6 pt-5 pb-3">
+                    <div className="relative">
+                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                        <input
+                            autoFocus
+                            type="text"
+                            value={search}
+                            onChange={(e) => setSearch(e.target.value)}
+                            placeholder="Buscar por número, cliente o referencia..."
+                            className="w-full pl-11 pr-4 py-3 bg-muted border-none rounded-2xl text-sm font-bold focus:ring-2 focus:ring-success outline-none transition-all"
+                        />
                     </div>
-                )}
+                </div>
 
-                {/* Paso 2: selector de EVN */}
-                {step === 'template' && (
-                    <>
-                        <div className="px-6 pt-5 pb-3">
-                            <div className="relative">
-                                <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                                <input
-                                    autoFocus
-                                    type="text"
-                                    value={search}
-                                    onChange={(e) => setSearch(e.target.value)}
-                                    placeholder="Buscar por número, cliente o referencia..."
-                                    className="w-full pl-11 pr-4 py-3 bg-muted border-none rounded-2xl text-sm font-bold focus:ring-2 focus:ring-success outline-none transition-all"
-                                />
-                            </div>
-                        </div>
-
-                        <div className="px-6 pb-6 overflow-y-auto flex-1 space-y-3">
-                            {filtradas.map((ev) => (
-                                <button
-                                    key={ev.evaluacionNegocioId ?? ev.id}
-                                    onClick={() => onSelectEVN(ev)}
-                                    className="group w-full text-left p-4 rounded-2xl border-2 border-border hover:border-success hover:bg-success/5 transition-all flex items-center justify-between gap-4"
-                                >
-                                    <div className="min-w-0">
-                                        <div className="flex items-center gap-2 mb-1">
-                                            <span className="text-[10px] font-black text-success bg-success/10 px-2 py-0.5 rounded-full uppercase tracking-widest">
-                                                {formatNumeroEVN(ev.numeroEvn ?? ev.numero)}
-                                            </span>
-                                            <span className="text-[9px] font-black text-muted-foreground uppercase tracking-widest">
-                                                {(ev.items?.length || 0)} ítems
-                                            </span>
-                                        </div>
-                                        <p className="text-sm font-black text-foreground uppercase truncate">{ev.clienteNombre || 'Sin cliente'}</p>
-                                        <p className="text-[11px] font-bold text-muted-foreground truncate">{ev.referencia || 'Sin referencia'}</p>
-                                    </div>
-                                    <ChevronRight className="w-5 h-5 text-muted-foreground/50 group-hover:text-success group-hover:translate-x-1 transition-all flex-shrink-0" />
-                                </button>
-                            ))}
-
-                            {filtradas.length === 0 && (
-                                <div className="py-16 flex flex-col items-center justify-center text-center">
-                                    <Target className="w-12 h-12 text-muted-foreground/30 mb-4" />
-                                    <p className="text-sm font-black text-muted-foreground uppercase tracking-widest">
-                                        {evaluaciones.length === 0
-                                            ? 'No hay evaluaciones adjudicadas disponibles'
-                                            : 'Sin resultados para la búsqueda'}
-                                    </p>
-                                    {evaluaciones.length === 0 && (
-                                        <p className="text-xs font-bold text-muted-foreground mt-2">
-                                            Adjudica una Evaluación de Negocio para usarla como plantilla.
-                                        </p>
-                                    )}
+                <div className="px-6 pb-6 overflow-y-auto flex-1 space-y-3">
+                    {filtradas.map((ev) => (
+                        <button
+                            key={ev.evaluacionNegocioId ?? ev.id}
+                            onClick={() => onSelectEVN(ev)}
+                            className="group w-full text-left p-4 rounded-2xl border-2 border-border hover:border-success hover:bg-success/5 transition-all flex items-center justify-between gap-4"
+                        >
+                            <div className="min-w-0">
+                                <div className="flex items-center gap-2 mb-1">
+                                    <span className="text-[10px] font-black text-success bg-success/10 px-2 py-0.5 rounded-full uppercase tracking-widest">
+                                        {formatNumeroEVN(ev.numeroEvn ?? ev.numero)}
+                                    </span>
+                                    <span className="text-[9px] font-black text-muted-foreground uppercase tracking-widest">
+                                        {(ev.items?.length || 0)} ítems
+                                    </span>
                                 </div>
+                                <p className="text-sm font-black text-foreground uppercase truncate">{ev.clienteNombre || 'Sin cliente'}</p>
+                                <p className="text-[11px] font-bold text-muted-foreground truncate">{ev.referencia || 'Sin referencia'}</p>
+                            </div>
+                            <ChevronRight className="w-5 h-5 text-muted-foreground/50 group-hover:text-success group-hover:translate-x-1 transition-all flex-shrink-0" />
+                        </button>
+                    ))}
+
+                    {filtradas.length === 0 && (
+                        <div className="py-16 flex flex-col items-center justify-center text-center">
+                            <Target className="w-12 h-12 text-muted-foreground/30 mb-4" />
+                            <p className="text-sm font-black text-muted-foreground uppercase tracking-widest">
+                                {evaluaciones.length === 0
+                                    ? 'No hay evaluaciones adjudicadas disponibles'
+                                    : 'Sin resultados para la búsqueda'}
+                            </p>
+                            {evaluaciones.length === 0 && (
+                                <p className="text-xs font-bold text-muted-foreground mt-2">
+                                    Toda Nota de Venta debe originarse desde una Evaluación de Negocio adjudicada.
+                                    Adjudica una EVN para poder crear la NV.
+                                </p>
                             )}
                         </div>
-                    </>
-                )}
+                    )}
+                </div>
             </div>
         </div>
     );

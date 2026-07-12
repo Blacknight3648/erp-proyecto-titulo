@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { OrdenServicioService } from '../remote/service/OrdenServicioService';
+import { getApiErrorMessage } from '../utils/apiError';
 
 export function useOSState() {
     const [view, setView] = useState('list'); // 'list' | 'create' | 'detail'
@@ -22,7 +23,7 @@ export function useOSState() {
             );
             setOss(data);
         } catch (e) {
-            setError(e?.response?.data?.message || e?.message || 'Error cargando OSs');
+            setError(getApiErrorMessage(e, 'Error cargando OSs'));
             setOss([]);
         } finally {
             setLoading(false);
@@ -50,7 +51,7 @@ export function useOSState() {
             back();
             return nueva;
         } catch (e) {
-            setError(e?.response?.data?.message || e?.message || 'Error creando OS');
+            setError(getApiErrorMessage(e, 'Error creando OS'));
             return null;
         } finally {
             setSubmitting(false);
@@ -63,7 +64,7 @@ export function useOSState() {
             await refresh();
             if (actualizada && selectedOS?.idOS === idOS) setSelectedOS(actualizada);
         } catch (e) {
-            setError(e?.response?.data?.message || e?.message || 'Error en despacho');
+            setError(getApiErrorMessage(e, 'Error en despacho'));
         }
     }, [refresh, selectedOS]);
 
@@ -73,7 +74,7 @@ export function useOSState() {
             await refresh();
             if (actualizada && selectedOS?.idOS === idOS) setSelectedOS(actualizada);
         } catch (e) {
-            setError(e?.response?.data?.message || e?.message || 'Error en recepción');
+            setError(getApiErrorMessage(e, 'Error en recepción'));
         }
     }, [refresh, selectedOS]);
 
@@ -83,7 +84,7 @@ export function useOSState() {
             await refresh();
             if (selectedOS?.idOS === idOS) await refreshSelected();
         } catch (e) {
-            setError(e?.response?.data?.message || e?.message || 'Error cerrando OS');
+            setError(getApiErrorMessage(e, 'Error cerrando OS'));
         }
     }, [refresh, refreshSelected, selectedOS]);
 

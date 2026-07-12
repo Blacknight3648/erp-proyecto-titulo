@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { toast } from 'sonner';
 import { HojaCompraService } from '../remote/service/HojaCompraService';
 import { OrdenCompraService } from '../remote/service/OrdenCompraService';
+import { getApiErrorMessage } from '../utils/apiError';
 
 // Identidad del actor (firma). Mismo patrón que useOCState.js/useCosteosOPState.js:
 // se intenta leer de localStorage y, si no hay, se usa un actor por defecto con un
@@ -91,7 +93,11 @@ export function useHCState(initialView = 'list') {
             const ocs = await OrdenCompraService.getAll();
             setOcsById(Object.fromEntries(ocs.map(oc => [oc.idOC, oc])));
         } catch (e) {
+            // Si esto falla en silencio, los botones de rechazar/reingresar OC
+            // desaparecen de HCModificacion sin ningún indicio visible (ocsById
+            // queda {} para siempre) — por eso se avisa explícitamente al usuario.
             console.error('Error cargando estado de las Órdenes de Compra:', e);
+            toast.error(getApiErrorMessage(e, 'No se pudo cargar el estado de las Órdenes de Compra'));
         }
     }, []);
 

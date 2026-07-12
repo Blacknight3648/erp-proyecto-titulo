@@ -2,6 +2,7 @@ package backend.com.produccion.infrastructure.api;
 
 import backend.com.produccion.application.dto.GenerarOCConsolidadaRequest;
 import backend.com.produccion.application.dto.GenerarOCLoteRequest;
+import backend.com.produccion.application.dto.HistorialVersionOCDTO;
 import backend.com.produccion.application.dto.OrdenCompraDTO;
 import backend.com.produccion.application.dto.OrdenCompraItemDTO;
 import backend.com.produccion.application.dto.ReingresarOCRequest;
@@ -60,6 +61,15 @@ public class OrdenCompraController {
         return ordenCompraService.obtenerPorId(idOC)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
+    }
+
+    /**
+     * Historial de versiones de la OC (snapshots congelados en cada rechazo),
+     * más reciente primero.
+     */
+    @GetMapping("/{idOC}/versiones")
+    public ResponseEntity<List<HistorialVersionOCDTO>> obtenerHistorialVersiones(@PathVariable Long idOC) {
+        return ResponseEntity.ok(ordenCompraService.obtenerHistorialVersiones(idOC));
     }
 
     @PatchMapping("/{idOC}/enviar")

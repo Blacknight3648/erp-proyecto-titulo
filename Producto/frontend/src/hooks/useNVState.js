@@ -7,6 +7,7 @@ import { useComercial } from './useComercial';
 import { useProduccion } from './useProduccion';
 import { toast } from 'sonner';
 import { validateNumericInput } from '../utils/validations';
+import { getApiErrorMessage } from '../utils/apiError';
 
 export const useNVState = (initialView = 'list') => {
     const [view, setView] = useState(initialView);
@@ -252,19 +253,9 @@ export const useNVState = (initialView = 'list') => {
             setSourceEVN(data.evaluacionNegocioId || data.id);
             setIsReadOnly(false);
             setView('form');
-        } else {
-            setFormData({
-                clienteId: '',
-                clienteNombre: '',
-                vendedorId: '',
-                fechaEntregaEstimada: '',
-                esKit: false,
-                detalleKit: '',
-                items: []
-            });
-            setIsReadOnly(false);
-            setView('form');
         }
+        // Toda NV nueva se crea desde una EVN adjudicada (modo 'template');
+        // el dominio NotaVenta exige evaluacionNegocioId no nulo.
     };
 
     const addItem = () => {
@@ -376,6 +367,10 @@ export const useNVState = (initialView = 'list') => {
             toast.error('Debe añadir al menos un ítem');
             return;
         }
+        if (!formData.fechaEntregaEstimada) {
+            toast.error('Debe indicar la fecha de entrega estimada');
+            return;
+        }
 
         setIsSubmitting(true);
         setSubmitStatus(null);
@@ -441,7 +436,7 @@ export const useNVState = (initialView = 'list') => {
             setSubmitStatus({ type: 'success', message: 'Operación exitosa' });
             setTimeout(() => { setView('list'); loadComercial(); }, 2000);
         } catch (error) {
-            const msg = error.response?.data?.message || error.message || 'Error desconocido';
+            const msg = getApiErrorMessage(error, 'Error desconocido');
             setSubmitStatus({ type: 'error', message: msg });
         } finally {
             setIsSubmitting(false);
@@ -455,7 +450,7 @@ export const useNVState = (initialView = 'list') => {
             return true;
         } catch (error) {
             console.error("Error al eliminar borrador:", error);
-            setSubmitStatus({ type: 'error', message: 'Error al eliminar el borrador' });
+            setSubmitStatus({ type: 'error', message: getApiErrorMessage(error, 'Error al eliminar el borrador') });
             return false;
         } finally {
             setIsSubmitting(false);

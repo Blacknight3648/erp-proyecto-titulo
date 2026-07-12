@@ -341,7 +341,7 @@ export default function FormularioNV({
                             </button>
                             <button
                                 onClick={() => handleConfirmNV(true)}
-                                disabled={isSubmitting || !formData.clienteId || formData.vendedorId === '' || formData.items.length === 0}
+                                disabled={isSubmitting || !formData.clienteId || formData.vendedorId === '' || formData.items.length === 0 || !formData.fechaEntregaEstimada}
                                 className="px-10 py-5 bg-white/10 hover:bg-white/20 text-white font-black rounded-3xl text-[10px] uppercase tracking-[0.2em] shadow-xl flex items-center gap-3 disabled:opacity-50 transition-all"
                             >
                                 <Save className="w-4 h-4" />
@@ -349,7 +349,7 @@ export default function FormularioNV({
                             </button>
                             <button
                                 onClick={() => handleConfirmNV(false)}
-                                disabled={isSubmitting || !formData.clienteId || formData.vendedorId === '' || formData.items.length === 0}
+                                disabled={isSubmitting || !formData.clienteId || formData.vendedorId === '' || formData.items.length === 0 || !formData.fechaEntregaEstimada}
                                 className="px-12 py-5 bg-primary hover:bg-primary-hover text-primary-foreground font-black rounded-3xl text-[10px] uppercase tracking-[0.2em] shadow-2xl flex items-center gap-4 disabled:opacity-50 transition-all"
                             >
 

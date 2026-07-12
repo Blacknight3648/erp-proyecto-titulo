@@ -1,10 +1,12 @@
 package backend.com.produccion.application.service.impl;
 
+import backend.com.produccion.application.UseCase.CrearVersionOCUseCase;
 import backend.com.produccion.application.UseCase.GenerarOCConsolidadaUseCase;
 import backend.com.produccion.application.UseCase.GenerarOCLoteUseCase;
 import backend.com.produccion.application.dto.GenerarOCConsolidadaRequest;
 import backend.com.produccion.application.dto.GenerarOCLoteRequest;
 import backend.com.produccion.application.dto.HCItemOCItemLinkDTO;
+import backend.com.produccion.application.dto.HistorialVersionOCDTO;
 import backend.com.produccion.application.dto.OrdenCompraDTO;
 import backend.com.produccion.application.dto.OrdenCompraItemDTO;
 import backend.com.produccion.application.service.OrdenCompraService;
@@ -13,8 +15,10 @@ import backend.com.produccion.domain.enums.EstadoOC;
 import backend.com.produccion.domain.model.HCItemOCItemLink;
 import backend.com.produccion.domain.model.OrdenCompra;
 import backend.com.produccion.domain.model.OrdenCompraItem;
+import backend.com.produccion.domain.model.OrdenCompraVersion;
 import backend.com.produccion.domain.repository.HojaCompraRepository;
 import backend.com.produccion.domain.repository.OrdenCompraRepository;
+import backend.com.produccion.domain.repository.OrdenCompraVersionRepository;
 import backend.com.shared.application.service.HistorialEstadoService;
 import backend.com.shared.application.service.NotificacionService;
 import backend.com.shared.exception.BusinessRuleException;
@@ -26,6 +30,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -41,6 +46,8 @@ public class OrdenCompraServiceImpl implements OrdenCompraService {
     private final HojaCompraRepository hojaCompraRepository;
     private final NotificacionService notificacionService;
     private final HistorialEstadoService historialEstadoService;
+    private final CrearVersionOCUseCase crearVersionOCUseCase;
+    private final OrdenCompraVersionRepository ordenCompraVersionRepository;
 
     /** Tipo de entidad para el registro de historial de estado de la OC. */
     private static final String TIPO_ENTIDAD = "OC";
@@ -95,6 +102,11 @@ public class OrdenCompraServiceImpl implements OrdenCompraService {
         AccionOC.RECHAZAR.validarRol(rol);
         OrdenCompra oc = cargar(idOC);
         EstadoOC estadoAnterior = oc.getEstado();
+
+        // Snapshot del estado justo antes del rechazo: preserva proveedor/cantidades/
+        // precios previos para que un reingreso posterior no los pierda al editarlos.
+        crearVersionOCUseCase.ejecutar(idOC, "Rechazo v" + oc.getVersion() + ": " + motivo, actor);
+
         oc.rechazar(motivo);
         OrdenCompra guardada = ordenCompraRepository.save(oc);
         registrarHistorial(guardada, estadoAnterior, actor, "OC v" + guardada.getVersion() + " rechazada: " + motivo);
@@ -237,6 +249,57 @@ public class OrdenCompraServiceImpl implements OrdenCompraService {
     public List<OrdenCompraDTO> listarPorHCItem(Long hcItemId) {
         return ordenCompraRepository.findAllByHcItemId(hcItemId).stream()
                 .map(this::toDTO).collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<HistorialVersionOCDTO> obtenerHistorialVersiones(Long idOC) {
+        List<HistorialVersionOCDTO> historial = new ArrayList<>();
+
+        // 1. Snapshots congelados (uno por cada rechazo sufrido)
+        List<OrdenCompraVersion> snapshots = ordenCompraVersionRepository.findAllByOcId(idOC);
+
+        BigDecimal totalAnterior = null;
+        for (OrdenCompraVersion snapshot : snapshots) {
+            historial.add(HistorialVersionOCDTO.builder()
+                    .id("v" + snapshot.getNumeroVersion())
+                    .version(snapshot.getNumeroVersion())
+                    .accion("RECHAZO")
+                    .fechaFormateada(snapshot.getFechaCreacion() != null
+                            ? java.time.format.DateTimeFormatter.ofPattern("dd MMM yyyy, HH:mm")
+                                    .format(snapshot.getFechaCreacion())
+                            : null)
+                    .totalNeto(snapshot.getTotalNeto())
+                    .totalAnterior(totalAnterior)
+                    .proveedorId(snapshot.getProveedorId())
+                    .usuario(snapshot.getUsuarioCreador())
+                    .motivo(snapshot.getMotivoCambio())
+                    .build());
+            totalAnterior = snapshot.getTotalNeto();
+        }
+
+        // 2. Estado activo actual
+        final BigDecimal totalAnteriorFinal = totalAnterior;
+        ordenCompraRepository.findById(idOC).ifPresent(oc -> {
+            String accion = switch (oc.getEstado()) {
+                case RECHAZADA -> "RECHAZO";
+                default -> snapshots.isEmpty() ? "EMISION" : "REINGRESO";
+            };
+            historial.add(HistorialVersionOCDTO.builder()
+                    .id("active")
+                    .version(oc.getVersion())
+                    .accion(accion)
+                    .fechaFormateada("Actual")
+                    .totalNeto(oc.getTotalNeto())
+                    .totalAnterior(totalAnteriorFinal)
+                    .proveedorId(oc.getProveedorId())
+                    .usuario("Sistema")
+                    .motivo(oc.getMotivoRechazo())
+                    .build());
+        });
+
+        Collections.reverse(historial);
+        return historial;
     }
 
     private OrdenCompra cargar(Long idOC) {

@@ -1,11 +1,13 @@
 import { useMemo, useState } from 'react';
 import {
     ChevronLeft, Truck, CheckCircle2, Lock, Pencil, Check, X, GitMerge,
-    Package, Inbox, Plus, Trash2, XCircle, RotateCcw, AlertTriangle,
+    Package, Inbox, Plus, Trash2, XCircle, RotateCcw, AlertTriangle, Clock,
 } from 'lucide-react';
 import { clampNonNegative } from '../../../utils/validations';
 import { useProveedores } from '../../../hooks/useProveedores';
 import ReingresoOCModal from '../../../components/shared/ReingresoOCModal';
+import HistorialVersionOC from './HistorialVersionOC';
+import { OrdenCompraService } from '../../../remote/service/OrdenCompraService';
 
 const STATUS_BADGE = {
     EMITIDA:               'bg-amber-50 text-amber-600 border-amber-100',
@@ -42,9 +44,25 @@ export default function DetalleOC({
     const [showRechazoModal, setShowRechazoModal] = useState(false);
     const [motivoRechazo, setMotivoRechazo] = useState('');
     const [showReingresoModal, setShowReingresoModal] = useState(false);
+    const [showHistorial, setShowHistorial] = useState(false);
+    const [historialVersiones, setHistorialVersiones] = useState([]);
+    const [loadingHistorial, setLoadingHistorial] = useState(false);
     const { proveedores } = useProveedores();
 
     if (!oc) return null;
+
+    const abrirHistorial = async () => {
+        setShowHistorial(true);
+        setLoadingHistorial(true);
+        try {
+            const data = await OrdenCompraService.obtenerHistorialVersiones(oc.idOC);
+            setHistorialVersiones(data);
+        } catch (_) {
+            setHistorialVersiones([]);
+        } finally {
+            setLoadingHistorial(false);
+        }
+    };
 
     const startEdit = (item) => {
         setEditingItemId(item.idOCItem);
@@ -119,6 +137,12 @@ export default function DetalleOC({
                                 <span className="px-2.5 py-1 rounded-full text-[9px] font-black uppercase tracking-widest bg-indigo-50 text-indigo-600 border border-indigo-100">
                                     v{oc.version}
                                 </span>
+                            )}
+                            {(oc.version > 1 || oc.estado === 'RECHAZADA') && (
+                                <button onClick={abrirHistorial}
+                                    className="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[9px] font-black uppercase tracking-widest text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 border border-transparent hover:border-indigo-100 transition-all">
+                                    <Clock className="w-3 h-3" /> Historial
+                                </button>
                             )}
                         </div>
                         <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mt-1">
@@ -336,6 +360,25 @@ export default function DetalleOC({
                     onClose={() => setShowReingresoModal(false)}
                     onConfirm={confirmarReingreso}
                 />
+            )}
+
+            {showHistorial && (
+                <div className="fixed inset-0 z-50 flex items-center justify-end bg-slate-900/60 backdrop-blur-sm p-4"
+                    onClick={() => setShowHistorial(false)}>
+                    <div onClick={(e) => e.stopPropagation()}>
+                        {loadingHistorial ? (
+                            <div className="bg-card p-8 rounded-[2.5rem] shadow-xl">
+                                <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">Cargando historial...</p>
+                            </div>
+                        ) : (
+                            <HistorialVersionOC
+                                historial={historialVersiones}
+                                numeroOC={oc.numeroOC}
+                                onClose={() => setShowHistorial(false)}
+                            />
+                        )}
+                    </div>
+                </div>
             )}
         </div>
     );

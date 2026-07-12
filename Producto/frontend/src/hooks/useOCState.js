@@ -3,6 +3,7 @@ import { OrdenCompraService } from '../remote/service/OrdenCompraService';
 import { HojaCompraService } from '../remote/service/HojaCompraService';
 import { RecepcionOCService } from '../remote/service/RecepcionOCService';
 import { ProveedorService } from '../remote/service/ProveedorService';
+import { getApiErrorMessage } from '../utils/apiError';
 
 /**
  * Hook para gestionar el estado de Órdenes de Compra (lista + acciones + flujo
@@ -54,7 +55,7 @@ export function useOCState() {
             );
             setOcs(data);
         } catch (e) {
-            setError(e?.response?.data?.message || e?.message || 'Error cargando OCs');
+            setError(getApiErrorMessage(e, 'Error cargando OCs'));
             setOcs([]);
         } finally {
             setLoading(false);
@@ -67,7 +68,7 @@ export function useOCState() {
             setHcsAprobadas(data);
             return data;
         } catch (e) {
-            setError(e?.response?.data?.message || e?.message || 'Error cargando HCs');
+            setError(getApiErrorMessage(e, 'Error cargando HCs'));
             return [];
         }
     }, []);
@@ -78,7 +79,7 @@ export function useOCState() {
             setRecepciones(data);
             return data;
         } catch (e) {
-            setError(e?.response?.data?.message || e?.message || 'Error cargando recepciones');
+            setError(getApiErrorMessage(e, 'Error cargando recepciones'));
             return [];
         }
     }, []);
@@ -117,7 +118,7 @@ export function useOCState() {
             back();
             return nueva;
         } catch (e) {
-            setError(e?.response?.data?.message || e?.message || 'Error generando OC consolidada');
+            setError(getApiErrorMessage(e, 'Error generando OC consolidada'));
             return null;
         } finally {
             setSubmitting(false);
@@ -130,7 +131,7 @@ export function useOCState() {
             await refresh();
             if (selectedOC?.idOC === idOC) await refreshSelectedOC();
         } catch (e) {
-            setError(e?.response?.data?.message || e?.message || 'Error en transición');
+            setError(getApiErrorMessage(e, 'Error en transición'));
         }
     }, [refresh, refreshSelectedOC, selectedOC]);
 
@@ -140,7 +141,7 @@ export function useOCState() {
             await refresh();
             if (selectedOC?.idOC === idOC) await refreshSelectedOC();
         } catch (e) {
-            setError(e?.response?.data?.message || e?.message || 'Error en transición');
+            setError(getApiErrorMessage(e, 'Error en transición'));
         }
     }, [refresh, refreshSelectedOC, selectedOC]);
 
@@ -150,7 +151,7 @@ export function useOCState() {
             await refresh();
             if (selectedOC?.idOC === idOC) await refreshSelectedOC();
         } catch (e) {
-            setError(e?.response?.data?.message || e?.message || 'Error cerrando OC');
+            setError(getApiErrorMessage(e, 'Error cerrando OC'));
         }
     }, [refresh, refreshSelectedOC, selectedOC]);
 
@@ -160,7 +161,7 @@ export function useOCState() {
             await refresh();
             if (oc && selectedOC?.idOC === idOC) setSelectedOC(oc);
         } catch (e) {
-            setError(e?.response?.data?.message || e?.message || 'Error actualizando precio');
+            setError(getApiErrorMessage(e, 'Error actualizando precio'));
         }
     }, [refresh, selectedOC]);
 
@@ -173,7 +174,7 @@ export function useOCState() {
             if (oc && selectedOC?.idOC === idOC) setSelectedOC(oc);
             return oc;
         } catch (e) {
-            setError(e?.response?.data?.message || e?.message || 'Error rechazando OC');
+            setError(getApiErrorMessage(e, 'Error rechazando OC'));
             return null;
         } finally {
             setSubmitting(false);
@@ -189,7 +190,7 @@ export function useOCState() {
             if (oc && selectedOC?.idOC === idOC) setSelectedOC(oc);
             return oc;
         } catch (e) {
-            setError(e?.response?.data?.message || e?.message || 'Error reingresando OC');
+            setError(getApiErrorMessage(e, 'Error reingresando OC'));
             return null;
         } finally {
             setSubmitting(false);
@@ -203,7 +204,7 @@ export function useOCState() {
             if (oc && selectedOC?.idOC === idOC) setSelectedOC(oc);
             return oc;
         } catch (e) {
-            setError(e?.response?.data?.message || e?.message || 'Error agregando ítem');
+            setError(getApiErrorMessage(e, 'Error agregando ítem'));
             return null;
         }
     }, [refresh, selectedOC]);
@@ -215,7 +216,7 @@ export function useOCState() {
             if (oc && selectedOC?.idOC === idOC) setSelectedOC(oc);
             return oc;
         } catch (e) {
-            setError(e?.response?.data?.message || e?.message || 'Error actualizando ítem');
+            setError(getApiErrorMessage(e, 'Error actualizando ítem'));
             return null;
         }
     }, [refresh, selectedOC]);
@@ -227,7 +228,7 @@ export function useOCState() {
             if (oc && selectedOC?.idOC === idOC) setSelectedOC(oc);
             return oc;
         } catch (e) {
-            setError(e?.response?.data?.message || e?.message || 'Error eliminando ítem');
+            setError(getApiErrorMessage(e, 'Error eliminando ítem'));
             return null;
         }
     }, [refresh, selectedOC]);
@@ -244,7 +245,7 @@ export function useOCState() {
             await refresh();
             if (selectedOC?.idOC === ocId) await refreshSelectedOC();
         } catch (e) {
-            setError(e?.response?.data?.message || e?.message || 'Error registrando recepción');
+            setError(getApiErrorMessage(e, 'Error registrando recepción'));
         } finally {
             setSubmitting(false);
         }

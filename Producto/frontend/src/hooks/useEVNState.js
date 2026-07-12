@@ -8,6 +8,7 @@ import { useProduccion } from './useProduccion';
 import { useClientes } from './useClientes';
 import { useVendedores } from './useVendedores';
 import { validateNumericInput } from '../utils/validations';
+import { getApiErrorMessage } from '../utils/apiError';
 
 export const DEFAULT_ITEM = {
     id: 1,
@@ -677,7 +678,7 @@ export const useEVNState = (initialEval = null) => {
             return true;
         } catch (error) {
             console.error("Error al guardar la propuesta:", error);
-            const msg = error.response?.data?.message || error.message;
+            const msg = getApiErrorMessage(error, 'Error desconocido');
             toast.error(`Error al guardar: ${msg}`);
             return false;
         } finally {
@@ -692,7 +693,7 @@ export const useEVNState = (initialEval = null) => {
             toast.success("EVN adjudicada con éxito");
             return true;
         } catch (error) {
-            toast.error('Error al adjudicar: ' + (error.response?.data?.message || error.message));
+            toast.error('Error al adjudicar: ' + getApiErrorMessage(error, 'Error desconocido'));
             return false;
         }
     };

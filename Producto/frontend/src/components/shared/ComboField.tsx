@@ -176,14 +176,14 @@ export default function ComboField({
                 onClick={open}
                 disabled={readOnly}
                 className={[
-                    'w-full flex items-center justify-between gap-2 px-4 py-2.5 rounded-xl border text-left text-sm font-medium transition-all outline-none',
+                    'w-full flex items-center justify-between gap-3 p-3.5 rounded-xl text-left transition-all outline-none',
                     readOnly
-                        ? 'bg-muted border-border text-muted-foreground cursor-default'
-                        : 'bg-muted border-border text-foreground hover:border-border-strong cursor-pointer',
-                    isOpen ? 'bg-card border-primary ring-2 ring-primary/10' : '',
+                        ? 'bg-muted/50 border-none text-muted-foreground cursor-default'
+                        : 'bg-muted hover:bg-muted/80 text-foreground cursor-pointer',
+                    isOpen ? 'ring-2 ring-primary/50' : 'border-none',
                 ].join(' ')}
             >
-                <span className={`truncate ${!displayLabel ? 'text-muted-foreground/80 font-normal' : ''}`}>
+                <span className={`text-xs font-bold uppercase truncate ${!displayLabel ? 'text-muted-foreground/50' : ''}`}>
                     {displayLabel || placeholder}
                 </span>
                 <div className="flex items-center gap-1 flex-shrink-0">

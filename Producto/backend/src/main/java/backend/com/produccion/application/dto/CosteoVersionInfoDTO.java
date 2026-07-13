@@ -22,4 +22,6 @@ public class CosteoVersionInfoDTO {
     private LocalDateTime fechaCreacion;
     private String motivoCambio;
     private String usuarioCreador;
+    private String motivoRechazoCosteo;
+    private LocalDateTime fechaRechazoCosteo;
 }

@@ -1739,10 +1739,53 @@ VALUES
      'CHALECO CORPORATIVO ACOLCHADO IMPERMEABLE', 'VEST SOFTSHELL', 'RIPSTOP IMPERMEABLE 150G', 'UNISEX',
      50, 32000.00, 'CLP', 23500.00, 'CLP', 23500.00, 'OP');
 
+-- ── 8.2.1. EVN CERRADAS PARA LAS NV HISTÓRICAS ─────────────
+-- Una EVN solo es plantilla comercial válida para generar una NV cuando ya
+-- fue ADJUDICADA (y, al cerrar el ciclo, CERRADA). EVN-000003 (BORRADOR) y
+-- EVN-000004 (EVALUACION) de 8.2 son negociaciones AÚN ABIERTAS —no pueden
+-- ser el origen de una NV ya ENTREGADA—, así que las NV históricas de 8.3
+-- necesitan su propia EVN, ya CERRADA, en vez de reutilizar esas dos.
+INSERT IGNORE INTO evaluaciones_negocio
+    (id_evn, numero, referencia, cliente_nombre, cliente_id, vendedor_id,
+     estado, fecha_evaluacion, porcentaje_comision, created_at, updated_at)
+VALUES
+    (5, 'EVN-000005',
+     'COTIZACIÓN POLERA BÁSICA MANGA CORTA — GEODIS WILSON',
+     'GEODIS WILSON', 3, 1,
+     'CERRADA', '2026-01-15', 20.00, '2026-01-15 09:00:00', '2026-01-15 09:00:00'),
+    (6, 'EVN-000006',
+     'COTIZACIÓN POLERA SLIM FIT MANGA CORTA — GEODIS WILSON',
+     'GEODIS WILSON', 3, 2,
+     'CERRADA', '2026-04-15', 20.00, '2026-04-15 09:00:00', '2026-04-15 09:00:00'),
+    (7, 'EVN-000007',
+     'COTIZACIÓN CHALECO VEST SOFTSHELL — HITES S.A.',
+     'HITES S.A.', 1, 1,
+     'CERRADA', '2026-05-05', 20.00, '2026-05-05 09:00:00', '2026-05-05 09:00:00')
+ON DUPLICATE KEY UPDATE estado = VALUES(estado), porcentaje_comision = VALUES(porcentaje_comision);
+
+INSERT IGNORE INTO evaluacion_negocio_items
+    (idevni, evaluacion_negocio_id, proveedor_id, articulo_id, nro_item,
+     descripcion, modelo, tela, genero,
+     cantidad, precio_unitario, moneda_precio_unitario,
+     costo_unitario, moneda_costo_unitario,
+     costo_producto, tipo_item)
+VALUES
+    (5, 5, 1, 3, 1,
+     'POLERA BÁSICA MANGA CORTA CORPORATIVA', 'BÁSICA MANGA CORTA', 'JERSEY PIQUÉ 180G', 'UNISEX',
+     80, 9125.00, 'CLP', 6844.00, 'CLP', 6844.00, 'OP'),
+    (6, 6, 1, 3, 1,
+     'POLERA SLIM FIT MANGA CORTA CORPORATIVA', 'SLIM FIT MANGA CORTA', 'JERSEY PIQUÉ 180G', 'UNISEX',
+     150, 10600.00, 'CLP', 7950.00, 'CLP', 7950.00, 'OP'),
+    (7, 7, 3, 10, 1,
+     'CHALECO VEST SOFTSHELL CORPORATIVO', 'VEST SOFTSHELL', 'RIPSTOP IMPERMEABLE 150G', 'UNISEX',
+     60, 32000.00, 'CLP', 23500.00, 'CLP', 23500.00, 'OP')
+ON DUPLICATE KEY UPDATE cantidad = VALUES(cantidad);
+
 -- ── 8.3. NOTAS DE VENTA HISTÓRICAS (Ene–May 2026) ──────────
 -- Pobla el gráfico "Ventas Mensuales" con datos de los meses anteriores.
 -- Estas NV representan negocios ya cerrados (estado ENTREGADA).
--- Se usan los EVN existentes (1 y 2) como referencia comercial.
+-- Cada una usa una EVN ya CERRADA (1, 2 o las nuevas de 8.2.1) como origen
+-- comercial — nunca EVN-000003/000004, que siguen en negociación.
 INSERT IGNORE INTO notas_venta
     (id_nv, numeronv, evaluacion_negocio_id, cliente_id, vendedor_id,
      estado, es_kit,
@@ -1753,7 +1796,7 @@ INSERT IGNORE INTO notas_venta
      created_at, updated_at)
 VALUES
     -- Enero 2026 — GEODIS, 80 poleras basic
-    (3, 'NV-0000003', 3, 3, 1,
+    (3, 'NV-0000003', 5, 3, 1,
      'ENTREGADA', false,
      '2026-01-20', '2026-02-10',
      730000.00, 'CLP', 138700.00, 'CLP', 868700.00, 'CLP',
@@ -1771,18 +1814,18 @@ VALUES
      515130.00, 'CLP', 97874.70, 'CLP', 613004.70, 'CLP',
      '2026-03-08 11:00:00', '2026-03-08 11:00:00'),
     -- Abril 2026 — GEODIS, 150 poleras corporativas
-    (6, 'NV-0000006', 3, 3, 2,
+    (6, 'NV-0000006', 6, 3, 2,
      'ENTREGADA', false,
      '2026-04-22', '2026-05-15',
      1590000.00, 'CLP', 302100.00, 'CLP', 1892100.00, 'CLP',
      '2026-04-22 08:30:00', '2026-04-22 08:30:00'),
     -- Mayo 2026 — HITES, 60 chalecos acolchados
-    (7, 'NV-0000007', 4, 1, 1,
+    (7, 'NV-0000007', 7, 1, 1,
      'ENTREGADA', false,
      '2026-05-10', '2026-06-01',
      1920000.00, 'CLP', 364800.00, 'CLP', 2284800.00, 'CLP',
      '2026-05-10 14:00:00', '2026-05-10 14:00:00')
-ON DUPLICATE KEY UPDATE estado = VALUES(estado);
+ON DUPLICATE KEY UPDATE estado = VALUES(estado), evaluacion_negocio_id = VALUES(evaluacion_negocio_id);
 
 -- Items simplificados de las NV históricas (un ítem por NV)
 INSERT IGNORE INTO notas_venta_items
@@ -1866,6 +1909,120 @@ INSERT INTO document_counter (tipo, ultimo_numero) VALUES
     ('EVN',  10),
     ('SCOS', 10),
     ('OP',   10)
+ON DUPLICATE KEY UPDATE ultimo_numero = GREATEST(ultimo_numero, VALUES(ultimo_numero));
+
+-- ── 8.6. CADENA DE PRODUCCIÓN COMPLETA PARA NVs HISTÓRICAS ──
+-- Las NV-0000003 a NV-0000007 (ver 8.3) se insertaron directo en estado
+-- ENTREGADA solo para poblar el gráfico de ventas históricas, pero sus items
+-- son tipo OP y por lo tanto SIEMPRE deberían tener OP+HC+OC+Recepción (así
+-- lo garantiza CrearNVUseCase en el flujo real). Esta sección completa esa
+-- cadena retroactivamente para que la Trazabilidad muestre el ciclo
+-- EVN → NV → OP → HC → OC → Recepción de punta a punta, sin huecos.
+INSERT INTO produccion_costeos (id_costeo, solicitud_costos_id, numero_costeo, estado, version,
+    costo_hilos, costo_mano_obra, costo_etiquetas, costo_embalaje, costo_flete,
+    porcentaje_costo_fijo, costo_total_materia_prima, margen_bruto_sugerido, precio_venta_sugerido,
+    nota_venta_id) VALUES
+    (5, NULL, 'COST-0000005', 'APROBADO', 1,  6400.00, 176000.00,  9600.00, 12000.00, 16000.00, 10.00, 432000.00, 25.00,  956267.00, 3),
+    (6, NULL, 'COST-0000006', 'APROBADO', 1,  9600.00, 264000.00, 14400.00, 18000.00, 24000.00, 10.00, 648000.00, 25.00, 1434400.00, 4),
+    (7, NULL, 'COST-0000007', 'APROBADO', 1,  7500.00, 114000.00,  4500.00,  6480.00, 15000.00, 10.00, 259200.00, 25.00,  596464.00, 5),
+    (8, NULL, 'COST-0000008', 'APROBADO', 1, 12000.00, 330000.00, 18000.00, 22500.00, 30000.00, 10.00, 810000.00, 25.00, 1793000.00, 6),
+    (9, NULL, 'COST-0000009', 'APROBADO', 1, 15000.00, 228000.00,  9000.00, 12960.00, 30000.00, 10.00, 518400.00, 25.00, 1192928.00, 7)
+ON DUPLICATE KEY UPDATE estado = VALUES(estado);
+
+INSERT INTO produccion_costeo_items (id_costeo_item, costeo_id, tipo_insumo, articulo_id, nombre_insumo, consumo, precio_unitario, costo_total) VALUES
+    ( 9, 5, 'TELAS', 3, 'JERSEY PIQUÉ ALGODÓN 180 GSM', 1.2000, 4500.00, 5400.00),
+    (10, 6, 'TELAS', 3, 'JERSEY PIQUÉ ALGODÓN 180 GSM', 1.2000, 4500.00, 5400.00),
+    (11, 7, 'TELAS', 2, 'RIPSTOP IMPERMEABLE 150 GSM',  1.8000, 4800.00, 8640.00),
+    (12, 8, 'TELAS', 3, 'JERSEY PIQUÉ ALGODÓN 180 GSM', 1.2000, 4500.00, 5400.00),
+    (13, 9, 'TELAS', 2, 'RIPSTOP IMPERMEABLE 150 GSM',  1.8000, 4800.00, 8640.00)
+ON DUPLICATE KEY UPDATE costo_total = VALUES(costo_total);
+
+INSERT IGNORE INTO produccion_costeo_versiones (id_costeo_version, costeo_id, numero_version, fecha_creacion, usuario_creador,
+    total_mano_obra, total_hilo, total_flete, total_embalaje, total_etiquetas,
+    porcentaje_costo_fijo, costo_total_materia_prima, margen_bruto_sugerido, precio_venta_sugerido) VALUES
+    (3, 5, 1, '2026-01-20 09:00:00', 'SISTEMA', 176000.00,  6400.00, 16000.00, 12000.00,  9600.00, 10.00, 432000.00, 25.00,  956267.00),
+    (4, 6, 1, '2026-02-14 10:00:00', 'SISTEMA', 264000.00,  9600.00, 24000.00, 18000.00, 14400.00, 10.00, 648000.00, 25.00, 1434400.00),
+    (5, 7, 1, '2026-03-08 11:00:00', 'SISTEMA', 114000.00,  7500.00, 15000.00,  6480.00,  4500.00, 10.00, 259200.00, 25.00,  596464.00),
+    (6, 8, 1, '2026-04-22 08:30:00', 'SISTEMA', 330000.00, 12000.00, 30000.00, 22500.00, 18000.00, 10.00, 810000.00, 25.00, 1793000.00),
+    (7, 9, 1, '2026-05-10 14:00:00', 'SISTEMA', 228000.00, 15000.00, 30000.00, 12960.00,  9000.00, 10.00, 518400.00, 25.00, 1192928.00);
+
+INSERT INTO produccion_costeo_item_versiones (id_costeo_item_version, costeo_version_id, costeo_item_id, tipo_insumo, articulo_id, nombre_insumo, consumo, precio_unitario, costo_total, activo) VALUES
+    ( 9, 3,  9, 'TELAS', 3, 'JERSEY PIQUÉ ALGODÓN 180 GSM', 1.2000, 4500.00, 5400.00, true),
+    (10, 4, 10, 'TELAS', 3, 'JERSEY PIQUÉ ALGODÓN 180 GSM', 1.2000, 4500.00, 5400.00, true),
+    (11, 5, 11, 'TELAS', 2, 'RIPSTOP IMPERMEABLE 150 GSM',  1.8000, 4800.00, 8640.00, true),
+    (12, 6, 12, 'TELAS', 3, 'JERSEY PIQUÉ ALGODÓN 180 GSM', 1.2000, 4500.00, 5400.00, true),
+    (13, 7, 13, 'TELAS', 2, 'RIPSTOP IMPERMEABLE 150 GSM',  1.8000, 4800.00, 8640.00, true)
+ON DUPLICATE KEY UPDATE costo_total = VALUES(costo_total);
+
+INSERT IGNORE INTO orden_produccion (id_op, costeo_version_id, numero_op, nota_venta_id, estado, fecha_inicio, fecha_entrega_programada, observaciones, created_at, updated_at) VALUES
+    (3, 3, 'OP-00003', 3, 'COMPLETADA', '2026-01-20', '2026-02-10', 'POLERA BÁSICA MANGA CORTA — GEODIS WILSON — 80 UNIDADES',           '2026-01-20 09:00:00', '2026-01-20 09:00:00'),
+    (4, 4, 'OP-00004', 4, 'COMPLETADA', '2026-02-14', '2026-03-05', 'POLERA SLIM FIT MANGA CORTA — HITES S.A. — 120 UNIDADES',           '2026-02-14 10:00:00', '2026-02-14 10:00:00'),
+    (5, 5, 'OP-00005', 5, 'COMPLETADA', '2026-03-08', '2026-04-01', 'PANTALÓN CARGO 6 BOLSILLOS — MEDCELL — 30 UNIDADES',                '2026-03-08 11:00:00', '2026-03-08 11:00:00'),
+    (6, 6, 'OP-00006', 6, 'COMPLETADA', '2026-04-22', '2026-05-15', 'POLERA SLIM FIT MANGA CORTA — GEODIS WILSON — 150 UNIDADES',        '2026-04-22 08:30:00', '2026-04-22 08:30:00'),
+    (7, 7, 'OP-00007', 7, 'COMPLETADA', '2026-05-10', '2026-06-01', 'CHALECO VEST SOFTSHELL — HITES S.A. — 60 UNIDADES',                 '2026-05-10 14:00:00', '2026-05-10 14:00:00');
+
+INSERT IGNORE INTO produccion_orden_items (id_op_item, orden_produccion_id, articulo_id, nro_item, modelo, tela, color, talla, genero, codigo, lleva_logo, cantidad) VALUES
+    (3, 3,  3, 1, 'BÁSICA MANGA CORTA',   'JERSEY PIQUÉ 180G', 'BLANCO',     'M', 'UNISEX',    'POL-BAS-M',   'NO',  80),
+    (4, 4,  3, 1, 'SLIM FIT MANGA CORTA', 'JERSEY PIQUÉ 180G', 'AZUL NAVY',  'M', 'UNISEX',    'POL-PIQUE-M', 'SI', 120),
+    (5, 5,  2, 1, 'CARGO 6 BOLSILLOS',    'RIPSTOP 150G',      'VERDE OLIVA','M', 'MASCULINO', 'PAN-CARGO-M', 'NO',  30),
+    (6, 6,  3, 1, 'SLIM FIT MANGA CORTA', 'JERSEY PIQUÉ 180G', 'NEGRO',      'L', 'UNISEX',    'POL-PIQUE-L', 'SI', 150),
+    (7, 7, 10, 1, 'VEST SOFTSHELL',       'RIPSTOP 150G',      'NEGRO',      'M', 'UNISEX',    'CHL-SOFT-M',  'NO',  60);
+
+INSERT IGNORE INTO produccion_hojas_compra (id_hc, numero_hc, op_id, costeo_version_id, estado, fecha_generacion, observaciones) VALUES
+    (2, 'HC-000002', 3, 3, 'APROBADA', '2026-01-20', 'HC GENERADA AUTOMÁTICAMENTE DESDE COSTEO VERSIÓN 3 — OP-00003'),
+    (3, 'HC-000003', 4, 4, 'APROBADA', '2026-02-14', 'HC GENERADA AUTOMÁTICAMENTE DESDE COSTEO VERSIÓN 4 — OP-00004'),
+    (4, 'HC-000004', 5, 5, 'APROBADA', '2026-03-08', 'HC GENERADA AUTOMÁTICAMENTE DESDE COSTEO VERSIÓN 5 — OP-00005'),
+    (5, 'HC-000005', 6, 6, 'APROBADA', '2026-04-22', 'HC GENERADA AUTOMÁTICAMENTE DESDE COSTEO VERSIÓN 6 — OP-00006'),
+    (6, 'HC-000006', 7, 7, 'APROBADA', '2026-05-10', 'HC GENERADA AUTOMÁTICAMENTE DESDE COSTEO VERSIÓN 7 — OP-00007');
+
+INSERT IGNORE INTO produccion_ordenes_compra (id_oc, estado, fecha_emision, fecha_entrega_estimada, motivo_rechazo, numero_oc, observaciones, total_neto, version, proveedor_id) VALUES
+    (1, 'RECEPCIONADA', '2026-01-20', '2026-01-25', NULL, 'OC-000001', 'OC CONSOLIDADA DESDE HC-000002 — NV-0000003', 432000.00, 1, 1),
+    (2, 'RECEPCIONADA', '2026-02-14', '2026-02-19', NULL, 'OC-000002', 'OC CONSOLIDADA DESDE HC-000003 — NV-0000004', 648000.00, 1, 1),
+    (3, 'RECEPCIONADA', '2026-03-08', '2026-03-13', NULL, 'OC-000003', 'OC CONSOLIDADA DESDE HC-000004 — NV-0000005', 259200.00, 1, 1),
+    (4, 'RECEPCIONADA', '2026-04-22', '2026-04-27', NULL, 'OC-000004', 'OC CONSOLIDADA DESDE HC-000005 — NV-0000006', 810000.00, 1, 1),
+    (5, 'RECEPCIONADA', '2026-05-10', '2026-05-15', NULL, 'OC-000005', 'OC CONSOLIDADA DESDE HC-000006 — NV-0000007', 518400.00, 1, 3);
+
+INSERT IGNORE INTO produccion_orden_compra_items (id_oc_item, articulo_id, cantidad_comprada, cantidad_requerida, cantidad_stock, nombre_insumo, precio_unitario, subtotal, tipo_insumo, oc_id) VALUES
+    (1, 3,  96.0000,  96.0000, 0.0000, 'JERSEY PIQUÉ ALGODÓN 180 GSM', 4500.00, 432000.00, 'TELA', 1),
+    (2, 3, 144.0000, 144.0000, 0.0000, 'JERSEY PIQUÉ ALGODÓN 180 GSM', 4500.00, 648000.00, 'TELA', 2),
+    (3, 2,  54.0000,  54.0000, 0.0000, 'RIPSTOP IMPERMEABLE 150 GSM',  4800.00, 259200.00, 'TELA', 3),
+    (4, 3, 180.0000, 180.0000, 0.0000, 'JERSEY PIQUÉ ALGODÓN 180 GSM', 4500.00, 810000.00, 'TELA', 4),
+    (5, 2, 108.0000, 108.0000, 0.0000, 'RIPSTOP IMPERMEABLE 150 GSM',  4800.00, 518400.00, 'TELA', 5);
+
+-- Ítems de HC ya vinculados a su OC (denormalizado, usado por la vista de HC)
+INSERT IGNORE INTO produccion_hoja_compra_items (id_hc_item, hc_id, tipo_insumo, articulo_id, proveedor_id, nombre_insumo, consumo_unitario, cantidad_op, cantidad_requerida, precio_unitario_ref, numero_oc, oc_id) VALUES
+    ( 6, 2, 'TELA', 3, 1, 'JERSEY PIQUÉ ALGODÓN 180 GSM', 1.2000,  80,  96.0000, 4500.00, 'OC-000001', 1),
+    ( 7, 3, 'TELA', 3, 1, 'JERSEY PIQUÉ ALGODÓN 180 GSM', 1.2000, 120, 144.0000, 4500.00, 'OC-000002', 2),
+    ( 8, 4, 'TELA', 2, 1, 'RIPSTOP IMPERMEABLE 150 GSM',  1.8000,  30,  54.0000, 4800.00, 'OC-000003', 3),
+    ( 9, 5, 'TELA', 3, 1, 'JERSEY PIQUÉ ALGODÓN 180 GSM', 1.2000, 150, 180.0000, 4500.00, 'OC-000004', 4),
+    (10, 6, 'TELA', 2, 3, 'RIPSTOP IMPERMEABLE 150 GSM',  1.8000,  60, 108.0000, 4800.00, 'OC-000005', 5);
+
+INSERT IGNORE INTO produccion_hc_item_oc_item (id_link, cantidad_asignada, hc_item_id, oc_item_id) VALUES
+    (1,  96.0000,  6, 1),
+    (2, 144.0000,  7, 2),
+    (3,  54.0000,  8, 3),
+    (4, 180.0000,  9, 4),
+    (5, 108.0000, 10, 5);
+
+INSERT IGNORE INTO produccion_recepciones_oc (id_recepcion, fecha_recepcion, numero_guia, observaciones, responsable, oc_id) VALUES
+    (1, '2026-01-23', 'GUIA-0001', 'RECEPCIÓN CONFORME', 'BODEGA CENTRAL', 1),
+    (2, '2026-02-17', 'GUIA-0002', 'RECEPCIÓN CONFORME', 'BODEGA CENTRAL', 2),
+    (3, '2026-03-11', 'GUIA-0003', 'RECEPCIÓN CONFORME', 'BODEGA CENTRAL', 3),
+    (4, '2026-04-25', 'GUIA-0004', 'RECEPCIÓN CONFORME', 'BODEGA CENTRAL', 4),
+    (5, '2026-05-13', 'GUIA-0005', 'RECEPCIÓN CONFORME', 'BODEGA CENTRAL', 5);
+
+INSERT IGNORE INTO produccion_recepcion_oc_items (id_recepcion_item, cantidad_conforme, cantidad_rechazada, cantidad_recibida, motivo_rechazo, oc_item_id, recepcion_id) VALUES
+    (1,  96.0000, 0.0000,  96.0000, NULL, 1, 1),
+    (2, 144.0000, 0.0000, 144.0000, NULL, 2, 2),
+    (3,  54.0000, 0.0000,  54.0000, NULL, 3, 3),
+    (4, 180.0000, 0.0000, 180.0000, NULL, 4, 4),
+    (5, 108.0000, 0.0000, 108.0000, NULL, 5, 5);
+
+INSERT INTO document_counter (tipo, ultimo_numero) VALUES
+    ('COST', 9),
+    ('HC',   6),
+    ('OP',   10),
+    ('OC',   5)
 ON DUPLICATE KEY UPDATE ultimo_numero = GREATEST(ultimo_numero, VALUES(ultimo_numero));
 
 -- ============================================================

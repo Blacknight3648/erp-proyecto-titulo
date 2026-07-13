@@ -1,11 +1,13 @@
 package backend.com.comercial.infrastructure.api;
 
 import backend.com.comercial.application.UseCase.ActualizarNVUseCase;
+import backend.com.comercial.application.UseCase.ConsultarTrazabilidadResumenUseCase;
 import backend.com.comercial.application.UseCase.ConsultarTrazabilidadUseCase;
 import backend.com.comercial.application.UseCase.CrearNVUseCase;
 import backend.com.comercial.application.UseCase.GestionarNVUseCase;
 import backend.com.comercial.application.dto.CrearNVCommand;
 import backend.com.comercial.application.dto.NVResponse;
+import backend.com.comercial.application.dto.NVTrazabilidadResumenDTO;
 import backend.com.comercial.domain.repository.NotaVentaRepository;
 import backend.com.shared.application.dto.DocumentTraceDTO;
 import backend.com.shared.application.dto.FirmaAprobacionRequest;
@@ -28,6 +30,7 @@ public class NotaVentaController {
     private final CrearNVUseCase crearNVUseCase;
     private final ActualizarNVUseCase actualizarNVUseCase;
     private final ConsultarTrazabilidadUseCase consultarTrazabilidadUseCase;
+    private final ConsultarTrazabilidadResumenUseCase consultarTrazabilidadResumenUseCase;
     private final GestionarNVUseCase gestionarNVUseCase;
     private final NotaVentaRepository repository;
     private final HistorialEstadoService historialService;
@@ -70,6 +73,11 @@ public class NotaVentaController {
     @GetMapping("/{id}/trazabilidad")
     public List<DocumentTraceDTO> getTrazabilidad(@PathVariable Long id) {
         return consultarTrazabilidadUseCase.ejecutar(id);
+    }
+
+    @GetMapping("/trazabilidad-resumen")
+    public List<NVTrazabilidadResumenDTO> getTrazabilidadResumen() {
+        return consultarTrazabilidadResumenUseCase.ejecutar();
     }
 
     @PatchMapping("/{id}/emitir")

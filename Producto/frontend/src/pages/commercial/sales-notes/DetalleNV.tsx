@@ -40,42 +40,34 @@ export default function DetalleNV({
 }) {
     const nv = registros.find(r => String(r.idNV || r.id) === String(selectedNV) || String(r.numeroNV) === String(selectedNV)) || registros[0];
 
-    const [avance, setAvance] = useState(null);
-    const [trazaOP, setTrazaOP] = useState(null);
+    const [opsData, setOpsData] = useState([]);
 
     useEffect(() => {
         let cancelado = false;
 
         async function cargarTrazabilidad() {
             if (!nv?.idNV) {
-                setAvance(null);
-                setTrazaOP(null);
+                setOpsData([]);
                 return;
             }
             try {
                 const trace = await NotaVentaService.getTrazabilidad(nv.idNV);
-                const opTrace = (trace || []).find(t => t.tipoDocumento === 'Orden Producción');
-                if (!opTrace) {
-                    if (!cancelado) {
-                        setAvance(null);
-                        setTrazaOP(null);
-                    }
+                const opTraces = (trace || []).filter(t => t.tipoDocumento === 'Orden Producción');
+                if (opTraces.length === 0) {
+                    if (!cancelado) setOpsData([]);
                     return;
                 }
-                const [avanceOP, trazaOPData] = await Promise.all([
-                    OrdenProduccionService.getAvance(opTrace.id),
-                    TrazabilidadService.obtenerPorOP(opTrace.id)
-                ]);
-                if (!cancelado) {
-                    setAvance(avanceOP);
-                    setTrazaOP(trazaOPData);
-                }
+                const resultados = await Promise.all(opTraces.map(async (opTrace) => {
+                    const [avanceOP, trazaOPData] = await Promise.all([
+                        OrdenProduccionService.getAvance(opTrace.id),
+                        TrazabilidadService.obtenerPorOP(opTrace.id)
+                    ]);
+                    return { opId: opTrace.id, numeroOP: opTrace.numero, avance: avanceOP, trazaOP: trazaOPData };
+                }));
+                if (!cancelado) setOpsData(resultados);
             } catch (err) {
                 console.error('Error cargando trazabilidad de la NV:', err);
-                if (!cancelado) {
-                    setAvance(null);
-                    setTrazaOP(null);
-                }
+                if (!cancelado) setOpsData([]);
             }
         }
 
@@ -112,27 +104,47 @@ export default function DetalleNV({
         })),
     };
 
-    const ordenesTrabajo = avance?.ordenesTrabajo || [];
-    const porcentajeGlobal = avance?.porcentajeGlobal ?? 0;
+    /**
+     * Deriva de un elemento de opsData todo lo que necesita el render de esa OP
+     * (avance de producción, flujo de vida, motivo de rechazo del Costeo/OCs).
+     */
+    function construirVistaOP({ avance, trazaOP }) {
+        const ordenesTrabajo = avance?.ordenesTrabajo || [];
+        const porcentajeGlobal = avance?.porcentajeGlobal ?? 0;
 
-    const productionTracking = FASES_ORDEN
-        .map(fase => ordenesTrabajo.filter(ot => ot.fase === fase))
-        .filter(ots => ots.length > 0)
-        .map(ots => {
-            const fase = ots[0].fase;
-            const totalUnidades = ots.reduce((acc, ot) => acc + (ot.cantidadTotal || 0), 0);
-            const totalProcesado = ots.reduce((acc, ot) => acc + (ot.cantidadProducida || 0) + (ot.cantidadMerma || 0), 0);
-            const progress = totalUnidades > 0 ? Math.round((totalProcesado / totalUnidades) * 100) : 0;
-            return {
-                stage: FASE_LABEL[fase] || fase,
-                status: progress >= 100 ? 'Completado' : progress > 0 ? 'En Proceso' : 'Pendiente',
-                progress
-            };
-        });
+        const productionTracking = FASES_ORDEN
+            .map(fase => ordenesTrabajo.filter(ot => ot.fase === fase))
+            .filter(ots => ots.length > 0)
+            .map(ots => {
+                const fase = ots[0].fase;
+                const totalUnidades = ots.reduce((acc, ot) => acc + (ot.cantidadTotal || 0), 0);
+                const totalProcesado = ots.reduce((acc, ot) => acc + (ot.cantidadProducida || 0) + (ot.cantidadMerma || 0), 0);
+                const progress = totalUnidades > 0 ? Math.round((totalProcesado / totalUnidades) * 100) : 0;
+                return {
+                    stage: FASE_LABEL[fase] || fase,
+                    status: progress >= 100 ? 'Completado' : progress > 0 ? 'En Proceso' : 'Pendiente',
+                    progress
+                };
+            });
 
-    const hojaCompra = trazaOP?.hojaCompra || null;
-    const ordenesCompra = trazaOP?.ordenesCompra || [];
-    const estadoOP = trazaOP?.estadoOP || null;
+        const hojaCompra = trazaOP?.hojaCompra || null;
+        const ordenesCompra = trazaOP?.ordenesCompra || [];
+        const estadoOP = trazaOP?.estadoOP || null;
+        const motivoRechazoCosteo = trazaOP?.costeoVersion?.motivoRechazoCosteo || null;
+        const fechaRechazoCosteo = trazaOP?.costeoVersion?.fechaRechazoCosteo || null;
+        const ocsRechazadas = ordenesCompra.filter(oc => oc.estado === 'RECHAZADA' && oc.motivoRechazo);
+
+        return {
+            porcentajeGlobal,
+            productionTracking,
+            hojaCompra,
+            ordenesCompra,
+            estadoOP,
+            motivoRechazoCosteo,
+            fechaRechazoCosteo,
+            ocsRechazadas
+        };
+    }
 
     return (
         <div className="max-w-6xl mx-auto space-y-8 animate-in slide-in-from-right-8 duration-700 p-6 pb-24">
@@ -168,33 +180,84 @@ export default function DetalleNV({
                 </div>
             </div>
 
-            <div className="bg-sidebar p-10 rounded-[3rem] shadow-2xl relative overflow-hidden">
-                <div className="absolute top-0 right-0 w-64 h-64 bg-primary/10 rounded-full -mr-32 -mt-32 blur-3xl"></div>
-                <h3 className="text-xs font-black text-sidebar-primary uppercase tracking-[0.2em] mb-10 flex items-center">
-                    <TrendingUp className="w-4 h-4 mr-3" /> Flujo de Vida de la Orden
-                </h3>
-                <div className="flex flex-col md:flex-row items-center justify-between relative">
-                    <div className="absolute top-1/2 left-0 w-full h-1 bg-sidebar-border -translate-y-1/2 hidden md:block"></div>
-                    {[
-                        { icon: FileText, label: 'Nota Venta', id: data.id, active: true },
-                        { icon: ShoppingCart, label: 'Hoja de Compra', id: hojaCompra?.numeroHC || 'Pendiente', active: !!hojaCompra },
-                        { icon: CheckCircle2, label: 'Orden Compra', id: ordenesCompra.length > 0 ? `${ordenesCompra.length} OC` : 'Pendiente', active: ordenesCompra.length > 0 },
-                        { icon: Package, label: 'Producción', id: estadoOP || 'Pendiente', active: estadoOP === 'EN_PROCESO' || estadoOP === 'COMPLETADA' },
-                        { icon: Box, label: 'Bodega / Empaque', id: 'Revisado', active: data.status === 'Entregado' || data.status === 'Completado' },
-                        { icon: Truck, label: 'Pedido Entregado', id: 'Despachado', active: data.status === 'Entregado' || data.status === 'Completado' }
-                    ].map((step, idx) => (
-                        <div key={idx} className="relative z-10 flex flex-col items-center group mb-8 md:mb-0">
-                            <div className={`w-14 h-14 md:w-16 md:h-16 rounded-2xl flex items-center justify-center transition-all duration-500 ${step.active ? 'bg-primary shadow-primary/40 scale-110' : 'bg-white/10 group-hover:bg-white/20'}`}>
-                                <step.icon className={`w-6 h-6 md:w-7 md:h-7 ${step.active ? 'text-white' : 'text-white/40'}`} />
+            {opsData.length === 0 ? (
+                <div className="bg-sidebar p-10 rounded-[3rem] shadow-2xl relative overflow-hidden">
+                    <div className="absolute top-0 right-0 w-64 h-64 bg-primary/10 rounded-full -mr-32 -mt-32 blur-3xl"></div>
+                    <h3 className="text-xs font-black text-sidebar-primary uppercase tracking-[0.2em] mb-10 flex items-center">
+                        <TrendingUp className="w-4 h-4 mr-3" /> Flujo de Vida de la Orden
+                    </h3>
+                    <div className="flex flex-col md:flex-row items-center justify-between relative">
+                        <div className="absolute top-1/2 left-0 w-full h-1 bg-sidebar-border -translate-y-1/2 hidden md:block"></div>
+                        {[
+                            { icon: FileText, label: 'Nota Venta', id: data.id, active: true },
+                            { icon: ShoppingCart, label: 'Hoja de Compra', id: 'Pendiente', active: false },
+                            { icon: CheckCircle2, label: 'Orden Compra', id: 'Pendiente', active: false },
+                            { icon: Package, label: 'Producción', id: 'Pendiente', active: false },
+                            { icon: Box, label: 'Bodega / Empaque', id: 'Revisado', active: data.status === 'Entregado' || data.status === 'Completado' },
+                            { icon: Truck, label: 'Pedido Entregado', id: 'Despachado', active: data.status === 'Entregado' || data.status === 'Completado' }
+                        ].map((step, idx) => (
+                            <div key={idx} className="relative z-10 flex flex-col items-center group mb-8 md:mb-0">
+                                <div className={`w-14 h-14 md:w-16 md:h-16 rounded-2xl flex items-center justify-center transition-all duration-500 ${step.active ? 'bg-primary shadow-primary/40 scale-110' : 'bg-white/10 group-hover:bg-white/20'}`}>
+                                    <step.icon className={`w-6 h-6 md:w-7 md:h-7 ${step.active ? 'text-white' : 'text-white/40'}`} />
+                                </div>
+                                <div className="text-center mt-4">
+                                    <p className="text-white font-black text-[9px] md:text-[10px] uppercase tracking-widest opacity-90">{step.label}</p>
+                                    <p className={`text-[8px] md:text-[9px] font-bold uppercase tracking-tight mt-1 ${step.active ? 'text-sidebar-primary' : 'text-white/30'}`}>{step.id}</p>
+                                </div>
                             </div>
-                            <div className="text-center mt-4">
-                                <p className="text-white font-black text-[9px] md:text-[10px] uppercase tracking-widest opacity-90">{step.label}</p>
-                                <p className={`text-[8px] md:text-[9px] font-bold uppercase tracking-tight mt-1 ${step.active ? 'text-sidebar-primary' : 'text-white/30'}`}>{step.id}</p>
+                        ))}
+                    </div>
+                </div>
+            ) : (
+                opsData.map((opData) => {
+                    const vista = construirVistaOP(opData);
+                    return (
+                        <div key={opData.opId} className="bg-sidebar p-10 rounded-[3rem] shadow-2xl relative overflow-hidden">
+                            <div className="absolute top-0 right-0 w-64 h-64 bg-primary/10 rounded-full -mr-32 -mt-32 blur-3xl"></div>
+                            <h3 className="text-xs font-black text-sidebar-primary uppercase tracking-[0.2em] mb-10 flex items-center">
+                                <TrendingUp className="w-4 h-4 mr-3" /> Flujo de Vida — OP {opData.numeroOP}
+                            </h3>
+                            {vista.motivoRechazoCosteo && (
+                                <div className="mb-8 flex items-start space-x-2 text-xs text-destructive-foreground bg-destructive/20 border border-destructive/40 rounded-2xl px-4 py-3">
+                                    <AlertCircle className="w-4 h-4 mt-0.5 shrink-0" />
+                                    <span>Costeo rechazado: {vista.motivoRechazoCosteo}{vista.fechaRechazoCosteo ? ` (${vista.fechaRechazoCosteo})` : ''}</span>
+                                </div>
+                            )}
+                            {vista.ocsRechazadas.length > 0 && (
+                                <div className="mb-8 space-y-2">
+                                    {vista.ocsRechazadas.map(oc => (
+                                        <div key={oc.idOC} className="flex items-start space-x-2 text-xs text-destructive-foreground bg-destructive/20 border border-destructive/40 rounded-2xl px-4 py-3">
+                                            <AlertCircle className="w-4 h-4 mt-0.5 shrink-0" />
+                                            <span>OC {oc.numeroOC} rechazada: {oc.motivoRechazo}{oc.fechaRechazo ? ` (${oc.fechaRechazo})` : ''}</span>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                            <div className="flex flex-col md:flex-row items-center justify-between relative">
+                                <div className="absolute top-1/2 left-0 w-full h-1 bg-sidebar-border -translate-y-1/2 hidden md:block"></div>
+                                {[
+                                    { icon: FileText, label: 'Nota Venta', id: data.id, active: true },
+                                    { icon: ShoppingCart, label: 'Hoja de Compra', id: vista.hojaCompra?.numeroHC || 'Pendiente', active: !!vista.hojaCompra },
+                                    { icon: CheckCircle2, label: 'Orden Compra', id: vista.ordenesCompra.length > 0 ? `${vista.ordenesCompra.length} OC` : 'Pendiente', active: vista.ordenesCompra.length > 0 },
+                                    { icon: Package, label: 'Producción', id: vista.estadoOP || 'Pendiente', active: vista.estadoOP === 'EN_PROCESO' || vista.estadoOP === 'COMPLETADA' },
+                                    { icon: Box, label: 'Bodega / Empaque', id: 'Revisado', active: data.status === 'Entregado' || data.status === 'Completado' },
+                                    { icon: Truck, label: 'Pedido Entregado', id: 'Despachado', active: data.status === 'Entregado' || data.status === 'Completado' }
+                                ].map((step, idx) => (
+                                    <div key={idx} className="relative z-10 flex flex-col items-center group mb-8 md:mb-0">
+                                        <div className={`w-14 h-14 md:w-16 md:h-16 rounded-2xl flex items-center justify-center transition-all duration-500 ${step.active ? 'bg-primary shadow-primary/40 scale-110' : 'bg-white/10 group-hover:bg-white/20'}`}>
+                                            <step.icon className={`w-6 h-6 md:w-7 md:h-7 ${step.active ? 'text-white' : 'text-white/40'}`} />
+                                        </div>
+                                        <div className="text-center mt-4">
+                                            <p className="text-white font-black text-[9px] md:text-[10px] uppercase tracking-widest opacity-90">{step.label}</p>
+                                            <p className={`text-[8px] md:text-[9px] font-bold uppercase tracking-tight mt-1 ${step.active ? 'text-sidebar-primary' : 'text-white/30'}`}>{step.id}</p>
+                                        </div>
+                                    </div>
+                                ))}
                             </div>
                         </div>
-                    ))}
-                </div>
-            </div>
+                    );
+                })
+            )}
 
             <div className="bg-card p-10 rounded-[3.5rem] shadow-sm border border-border group hover:border-brand-indigo/30 transition-all">
                 <div className="flex justify-between items-center mb-10">
@@ -302,9 +365,9 @@ export default function DetalleNV({
                 </div>
             </div>
 
-            <div className="bg-card p-10 rounded-[3.5rem] shadow-sm border border-border flex flex-col">
-                <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12">
-                    <div className="flex items-center space-x-4">
+            {opsData.length === 0 ? (
+                <div className="bg-card p-10 rounded-[3.5rem] shadow-sm border border-border flex flex-col">
+                    <div className="flex items-center space-x-4 mb-12">
                         <div className="w-12 h-12 bg-warning/10 rounded-2xl flex items-center justify-center shadow-sm shadow-warning/10">
                             <ClipboardList className="w-6 h-6 text-warning" />
                         </div>
@@ -313,42 +376,64 @@ export default function DetalleNV({
                             <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Trazabilidad detallada por etapa</p>
                         </div>
                     </div>
-
-                    <div className="flex-1 max-w-xl bg-muted/80 p-6 rounded-[2rem] border border-border/50">
-                        <div className="flex justify-between items-center mb-3">
-                            <span className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">Progreso Global</span>
-                            <span className="text-sm font-black text-primary">{Math.round(porcentajeGlobal)}%</span>
-                        </div>
-                        <div className="w-full h-3 bg-muted rounded-full overflow-hidden shadow-inner">
-                            <div
-                                className="h-full bg-gradient-to-r from-primary to-brand-indigo transition-all duration-1000"
-                                style={{ width: `${Math.round(porcentajeGlobal)}%` }}
-                            ></div>
-                        </div>
-                    </div>
-                </div>
-
-                {productionTracking.length === 0 ? (
                     <div className="text-center py-10 bg-muted/50 rounded-[2rem] border border-dashed border-border">
                         <span className="text-[10px] font-black text-muted-foreground uppercase tracking-widest italic">Producción aún no iniciada</span>
                     </div>
-                ) : (
-                    <div className="relative pt-8 pb-12">
-                        <div className="absolute top-[4.5rem] left-0 w-full h-1 bg-border rounded-full -z-0"></div>
-                        <div className="flex justify-between relative z-10 text-center">
-                            {productionTracking.map((stage, idx) => (
-                                <div key={idx} className="flex flex-col items-center flex-1">
-                                    <div className={`w-14 h-14 rounded-2xl border-4 border-card shadow-xl flex items-center justify-center mb-4 ${stage.status === 'Completado' ? 'bg-success text-white' : stage.status === 'En Proceso' ? 'bg-primary text-white animate-pulse' : 'bg-muted-foreground/30 text-white'}`}>
-                                        {stage.status === 'Completado' ? <CheckCircle2 className="w-7 h-7" /> : <span className="text-lg font-black">{idx + 1}</span>}
+                </div>
+            ) : (
+                opsData.map((opData) => {
+                    const vista = construirVistaOP(opData);
+                    return (
+                        <div key={opData.opId} className="bg-card p-10 rounded-[3.5rem] shadow-sm border border-border flex flex-col">
+                            <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12">
+                                <div className="flex items-center space-x-4">
+                                    <div className="w-12 h-12 bg-warning/10 rounded-2xl flex items-center justify-center shadow-sm shadow-warning/10">
+                                        <ClipboardList className="w-6 h-6 text-warning" />
                                     </div>
-                                    <h4 className="text-[11px] font-black uppercase text-foreground mb-1">{stage.stage}</h4>
-                                    <span className={`text-[9px] font-black uppercase ${stage.status === 'Completado' ? 'text-success' : stage.status === 'En Proceso' ? 'text-primary' : 'text-muted-foreground'}`}>{stage.status}</span>
+                                    <div>
+                                        <h3 className="text-sm font-black text-foreground uppercase tracking-[0.2em] leading-none mb-2">Avance de Producción — OP {opData.numeroOP}</h3>
+                                        <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Trazabilidad detallada por etapa</p>
+                                    </div>
                                 </div>
-                            ))}
+
+                                <div className="flex-1 max-w-xl bg-muted/80 p-6 rounded-[2rem] border border-border/50">
+                                    <div className="flex justify-between items-center mb-3">
+                                        <span className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">Progreso Global</span>
+                                        <span className="text-sm font-black text-primary">{Math.round(vista.porcentajeGlobal)}%</span>
+                                    </div>
+                                    <div className="w-full h-3 bg-muted rounded-full overflow-hidden shadow-inner">
+                                        <div
+                                            className="h-full bg-gradient-to-r from-primary to-brand-indigo transition-all duration-1000"
+                                            style={{ width: `${Math.round(vista.porcentajeGlobal)}%` }}
+                                        ></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {vista.productionTracking.length === 0 ? (
+                                <div className="text-center py-10 bg-muted/50 rounded-[2rem] border border-dashed border-border">
+                                    <span className="text-[10px] font-black text-muted-foreground uppercase tracking-widest italic">Producción aún no iniciada</span>
+                                </div>
+                            ) : (
+                                <div className="relative pt-8 pb-12">
+                                    <div className="absolute top-[4.5rem] left-0 w-full h-1 bg-border rounded-full -z-0"></div>
+                                    <div className="flex justify-between relative z-10 text-center">
+                                        {vista.productionTracking.map((stage, idx) => (
+                                            <div key={idx} className="flex flex-col items-center flex-1">
+                                                <div className={`w-14 h-14 rounded-2xl border-4 border-card shadow-xl flex items-center justify-center mb-4 ${stage.status === 'Completado' ? 'bg-success text-white' : stage.status === 'En Proceso' ? 'bg-primary text-white animate-pulse' : 'bg-muted-foreground/30 text-white'}`}>
+                                                    {stage.status === 'Completado' ? <CheckCircle2 className="w-7 h-7" /> : <span className="text-lg font-black">{idx + 1}</span>}
+                                                </div>
+                                                <h4 className="text-[11px] font-black uppercase text-foreground mb-1">{stage.stage}</h4>
+                                                <span className={`text-[9px] font-black uppercase ${stage.status === 'Completado' ? 'text-success' : stage.status === 'En Proceso' ? 'text-primary' : 'text-muted-foreground'}`}>{stage.status}</span>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
                         </div>
-                    </div>
-                )}
-            </div>
+                    );
+                })
+            )}
         </div>
     );
 }

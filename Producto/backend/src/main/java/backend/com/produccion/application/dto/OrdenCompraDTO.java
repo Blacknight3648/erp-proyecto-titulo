@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import backend.com.produccion.domain.enums.EstadoOC;
@@ -27,5 +28,6 @@ public class OrdenCompraDTO {
     private BigDecimal totalNeto;
     private List<OrdenCompraItemDTO> items;
     private String motivoRechazo;
+    private LocalDateTime fechaRechazo;
     private Integer version;
 }

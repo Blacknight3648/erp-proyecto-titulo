@@ -20,6 +20,7 @@ export class OrdenCompraDTO {
             ? data.items.map(item => new OrdenCompraItemDTO(item))
             : [];
         this.motivoRechazo = data.motivoRechazo ?? null;
+        this.fechaRechazo = data.fechaRechazo ?? null;
         this.version = data.version ?? 1;
     }
 

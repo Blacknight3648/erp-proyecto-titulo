@@ -76,6 +76,9 @@ export default function TimelineGlobal() {
         }
     };
 
+    const esEstadoRechazado = (estado) =>
+        estado === 'RECHAZADA' || estado === 'RECHAZADO' || estado === 'CANCELADA';
+
     return (
         <div className="max-w-6xl mx-auto space-y-8 animate-in fade-in duration-700 pb-20">
             {/* Header / Search */}
@@ -180,7 +183,7 @@ export default function TimelineGlobal() {
                                 {traceData.length > 0 ? traceData.map((doc, idx) => (
                                     <div key={idx} className="relative pl-24 group">
                                         {/* Connector Circle */}
-                                        <div className={`absolute left-[26px] top-6 w-4 h-4 rounded-full border-4 border-card z-10 shadow-sm transition-transform group-hover:scale-125 ${doc.estado === 'FINALIZADA' || doc.estado === 'COMPLETO' ? 'bg-success' : 'bg-primary'
+                                        <div className={`absolute left-[26px] top-6 w-4 h-4 rounded-full border-4 border-card z-10 shadow-sm transition-transform group-hover:scale-125 ${esEstadoRechazado(doc.estado) ? 'bg-destructive' : doc.estado === 'FINALIZADA' || doc.estado === 'COMPLETO' ? 'bg-success' : 'bg-primary'
                                             }`}></div>
 
                                         <div className={`p-8 rounded-[2rem] border-2 transition-all group-hover:shadow-xl group-hover:border-primary/20 ${getColorByDocType(doc.tipoDocumento)}`}>
@@ -216,6 +219,13 @@ export default function TimelineGlobal() {
                                                     )}
                                                 </div>
                                             </div>
+
+                                            {doc.motivoRechazo && (
+                                                <div className="mt-6 flex items-start space-x-2 text-xs text-destructive bg-destructive/10 border border-destructive/30 rounded-2xl px-4 py-3">
+                                                    <AlertCircle className="w-4 h-4 mt-0.5 shrink-0" />
+                                                    <span>{doc.motivoRechazo}{doc.fechaRechazo ? ` (${doc.fechaRechazo})` : ''}</span>
+                                                </div>
+                                            )}
                                         </div>
                                     </div>
                                 )) : (

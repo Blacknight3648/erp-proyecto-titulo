@@ -3,7 +3,7 @@ import { useTrazabilidad } from '../../hooks/useTrazabilidad';
 import { clampNonNegative } from '../../utils/validations';
 import {
     Search, Loader2, Package, GitBranch, ShoppingBag, ShoppingCart,
-    Inbox, Factory, X, Hash, Calendar
+    Inbox, Factory, X, Hash, Calendar, AlertCircle
 } from 'lucide-react';
 
 const STATUS_OC = {
@@ -12,6 +12,7 @@ const STATUS_OC = {
     RECEPCIONADA_PARCIAL:  'bg-brand-violet/10 text-brand-violet border-brand-violet/20',
     RECEPCIONADA:          'bg-success/10 text-success border-success/20',
     CERRADA:               'bg-muted text-muted-foreground border-border',
+    RECHAZADA:             'bg-destructive/10 text-destructive border-destructive/20',
 };
 const STATUS_OS = {
     EMITIDA:      'bg-warning/10 text-warning border-warning/20',
@@ -110,6 +111,16 @@ export default function TrazabilidadOP() {
                                 <Field label="Usuario">{data.costeoVersion.usuarioCreador || '—'}</Field>
                                 <Field label="Motivo" wide>{data.costeoVersion.motivoCambio || '—'}</Field>
                             </Grid>
+                            {data.costeoVersion.motivoRechazoCosteo && (
+                                <div className="mt-4 flex items-start gap-2 text-xs text-destructive bg-destructive/10 border border-destructive/20 rounded-2xl px-4 py-3">
+                                    <AlertCircle className="w-4 h-4 mt-0.5 shrink-0" />
+                                    <span>
+                                        <span className="font-black uppercase tracking-widest">Motivo Rechazo Costeo:</span>{' '}
+                                        {data.costeoVersion.motivoRechazoCosteo}
+                                        {data.costeoVersion.fechaRechazoCosteo ? ` (${data.costeoVersion.fechaRechazoCosteo})` : ''}
+                                    </span>
+                                </div>
+                            )}
                         </Bloque>
                     ) : (
                         <Vacio mensaje="La OP no tiene versión de Costeo vinculada" />
@@ -156,14 +167,22 @@ export default function TrazabilidadOP() {
                         <Bloque icon={ShoppingCart} title={`Órdenes de Compra (${data.ordenesCompra.length})`} color="blue">
                             <div className="space-y-3">
                                 {data.ordenesCompra.map(oc => (
-                                    <div key={oc.idOC} className="border border-border rounded-2xl p-4 bg-muted/30 flex items-center justify-between">
-                                        <div className="flex items-center gap-3">
-                                            <span className="text-[10px] font-black text-primary bg-primary/10 px-3 py-1 rounded-lg uppercase tracking-widest">OC #{oc.idOC}</span>
-                                            <span className="text-[10px] font-bold text-muted-foreground uppercase">{oc.numeroOC}</span>
-                                            <span className="text-[10px] font-bold text-muted-foreground uppercase">Prov #{oc.proveedorId}</span>
-                                            <span className={`px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest border ${STATUS_OC[oc.estado] || ''}`}>{oc.estado}</span>
+                                    <div key={oc.idOC} className="border border-border rounded-2xl p-4 bg-muted/30">
+                                        <div className="flex items-center justify-between">
+                                            <div className="flex items-center gap-3">
+                                                <span className="text-[10px] font-black text-primary bg-primary/10 px-3 py-1 rounded-lg uppercase tracking-widest">OC #{oc.idOC}</span>
+                                                <span className="text-[10px] font-bold text-muted-foreground uppercase">{oc.numeroOC}</span>
+                                                <span className="text-[10px] font-bold text-muted-foreground uppercase">Prov #{oc.proveedorId}</span>
+                                                <span className={`px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest border ${STATUS_OC[oc.estado] || ''}`}>{oc.estado}</span>
+                                            </div>
+                                            <span className="text-xs font-black text-foreground tabular-nums">{formatCLP(oc.totalNeto)}</span>
                                         </div>
-                                        <span className="text-xs font-black text-foreground tabular-nums">{formatCLP(oc.totalNeto)}</span>
+                                        {oc.estado === 'RECHAZADA' && oc.motivoRechazo && (
+                                            <div className="mt-3 flex items-start gap-2 text-[10px] text-destructive bg-destructive/10 border border-destructive/20 rounded-xl px-3 py-2">
+                                                <AlertCircle className="w-3.5 h-3.5 mt-0.5 shrink-0" />
+                                                <span>{oc.motivoRechazo}{oc.fechaRechazo ? ` (${oc.fechaRechazo})` : ''}</span>
+                                            </div>
+                                        )}
                                     </div>
                                 ))}
                             </div>

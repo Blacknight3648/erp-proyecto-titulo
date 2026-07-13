@@ -8,6 +8,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -28,5 +30,17 @@ public class HistorialEstadoService {
         return repository.findByEntidad(tipoEntidad, entidadId).stream()
                 .map(HistorialEstadoDTO::fromDomain)
                 .collect(Collectors.toList());
+    }
+
+    /**
+     * Devuelve la ultima transicion registrada hacia alguno de los estadosDestino
+     * (ej. el ultimo rechazo), o vacio si nunca ocurrio.
+     */
+    public Optional<HistorialEstadoDTO> ultimaTransicionA(String tipoEntidad, Long entidadId,
+            Set<String> estadosDestino) {
+        return repository.findByEntidad(tipoEntidad, entidadId).stream()
+                .filter(h -> estadosDestino.contains(h.getEstadoNuevo()))
+                .reduce((first, second) -> second)
+                .map(HistorialEstadoDTO::fromDomain);
     }
 }

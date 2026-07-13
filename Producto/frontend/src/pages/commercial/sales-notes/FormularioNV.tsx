@@ -1,8 +1,64 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { FileText, ChevronRight, Save, Plus, Trash2, Wrench, CheckCircle2, AlertCircle, Calculator } from 'lucide-react';
 import { pdfService } from '../../../remote/service/pdfService';
 import CosteoSelectionModal from '../administration/CosteoSelectionModal';
 import { clampNonNegative } from '../../../utils/validations';
+import ComboSearchField from '../../../components/shared/ComboSearchField';
+import ComboField from '../../../components/shared/ComboField';
+import ModeloComboField from '../../../components/shared/ModeloComboField';
+import { useArticulosSearch } from '../../../hooks/useArticulosSearch';
+import { api } from '../../../remote/service/api';
+
+function TallasMenuButton({ item, updateSize, isReadOnly }) {
+    const [isOpen, setIsOpen] = useState(false);
+    const [dropdownPos, setDropdownPos] = useState(null);
+    const triggerRef = useRef(null);
+    const dropdownRef = useRef(null);
+
+    useEffect(() => {
+        if (!isOpen) return;
+        const handler = (e) => {
+            const inTrigger = triggerRef.current && triggerRef.current.contains(e.target);
+            const inDropdown = dropdownRef.current && dropdownRef.current.contains(e.target);
+            if (!inTrigger && !inDropdown) setIsOpen(false);
+        };
+        document.addEventListener('mousedown', handler);
+        return () => document.removeEventListener('mousedown', handler);
+    }, [isOpen]);
+
+    const open = () => {
+        if (isReadOnly) return;
+        if (triggerRef.current) {
+            const r = triggerRef.current.getBoundingClientRect();
+            setDropdownPos({ top: r.bottom + 6, left: r.right - 192, width: 192 });
+        }
+        setIsOpen(true);
+    };
+
+    return (
+        <>
+            <button ref={triggerRef} type="button" onClick={open} className="w-full p-3.5 bg-foreground text-background rounded-xl text-xs font-black shadow-lg">
+                {item.quantity} und
+            </button>
+            {isOpen && dropdownPos && createPortal(
+                <div
+                    ref={dropdownRef}
+                    style={{ position: 'fixed', top: dropdownPos.top, left: dropdownPos.left, width: dropdownPos.width, zIndex: 9999 }}
+                    className="bg-card rounded-2xl shadow-2xl border border-border p-4 animate-in fade-in zoom-in-95 duration-150"
+                >
+                    {['XS', 'S', 'M', 'L', 'XL'].map(size => (
+                        <div key={size} className="flex items-center justify-between mb-3 last:mb-0">
+                            <span className="text-xs font-bold text-muted-foreground w-8">{size}</span>
+                            <input type="number" min="0" value={item.sizes[size]} onChange={(e) => updateSize(item.id, size, clampNonNegative(e.target.value))} className="w-20 p-1.5 bg-muted border-none rounded-lg text-sm font-black text-center outline-none focus:ring-2 focus:ring-primary/50" />
+                        </div>
+                    ))}
+                </div>,
+                document.body
+            )}
+        </>
+    );
+}
 
 export default function FormularioNV({
     formData,
@@ -37,6 +93,82 @@ export default function FormularioNV({
     const [showCancelModal, setShowCancelModal] = useState(false);
     const [itemToDelete, setItemToDelete] = useState(null);
     const currentModalItem = (formData.items || []).find(item => item.id === costeoModalItemId);
+
+    // Los ítems cargados desde una NV existente traen `tela` guardada pero
+    // `coloresDisponibles` vacío (no se persiste): sin esto, el combo de Color
+    // queda sin opciones y Composición nunca se completa hasta que el usuario
+    // vuelve a seleccionar la misma tela manualmente.
+    const { articulos: telasCatalog } = useArticulosSearch('TELA');
+    
+    const [dbColores, setDbColores] = useState([]);
+    const [dbComposiciones, setDbComposiciones] = useState([]);
+
+    useEffect(() => {
+        const loadMaestros = async () => {
+            try {
+                const [colRes, compRes] = await Promise.all([
+                    api.get('/maestros/colores-tela'),
+                    api.get('/maestros/composiciones')
+                ]);
+                const colData = colRes.data as any[];
+                const compData = compRes.data as any[];
+                setDbColores(colData.map(c => ({ value: c.descripcionColor, label: c.descripcionColor })));
+                setDbComposiciones(compData.map(c => ({ value: c.descripcionComposicion, label: c.descripcionComposicion })));
+            } catch (e) {
+                console.error("Error loading colors/compositions", e);
+            }
+        };
+        loadMaestros();
+    }, []);
+
+    const handleSelectColor = async (itemId, val, itemColoresDisp) => {
+        const uppercaseVal = (val || '').toUpperCase();
+        if (uppercaseVal) {
+            const exists = dbColores.some(c => c.value.toUpperCase() === uppercaseVal) || 
+                           (itemColoresDisp || []).some(c => (c.descripcionColor || c.value || '').toUpperCase() === uppercaseVal);
+            if (!exists) {
+                try {
+                    const res = await api.post('/maestros/colores-tela', { descripcionColor: uppercaseVal });
+                    const data = res.data as any;
+                    setDbColores(prev => [...prev, { value: data.descripcionColor, label: data.descripcionColor }]);
+                } catch (e) {
+                    console.error("Error creating color", e);
+                }
+            }
+        }
+        updateItem(itemId, 'color', uppercaseVal);
+    };
+
+    const handleSelectComposicion = async (itemId, val) => {
+        const uppercaseVal = (val || '').toUpperCase();
+        if (uppercaseVal) {
+            const exists = dbComposiciones.some(c => c.value.toUpperCase() === uppercaseVal);
+            if (!exists) {
+                try {
+                    const res = await api.post('/maestros/composiciones', { descripcionComposicion: uppercaseVal });
+                    const data = res.data as any;
+                    setDbComposiciones(prev => [...prev, { value: data.descripcionComposicion, label: data.descripcionComposicion }]);
+                } catch (e) {
+                    console.error("Error creating composition", e);
+                }
+            }
+        }
+        updateItem(itemId, 'composicion', uppercaseVal);
+    };
+
+    useEffect(() => {
+        if (!telasCatalog || telasCatalog.length === 0) return;
+        (formData.items || []).forEach(item => {
+            if (!item.tela || (item.coloresDisponibles || []).length > 0) return;
+            const match = telasCatalog.find(a => (a.nombreArticulo || '').toUpperCase() === item.tela.toUpperCase());
+            if (!match) return;
+            const colores = match.detalleTela?.colores || [];
+            const comp = match.detalleTela?.composicion?.descripcionComposicion || '';
+            if (colores.length > 0) updateItem(item.id, 'coloresDisponibles', colores);
+            if (comp && !item.composicion) updateItem(item.id, 'composicion', comp);
+        });
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [telasCatalog, formData.items.length]);
 
     const handleDeleteDraft = async () => {
         if (!formData.idNV) return;
@@ -156,7 +288,7 @@ export default function FormularioNV({
                                     value={formData.detalleKit || ''}
                                     onChange={(e) => setFormData({ ...formData, detalleKit: e.target.value.toUpperCase() })}
                                     readOnly={isReadOnly}
-                                    rows="2"
+                                    rows={2}
                                 />
                             </div>
                         )}
@@ -225,74 +357,113 @@ export default function FormularioNV({
                                         )
                                     )}
                                 </div>
-                                <div className="grid grid-cols-12 gap-6">
-                                    <div className="col-span-3">
+                                <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-start">
+                                    {/* Fila 1 */}
+                                    <div className="col-span-1 lg:col-span-4">
                                         <div className="flex items-center justify-between mb-2">
-                                            <label className="text-[9px] font-black text-muted-foreground uppercase tracking-widest block">Producto <span className="text-destructive">*</span></label>
+                                            <label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest block">Producto <span className="text-destructive">*</span></label>
                                             {item.codigoInterno && (
-                                                <span className="text-[8px] font-black bg-warning/10 text-warning px-2 py-0.5 rounded-full border border-warning/20 uppercase tracking-tighter">
+                                                <span className="text-[9px] font-black bg-warning/10 text-warning px-2.5 py-1 rounded-full border border-warning/20 uppercase tracking-tighter">
                                                     Ref: {item.codigoInterno}
                                                 </span>
                                             )}
                                         </div>
-                                        <input className="w-full p-3 bg-muted border-none rounded-xl text-[11px] font-bold uppercase outline-none" value={item.nombreProducto} onChange={(e) => updateItem(item.id, 'nombreProducto', e.target.value.toUpperCase())} readOnly={isReadOnly} />
+                                        <ComboSearchField
+                                            className="w-full"
+                                            tipo="PRENDA_CONFECCIONAR"
+                                            value={item.nombreProducto}
+                                            onChange={(v) => updateItem(item.id, 'nombreProducto', v)}
+                                            placeholder="Producto"
+                                            readOnly={isReadOnly}
+                                        />
                                     </div>
-                                    <div className="col-span-2">
-                                        <label className="text-[9px] font-black text-muted-foreground uppercase tracking-widest mb-2 block">Modelo</label>
-                                        <input className="w-full p-3 bg-muted border-none rounded-xl text-[11px] font-bold uppercase outline-none" value={item.modelo} onChange={(e) => updateItem(item.id, 'modelo', e.target.value.toUpperCase())} readOnly={isReadOnly} />
+                                    <div className="col-span-1 lg:col-span-4">
+                                        <label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-2 block">Modelo</label>
+                                        <ModeloComboField
+                                            className="w-full"
+                                            value={item.modelo}
+                                            onChange={(v) => updateItem(item.id, 'modelo', v)}
+                                            placeholder="Modelo"
+                                            readOnly={isReadOnly}
+                                        />
                                     </div>
-                                    <div className="col-span-2">
-                                        <label className="text-[9px] font-black text-muted-foreground uppercase tracking-widest mb-2 block">Tela</label>
-                                        <input className="w-full p-3 bg-muted border-none rounded-xl text-[11px] font-bold uppercase outline-none" value={item.tela} onChange={(e) => updateItem(item.id, 'tela', e.target.value.toUpperCase())} readOnly={isReadOnly} />
+                                    <div className="col-span-1 lg:col-span-4">
+                                        <label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-2 block">Tela</label>
+                                        <ComboSearchField
+                                            className="w-full"
+                                            tipo="TELA"
+                                            value={item.tela}
+                                            onChange={(v) => updateItem(item.id, 'tela', v)}
+                                            onSelectArticulo={(articulo) => {
+                                                const comp = articulo?.detalleTela?.composicion?.descripcionComposicion || '';
+                                                updateItem(item.id, 'composicion', comp);
+                                                
+                                                const colores = articulo?.detalleTela?.colores || [];
+                                                updateItem(item.id, 'coloresDisponibles', colores);
+                                                updateItem(item.id, 'color', ''); // Reset selected color
+                                            }}
+                                            placeholder="Tela"
+                                            readOnly={isReadOnly}
+                                        />
                                     </div>
-                                    <div className="col-span-2">
-                                        <label className="text-[9px] font-black text-muted-foreground uppercase tracking-widest mb-2 block">Género <span className="text-destructive">*</span></label>
-                                        <select className="w-full p-3 bg-muted border-none rounded-xl text-[11px] font-bold uppercase outline-none appearance-none" value={item.genero} onChange={(e) => updateItem(item.id, 'genero', e.target.value)} disabled={isReadOnly}>
+
+                                    {/* Fila 2 */}
+                                    <div className="col-span-1 lg:col-span-3">
+                                        <label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-2 block">Color</label>
+                                        <ComboField
+                                            className="w-full"
+                                            portal
+                                            allowCustom
+                                            value={item.color || ''}
+                                            onChange={(v) => handleSelectColor(item.id, v, item.coloresDisponibles)}
+                                            options={item.coloresDisponibles?.length > 0 
+                                                ? item.coloresDisponibles.map(c => ({ value: c.descripcionColor, label: c.descripcionColor })) 
+                                                : dbColores}
+                                            placeholder="Color"
+                                            readOnly={isReadOnly}
+                                        />
+                                    </div>
+                                    <div className="col-span-1 lg:col-span-3">
+                                        <label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-2 block">Composición</label>
+                                        <ComboField
+                                            className="w-full"
+                                            portal
+                                            allowCustom
+                                            value={item.composicion || ''}
+                                            onChange={(v) => handleSelectComposicion(item.id, v)}
+                                            options={dbComposiciones}
+                                            placeholder="Composición"
+                                            readOnly={isReadOnly}
+                                        />
+                                    </div>
+                                    <div className="col-span-1 lg:col-span-3">
+                                        <label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-2 block">Género <span className="text-destructive">*</span></label>
+                                        <select className="w-full p-3.5 bg-muted border-none rounded-xl text-xs font-bold uppercase outline-none appearance-none" value={item.genero} onChange={(e) => updateItem(item.id, 'genero', e.target.value)} disabled={isReadOnly}>
                                             <option value="Unisex">Unisex</option><option value="Masculino">Masculino</option><option value="Femenino">Femenino</option>
                                         </select>
                                     </div>
-                                    <div className="col-span-1">
-                                        <label className="text-[9px] font-black text-muted-foreground uppercase tracking-widest mb-2 block text-center">Cant.</label>
-                                        <button onClick={() => !isReadOnly && updateItem(item.id, 'showSizeMenu', !item.showSizeMenu)} className="w-full p-3 bg-foreground text-background rounded-xl text-[10px] font-black shadow-lg">
-                                            {item.quantity} und
-                                        </button>
-                                        {item.showSizeMenu && !isReadOnly && (
-                                            <div className="absolute right-0 mt-2 w-40 bg-card rounded-2xl shadow-2xl border border-border p-4 z-20 animate-in fade-in zoom-in-95">
-                                                {['XS', 'S', 'M', 'L', 'XL'].map(size => (
-                                                    <div key={size} className="flex items-center justify-between mb-2">
-                                                        <span className="text-[10px] font-bold text-muted-foreground w-6">{size}</span>
-                                                        <input type="number" min="0" value={item.sizes[size]} onChange={(e) => updateSize(item.id, size, clampNonNegative(e.target.value))} className="w-16 p-1 bg-muted border-none rounded-lg text-xs font-black text-center" />
-                                                    </div>
-                                                ))}
-                                            </div>
-                                        )}
-                                    </div>
-                                    <div className="col-span-2">
-                                        <label className="text-[9px] font-black text-muted-foreground uppercase tracking-widest mb-2 block">P. Unitario</label>
-                                        <div className="relative">
-                                            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-xs font-bold">$</span>
-                                            <input type="number" min="0" value={item.unitPrice} onChange={(e) => updateItem(item.id, 'unitPrice', Math.max(0, parseFloat(e.target.value) || 0))} className="w-full pl-6 pr-3 py-3 bg-primary/5 border-none rounded-xl text-xs font-black text-primary outline-none" readOnly={isReadOnly} />
-                                        </div>
-                                    </div>
-                                </div>
-                                <div className="grid grid-cols-12 gap-6 pt-4 border-t border-border">
-                                    <div className="col-span-3">
-                                        <label className="text-[9px] font-black text-muted-foreground uppercase tracking-widest mb-2 block">Color</label>
-                                        <input className="w-full p-3 bg-muted border-none rounded-xl text-[11px] font-bold uppercase outline-none" value={item.color || ''} onChange={(e) => updateItem(item.id, 'color', e.target.value.toUpperCase())} readOnly={isReadOnly} />
-                                    </div>
-                                    <div className="col-span-3">
-                                        <label className="text-[9px] font-black text-muted-foreground uppercase tracking-widest mb-2 block">Composición</label>
-                                        <input className="w-full p-3 bg-muted border-none rounded-xl text-[11px] font-bold uppercase outline-none" value={item.composicion || ''} onChange={(e) => updateItem(item.id, 'composicion', e.target.value.toUpperCase())} readOnly={isReadOnly} />
-                                    </div>
-                                    <div className="col-span-3">
-                                        <label className="text-[9px] font-black text-muted-foreground uppercase tracking-widest mb-2 block">Logo</label>
-                                        <select className="w-full p-3 bg-muted border-none rounded-xl text-[11px] font-bold uppercase outline-none appearance-none" value={item.logo} onChange={(e) => updateItem(item.id, 'logo', e.target.value)} disabled={isReadOnly}>
+                                    <div className="col-span-1 lg:col-span-3">
+                                        <label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-2 block">Logo</label>
+                                        <select className="w-full p-3.5 bg-muted border-none rounded-xl text-xs font-bold uppercase outline-none appearance-none" value={item.logo} onChange={(e) => updateItem(item.id, 'logo', e.target.value)} disabled={isReadOnly}>
                                             <option value="N/A">N/A</option><option value="Bordado">Bordado</option><option value="Estampado">Estampado</option><option value="Bordado y Estampado">Bordado y Estampado</option>
                                         </select>
                                     </div>
-                                    <div className="col-span-3">
-                                        <label className="text-[9px] font-black text-muted-foreground uppercase tracking-widest mb-2 block">Proveedor Sugerido</label>
-                                        <select className="w-full p-3 bg-muted border-none rounded-xl text-[11px] font-bold uppercase outline-none appearance-none"
+
+                                    {/* Fila 3 */}
+                                    <div className="col-span-1 lg:col-span-2">
+                                        <label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-2 block text-center">Cant.</label>
+                                        <TallasMenuButton item={item} updateSize={updateSize} isReadOnly={isReadOnly} />
+                                    </div>
+                                    <div className="col-span-1 lg:col-span-4">
+                                        <label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-2 block">P. Unitario</label>
+                                        <div className="relative">
+                                            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground text-sm font-bold">$</span>
+                                            <input type="number" min="0" value={item.unitPrice} onChange={(e) => updateItem(item.id, 'unitPrice', Math.max(0, parseFloat(e.target.value) || 0))} className="w-full pl-8 pr-4 py-3.5 bg-primary/5 border-none rounded-xl text-sm font-black text-primary outline-none focus:ring-2 focus:ring-primary/20" readOnly={isReadOnly} />
+                                        </div>
+                                    </div>
+                                    <div className="col-span-1 lg:col-span-6">
+                                        <label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-2 block">Proveedor Sugerido</label>
+                                        <select className="w-full p-3.5 bg-muted border-none rounded-xl text-xs font-bold uppercase outline-none appearance-none"
                                             value={item.proveedorId || ''}
                                             onChange={(e) => updateItem(item.id, 'proveedorId', e.target.value)}
                                             disabled={isReadOnly}
@@ -316,7 +487,7 @@ export default function FormularioNV({
                                 </div>
                                 {item.requiereOt && (
                                     <div className="mt-4 p-6 bg-warning/5 border-2 border-dashed border-warning/20 rounded-3xl animate-in slide-in-from-top-4">
-                                        <textarea rows="2" placeholder="Describa requerimientos especiales..." className="w-full bg-transparent border-none text-xs font-bold text-foreground uppercase outline-none resize-none" value={item.detalleOt || ''} onChange={(e) => updateItem(item.id, 'detalleOt', e.target.value.toUpperCase())} readOnly={isReadOnly} />
+                                        <textarea rows={2} placeholder="Describa requerimientos especiales..." className="w-full bg-transparent border-none text-xs font-bold text-foreground uppercase outline-none resize-none" value={item.detalleOt || ''} onChange={(e) => updateItem(item.id, 'detalleOt', e.target.value.toUpperCase())} readOnly={isReadOnly} />
                                     </div>
                                 )}
                             </div>

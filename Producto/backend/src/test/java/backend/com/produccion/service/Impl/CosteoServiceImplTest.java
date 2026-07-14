@@ -71,9 +71,9 @@ class CosteoServiceImplTest {
 
     @org.junit.jupiter.api.BeforeEach
     void setUp() {
-        // save asigna el correlativo propio del Costeo (C-0000001) cuando no lo trae.
-        org.mockito.Mockito.lenient().when(numeroDocumentoService.siguienteFormateado("C"))
-                .thenReturn(new DocumentNumber("C-0000001"));
+        // save asigna el correlativo propio del Costeo (COST-0000001) cuando no lo trae.
+        org.mockito.Mockito.lenient().when(numeroDocumentoService.siguienteFormateado("COST"))
+                .thenReturn(new DocumentNumber("COST-0000001"));
     }
 
     // --- Métodos Helper ---

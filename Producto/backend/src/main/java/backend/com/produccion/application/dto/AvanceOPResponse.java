@@ -3,26 +3,29 @@ package backend.com.produccion.application.dto;
 import lombok.Data;
 
 import java.math.BigDecimal;
-import java.util.List;
+import java.time.LocalDate;
 
 @Data
 public class AvanceOPResponse {
     private Long ordenProduccionId;
     private BigDecimal porcentajeGlobal;
     private String semaforo;
-    private Integer totalUnidades;
-    private Integer totalProducidas;
-    private Integer totalMermas;
-    private List<AvanceOT> ordenesTrabajo;
-
-    @Data
-    public static class AvanceOT {
-        private Long idOT;
-        private String fase;
-        private String estado;
-        private Integer cantidadTotal;
-        private Integer cantidadProducida;
-        private Integer cantidadMerma;
-        private BigDecimal porcentajeAvance;
-    }
+    
+    // Hitos / Seguimiento
+    private LocalDate fechaRecepcionOp;
+    private LocalDate finTizado;
+    private String estadoOcMp;
+    private LocalDate recepcionCompras;
+    private LocalDate inicioCorte;
+    private LocalDate finCorte;
+    private LocalDate inicioLogo;
+    private String estadoIdaLogo;
+    private LocalDate regresoLogo;
+    private String estadoRecLogo;
+    private LocalDate inicioTallerExterno;
+    private LocalDate finTallerExterno;
+    private String calidadTaller;
+    private String obsTaller;
+    private LocalDate finTerminacion;
+    private LocalDate finPersonalizado;
 }

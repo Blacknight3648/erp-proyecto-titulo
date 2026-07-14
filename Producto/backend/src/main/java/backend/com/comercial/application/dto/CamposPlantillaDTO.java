@@ -15,4 +15,7 @@ public class CamposPlantillaDTO {
     @NotBlank(message = "El nombre del campo es obligatorio")
     @Size(max = 100, message = "El nombre no puede superar 100 caracteres")
     private String nombreCampo;
+
+    @Builder.Default
+    private boolean activo = true;
 }

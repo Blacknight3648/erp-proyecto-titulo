@@ -2,6 +2,7 @@ package backend.com.gestionUsuarios.domain.model;
 
 import lombok.*;
 
+import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -21,6 +22,10 @@ public class User {
     private String usuarioEmail;
     private String usuarioPassword;
     private String telefono;
+    private LocalDate fechaNacimiento;
+    private String direccion;
+    private String region;
+    private String comuna;
 
     @Builder.Default
     private boolean enabled = true;

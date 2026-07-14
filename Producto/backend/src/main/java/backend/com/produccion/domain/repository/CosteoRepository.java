@@ -16,4 +16,5 @@ public interface CosteoRepository {
 
     /** Busca el Costeo auto-creado para una NV específica. Garantiza idempotencia en la creación. */
     Optional<Costeo> findByNotaVentaId(Long notaVentaId);
+    void deleteBySolicitudCostosId(Long solicitudCostosId);
 }

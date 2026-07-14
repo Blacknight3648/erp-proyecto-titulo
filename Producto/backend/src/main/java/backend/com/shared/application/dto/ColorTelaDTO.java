@@ -12,8 +12,7 @@ public class ColorTelaDTO {
 
     private Integer idColor;
 
-    @NotBlank(message = "El código de color es obligatorio")
-    @Size(max = 10)
+    @Size(max = 10, message = "El código no puede superar 10 caracteres")
     private String codigoColor;
 
     @NotBlank(message = "La descripción del color es obligatoria")

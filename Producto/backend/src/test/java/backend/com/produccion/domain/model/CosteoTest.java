@@ -53,6 +53,7 @@ class CosteoTest {
                     30L, "Juan Pérez",
                     mockMoney("50.00"),   // costoHilos
                     mockMoney("150.00"),  // costoManoObra
+                    "", // observacionesManoObra
                     mockMoney("10.00"),   // costoEtiquetas
                     mockMoney("15.00"),   // costoEmbalaje
                     mockMoney("35.00"),   // costoFlete
@@ -85,7 +86,7 @@ class CosteoTest {
             // When
             Costeo costeo = new Costeo(
                     1L, mockDocumentNumber(1L), 2L, 3L, "Cliente", 4L, "Vendedor",
-                    mockMoney("0"), mockMoney("0"), mockMoney("0"), mockMoney("0"), mockMoney("0"),
+                    mockMoney("0"), mockMoney("0"), "", mockMoney("0"), mockMoney("0"), mockMoney("0"),
                     BigDecimal.ZERO, mockMoney("0"), BigDecimal.ZERO, mockMoney("0"), BigDecimal.ZERO,
                     mockMoney("0"), BigDecimal.ZERO, mockMoney("0"), BigDecimal.ZERO, mockMoney("0"),
                     null // Lista de items explícitamente nula

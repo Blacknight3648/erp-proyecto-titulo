@@ -5,17 +5,22 @@ import backend.com.produccion.domain.repository.CosteoRepository;
 import backend.com.produccion.infrastructure.persistence.entity.CosteoJpaEntity;
 import backend.com.produccion.infrastructure.mapper.CosteoMapper;
 import backend.com.produccion.infrastructure.persistence.repository.CosteoJpaRepository;
+import backend.com.produccion.infrastructure.persistence.repository.CosteoVersionJpaRepository;
 import backend.com.shared.exception.ValidationException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
 public class CosteoRepositoryImpl implements CosteoRepository {
 
     private final CosteoJpaRepository jpaRepository;
+    private final CosteoVersionJpaRepository versionJpaRepository;
     private final CosteoMapper mapper;
 
     @Override
@@ -72,5 +77,23 @@ public class CosteoRepositoryImpl implements CosteoRepository {
         if (id == null)
             return Optional.empty();
         return jpaRepository.findById(id).map(mapper::toDomain);
+    }
+
+    @Override
+    @Transactional
+    public void deleteBySolicitudCostosId(Long solicitudCostosId) {
+        if (solicitudCostosId == null) return;
+        List<CosteoJpaEntity> costeos = jpaRepository.findAllBySolicitudCostosId(solicitudCostosId);
+        if (costeos.isEmpty()) return;
+
+        // 1. Borrar las versiones (produccion_costeo_versiones) antes que el padre
+        //    para evitar FK violation (costeo_id NOT NULL sin cascade en versiones).
+        List<Long> costeoIds = costeos.stream()
+                .map(CosteoJpaEntity::getIdCosteo)
+                .collect(Collectors.toList());
+        versionJpaRepository.deleteByCosteo_IdCosteoIn(costeoIds);
+
+        // 2. Borrar cada costeo (activa orphanRemoval en sus items: produccion_costeo_items)
+        costeos.forEach(jpaRepository::delete);
     }
 }

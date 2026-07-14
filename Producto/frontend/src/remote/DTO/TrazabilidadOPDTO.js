@@ -22,6 +22,8 @@ export class TrazabilidadOPDTO {
             fechaCreacion: data.costeoVersion.fechaCreacion ?? null,
             motivoCambio: data.costeoVersion.motivoCambio ?? '',
             usuarioCreador: data.costeoVersion.usuarioCreador ?? '',
+            motivoRechazoCosteo: data.costeoVersion.motivoRechazoCosteo ?? null,
+            fechaRechazoCosteo: data.costeoVersion.fechaRechazoCosteo ?? null,
         } : null;
 
         this.hojaCompra = data.hojaCompra ? new HojaCompraDTO(data.hojaCompra) : null;

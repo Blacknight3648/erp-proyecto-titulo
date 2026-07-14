@@ -11,6 +11,7 @@ import backend.com.produccion.domain.enums.EstadoCosteo;
 import backend.com.produccion.domain.model.Costeo;
 import backend.com.produccion.domain.model.CosteoItem;
 import backend.com.produccion.domain.repository.CosteoRepository;
+import backend.com.produccion.domain.repository.OrdenProduccionRepository;
 import backend.com.produccion.infrastructure.mapper.CosteoMapper;
 import backend.com.shared.application.service.HistorialEstadoService;
 import backend.com.shared.application.service.NumeroDocumentoService;
@@ -33,6 +34,7 @@ public class CosteoServiceImpl implements CosteoService {
     private final SolicitudCostosRepository scosRepository;
     private final ArticuloRepository articuloRepository;
     private final EvaluacionNegocioRepository evnRepository;
+    private final OrdenProduccionRepository ordenProduccionRepository;
     private final NumeroDocumentoService numeroDocumentoService;
     private final CrearVersionCosteoUseCase crearVersionCosteoUseCase;
     private final HistorialEstadoService historialEstadoService;
@@ -104,7 +106,7 @@ public class CosteoServiceImpl implements CosteoService {
     }
 
     /**
-     * Garantiza que el Costeo tenga su propio número correlativo ({@code C-0000001}).
+     * Garantiza que el Costeo tenga su propio número correlativo ({@code COST-0000001}).
      * En creación genera uno nuevo de forma atómica dentro de esta transacción
      * (sin huecos si el save falla). En actualización conserva el número ya
      * asignado, recuperándolo de BD si el DTO no lo trajo, para no regenerarlo
@@ -122,11 +124,12 @@ public class CosteoServiceImpl implements CosteoService {
         }
         // Creación (o registro legacy sin número): asignar correlativo propio.
         if (domain.getNumeroCosteo() == null) {
-            domain.setNumeroCosteo(numeroDocumentoService.siguienteFormateado("C"));
+            domain.setNumeroCosteo(numeroDocumentoService.siguienteFormateado("COST"));
         }
     }
 
     @Override
+    @Transactional(readOnly = true)
     public java.util.List<CosteoDTO> findAll() {
         return repository.findAll().stream()
                 .map(this::toEnrichedDto)
@@ -140,16 +143,24 @@ public class CosteoServiceImpl implements CosteoService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Optional<CosteoDTO> findBySolicitudCostosId(Long scosId) {
         return repository.findBySolicitudCostosId(scosId)
                 .map(this::toEnrichedDto);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public java.util.List<CosteoDTO> findAllBySolicitudCostosId(Long scosId) {
         return repository.findAllBySolicitudCostosId(scosId).stream()
                 .map(this::toEnrichedDto)
                 .collect(java.util.stream.Collectors.toList());
+    }
+
+    @Override
+    @Transactional
+    public void deleteBySolicitudCostosId(Long scosId) {
+        repository.deleteBySolicitudCostosId(scosId);
     }
 
     @Override
@@ -159,6 +170,21 @@ public class CosteoServiceImpl implements CosteoService {
         // Solo costeos APROBADOS pueden vincularse a un ítem de EVN/NV.
         return repository.findAll().stream()
                 .filter(c -> c.getIdCosteo() != null && !vinculados.contains(c.getIdCosteo()))
+                .filter(c -> c.getEstado() == backend.com.produccion.domain.enums.EstadoCosteo.APROBADO)
+                .map(this::toEnrichedDto)
+                .collect(java.util.stream.Collectors.toList());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public java.util.List<CosteoDTO> obtenerDisponiblesParaOP() {
+        java.util.Set<Long> vinculadosEVN = new java.util.HashSet<>(evnRepository.findLinkedCosteoIds());
+        java.util.Set<Long> enUsoOP = new java.util.HashSet<>(ordenProduccionRepository.findCosteoIdsEnUso());
+        // Solo costeos APROBADOS, sin vínculo previo a EVN ni a otra OP, pueden ofrecerse para vincular manualmente.
+        return repository.findAll().stream()
+                .filter(c -> c.getIdCosteo() != null
+                        && !vinculadosEVN.contains(c.getIdCosteo())
+                        && !enUsoOP.contains(c.getIdCosteo()))
                 .filter(c -> c.getEstado() == backend.com.produccion.domain.enums.EstadoCosteo.APROBADO)
                 .map(this::toEnrichedDto)
                 .collect(java.util.stream.Collectors.toList());

@@ -180,6 +180,7 @@ export class RubroDTO {
         this.id = data.id || null;
         this.nombreRubro = data.nombreRubro || '';
         this.descripcion = data.descripcion || '';
+        this.siglaRubro = data.siglaRubro || '';
     }
     static fromResponse(response) {
         if (!response?.data) return null;

@@ -29,6 +29,8 @@ public interface UserService {
 
     User actualizarUsuario(@NonNull Long id, CreateUserDTO dto);
 
+    User actualizarUsuario(@NonNull Long id, CreateUserDTO dto, String adminUser);
+
     void eliminarUsuario(@NonNull Long id);
 
     User asignarRoles(@NonNull Long userId, Set<String> roles);

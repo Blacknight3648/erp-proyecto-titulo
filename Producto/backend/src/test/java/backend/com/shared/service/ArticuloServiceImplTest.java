@@ -4,6 +4,7 @@ import backend.com.shared.application.dto.ArticuloAccesorioDTO;
 import backend.com.shared.application.dto.ArticuloDTO;
 import backend.com.shared.application.dto.ArticuloPrendaDTO;
 import backend.com.shared.application.dto.ArticuloTelaDTO;
+import backend.com.shared.application.service.CodigoGeneratorService;
 import backend.com.shared.application.service.impl.ArticuloServiceImpl;
 import backend.com.shared.domain.enums.TipoArticulo;
 import backend.com.shared.domain.model.Articulo;
@@ -12,7 +13,6 @@ import backend.com.shared.domain.model.ArticuloPrenda;
 import backend.com.shared.domain.model.ArticuloTela;
 import backend.com.shared.domain.model.CategoriaTela;
 import backend.com.shared.domain.model.SubCategoriaTela;
-import backend.com.shared.exception.DuplicadoException;
 import backend.com.shared.exception.EntityNotFoundException;
 import backend.com.shared.infrastructure.mapper.ArticuloAccesorioMapper;
 import backend.com.shared.infrastructure.mapper.ArticuloMapper;
@@ -20,7 +20,9 @@ import backend.com.shared.infrastructure.mapper.ArticuloPrendaMapper;
 import backend.com.shared.infrastructure.mapper.ArticuloTelaMapper;
 import backend.com.shared.infrastructure.persistence.repository.ArticuloRepository;
 import backend.com.shared.infrastructure.persistence.repository.CategoriaTelaRepository;
+import backend.com.shared.infrastructure.persistence.repository.FamiliaTelaRepository;
 import backend.com.shared.infrastructure.persistence.repository.SubCategoriaTelaRepository;
+import backend.com.shared.infrastructure.persistence.repository.TipoAccesorioRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -34,6 +36,7 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -50,6 +53,12 @@ class ArticuloServiceImplTest {
     private SubCategoriaTelaRepository subCategoriaTelaRepository;
 
     @Mock
+    private FamiliaTelaRepository familiaTelaRepository;
+
+    @Mock
+    private TipoAccesorioRepository tipoAccesorioRepository;
+
+    @Mock
     private ArticuloMapper articuloMapper;
 
     @Mock
@@ -60,6 +69,9 @@ class ArticuloServiceImplTest {
 
     @Mock
     private ArticuloAccesorioMapper articuloAccesorioMapper;
+
+    @Mock
+    private CodigoGeneratorService codigoGeneratorService;
 
     @InjectMocks
     private ArticuloServiceImpl articuloServiceImpl;
@@ -111,9 +123,9 @@ class ArticuloServiceImplTest {
         Articulo guardado = articulo(1, "ART-001", "Polera", TipoArticulo.PRENDA_LISTA, true, categoria, null);
         ArticuloDTO esperado = ArticuloDTO.builder().idArticulo(1).codigoArticulo("ART-001").build();
 
-        when(articuloRepository.existsByCodigoArticulo("ART-001")).thenReturn(false);
         when(categoriaTelaRepository.findById(1)).thenReturn(Optional.of(categoria));
         when(articuloPrendaMapper.toDomain(detallePrendaDTO)).thenReturn(detallePrenda);
+        when(codigoGeneratorService.siguienteCorrelativo(eq("PRD"), any())).thenReturn("ART-001");
         when(articuloRepository.save(any(Articulo.class))).thenReturn(guardado);
         when(articuloMapper.toDTO(guardado)).thenReturn(esperado);
 
@@ -127,24 +139,6 @@ class ArticuloServiceImplTest {
                         && a.getSubCategoriaTela() == null
                         && a.getDetallePrenda() == detallePrenda));
         verify(subCategoriaTelaRepository, never()).findById(any());
-    }
-
-    @Test
-    @DisplayName("crearArticulo lanza excepción si el código ya existe")
-    void crear_duplicado() {
-        ArticuloDTO dto = ArticuloDTO.builder()
-                .codigoArticulo("ART-001")
-                .nombreArticulo("Polera")
-                .tipoArticulo(TipoArticulo.PRENDA_LISTA)
-                .idCategoriaTela(1)
-                .build();
-
-        when(articuloRepository.existsByCodigoArticulo("ART-001")).thenReturn(true);
-
-        assertThatThrownBy(() -> articuloServiceImpl.crearArticulo(dto))
-                .isInstanceOf(DuplicadoException.class);
-
-        verify(articuloRepository, never()).save(any());
     }
 
     @Test
@@ -166,10 +160,10 @@ class ArticuloServiceImplTest {
         Articulo guardado = articulo(2, "ART-002", "Tela algodón", TipoArticulo.TELA, true, categoria, subCategoria);
         ArticuloDTO esperado = ArticuloDTO.builder().idArticulo(2).codigoArticulo("ART-002").build();
 
-        when(articuloRepository.existsByCodigoArticulo("ART-002")).thenReturn(false);
         when(categoriaTelaRepository.findById(1)).thenReturn(Optional.of(categoria));
         when(subCategoriaTelaRepository.findById(2)).thenReturn(Optional.of(subCategoria));
         when(articuloTelaMapper.toDomain(detalleTelaDTO)).thenReturn(detalleTela);
+        when(codigoGeneratorService.siguienteCorrelativo(eq("TEL"), any())).thenReturn("ART-002");
         when(articuloRepository.save(any(Articulo.class))).thenReturn(guardado);
         when(articuloMapper.toDTO(guardado)).thenReturn(esperado);
 
@@ -190,7 +184,6 @@ class ArticuloServiceImplTest {
                 .idCategoriaTela(99)
                 .build();
 
-        when(articuloRepository.existsByCodigoArticulo("ART-001")).thenReturn(false);
         when(categoriaTelaRepository.findById(99)).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> articuloServiceImpl.crearArticulo(dto))
@@ -211,7 +204,6 @@ class ArticuloServiceImplTest {
                 .idSubCategoriaTela(99)
                 .build();
 
-        when(articuloRepository.existsByCodigoArticulo("ART-001")).thenReturn(false);
         when(categoriaTelaRepository.findById(1)).thenReturn(Optional.of(categoria));
         when(subCategoriaTelaRepository.findById(99)).thenReturn(Optional.empty());
 
@@ -238,9 +230,9 @@ class ArticuloServiceImplTest {
         Articulo guardado = articulo(3, "ART-003", "Botón", TipoArticulo.ACCESORIO, true, categoria, null);
         ArticuloDTO esperado = ArticuloDTO.builder().idArticulo(3).codigoArticulo("ART-003").build();
 
-        when(articuloRepository.existsByCodigoArticulo("ART-003")).thenReturn(false);
         when(categoriaTelaRepository.findById(1)).thenReturn(Optional.of(categoria));
         when(articuloAccesorioMapper.toDomain(detalleAccesorioDTO)).thenReturn(detalleAccesorio);
+        when(codigoGeneratorService.siguienteCorrelativo(eq("ACC"), any())).thenReturn("ART-003");
         when(articuloRepository.save(any(Articulo.class))).thenReturn(guardado);
         when(articuloMapper.toDTO(guardado)).thenReturn(esperado);
 

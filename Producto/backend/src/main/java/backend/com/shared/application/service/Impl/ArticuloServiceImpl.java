@@ -2,22 +2,27 @@ package backend.com.shared.application.service.impl;
 
 import backend.com.shared.application.dto.ArticuloDTO;
 import backend.com.shared.application.service.ArticuloService;
+import backend.com.shared.application.service.CodigoGeneratorService;
 import backend.com.shared.domain.enums.TipoArticulo;
 import backend.com.shared.domain.model.Articulo;
 import backend.com.shared.domain.model.ArticuloAccesorio;
 import backend.com.shared.domain.model.ArticuloPrenda;
 import backend.com.shared.domain.model.ArticuloTela;
 import backend.com.shared.domain.model.CategoriaTela;
+import backend.com.shared.domain.model.FamiliaTela;
 import backend.com.shared.domain.model.SubCategoriaTela;
-import backend.com.shared.exception.DuplicadoException;
+import backend.com.shared.domain.model.TipoAccesorio;
 import backend.com.shared.exception.EntityNotFoundException;
+import backend.com.shared.exception.ValidationException;
 import backend.com.shared.infrastructure.mapper.ArticuloAccesorioMapper;
 import backend.com.shared.infrastructure.mapper.ArticuloMapper;
 import backend.com.shared.infrastructure.mapper.ArticuloPrendaMapper;
 import backend.com.shared.infrastructure.mapper.ArticuloTelaMapper;
 import backend.com.shared.infrastructure.persistence.repository.ArticuloRepository;
 import backend.com.shared.infrastructure.persistence.repository.CategoriaTelaRepository;
+import backend.com.shared.infrastructure.persistence.repository.FamiliaTelaRepository;
 import backend.com.shared.infrastructure.persistence.repository.SubCategoriaTelaRepository;
+import backend.com.shared.infrastructure.persistence.repository.TipoAccesorioRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,19 +37,21 @@ public class ArticuloServiceImpl implements ArticuloService {
     private final ArticuloRepository articuloRepository;
     private final CategoriaTelaRepository categoriaTelaRepository;
     private final SubCategoriaTelaRepository subCategoriaTelaRepository;
+    private final FamiliaTelaRepository familiaTelaRepository;
+    private final TipoAccesorioRepository tipoAccesorioRepository;
     private final ArticuloMapper articuloMapper;
     private final ArticuloTelaMapper articuloTelaMapper;
     private final ArticuloPrendaMapper articuloPrendaMapper;
     private final ArticuloAccesorioMapper articuloAccesorioMapper;
+    private final CodigoGeneratorService codigoGeneratorService;
 
     @Override
     public ArticuloDTO crearArticulo(ArticuloDTO dto) {
-        if (articuloRepository.existsByCodigoArticulo(dto.getCodigoArticulo())) {
-            throw new DuplicadoException("código de artículo", dto.getCodigoArticulo());
+        if (dto.getTipoArticulo() == TipoArticulo.TELA && dto.getIdCategoriaTela() == null) {
+            throw new ValidationException("La categoría de tela es obligatoria para artículos tipo TELA");
         }
 
         Articulo articulo = Articulo.builder()
-                .codigoArticulo(dto.getCodigoArticulo())
                 .nombreArticulo(dto.getNombreArticulo())
                 .descripcionArticulo(dto.getDescripcionArticulo())
                 .codigoBarra(dto.getCodigoBarra())
@@ -55,6 +62,7 @@ public class ArticuloServiceImpl implements ArticuloService {
                 .build();
 
         asignarDetalle(articulo, dto);
+        articulo.setCodigoArticulo(generarCodigoArticulo(articulo, dto));
         return articuloMapper.toDTO(articuloRepository.save(articulo));
     }
 
@@ -166,5 +174,33 @@ public class ArticuloServiceImpl implements ArticuloService {
             articulo.setDetallePrenda(null);
         if (nuevoTipo != TipoArticulo.ACCESORIO)
             articulo.setDetalleAccesorio(null);
+    }
+
+    /**
+     * Genera el SKU del artículo según su tipo de negocio: para Telas usa el
+     * código de la Familia elegida (ej. {@code GAB-001}), para Accesorios el
+     * código del Tipo de Accesorio (ej. {@code CIE-001}), y para Prendas un
+     * prefijo fijo ({@code PRD-001}). El código nunca lo escribe el usuario.
+     */
+    private String generarCodigoArticulo(Articulo articulo, ArticuloDTO dto) {
+        String prefijo;
+        switch (articulo.getTipoArticulo()) {
+            case TELA -> {
+                Integer idFamilia = dto.getDetalleTela() != null && dto.getDetalleTela().getFamiliaTela() != null
+                        ? dto.getDetalleTela().getFamiliaTela().getIdFamiliaTela()
+                        : null;
+                prefijo = idFamilia == null ? "TEL"
+                        : familiaTelaRepository.findById(idFamilia).map(FamiliaTela::getCodigoFamilia).orElse("TEL");
+            }
+            case ACCESORIO -> {
+                Integer idTipoAccesorio = dto.getDetalleAccesorio() != null && dto.getDetalleAccesorio().getTipoAccesorio() != null
+                        ? dto.getDetalleAccesorio().getTipoAccesorio().getIdTipoAccesorio()
+                        : null;
+                prefijo = idTipoAccesorio == null ? "ACC"
+                        : tipoAccesorioRepository.findById(idTipoAccesorio).map(TipoAccesorio::getCodigo).orElse("ACC");
+            }
+            default -> prefijo = "PRD";
+        }
+        return codigoGeneratorService.siguienteCorrelativo(prefijo, articuloRepository::existsByCodigoArticulo);
     }
 }

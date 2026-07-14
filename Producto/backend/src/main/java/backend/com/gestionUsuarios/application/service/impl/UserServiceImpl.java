@@ -16,8 +16,10 @@ import backend.com.comercial.infrastructure.persistence.repository.EvaluacionNeg
 import backend.com.comercial.infrastructure.persistence.repository.NotaVentaJpaRepository;
 import backend.com.comercial.infrastructure.persistence.repository.SolicitudCostosJpaRepository;
 import backend.com.comercial.infrastructure.persistence.repository.SolicitudCotizacionJpaRepository;
+import backend.com.shared.application.service.HistorialEstadoService;
 
 import org.springframework.lang.NonNull;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -39,12 +41,15 @@ public class UserServiceImpl implements UserService {
     private final NotaVentaJpaRepository notaVentaRepository;
     private final SolicitudCostosJpaRepository solicitudCostosRepository;
     private final SolicitudCotizacionJpaRepository solicitudCotizacionRepository;
+    private final HistorialEstadoService historialEstadoService;
+    private final PasswordEncoder passwordEncoder;
 
     public UserServiceImpl(UserRepository userRepository, RoleRepository roleRepository,
             AreaRepository areaRepository, UserMapper userMapper, UserValidator userValidator,
             VendedorRepository vendedorRepository, EvaluacionNegocioJpaRepository evaluacionNegocioRepository,
             NotaVentaJpaRepository notaVentaRepository, SolicitudCostosJpaRepository solicitudCostosRepository,
-            SolicitudCotizacionJpaRepository solicitudCotizacionRepository) {
+            SolicitudCotizacionJpaRepository solicitudCotizacionRepository,
+            HistorialEstadoService historialEstadoService, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         this.areaRepository = areaRepository;
@@ -55,6 +60,8 @@ public class UserServiceImpl implements UserService {
         this.notaVentaRepository = notaVentaRepository;
         this.solicitudCostosRepository = solicitudCostosRepository;
         this.solicitudCotizacionRepository = solicitudCotizacionRepository;
+        this.historialEstadoService = historialEstadoService;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
@@ -78,6 +85,10 @@ public class UserServiceImpl implements UserService {
     public User crearUsuario(User user, Set<Role> roles, Set<Area> areas) {
         userValidator.validateRun(user.getUsuarioRun());
         userValidator.validateUniqueness(user.getUsuarioEmail(), user.getUsuarioRun());
+
+        if (user.getUsuarioPassword() != null && !user.getUsuarioPassword().isBlank()) {
+            user.setUsuarioPassword(passwordEncoder.encode(user.getUsuarioPassword()));
+        }
 
         user.setRoles(roles != null ? roles : new HashSet<>());
         user.setAreas(areas != null ? areas : new HashSet<>());
@@ -117,19 +128,28 @@ public class UserServiceImpl implements UserService {
     public User actualizarUsuario(@NonNull Long id, User userActualizado, Set<Role> roles, Set<Area> areas) {
         User user = obtenerUsuario(id);
 
-        userValidator.validateRun(userActualizado.getUsuarioRun());
-        if (userActualizado.getUsuarioNombre() != null && !userActualizado.getUsuarioNombre().isBlank()) 
+        if (userActualizado.getUsuarioRun() != null && !userActualizado.getUsuarioRun().isBlank())
+            userValidator.validateRun(userActualizado.getUsuarioRun());
+        if (userActualizado.getUsuarioNombre() != null && !userActualizado.getUsuarioNombre().isBlank())
             user.setUsuarioNombre(userActualizado.getUsuarioNombre());
         if (userActualizado.getUsuarioApellidos() != null && !userActualizado.getUsuarioApellidos().isBlank()) 
             user.setUsuarioApellidos(userActualizado.getUsuarioApellidos());
         if (userActualizado.getUsuarioEmail() != null && !userActualizado.getUsuarioEmail().isBlank()) 
             user.setUsuarioEmail(userActualizado.getUsuarioEmail());
         if (userActualizado.getUsuarioPassword() != null && !userActualizado.getUsuarioPassword().isBlank()) {
-            user.setUsuarioPassword(userActualizado.getUsuarioPassword());
+            user.setUsuarioPassword(passwordEncoder.encode(userActualizado.getUsuarioPassword()));
         }
-        if (userActualizado.getTelefono() != null && !userActualizado.getTelefono().isBlank()) 
+        if (userActualizado.getTelefono() != null && !userActualizado.getTelefono().isBlank())
             user.setTelefono(userActualizado.getTelefono());
-        if (userActualizado.getUsuarioRun() != null && !userActualizado.getUsuarioRun().isBlank()) 
+        if (userActualizado.getFechaNacimiento() != null)
+            user.setFechaNacimiento(userActualizado.getFechaNacimiento());
+        if (userActualizado.getDireccion() != null)
+            user.setDireccion(userActualizado.getDireccion());
+        if (userActualizado.getRegion() != null)
+            user.setRegion(userActualizado.getRegion());
+        if (userActualizado.getComuna() != null)
+            user.setComuna(userActualizado.getComuna());
+        if (userActualizado.getUsuarioRun() != null && !userActualizado.getUsuarioRun().isBlank())
             user.setUsuarioRun(userActualizado.getUsuarioRun());
         user.setEnabled(userActualizado.isEnabled());
 
@@ -144,18 +164,45 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public User actualizarUsuario(@NonNull Long id, CreateUserDTO dto) {
+        return actualizarUsuario(id, dto, null);
+    }
+
+    @Override
+    @Transactional
+    public User actualizarUsuario(@NonNull Long id, CreateUserDTO dto, String adminUser) {
+        boolean cambiandoPassword = dto.getUsuarioPassword() != null && !dto.getUsuarioPassword().isBlank();
+        if (cambiandoPassword && !Boolean.TRUE.equals(dto.getPasswordChangeConsent())) {
+            throw new IllegalArgumentException(
+                    "Debe confirmar que cuenta con el consentimiento del colaborador para cambiar la contraseña");
+        }
+
+        // roles/areas quedan en null (no en un Set vacío) cuando el request no los incluye,
+        // para que actualizarUsuario(...) sepa que no debe tocar las asignaciones existentes.
         Set<Role> roles = dto.getRoles() != null ? dto.getRoles().stream()
                 .map(nombre -> roleRepository.findByNombre(nombre)
                         .orElseThrow(() -> new RuntimeException("Rol no encontrado: " + nombre)))
-                .collect(Collectors.toSet()) : new HashSet<>();
+                .collect(Collectors.toSet()) : null;
 
         Set<Area> areas = dto.getAreas() != null ? dto.getAreas().stream()
                 .map(nombre -> areaRepository.findByNombre(nombre)
                         .orElseThrow(() -> new RuntimeException("Área no encontrada: " + nombre)))
-                .collect(Collectors.toSet()) : new HashSet<>();
+                .collect(Collectors.toSet()) : null;
 
         User userToUpdate = userMapper.toUser(dto);
-        return actualizarUsuario(id, userToUpdate, roles, areas);
+        // El mapper no distingue "enabled omitido" de "enabled=true": si el request no
+        // trajo el campo, se preserva el valor actual en vez de reactivar la cuenta.
+        if (dto.getEnabled() == null) {
+            userToUpdate.setEnabled(obtenerUsuario(id).isEnabled());
+        }
+        User actualizado = actualizarUsuario(id, userToUpdate, roles, areas);
+
+        if (cambiandoPassword) {
+            historialEstadoService.registrar("USUARIO", id, null, null,
+                    adminUser != null && !adminUser.isBlank() ? adminUser : "ADMIN",
+                    "Cambio de contraseña realizado por el administrador con consentimiento confirmado del colaborador");
+        }
+
+        return actualizado;
     }
 
     @Override

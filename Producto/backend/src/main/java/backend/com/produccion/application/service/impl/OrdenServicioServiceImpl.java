@@ -11,6 +11,7 @@ import backend.com.produccion.domain.model.DespachoOS;
 import backend.com.produccion.domain.model.OrdenServicio;
 import backend.com.produccion.domain.model.RecepcionOS;
 import backend.com.produccion.domain.repository.OrdenServicioRepository;
+import backend.com.shared.application.service.NotificacionService;
 import backend.com.shared.exception.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -27,10 +28,13 @@ public class OrdenServicioServiceImpl implements OrdenServicioService {
 
     private final OrdenServicioRepository ordenServicioRepository;
     private final CrearOSUseCase crearOSUseCase;
+    private final NotificacionService notificacionService;
 
     @Override
     public OrdenServicioDTO crear(CrearOSRequest request) {
-        return toDTO(crearOSUseCase.ejecutar(request));
+        OrdenServicioDTO dto = toDTO(crearOSUseCase.ejecutar(request));
+        notificacionService.crear("OS", "Orden de Servicio " + dto.getNumeroOS() + " creada", "PRODUCCION", "normal");
+        return dto;
     }
 
     @Override
@@ -45,7 +49,9 @@ public class OrdenServicioServiceImpl implements OrdenServicioService {
                 despachoDTO.getResponsable(),
                 despachoDTO.getObservaciones());
         os.registrarDespacho(despacho);
-        return toDTO(ordenServicioRepository.save(os));
+        OrdenServicioDTO dto = toDTO(ordenServicioRepository.save(os));
+        notificacionService.crear("OS", "Despacho registrado en Orden de Servicio " + dto.getNumeroOS(), "PRODUCCION", "normal");
+        return dto;
     }
 
     @Override
@@ -61,14 +67,18 @@ public class OrdenServicioServiceImpl implements OrdenServicioService {
                 recepcionDTO.getResponsable(),
                 recepcionDTO.getObservaciones());
         os.registrarRecepcion(recepcion);
-        return toDTO(ordenServicioRepository.save(os));
+        OrdenServicioDTO dto = toDTO(ordenServicioRepository.save(os));
+        notificacionService.crear("OS", "Recepción registrada en Orden de Servicio " + dto.getNumeroOS(), "PRODUCCION", "normal");
+        return dto;
     }
 
     @Override
     public OrdenServicioDTO cerrar(Long idOS) {
         OrdenServicio os = cargar(idOS);
         os.cerrar();
-        return toDTO(ordenServicioRepository.save(os));
+        OrdenServicioDTO dto = toDTO(ordenServicioRepository.save(os));
+        notificacionService.crear("OS", "Orden de Servicio " + dto.getNumeroOS() + " cerrada", "PRODUCCION", "normal");
+        return dto;
     }
 
     @Override

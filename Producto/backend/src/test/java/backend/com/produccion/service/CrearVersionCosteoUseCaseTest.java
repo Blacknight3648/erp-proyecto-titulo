@@ -70,6 +70,7 @@ class CrearVersionCosteoUseCaseTest {
                 1L, "Cliente Test", 2L, "Vendedor Test",
                 new Money(new BigDecimal("5000"), "CLP"), // costoHilos
                 new Money(new BigDecimal("20000"), "CLP"), // costoManoObra
+                "", // observacionesManoObra
                 new Money(new BigDecimal("1000"), "CLP"), // costoEtiquetas
                 new Money(new BigDecimal("2000"), "CLP"), // costoEmbalaje
                 new Money(new BigDecimal("3000"), "CLP"), // costoFlete

@@ -23,7 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
  * El formato es consecutivo puro {@code PREFIJO-0000001} (7 dígitos, sin año),
  * donde el prefijo es el propio tipo del documento.
  *
- * Tipos canónicos: "NV", "EVN", "OP", "HC", "C", "SCOS", "SCOT", "SC", "OC".
+ * Tipos canónicos: "NV", "EVN", "OP", "HC", "COST", "SCOS", "SCOT", "SC", "OC".
  */
 @Service
 @RequiredArgsConstructor
@@ -41,7 +41,7 @@ public class NumeroDocumentoService {
      * para garantizar que, si la creación del documento falla y se revierte, el
      * incremento del contador también se revierte — sin huecos en la numeración.
      */
-    @Transactional
+    @Transactional(propagation = org.springframework.transaction.annotation.Propagation.REQUIRES_NEW)
     public Long siguiente(String tipo) {
         if (tipo == null || tipo.isBlank()) {
             throw new IllegalArgumentException("El tipo de documento es obligatorio");

@@ -122,6 +122,13 @@ public class ProveedorServiceImpl implements ProveedorService {
             existente.setSigla(proveedor.getSigla());
         existente.setActivo(proveedor.isActivo());
 
+        if (proveedor.getContactos() != null)
+            existente.setContactos(proveedor.getContactos());
+        if (proveedor.getDireccion() != null)
+            existente.setDireccion(proveedor.getDireccion());
+        if (proveedor.getDatosBancarios() != null)
+            existente.setDatosBancarios(proveedor.getDatosBancarios());
+
         Giro giro = resolverGiro(proveedor.getGiro());
         if (giro != null)
             existente.setGiro(giro);

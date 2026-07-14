@@ -17,6 +17,7 @@ public class Articulo {
     private String codigoBarra;
     private TipoArticulo tipoArticulo;
     private Boolean activo;
+    private java.math.BigDecimal stockActual;
 
     private CategoriaTela categoriaTela;
     private SubCategoriaTela subCategoriaTela;

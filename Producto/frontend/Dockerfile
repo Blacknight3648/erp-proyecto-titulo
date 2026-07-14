@@ -9,7 +9,7 @@ ARG VITE_API_URL=
 ENV VITE_API_URL=$VITE_API_URL
 
 COPY package*.json ./
-RUN npm ci --silent
+RUN npm ci
 
 COPY . .
 RUN npm run build

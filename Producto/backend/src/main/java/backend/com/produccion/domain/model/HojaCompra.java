@@ -57,6 +57,10 @@ public class HojaCompra {
         this.estado = EstadoHC.CERRADA;
     }
 
+    public void reabrir() {
+        this.estado = EstadoHC.BORRADOR;
+    }
+
     public void addItem(HojaCompraItem item) {
         this.items.add(item);
     }

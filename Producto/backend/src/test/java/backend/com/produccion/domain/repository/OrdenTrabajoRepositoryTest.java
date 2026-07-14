@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.context.annotation.Import;
+import org.springframework.test.context.ActiveProfiles;
 
 import java.util.List;
 import java.util.Optional;
@@ -21,6 +22,7 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
+@ActiveProfiles("test")
 @Import({OrdenTrabajoRepositoryImpl.class, OrdenTrabajoMapper.class})
 @DisplayName("Pruebas para OrdenTrabajoRepository")
 class OrdenTrabajoRepositoryTest {
@@ -154,8 +156,8 @@ class OrdenTrabajoRepositoryTest {
         void debeEncontrarPorOrdenProduccionId() {
             // Given
             Long ordenProdTargetId = 800L;
-            OrdenTrabajoJpaEntity otEntity1 = persistirOrdenTrabajo(1L, ordenProdTargetId);
-            OrdenTrabajoJpaEntity otEntity2 = persistirOrdenTrabajo(2L, ordenProdTargetId);
+            persistirOrdenTrabajo(1L, ordenProdTargetId);
+            persistirOrdenTrabajo(2L, ordenProdTargetId);
 
             // When
             List<OrdenTrabajo> resultado = repository.findByOrdenProduccionId(ordenProdTargetId);

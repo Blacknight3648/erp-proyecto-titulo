@@ -77,9 +77,9 @@ public class HojaCompraMapper {
         Long proveedorId = entity.getProveedorId();
         String proveedorNombre = entity.getProveedor() != null ? entity.getProveedor().getRazonSocialProveedor() : null;
 
-        Long ocId = null;
-        String numeroOC = null;
-        if (entity.getOcLinks() != null && !entity.getOcLinks().isEmpty()) {
+        Long ocId = entity.getOcId();
+        String numeroOC = entity.getNumeroOC();
+        if (ocId == null && entity.getOcLinks() != null && !entity.getOcLinks().isEmpty()) {
             backend.com.produccion.infrastructure.persistence.entity.HCItemOCItemLinkJpaEntity link = entity.getOcLinks().get(0);
             if (link.getOcItem() != null && link.getOcItem().getOrdenCompra() != null) {
                 ocId = link.getOcItem().getOrdenCompra().getIdOC();
@@ -97,10 +97,15 @@ public class HojaCompraMapper {
                 entity.getCantidadOP(),
                 entity.getCantidadRequerida(),
                 entity.getPrecioUnitarioRef(),
+                entity.getCantidadStock(),
+                entity.getCantidadAComprar(),
+                entity.getModificado(),
+                entity.getJustificacionModificacion(),
                 proveedorId,
                 proveedorNombre,
                 ocId,
-                numeroOC);
+                numeroOC,
+                entity.getPresupuestado());
     }
 
     private HojaCompraItemJpaEntity itemToJpaEntity(HojaCompraItem domain) {
@@ -114,7 +119,14 @@ public class HojaCompraMapper {
         entity.setCantidadOP(domain.getCantidadOP());
         entity.setCantidadRequerida(domain.getCantidadRequerida());
         entity.setPrecioUnitarioRef(domain.getPrecioUnitarioRef());
+        entity.setCantidadStock(domain.getCantidadStock());
+        entity.setCantidadAComprar(domain.getCantidadAComprar());
+        entity.setModificado(domain.getModificado() != null ? domain.getModificado() : false);
+        entity.setJustificacionModificacion(domain.getJustificacionModificacion());
         entity.setProveedorId(domain.getProveedorId());
+        entity.setOcId(domain.getOcId());
+        entity.setNumeroOC(domain.getNumeroOC());
+        entity.setPresupuestado(domain.getPresupuestado() != null ? domain.getPresupuestado() : true);
         return entity;
     }
 }

@@ -15,7 +15,8 @@ public class SCOSPlantillaMaterialVinculoJpaEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @Column(name = "id_scos_plantilla_material_vinculo")
+    private Long idSCOSPlantillaMaterialVinculo;
 
     @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)

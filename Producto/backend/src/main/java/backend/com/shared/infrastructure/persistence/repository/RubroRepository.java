@@ -12,6 +12,8 @@ public interface RubroRepository {
 
     Optional<Rubro> findByNombreRubro(String nombreRubro);
 
+    Optional<Rubro> findBySiglaRubro(String siglaRubro);
+
     Rubro save(Rubro rubro);
 
     void deleteById(Long id);

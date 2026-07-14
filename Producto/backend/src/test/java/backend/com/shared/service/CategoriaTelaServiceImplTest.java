@@ -1,6 +1,7 @@
 package backend.com.shared.service;
 
 import backend.com.shared.application.dto.CategoriaTelaDTO;
+import backend.com.shared.application.service.CodigoGeneratorService;
 import backend.com.shared.application.service.impl.CategoriaTelaServiceImpl;
 import backend.com.shared.domain.model.CategoriaTela;
 import backend.com.shared.exception.DuplicadoException;
@@ -20,6 +21,7 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -31,6 +33,9 @@ class CategoriaTelaServiceImplTest {
 
     @Mock
     private CategoriaTelaMapper mapper;
+
+    @Mock
+    private CodigoGeneratorService codigoGeneratorService;
 
     @InjectMocks
     private CategoriaTelaServiceImpl categoriaTelaServiceImpl;
@@ -62,8 +67,8 @@ class CategoriaTelaServiceImplTest {
                 .nombreCategoriaTela("Telas")
                 .build();
 
-        when(categoriaTelaRepository.existsByCodigoCategoriaTela("TEL")).thenReturn(false);
         when(categoriaTelaRepository.existsByNombreCategoriaTela("Telas")).thenReturn(false);
+        when(codigoGeneratorService.generarPorAbreviatura(eq("CAT-"), eq("Telas"), any())).thenReturn("TEL");
         when(categoriaTelaRepository.save(any(CategoriaTela.class))).thenReturn(guardada);
         when(mapper.toDTO(guardada)).thenReturn(esperado);
 
@@ -75,22 +80,6 @@ class CategoriaTelaServiceImplTest {
     }
 
     @Test
-    @DisplayName("crear lanza excepción si el código de categoría ya existe")
-    void crear_codigoDuplicado() {
-        CategoriaTelaDTO dto = CategoriaTelaDTO.builder()
-                .codigoCategoriaTela("TEL")
-                .nombreCategoriaTela("Telas")
-                .build();
-
-        when(categoriaTelaRepository.existsByCodigoCategoriaTela("TEL")).thenReturn(true);
-
-        assertThatThrownBy(() -> categoriaTelaServiceImpl.crear(dto))
-                .isInstanceOf(DuplicadoException.class);
-
-        verify(categoriaTelaRepository, never()).save(any());
-    }
-
-    @Test
     @DisplayName("crear lanza excepción si el nombre de categoría ya existe")
     void crear_nombreDuplicado() {
         CategoriaTelaDTO dto = CategoriaTelaDTO.builder()
@@ -98,7 +87,6 @@ class CategoriaTelaServiceImplTest {
                 .nombreCategoriaTela("Telas")
                 .build();
 
-        when(categoriaTelaRepository.existsByCodigoCategoriaTela("TEL")).thenReturn(false);
         when(categoriaTelaRepository.existsByNombreCategoriaTela("Telas")).thenReturn(true);
 
         assertThatThrownBy(() -> categoriaTelaServiceImpl.crear(dto))

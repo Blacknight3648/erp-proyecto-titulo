@@ -48,6 +48,12 @@ public class OrdenCompraJpaEntity {
     @Column(name = "total_neto", precision = 14, scale = 2)
     private BigDecimal totalNeto;
 
+    @Column(name = "motivo_rechazo", length = 500)
+    private String motivoRechazo;
+
+    @Column(name = "version", nullable = false)
+    private Integer version = 1;
+
     @OneToMany(mappedBy = "ordenCompra", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OrdenCompraItemJpaEntity> items = new ArrayList<>();
 }

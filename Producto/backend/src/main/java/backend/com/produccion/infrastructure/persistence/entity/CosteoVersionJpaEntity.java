@@ -41,6 +41,9 @@ public class CosteoVersionJpaEntity {
     @Column(name = "total_mano_obra", precision = 12, scale = 2)
     private BigDecimal totalManoObra;
 
+    @Column(name = "observaciones_mano_obra", length = 1000)
+    private String observacionesManoObra;
+
     @Column(name = "total_hilo", precision = 12, scale = 2)
     private BigDecimal totalHilo;
 

@@ -1,7 +1,6 @@
 package backend.com.gestionUsuarios.domain.model;
 
 import backend.com.shared.domain.model.Contacto;
-import backend.com.shared.domain.model.DatoBancario;
 import backend.com.shared.domain.model.Direccion;
 import backend.com.shared.domain.model.Giro;
 

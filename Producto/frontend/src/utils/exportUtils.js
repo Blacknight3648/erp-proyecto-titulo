@@ -202,11 +202,11 @@ export const exportToPDF = (data) => {
     doc.setDrawColor(230);
     doc.rect(20, condBoxY, 170, 25);
 
-    doc.text(`Anticipo: ${condiciones.anticipo}%`, 25, condBoxY + 7);
-    doc.text(`Saldo contra entrega: ${100 - condiciones.anticipo}%`, 25, condBoxY + 12);
-    doc.text(`Flete: ${condiciones.flete}`, 25, condBoxY + 17);
-    doc.text(`Plazo de Entrega: ${condiciones.plazoEntrega}`, 100, condBoxY + 7);
-    doc.text(`Garantía: ${condiciones.garantia}`, 100, condBoxY + 12);
+    doc.text(`Anticipo: ${condiciones?.anticipo ?? 50}%`, 25, condBoxY + 7);
+    doc.text(`Saldo contra entrega: ${100 - (condiciones?.anticipo ?? 50)}%`, 25, condBoxY + 12);
+    doc.text(`Flete: ${condiciones?.flete ?? 'Cliente'}`, 25, condBoxY + 17);
+    doc.text(`Plazo de Entrega: ${condiciones?.plazoEntrega ?? 'Lugar a convenir'}`, 100, condBoxY + 7);
+    doc.text(`Garantía: ${condiciones?.garantia ?? '30 días de corrido'}`, 100, condBoxY + 12);
 
     // -- Footer --
     const pageCount = doc.internal.getNumberOfPages();

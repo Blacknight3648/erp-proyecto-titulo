@@ -4,7 +4,7 @@ import { OrdenCompraItemDTO } from './OrdenCompraItemDTO';
  * DTO para representar una Orden de Compra.
  * Espejo de OrdenCompraDTO.java del backend (modelo nuevo Fase 3).
  *
- * Estados: EMITIDA | ENVIADA | RECEPCIONADA_PARCIAL | RECEPCIONADA | CERRADA
+ * Estados: EMITIDA | ENVIADA | RECEPCIONADA_PARCIAL | RECEPCIONADA | CERRADA | RECHAZADA
  */
 export class OrdenCompraDTO {
     constructor(data = {}) {
@@ -19,6 +19,9 @@ export class OrdenCompraDTO {
         this.items = Array.isArray(data.items)
             ? data.items.map(item => new OrdenCompraItemDTO(item))
             : [];
+        this.motivoRechazo = data.motivoRechazo ?? null;
+        this.fechaRechazo = data.fechaRechazo ?? null;
+        this.version = data.version ?? 1;
     }
 
     static fromResponse(response) {

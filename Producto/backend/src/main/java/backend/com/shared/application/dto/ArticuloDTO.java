@@ -14,7 +14,6 @@ public class ArticuloDTO {
 
     private Integer idArticulo;
 
-    @NotBlank(message = "El código de artículo es obligatorio")
     @Size(max = 20, message = "El código no puede superar 20 caracteres")
     private String codigoArticulo;
 
@@ -32,8 +31,8 @@ public class ArticuloDTO {
     private TipoArticulo tipoArticulo;
 
     private Boolean activo;
+    private java.math.BigDecimal stockActual;
 
-    @NotNull(message = "La categoría es obligatoria")
     private Integer idCategoriaTela;
 
     private Integer idSubCategoriaTela;

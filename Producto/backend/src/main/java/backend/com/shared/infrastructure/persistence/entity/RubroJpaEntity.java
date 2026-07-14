@@ -24,4 +24,8 @@ public class RubroJpaEntity {
     @Size(max = 255)
     @Column(name = "descripcion_rubro", length = 255)
     private String descripcionRubro;
+
+    @Size(max = 10)
+    @Column(name = "sigla_rubro", unique = true, length = 10)
+    private String siglaRubro;
 }

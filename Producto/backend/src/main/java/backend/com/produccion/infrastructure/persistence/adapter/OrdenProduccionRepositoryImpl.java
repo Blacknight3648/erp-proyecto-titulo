@@ -53,4 +53,9 @@ public class OrdenProduccionRepositoryImpl implements OrdenProduccionRepository 
                 .map(mapper::toDomain)
                 .collect(Collectors.toList());
     }
+
+    @Override
+    public List<Long> findCosteoIdsEnUso() {
+        return jpaRepository.findCosteoIdsEnUso();
+    }
 }

@@ -39,6 +39,12 @@ public class CosteoController {
         return ResponseEntity.ok(gestionarCosteoUseCase.obtenerCosteosDisponiblesParaEVN());
     }
 
+    /** Costeos APROBADOS, sin vínculo a EVN ni a otra OP, disponibles para vincular manualmente al crear una NV. */
+    @GetMapping("/disponibles-op")
+    public ResponseEntity<java.util.List<CosteoDTO>> getDisponiblesParaOP() {
+        return ResponseEntity.ok(gestionarCosteoUseCase.obtenerCosteosDisponiblesParaOP());
+    }
+
     @PostMapping
     public CosteoDTO crear(@RequestBody CosteoDTO costeo) {
         return gestionarCosteoUseCase.registrarCosteo(costeo);

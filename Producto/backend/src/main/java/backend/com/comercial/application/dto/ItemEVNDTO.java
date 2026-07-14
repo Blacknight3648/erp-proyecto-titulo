@@ -23,6 +23,7 @@ public class ItemEVNDTO {
     private String codigoInterno;
     private String codigoProveedor;
     private String proveedorNombre;
+    private String color;
 
     // Cantidades y precios
     private Integer cantidad;

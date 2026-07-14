@@ -36,6 +36,16 @@ public class Costeo {
     private Long vendedorId;
     private String vendedorNombre;
 
+    private String observacionesManoObra;
+
+    // Desglose de mano de obra (costoManoObra = suma de estos + costoMoPropia + costoGratificacion)
+    private BigDecimal moPrenda;
+    private BigDecimal moCinta;
+    private BigDecimal moCosturaSellada;
+    private BigDecimal moAcolchado;
+    private BigDecimal costoMoPropia;
+    private BigDecimal costoGratificacion;
+
     // Detalle de costos (Money para precios, BigDecimal para cantidades)
     private Money costoHilos;
     private Money costoManoObra;
@@ -67,6 +77,13 @@ public class Costeo {
         c.numeroCosteo = numero;
         c.notaVentaId = notaVentaId;
         c.solicitudCostosId = null;
+        c.observacionesManoObra = "";
+        c.moPrenda = java.math.BigDecimal.ZERO;
+        c.moCinta = java.math.BigDecimal.ZERO;
+        c.moCosturaSellada = java.math.BigDecimal.ZERO;
+        c.moAcolchado = java.math.BigDecimal.ZERO;
+        c.costoMoPropia = java.math.BigDecimal.ZERO;
+        c.costoGratificacion = java.math.BigDecimal.ZERO;
         c.costoHilos = new Money(java.math.BigDecimal.ZERO, "CLP");
         c.costoManoObra = new Money(java.math.BigDecimal.ZERO, "CLP");
         c.costoEtiquetas = new Money(java.math.BigDecimal.ZERO, "CLP");
@@ -88,7 +105,7 @@ public class Costeo {
 
     public Costeo(Long id, DocumentNumber numero, Long solicitudCostosId, 
             Long clienteId, String clienteNombre, Long vendedorId, String vendedorNombre,
-            Money costoHilos, Money costoManoObra,
+            Money costoHilos, Money costoManoObra, String observacionesManoObra,
             Money costoEtiquetas, Money costoEmbalaje, Money costoFlete,
             BigDecimal porcentajeCostoFijo, Money precioCinta1, BigDecimal cantidadCinta1,
             Money precioCinta2, BigDecimal cantidadCinta2, Money vivoReflectivo,
@@ -104,6 +121,7 @@ public class Costeo {
         this.vendedorNombre = vendedorNombre;
         this.costoHilos = costoHilos;
         this.costoManoObra = costoManoObra;
+        this.observacionesManoObra = observacionesManoObra;
         this.costoEtiquetas = costoEtiquetas;
         this.costoEmbalaje = costoEmbalaje;
         this.costoFlete = costoFlete;

@@ -1,6 +1,24 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { toast } from 'sonner';
 import { HojaCompraService } from '../remote/service/HojaCompraService';
 import { OrdenCompraService } from '../remote/service/OrdenCompraService';
+import { getApiErrorMessage } from '../utils/apiError';
+
+// Identidad del actor (firma). Mismo patrón que useOCState.js/useCosteosOPState.js:
+// se intenta leer de localStorage y, si no hay, se usa un actor por defecto con un
+// rol autorizado (entorno sin RBAC real).
+function getActor() {
+    try {
+        const raw = localStorage.getItem('user');
+        if (raw) {
+            const u = JSON.parse(raw);
+            const rol = u.rol || u.roles?.[0]?.nombre || u.roles?.[0];
+            const aprobador = u.nombre || u.email || 'JEFE_PRODUCCION';
+            if (rol) return { aprobador, rol };
+        }
+    } catch (_) { /* noop */ }
+    return { aprobador: 'JEFE_PRODUCCION', rol: 'JEFE_PRODUCCION' };
+}
 
 /**
  * Mapea una HojaCompraDTO (shape del backend) al shape esperado por la lista de la UI.
@@ -23,10 +41,15 @@ function toRegistro(hc) {
             cantidadOP: i.cantidadOP,
             consumoUnitario: i.consumoUnitario,
             precioEstimado: i.precioUnitarioRef,
+            cantidadStock: i.cantidadStock,
+            cantidadAComprar: i.cantidadAComprar,
+            modificado: i.modificado,
+            justificacionModificacion: i.justificacionModificacion,
             proveedorId: i.proveedorId,
             proveedorNombre: i.proveedorNombre,
             ocId: i.ocId,
             numeroOC: i.numeroOC,
+            presupuestado: i.presupuestado ?? true,
         })),
         // Shape backend completo para acciones que lo necesiten
         raw: hc,
@@ -45,6 +68,7 @@ export function useHCState(initialView = 'list') {
     const [registros, setRegistros] = useState([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
+    const [ocsById, setOcsById] = useState({});
 
     /** Carga todas las HCs (o filtra por estado si activeTab !== 'all'). */
     const refresh = useCallback(async () => {
@@ -62,9 +86,25 @@ export function useHCState(initialView = 'list') {
         }
     }, [activeTab]);
 
+    /** Refresca el estado (EMITIDA/RECHAZADA/etc.) de las OCs, para saber qué
+     * acciones (rechazar/reingresar) mostrar en la vista de gestión de compra. */
+    const refreshOcs = useCallback(async () => {
+        try {
+            const ocs = await OrdenCompraService.getAll();
+            setOcsById(Object.fromEntries(ocs.map(oc => [oc.idOC, oc])));
+        } catch (e) {
+            // Si esto falla en silencio, los botones de rechazar/reingresar OC
+            // desaparecen de HCModificacion sin ningún indicio visible (ocsById
+            // queda {} para siempre) — por eso se avisa explícitamente al usuario.
+            console.error('Error cargando estado de las Órdenes de Compra:', e);
+            toast.error(getApiErrorMessage(e, 'No se pudo cargar el estado de las Órdenes de Compra'));
+        }
+    }, []);
+
     useEffect(() => {
         refresh();
-    }, [refresh]);
+        refreshOcs();
+    }, [refresh, refreshOcs]);
 
     /** Abre el formulario (crear) o el detalle (ver) */
     const handleOpenForm = useCallback((data, mode) => {
@@ -121,18 +161,59 @@ export function useHCState(initialView = 'list') {
         }
     }, [refresh]);
 
+    const modificarItemHC = useCallback(async (idHC, idHCItem, payload) => {
+        try {
+            const updatedHC = await HojaCompraService.modificarItem(idHC, idHCItem, payload);
+            await refresh();
+            if (selectedHC === idHC && updatedHC) {
+                setFormData(toRegistro(updatedHC));
+            }
+            return updatedHC;
+        } catch (e) {
+            const msg = e?.response?.data?.message || e?.message || 'Error al modificar ítem de la Hoja de Compra';
+            setError(msg);
+            throw e;
+        }
+    }, [refresh, selectedHC]);
+
     /** Abre la vista de gestión de compras (consolidación en OC) para una HC aprobada */
     const handleOpenModificacion = useCallback((idHC) => {
         setSelectedHC(idHC);
         setView('modificacion');
     }, []);
 
-    /** Consolida items de la HC seleccionada en una nueva Orden de Compra */
-    const consolidarOC = useCallback(async (payload) => {
-        const oc = await OrdenCompraService.generarConsolidada(payload);
+    /** Consolida varios grupos (proveedor + items) en una sola tanda atómica de OCs */
+    const consolidarOCLote = useCallback(async (grupos) => {
+        const ocs = await OrdenCompraService.generarLote(grupos);
         await refresh();
-        return oc;
+        return ocs;
     }, [refresh]);
+
+    /**
+     * Agrega un insumo "no presupuestado" a una HC APROBADA. Sí llama al backend
+     * (a diferencia de los helpers de abajo, que solo tocan formData local).
+     */
+    const agregarItemManual = useCallback(async (idHC, itemPayload) => {
+        const hc = await HojaCompraService.agregarItemManual(idHC, itemPayload);
+        await refresh();
+        return hc;
+    }, [refresh]);
+
+    /** Rechaza la OC vinculada a un ítem de la HC (solo permitido desde EMITIDA). */
+    const rechazarOC = useCallback(async (idOC, motivo) => {
+        const oc = await OrdenCompraService.rechazar(idOC, { ...getActor(), motivo });
+        await Promise.all([refresh(), refreshOcs()]);
+        return oc;
+    }, [refresh, refreshOcs]);
+
+    /** Reingresa una OC RECHAZADA vinculada a un ítem de la HC (mismo número, nueva versión).
+     * `proveedorId`/`itemsCambiados` son opcionales: permiten corregir el proveedor y
+     * editar cantidad/precio de ítems en el mismo paso, en una sola transacción atómica. */
+    const reingresarOC = useCallback(async (idOC, proveedorId, itemsCambiados) => {
+        const oc = await OrdenCompraService.reingresar(idOC, { ...getActor(), proveedorId, itemsCambiados });
+        await Promise.all([refresh(), refreshOcs()]);
+        return oc;
+    }, [refresh, refreshOcs]);
 
     /** Helpers para items (solo afectan el formData local; las HC no se editan línea por línea por API) */
     const handleAddItem = useCallback(() => {
@@ -164,10 +245,10 @@ export function useHCState(initialView = 'list') {
         return {
             totalItems: items.length,
             totalBudget: items.reduce(
-                (acc, curr) => acc + (parseFloat(curr.cantidadRequerida || 0) * parseFloat(curr.precioEstimado || 0)),
+                (acc, curr) => acc + (parseFloat((curr.cantidadAComprar ?? curr.cantidadRequerida) || 0) * parseFloat(curr.precioEstimado || 0)),
                 0
             ),
-            totalUnits: items.reduce((acc, curr) => acc + parseFloat(curr.cantidadRequerida || 0), 0),
+            totalUnits: Number(items.reduce((acc, curr) => acc + parseFloat((curr.cantidadAComprar ?? curr.cantidadRequerida) || 0), 0).toFixed(2)),
         };
     }, [formData]);
 
@@ -190,8 +271,13 @@ export function useHCState(initialView = 'list') {
         handleSave,
         aprobar,
         cerrar,
+        modificarItemHC,
         handleOpenModificacion,
-        consolidarOC,
+        consolidarOCLote,
+        agregarItemManual,
+        rechazarOC,
+        reingresarOC,
+        ocsById,
         formatCLP,
         ...calculations,
     };

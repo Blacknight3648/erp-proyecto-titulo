@@ -6,10 +6,10 @@ services:
     ports:
       - "3307:3306"
     environment:
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root_password}
+      MYSQL_ROOT_PASSWORD: root_password
       MYSQL_DATABASE: erp_db
     healthcheck:
-      test: [ "CMD-SHELL", "mysqladmin ping -h localhost -uroot -p${MYSQL_ROOT_PASSWORD:-root_password} || exit 1" ]
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-proot_password" ]
       interval: 5s
       timeout: 5s
       retries: 10
@@ -20,8 +20,9 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile
-    image: ${DOCKER_USER}/erp-backend:latest
+    image: ${DOCKER_USER:-erp}/erp-backend:latest
     container_name: erp-backend
+    stop_grace_period: 30s
     depends_on:
       mysql:
         condition: service_healthy
@@ -33,7 +34,7 @@ services:
       SPRING_PROFILES_ACTIVE: prod
       DB_URL: jdbc:mysql://mysql:3306/erp_db?useSSL=false&serverTimezone=America/Santiago&allowPublicKeyRetrieval=true
       DB_USER: root
-      DB_PASSWORD: ${DB_PASSWORD:-root_password}
+      DB_PASSWORD: root_password
       SPRING_JACKSON_TIME_ZONE: America/Santiago
     healthcheck:
       test: [ "CMD-SHELL", "wget -qO- http://localhost:8050/actuator/health || exit 1" ]
@@ -49,15 +50,15 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile
-    image: ${DOCKER_USER}/erp-frontend:latest
+      args:
+        VITE_API_URL: http://localhost:8050
+    image: ${DOCKER_USER:-erp}/erp-frontend:latest
     container_name: erp-frontend
     ports:
       - "5173:80"
     depends_on:
       backend:
         condition: service_healthy
-    environment:
-      BACKEND_API_URL: ${BACKEND_API_URL:-http://backend:8050}
     restart: unless-stopped
     networks:
       - network

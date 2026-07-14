@@ -4,7 +4,6 @@ import { useComercial } from './useComercial';
 import { useProduccion } from './useProduccion';
 import { useClientes } from './useClientes';
 import { useProveedores } from './useProveedores';
-import { mockOperaciones } from '../data/mockData';
 import { parseId } from '../utils/formUtils';
 import EstadoCosteo from '../remote/DTO/EstadoCosteo';
 
@@ -81,6 +80,7 @@ export function useCosteosOPState() {
     const [moCinta, setMoCinta] = useState(0);
     const [moCosturaSellada, setMoCosturaSellada] = useState(0);
     const [moAcolchado, setMoAcolchado] = useState(0);
+    const [observacionesManoObra, setObservacionesManoObra] = useState('');
 
     // Costos Fijos state
     const [costoHilo, setCostoHilo] = useState(0);
@@ -147,15 +147,10 @@ export function useCosteosOPState() {
         );
     }, [solicitudesCostos]);
 
-    // Registros que ya tienen costeos realizados (Estado Costeado/Aprobado) o están listos para ser procesados
+    // Todos los registros de tipo COSTEO se muestran en la lista, sin filtrar por estado;
+    // el filtro de estado lo aplica el buscador (statusFilter) más abajo.
     const allRecords = useMemo(() => {
-        return solicitudesFiltradas.filter(s =>
-            s.estado === 'Costeado' ||
-            s.estado === 'APROBADA' ||
-            s.estado === 'COSTEO REALIZADO' ||
-            s.estado === 'PENDIENTE' ||
-            s.estado === 'PENDIENTE PRODUCCIÓN'
-        );
+        return solicitudesFiltradas;
     }, [solicitudesFiltradas]);
 
     const dashboardStats = useMemo(() => {
@@ -183,8 +178,20 @@ export function useCosteosOPState() {
                 // Enriquecer con el Costeo real (estado/versión/id) para el badge y los botones.
                 const costeo = costeosByScos[r.id?.toString()];
                 return costeo
-                    ? { ...r, costeoId: costeo.idCosteo, costeoEstado: costeo.estado, costeoVersion: costeo.version }
-                    : r;
+                    ? {
+                        ...r,
+                        costeoId: costeo.idCosteo,
+                        numeroCosteo: costeo.numeroCosteo,
+                        costeoEstado: costeo.estado,
+                        costeoVersion: costeo.version,
+                        costoTotal: (costeo.costoTotalMateriaPrima || 0) + 
+                                    (costeo.costoManoObra || 0) + 
+                                    (costeo.costoHilos || 0) + 
+                                    (costeo.costoEtiquetas || 0) + 
+                                    (costeo.costoEmbalaje || 0) + 
+                                    (costeo.costoFlete || 0)
+                      }
+                    : { ...r, costoTotal: r.costoTotal || 0 };
             })
             .filter(r => {
                 const cliente = clientes.find(c => (c.clienteId || c.id)?.toString() === r.clienteId?.toString());
@@ -192,7 +199,8 @@ export function useCosteosOPState() {
 
                 const matchesSearch = clienteNombre.toUpperCase().includes(searchTerm.toUpperCase()) ||
                     (r.id?.toString() || '').toUpperCase().includes(searchTerm.toUpperCase()) ||
-                    (r.numero?.toString() || '').toUpperCase().includes(searchTerm.toUpperCase());
+                    (r.numero?.toString() || '').toUpperCase().includes(searchTerm.toUpperCase()) ||
+                    (r.numeroCosteo?.toString() || '').toUpperCase().includes(searchTerm.toUpperCase());
 
                 // El filtro de estado usa el estado real del Costeo si existe; si no, el de la SCOS.
                 const estadoParaFiltro = r.costeoEstado || r.estado;
@@ -282,8 +290,13 @@ export function useCosteosOPState() {
             savedCosteo = await getCosteoBySCOS(record.id);
             if (savedCosteo) {
                 setCostoHilo(savedCosteo.costoHilos || 0);
-                setCostoMoPropia(savedCosteo.costoManoObra || 0);
-                setCostoGratificacion(0);
+                setMoPrenda(savedCosteo.moPrenda || 0);
+                setMoCinta(savedCosteo.moCinta || 0);
+                setMoCosturaSellada(savedCosteo.moCosturaSellada || 0);
+                setMoAcolchado(savedCosteo.moAcolchado || 0);
+                setCostoMoPropia(savedCosteo.costoMoPropia || 0);
+                setCostoGratificacion(savedCosteo.costoGratificacion || 0);
+                setObservacionesManoObra(savedCosteo.observacionesManoObra || '');
                 setCostoEtiqueta(savedCosteo.costoEtiquetas || 0);
                 setCostoEmbalaje(savedCosteo.costoEmbalaje || 0);
                 setCostoFlete(savedCosteo.costoFlete || 0);
@@ -292,8 +305,13 @@ export function useCosteosOPState() {
                 setMotivoRechazo(savedCosteo.motivoRechazo || null);
             } else {
                 setCostoHilo(0);
+                setMoPrenda(0);
+                setMoCinta(0);
+                setMoCosturaSellada(0);
+                setMoAcolchado(0);
                 setCostoMoPropia(0);
                 setCostoGratificacion(0);
+                setObservacionesManoObra('');
                 setCostoEtiqueta(0);
                 setCostoEmbalaje(0);
                 setCostoFlete(0);
@@ -321,40 +339,34 @@ export function useCosteosOPState() {
             });
         });
 
-        // Cargar Telas de la ficha si existen
-        const sourceTelas = record.telas?.length > 0 ? record.telas : (record.plantillas?.[0]?.telas || []);
-        sourceTelas.forEach((t, idx) => {
-            initialInsumos.push({
-                id: t.id || `TELA-${idx}`,
-                producto: t.nombre || t.aplicacion || 'Tela',
-                costo: 0,
-                cantidad: t.consumo || 0,
-                unidad: t.unidadMedida || 'm',
-                categoryId: 'telas',
-                composicion: t.composicion,
-                color: t.color
-            });
-        });
-
-        // Cargar Accesorios de la ficha si existen
-        const sourceAccesorios = record.accesorios?.length > 0 ? record.accesorios : (record.plantillas?.[0]?.accesorios || []);
-        sourceAccesorios.forEach((a, idx) => {
-            initialInsumos.push({
-                id: a.id || `ACC-${idx}`,
-                producto: a.nombreAccesorio || a.tipo || 'Accesorio',
-                costo: 0,
-                cantidad: a.consumo || a.cantidad || 0,
-                unidad: a.unidadMedida || 'un',
-                categoryId: 'accesorios'
-            });
-        });
+        // Telas y Accesorios de la SCOS NO se precargan: solo se agregan a la tabla
+        // editable cuando el usuario los suma explícitamente desde el panel
+        // "Solicitud de costos" (ver handleAddItemFromSCOS).
 
         if (savedCosteo && savedCosteo.items && savedCosteo.items.length > 0) {
+            // Indexar las telas y accesorios de la SCOS por nombre para poder
+            // recuperar el proveedorReferencia (que producción no persiste).
+            const scosTelas = (record.telas || []);
+            const scosAccesorios = (record.accesorios || []);
+
             savedCosteo.items.forEach(savedItem => {
                 const matchIndex = initialInsumos.findIndex(i =>
                     i.producto === savedItem.nombreInsumo &&
                     i.categoryId.toLowerCase() === (savedItem.tipoInsumo?.toLowerCase() || '')
                 );
+
+                // Buscar proveedorReferencia en la SCOS por nombre de producto
+                let provRefFromSCOS = savedItem.proveedorReferencia || null;
+                if (!provRefFromSCOS) {
+                    const tipo = savedItem.tipoInsumo?.toLowerCase();
+                    if (tipo === 'telas') {
+                        const scosMatch = scosTelas.find(t => (t.nombre || '').toUpperCase() === (savedItem.nombreInsumo || '').toUpperCase());
+                        provRefFromSCOS = scosMatch?.proveedorReferencia || null;
+                    } else if (tipo === 'accesorios') {
+                        const scosMatch = scosAccesorios.find(a => (a.nombreAccesorio || '').toUpperCase() === (savedItem.nombreInsumo || '').toUpperCase());
+                        provRefFromSCOS = scosMatch?.proveedorReferencia || null;
+                    }
+                }
 
                 if (matchIndex !== -1) {
                     initialInsumos[matchIndex].costo = savedItem.precioUnitario || 0;
@@ -362,6 +374,7 @@ export function useCosteosOPState() {
                     // Preservar ID de la base de datos
                     initialInsumos[matchIndex].idCosteoItem = savedItem.idCosteoItem;
                     initialInsumos[matchIndex].insumoId = savedItem.insumoId ?? savedItem.articuloId ?? null;
+                    if (provRefFromSCOS) initialInsumos[matchIndex].proveedorReferencia = provRefFromSCOS;
                 } else {
                     initialInsumos.push({
                         id: `EXTRA-${savedItem.idCosteoItem}`,
@@ -371,6 +384,7 @@ export function useCosteosOPState() {
                         costo: savedItem.precioUnitario || 0,
                         cantidad: savedItem.consumo || 0,
                         unidad: 'un',
+                        proveedorReferencia: provRefFromSCOS,
                         categoryId: savedItem.tipoInsumo?.toLowerCase() || 'insumos'
                     });
                 }
@@ -409,6 +423,47 @@ export function useCosteosOPState() {
         }]);
     };
 
+    const handleAddItemFromSCOS = (item, categoryId) => {
+        const nextId = insumos.length > 0 ? Math.max(...insumos.map(i => {
+            if (typeof i.id === 'number') return i.id;
+            const num = parseInt(i.id?.toString().replace('REQ-', '').replace('NEW-', ''));
+            return isNaN(num) ? 0 : num;
+        })) + 1 : 1;
+
+        // Normaliza la unidad de medida del formato SCOS al formato de CosteoTable
+        const normalizarUnidad = (unidad) => {
+            if (!unidad) return null;
+            const u = unidad.toUpperCase();
+            if (u === 'MTRS' || u === 'MTS' || u === 'M') return 'm';
+            if (u === 'KG' || u === 'KILOS') return 'kg';
+            if (u === 'UNIDADES' || u === 'UN' || u === 'UND') return 'und';
+            return u.toLowerCase();
+        };
+
+        const nuevoItem = categoryId === 'telas'
+            ? {
+                id: `NEW-${nextId}`,
+                producto: item.nombre || item.aplicacion || 'Tela',
+                costo: 0,
+                cantidad: item.peso || item.consumo || 0,
+                unidad: normalizarUnidad(item.unidadMedida) || 'm',
+                categoryId: 'telas',
+                composicion: item.composicion,
+                color: item.color
+            }
+            : {
+                id: `NEW-${nextId}`,
+                producto: item.nombreAccesorio || item.tipo || 'Accesorio',
+                costo: 0,
+                cantidad: item.cantidad || item.consumo || 0,
+                unidad: normalizarUnidad(item.unidadMedida) || 'und',
+                categoryId: 'accesorios'
+            };
+
+        setInsumos(prev => [...prev, nuevoItem]);
+    };
+
+
     const handleValidateCostos = async () => {
         try {
             const updatedTelas = insumos.filter(i => i.categoryId === 'telas').map(i => ({
@@ -417,9 +472,10 @@ export function useCosteosOPState() {
                 nombre: i.producto,
                 unidadMedida: i.unidad,
                 consumo: parseFloat(i.cantidad) || 0,
-                precioUnitario: 0,
+                precioUnitario: parseFloat(i.costo) || 0,
                 color: i.color,
-                composicion: i.composicion
+                composicion: i.composicion,
+                proveedorReferencia: i.proveedorReferencia || null
             }));
 
             const updatedAccesorios = insumos.filter(i => i.categoryId === 'accesorios').map(i => ({
@@ -429,7 +485,8 @@ export function useCosteosOPState() {
                 nombreAccesorio: i.producto,
                 unidadMedida: i.unidad,
                 consumo: parseFloat(i.cantidad) || 0,
-                precioUnitario: 0
+                precioUnitario: parseFloat(i.costo) || 0,
+                proveedorReferencia: i.proveedorReferencia || null
             }));
 
             const updatedLogotipos = insumos.filter(i => i.categoryId === 'logotipo').map(i => ({
@@ -478,15 +535,24 @@ export function useCosteosOPState() {
                 telas: updatedTelas,
                 accesorios: updatedAccesorios,
                 logotipos: updatedLogotipos,
-                estado: 'APROBADA'
+                // Mantener el estado actual de la SCOS; la aprobación se maneja
+                // por flujo separado (handleAprobarCosteo).
+                estado: currentSolicitud.estado || 'PENDIENTE'
             };
 
 
             const productionPayload = {
                 solicitudCostosId: parseId(currentSolicitud.id),
-                numeroCosteo: `C-${(currentSolicitud.numero || currentSolicitud.id).toString().slice(-10)}-${Date.now().toString().slice(-4)}`,
+                // Nota: numeroCosteo NO se envía; el backend lo asigna atómicamente
                 costoHilos: costoHilo,
                 costoManoObra: totalMO + costoMoPropia + costoGratificacion,
+                moPrenda: moPrenda,
+                moCinta: moCinta,
+                moCosturaSellada: moCosturaSellada,
+                moAcolchado: moAcolchado,
+                costoMoPropia: costoMoPropia,
+                costoGratificacion: costoGratificacion,
+                observacionesManoObra: observacionesManoObra,
                 costoEtiquetas: costoEtiqueta,
                 costoEmbalaje: costoEmbalaje,
                 costoFlete: costoFlete,
@@ -515,35 +581,6 @@ export function useCosteosOPState() {
                 savedCosteoResult = await saveCosteo(productionPayload);
             }
 
-
-            const scosNumber = currentSolicitud.numero || currentSolicitud.id;
-            const match = String(scosNumber).match(/(\d+)/);
-            if (match) {
-                const numericId = match[1];
-                const newOpId = `OP-${numericId}`;
-                const existingOpIndex = mockOperaciones.findIndex(op => op.idOP === newOpId);
-                const cliente = currentSolicitud.clienteNombre ||
-                    clientes.find(c => (c.clienteId || c.id)?.toString() === currentSolicitud.clienteId?.toString())?.nombreCliente ||
-                    'Cliente SCOS';
-
-                if (existingOpIndex >= 0) {
-                    mockOperaciones[existingOpIndex].estado = 'En Proceso';
-                    mockOperaciones[existingOpIndex].progreso = Math.max(20, mockOperaciones[existingOpIndex].progreso);
-                } else {
-                    mockOperaciones.unshift({
-                        idOP: newOpId,
-                        notaVentaId: 'S/N',
-                        cliente: cliente,
-                        producto: currentSolicitud.articuloDescripcion || 'Sin Descripción',
-                        estado: 'En Proceso',
-                        progreso: 20,
-                        prioridad: 'Media',
-                        fechaInicio: new Date().toISOString().split('T')[0],
-                        sla: { corte: 2, logo: 2, taller: 5, term: 2, entrega: 1 },
-                        tienePersonalizado: false
-                    });
-                }
-            }
 
             toast.success("Costeo validado y guardado correctamente");
 
@@ -581,6 +618,7 @@ export function useCosteosOPState() {
         moCinta, setMoCinta,
         moCosturaSellada, setMoCosturaSellada,
         moAcolchado, setMoAcolchado,
+        observacionesManoObra, setObservacionesManoObra,
         costoHilo, setCostoHilo,
         costoMoPropia, setCostoMoPropia,
         costoGratificacion, setCostoGratificacion,
@@ -604,6 +642,7 @@ export function useCosteosOPState() {
         handleUpdateItem,
         handleRemoveItem,
         handleAddItem,
+        handleAddItemFromSCOS,
         handleValidateCostos,
         handleAprobarCosteo,
         handleRechazarCosteo,

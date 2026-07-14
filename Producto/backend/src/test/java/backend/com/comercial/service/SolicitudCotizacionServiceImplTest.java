@@ -67,7 +67,7 @@ class SolicitudCotizacionServiceImplTest {
                 .nombre("Logo")
                 .ubicacion("Pecho")
                 .color("Negro")
-                .tamanio(5.0)
+                .tamanio("5.0 cm")
                 .cantidad(2)
                 .precio(BigDecimal.valueOf(1000))
                 .build();

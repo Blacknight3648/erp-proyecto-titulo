@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.math.BigDecimal;
+import jakarta.persistence.Column;
 
 @Entity
 @Table(name = "scos_logotipos")
@@ -14,7 +15,8 @@ public class SCOSLogotipoJpaEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @Column(name = "id_scos_logotipo")
+    private Long idSCOSLogotipo;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "solicitud_costos_id", nullable = true)
@@ -28,7 +30,8 @@ public class SCOSLogotipoJpaEntity {
     private String nombre;
     private String ubicacion;
     private String color;
-    private Double tamano;
+    @Column(length = 50)
+    private String tamano;
     private Integer cantidad;
     
     @Column(precision = 14, scale = 2)

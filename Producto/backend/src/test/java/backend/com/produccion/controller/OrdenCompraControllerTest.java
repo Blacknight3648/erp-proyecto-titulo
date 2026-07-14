@@ -5,7 +5,6 @@ import backend.com.produccion.application.service.OrdenCompraService;
 import backend.com.produccion.domain.enums.EstadoOC;
 import backend.com.produccion.domain.repository.OrdenCompraRepository;
 import backend.com.produccion.infrastructure.api.OrdenCompraController;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -29,9 +28,6 @@ class OrdenCompraControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
-
-    @Autowired
-    private ObjectMapper objectMapper;
 
     @MockitoBean
     private OrdenCompraService ordenCompraService;

@@ -35,6 +35,7 @@ public class CosteoMapper {
                 null, // vendedorNombre (populated in service)
                 new Money(entity.getCostoHilos() != null ? entity.getCostoHilos() : BigDecimal.ZERO, "CLP"),
                 new Money(entity.getCostoManoObra() != null ? entity.getCostoManoObra() : BigDecimal.ZERO, "CLP"),
+                entity.getObservacionesManoObra(),
                 new Money(entity.getCostoEtiquetas() != null ? entity.getCostoEtiquetas() : BigDecimal.ZERO, "CLP"),
                 new Money(entity.getCostoEmbalaje() != null ? entity.getCostoEmbalaje() : BigDecimal.ZERO, "CLP"),
                 new Money(entity.getCostoFlete() != null ? entity.getCostoFlete() : BigDecimal.ZERO, "CLP"),
@@ -53,6 +54,12 @@ public class CosteoMapper {
         c.setEstado(entity.getEstado() != null ? entity.getEstado() : backend.com.produccion.domain.enums.EstadoCosteo.BORRADOR);
         c.setMotivoRechazo(entity.getMotivoRechazo());
         c.setVersion(entity.getVersion() != null ? entity.getVersion() : 1);
+        c.setMoPrenda(entity.getMoPrenda());
+        c.setMoCinta(entity.getMoCinta());
+        c.setMoCosturaSellada(entity.getMoCosturaSellada());
+        c.setMoAcolchado(entity.getMoAcolchado());
+        c.setCostoMoPropia(entity.getCostoMoPropia());
+        c.setCostoGratificacion(entity.getCostoGratificacion());
         return c;
     }
 
@@ -70,6 +77,13 @@ public class CosteoMapper {
         entity.setNotaVentaId(domain.getNotaVentaId());
         entity.setCostoHilos(domain.getCostoHilos().getAmount());
         entity.setCostoManoObra(domain.getCostoManoObra().getAmount());
+        entity.setMoPrenda(domain.getMoPrenda());
+        entity.setMoCinta(domain.getMoCinta());
+        entity.setMoCosturaSellada(domain.getMoCosturaSellada());
+        entity.setMoAcolchado(domain.getMoAcolchado());
+        entity.setCostoMoPropia(domain.getCostoMoPropia());
+        entity.setCostoGratificacion(domain.getCostoGratificacion());
+        entity.setObservacionesManoObra(domain.getObservacionesManoObra());
         entity.setCostoEtiquetas(domain.getCostoEtiquetas().getAmount());
         entity.setCostoEmbalaje(domain.getCostoEmbalaje().getAmount());
         entity.setCostoFlete(domain.getCostoFlete().getAmount());
@@ -110,6 +124,13 @@ public class CosteoMapper {
                 .vendedorNombre(domain.getVendedorNombre())
                 .costoHilos(domain.getCostoHilos().getAmount())
                 .costoManoObra(domain.getCostoManoObra().getAmount())
+                .moPrenda(domain.getMoPrenda())
+                .moCinta(domain.getMoCinta())
+                .moCosturaSellada(domain.getMoCosturaSellada())
+                .moAcolchado(domain.getMoAcolchado())
+                .costoMoPropia(domain.getCostoMoPropia())
+                .costoGratificacion(domain.getCostoGratificacion())
+                .observacionesManoObra(domain.getObservacionesManoObra())
                 .costoEtiquetas(domain.getCostoEtiquetas().getAmount())
                 .costoEmbalaje(domain.getCostoEmbalaje().getAmount())
                 .costoFlete(domain.getCostoFlete().getAmount())
@@ -139,6 +160,7 @@ public class CosteoMapper {
                 dto.getVendedorNombre(),
                 new Money(dto.getCostoHilos() != null ? dto.getCostoHilos() : BigDecimal.ZERO, "CLP"),
                 new Money(dto.getCostoManoObra() != null ? dto.getCostoManoObra() : BigDecimal.ZERO, "CLP"),
+                dto.getObservacionesManoObra(),
                 new Money(dto.getCostoEtiquetas() != null ? dto.getCostoEtiquetas() : BigDecimal.ZERO, "CLP"),
                 new Money(dto.getCostoEmbalaje() != null ? dto.getCostoEmbalaje() : BigDecimal.ZERO, "CLP"),
                 new Money(dto.getCostoFlete() != null ? dto.getCostoFlete() : BigDecimal.ZERO, "CLP"),
@@ -162,6 +184,12 @@ public class CosteoMapper {
         if (dto.getVersion() != null) {
             costeo.setVersion(dto.getVersion());
         }
+        costeo.setMoPrenda(dto.getMoPrenda());
+        costeo.setMoCinta(dto.getMoCinta());
+        costeo.setMoCosturaSellada(dto.getMoCosturaSellada());
+        costeo.setMoAcolchado(dto.getMoAcolchado());
+        costeo.setCostoMoPropia(dto.getCostoMoPropia());
+        costeo.setCostoGratificacion(dto.getCostoGratificacion());
         return costeo;
     }
 

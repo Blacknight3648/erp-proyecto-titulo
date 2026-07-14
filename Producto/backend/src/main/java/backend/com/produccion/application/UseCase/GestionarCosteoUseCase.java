@@ -68,6 +68,10 @@ public class GestionarCosteoUseCase {
         return costeoService.obtenerDisponiblesParaEVN();
     }
 
+    public java.util.List<CosteoDTO> obtenerCosteosDisponiblesParaOP() {
+        return costeoService.obtenerDisponiblesParaOP();
+    }
+
     public Optional<CosteoResumenEVNDTO> obtenerResumenEVN(Long idCosteo) {
         if (idCosteo == null)
             throw new IllegalArgumentException("El id del costeo es obligatorio");

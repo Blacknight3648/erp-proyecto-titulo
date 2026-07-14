@@ -1,5 +1,6 @@
 package backend.com.produccion.service.Impl;
 
+import backend.com.produccion.application.UseCase.CrearVersionOCUseCase;
 import backend.com.produccion.application.UseCase.GenerarOCConsolidadaUseCase;
 import backend.com.produccion.application.dto.GenerarOCConsolidadaRequest;
 import backend.com.produccion.application.dto.HCItemOCItemLinkDTO;
@@ -11,8 +12,10 @@ import backend.com.produccion.domain.model.HojaCompra;
 import backend.com.produccion.domain.model.HojaCompraItem;
 import backend.com.produccion.domain.model.OrdenCompra;
 import backend.com.produccion.domain.model.OrdenCompraItem;
+import backend.com.produccion.domain.model.OrdenCompraVersion;
 import backend.com.produccion.domain.repository.HojaCompraRepository;
 import backend.com.produccion.domain.repository.OrdenCompraRepository;
+import backend.com.produccion.domain.repository.OrdenCompraVersionRepository;
 import backend.com.shared.exception.BusinessRuleException;
 import backend.com.shared.exception.EntityNotFoundException;
 import backend.com.shared.valueobjects.DocumentNumber;
@@ -32,6 +35,7 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -47,6 +51,15 @@ public class OrdenCompraServiceImplTest {
 
     @Mock
     private HojaCompraRepository hojaCompraRepository;
+
+    @Mock
+    private CrearVersionOCUseCase crearVersionOCUseCase;
+
+    @Mock
+    private OrdenCompraVersionRepository ordenCompraVersionRepository;
+
+    @Mock
+    private backend.com.shared.application.service.HistorialEstadoService historialEstadoService;
 
     @InjectMocks
     private OrdenCompraServiceImpl ordenCompraService;
@@ -253,5 +266,46 @@ public class OrdenCompraServiceImplTest {
         assertThatThrownBy(() -> ordenCompraService.eliminarItem(1L, 999L))
                 .isInstanceOf(EntityNotFoundException.class)
                 .hasMessageContaining("OCItem 999 no encontrado en la OC 1");
+    }
+
+    // --- PRUEBAS DE VERSIONADO AL RECHAZAR ---
+
+    @Test
+    @DisplayName("rechazar crea un snapshot de versión ANTES de cambiar el estado, y cambia el estado a RECHAZADA")
+    void rechazar_creaVersionYCambiaEstado() {
+        OrdenCompra oc = crearOrdenCompraSimulada(1L, "OC-001", EstadoOC.EMITIDA);
+        when(repository.findById(1L)).thenReturn(Optional.of(oc));
+        when(repository.save(any(OrdenCompra.class))).thenAnswer(i -> i.getArgument(0));
+
+        OrdenCompraDTO resultado = ordenCompraService.rechazar(1L, "Proveedor sin stock", "ana", "JEFE_PRODUCCION");
+
+        assertThat(resultado.getEstado()).isEqualTo(EstadoOC.RECHAZADA);
+        assertThat(resultado.getMotivoRechazo()).isEqualTo("Proveedor sin stock");
+        verify(crearVersionOCUseCase).ejecutar(eq(1L), org.mockito.ArgumentMatchers.contains("Proveedor sin stock"), eq("ana"));
+        verify(repository).save(oc);
+    }
+
+    @Test
+    @DisplayName("obtenerHistorialVersiones combina snapshots congelados + estado activo, más reciente primero")
+    void obtenerHistorialVersiones_combinaSnapshotsYEstadoActivo() {
+        OrdenCompra ocRechazada = crearOrdenCompraSimulada(1L, "OC-001", EstadoOC.RECHAZADA);
+
+        OrdenCompraVersion snapshot = new OrdenCompraVersion(
+                10L, 1L, 1, java.time.LocalDateTime.now().minusHours(1),
+                "Rechazo v1: proveedor sin stock", "ana", List.of(),
+                500L, LocalDate.now(), "obs", new BigDecimal("1500.00"));
+
+        when(ordenCompraVersionRepository.findAllByOcId(1L)).thenReturn(List.of(snapshot));
+        when(repository.findById(1L)).thenReturn(Optional.of(ocRechazada));
+
+        List<backend.com.produccion.application.dto.HistorialVersionOCDTO> historial =
+                ordenCompraService.obtenerHistorialVersiones(1L);
+
+        assertThat(historial).hasSize(2);
+        // Más reciente primero: el estado activo (RECHAZADA) va antes que el snapshot v1
+        assertThat(historial.get(0).getId()).isEqualTo("active");
+        assertThat(historial.get(0).getAccion()).isEqualTo("RECHAZO");
+        assertThat(historial.get(1).getId()).isEqualTo("v1");
+        assertThat(historial.get(1).getMotivo()).contains("proveedor sin stock");
     }
 }

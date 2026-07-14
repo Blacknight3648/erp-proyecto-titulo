@@ -1,0 +1,44 @@
+-- =============================================================================
+-- V36: Versionado (snapshot) de Orden de Compra al rechazar
+-- =============================================================================
+-- Congela la OC (cabecera + ítems) justo antes de rechazarse, análogo a
+-- produccion_costeo_versiones/produccion_costeo_item_versiones (ver V18).
+-- Independiente de la columna `version` (contador simple, ya agregada en V33)
+-- y del log textual de historial de estado.
+--
+-- En dev/test (H2) Hibernate (ddl-auto=update) crea estas tablas desde las
+-- entidades OrdenCompraVersionJpaEntity/OrdenCompraItemVersionJpaEntity, por
+-- lo que este script no se ejecuta ahí. Bloque manual para prod (MySQL).
+-- =============================================================================
+-- BLOQUE MANUAL — SOLO PROD (MySQL) — ejecutar UNA vez
+-- =============================================================================
+--   CREATE TABLE produccion_oc_versiones (
+--       id_oc_version    BIGINT AUTO_INCREMENT PRIMARY KEY,
+--       oc_id            BIGINT NOT NULL,
+--       numero_version   INT NOT NULL,
+--       fecha_creacion   DATETIME NOT NULL,
+--       motivo_cambio    VARCHAR(500),
+--       usuario_creador  VARCHAR(150) NOT NULL,
+--       proveedor_id     BIGINT,
+--       fecha_entrega_estimada DATE,
+--       observaciones    VARCHAR(1000),
+--       total_neto       DECIMAL(14,2),
+--       CONSTRAINT uk_oc_version UNIQUE (oc_id, numero_version),
+--       CONSTRAINT fk_oc_version_oc FOREIGN KEY (oc_id)
+--           REFERENCES produccion_ordenes_compra (id_oc)
+--   );
+--
+--   CREATE TABLE produccion_oc_item_versiones (
+--       id_oc_item_version BIGINT AUTO_INCREMENT PRIMARY KEY,
+--       oc_version_id      BIGINT NOT NULL,
+--       oc_item_id         BIGINT NOT NULL,
+--       tipo_insumo        VARCHAR(30) NOT NULL,
+--       articulo_id        INT,
+--       nombre_insumo      VARCHAR(255),
+--       cantidad_comprada  DECIMAL(12,2),
+--       precio_unitario    DECIMAL(12,2),
+--       subtotal           DECIMAL(14,2),
+--       CONSTRAINT fk_oc_item_version_oc_version FOREIGN KEY (oc_version_id)
+--           REFERENCES produccion_oc_versiones (id_oc_version)
+--   );
+-- =============================================================================

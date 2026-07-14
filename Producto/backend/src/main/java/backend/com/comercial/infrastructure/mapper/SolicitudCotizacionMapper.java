@@ -44,7 +44,7 @@ public class SolicitudCotizacionMapper {
     }
 
     private SCOSLogotipo mapLogotipoToDomain(SCOSLogotipoJpaEntity entity) {
-        return new SCOSLogotipo(entity.getId(), entity.getTipo(), entity.getNombre(),
+        return new SCOSLogotipo(entity.getIdSCOSLogotipo(), entity.getTipo(), entity.getNombre(),
                 entity.getUbicacion(), entity.getColor(), entity.getTamano(),
                 entity.getCantidad(), entity.getPrecio());
     }
@@ -73,6 +73,7 @@ public class SolicitudCotizacionMapper {
         entity.setNombre(domain.getNombre());
         entity.setUbicacion(domain.getUbicacion());
         entity.setColor(domain.getColor());
+        // tamano es String: puede contener "6 cm" o "10 in"
         entity.setTamano(domain.getTamano());
         entity.setCantidad(domain.getCantidad());
         entity.setPrecio(domain.getPrecio());

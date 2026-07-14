@@ -13,6 +13,7 @@ public class SCOTPrendaListaJpaEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id_scot_prenda_lista")
     private Long idSCOTPrendaLista;
 
     @ManyToOne(fetch = FetchType.LAZY)

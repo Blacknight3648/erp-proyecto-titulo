@@ -1,51 +1,58 @@
 -- ============================================================
+-- 0. SCHEMA FIXES (idempotent column-type corrections)
+-- ============================================================
+-- tamano was historically DOUBLE; ensure it is VARCHAR(50) to match the entity.
+ALTER TABLE scos_logotipos MODIFY COLUMN tamano VARCHAR(50);
+
+-- ============================================================
 -- 0. TIPO ARTÍCULO
 -- ============================================================
 INSERT IGNORE INTO tipo_articulo (id_tipo_articulo, codigo, nombre) VALUES
-    (1, 'TELA',         'Tela'),
-    (2, 'PRENDA_LISTA', 'Prenda Lista'),
-    (3, 'ACCESORIO',    'Accesorio');
+    (1, 'TELA',                 'TELA'),
+    (2, 'PRENDA_LISTA',         'PRENDA LISTA'),
+    (3, 'ACCESORIO',            'ACCESORIO'),
+    (4, 'PRENDA_CONFECCIONAR',  'PRENDA A CONFECCIONAR');
 
 -- ============================================================
 -- 1. ÁREAS
 -- ============================================================
 INSERT IGNORE INTO areas (id_area, nombre_area, descripcion) VALUES
-    (1, 'GERENCIA COMERCIAL', 'Planificación estratégica de ventas y marketing'),
-    (2, 'ADMINISTRACIÓN', 'Gestión de recursos y procesos internos'),
-    (3, 'VENTAS', 'Ejecución de fuerza de venta y captación'),
-    (4, 'PRODUCCIÓN', 'Operaciones de manufactura y transformación'),
-    (5, 'LOGÍSTICA Y BODEGA', 'Control de existencias y despacho'),
-    (6, 'ADQUISICIONES', 'Gestión de compras y cadena de suministro'),
-    (7, 'FINANZAS', 'Tesorería, contabilidad y cumplimiento tributario'),
-    (8, 'TECNOLOGÍA Y SISTEMAS', 'Soporte, infraestructura y desarrollo');
+    (1, 'GERENCIA COMERCIAL',    'PLANIFICACIÓN ESTRATÉGICA DE VENTAS Y MARKETING'),
+    (2, 'ADMINISTRACIÓN',        'GESTIÓN DE RECURSOS Y PROCESOS INTERNOS'),
+    (3, 'VENTAS',                'EJECUCIÓN DE FUERZA DE VENTA Y CAPTACIÓN'),
+    (4, 'PRODUCCIÓN',            'OPERACIONES DE MANUFACTURA Y TRANSFORMACIÓN'),
+    (5, 'LOGÍSTICA Y BODEGA',    'CONTROL DE EXISTENCIAS Y DESPACHO'),
+    (6, 'ADQUISICIONES',         'GESTIÓN DE COMPRAS Y CADENA DE SUMINISTRO'),
+    (7, 'FINANZAS',              'TESORERÍA, CONTABILIDAD Y CUMPLIMIENTO TRIBUTARIO'),
+    (8, 'TECNOLOGÍA Y SISTEMAS', 'SOPORTE, INFRAESTRUCTURA Y DESARROLLO');
 
 -- ============================================================
 -- 2. ROLES
 -- ============================================================
 INSERT IGNORE INTO roles (id_role, nombre, descripcion, area_id) VALUES
-    (1, 'JEFE_COMERCIAL', 'Líder de estrategia comercial', 1),
-    (2, 'ASISTENTE_COMERCIAL', 'Apoyo administrativo comercial', 1),
-    (3, 'JEFE_ADMIN', 'Encargado de administración general', 2),
-    (4, 'ASISTENTE_ADMIN', 'Apoyo operativo administrativo', 2),
-    (5, 'VENDEDOR', 'Ejecutivo de cuentas en terreno', 3),
-    (6, 'JEFE_PRODUCCION', 'Supervisor de planta y procesos', 4),
-    (7, 'OPERARIO_PRODUCCION', 'Personal de línea de producción', 4),
-    (8, 'JEFE_BODEGA', 'Responsable de inventario y WMS', 5),
-    (9, 'ASISTENTE_BODEGA', 'Recepción y despacho de mercadería', 5),
-    (10, 'JEFE_COMPRAS', 'Responsable de negociación con proveedores', 6),
-    (11, 'ASISTENTE_COMPRAS', 'Gestor de órdenes de compra', 6),
-    (12, 'CONTADOR_GENERAL', 'Responsable de estados financieros', 7),
-    (13, 'ANALISTA_TESORERIA', 'Gestión de pagos y flujo de caja', 7),
-    (14, 'DEVOPS_ENGINEER', 'Gestión de infraestructura en nube', 8),
-    (15, 'FULLSTACK_DEVELOPER', 'Desarrollo de aplicaciones internas', 8),
-    (16, 'SOPORTE_TI', 'Atención técnica a usuarios', 8);
+    (1,  'JEFE_COMERCIAL',       'LÍDER DE ESTRATEGIA COMERCIAL',             1),
+    (2,  'ASISTENTE_COMERCIAL',  'APOYO ADMINISTRATIVO COMERCIAL',            1),
+    (3,  'JEFE_ADMIN',           'ENCARGADO DE ADMINISTRACIÓN GENERAL',       2),
+    (4,  'ASISTENTE_ADMIN',      'APOYO OPERATIVO ADMINISTRATIVO',            2),
+    (5,  'VENDEDOR',             'EJECUTIVO DE CUENTAS EN TERRENO',           3),
+    (6,  'JEFE_PRODUCCION',      'SUPERVISOR DE PLANTA Y PROCESOS',           4),
+    (7,  'OPERARIO_PRODUCCION',  'PERSONAL DE LÍNEA DE PRODUCCIÓN',           4),
+    (8,  'JEFE_BODEGA',          'RESPONSABLE DE INVENTARIO Y WMS',           5),
+    (9,  'ASISTENTE_BODEGA',     'RECEPCIÓN Y DESPACHO DE MERCADERÍA',        5),
+    (10, 'JEFE_COMPRAS',         'RESPONSABLE DE NEGOCIACIÓN CON PROVEEDORES',6),
+    (11, 'ASISTENTE_COMPRAS',    'GESTOR DE ÓRDENES DE COMPRA',               6),
+    (12, 'CONTADOR_GENERAL',     'RESPONSABLE DE ESTADOS FINANCIEROS',        7),
+    (13, 'ANALISTA_TESORERIA',   'GESTIÓN DE PAGOS Y FLUJO DE CAJA',          7),
+    (14, 'DEVOPS_ENGINEER',      'GESTIÓN DE INFRAESTRUCTURA EN NUBE',        8),
+    (15, 'FULLSTACK_DEVELOPER',  'DESARROLLO DE APLICACIONES INTERNAS',       8),
+    (16, 'SOPORTE_TI',           'ATENCIÓN TÉCNICA A USUARIOS',               8);
 
 -- ============================================================
 -- 3. USUARIOS (RUTs y Teléfonos validados)
 -- ============================================================
-INSERT IGNORE INTO usuarios (id_usuario, run, nombre, apellidos, email, password, telefono, enabled) VALUES
-    (1, '15342981-2', 'Carlos', 'Iturrieta Méndez', 'c.iturrieta@empresa.cl', '$2a$10$xyz1234567890123456789', '+56988223344', true),
-    (2, '17589432-K', 'Valentina', 'Lagos Espinoza', 'v.lagos@empresa.cl', '$2a$10$abc1234567890123456789', '+56977445566', true);
+INSERT IGNORE INTO usuarios (id_usuario, run, nombre, apellidos, email, password, telefono, fecha_nacimiento, direccion, region, comuna, enabled) VALUES
+    (1, '15342981-2', 'CARLOS',    'ITURRIETA MÉNDEZ',  'C.ITURRIETA@EMPRESA.CL', '$2a$10$xyz1234567890123456789', '+56988223344', '1985-03-12', 'Av. Providencia 1234', 'Metropolitana', 'Providencia', true),
+    (2, '17589432-K', 'VALENTINA', 'LAGOS ESPINOZA',    'V.LAGOS@EMPRESA.CL',     '$2a$10$abc1234567890123456789', '+56977445566', '1992-07-22', 'Los Álamos 567',      'Valparaíso',    'Viña del Mar', true);
 
 -- ============================================================
 -- 4. VENDEDORES
@@ -53,39 +60,193 @@ INSERT IGNORE INTO usuarios (id_usuario, run, nombre, apellidos, email, password
 INSERT IGNORE INTO vendedores (id_vendedor, id_usuario, codigo_vendedor, activo, creado_en, actualizado_en) VALUES
     (1, 1, 'V-2024-001', true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
     (2, 2, 'V-2024-002', true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
-    
+
 -- ============================================================
 -- 4.1. RUBROS
 -- ============================================================
-INSERT IGNORE INTO rubros (rubro_id, nombre_rubro, descripcion_rubro) VALUES
-    (1, 'COMERCIO', 'Empresas dedicadas a la compra y venta de bienes y servicios'),
-    (2, 'SALUD', 'Empresas del sector salud, farmacéutico y laboratorio'),
-    (3, 'LOGÍSTICA', 'Empresas de transporte, almacenamiento y distribución'),
-    (4, 'CONSTRUCCIÓN', 'Empresas del rubro inmobiliario, infraestructura y ferretería');
+INSERT IGNORE INTO rubros (rubro_id, nombre_rubro, descripcion_rubro, sigla_rubro) VALUES
+    (1, 'COMERCIO', 'Empresas dedicadas a la compra y venta de bienes y servicios', 'COM'),
+    (2, 'SALUD', 'Empresas del sector salud, farmacéutico y laboratorio', 'SAL'),
+    (3, 'LOGÍSTICA', 'Empresas de transporte, almacenamiento y distribución', 'LOG'),
+    (4, 'CONSTRUCCIÓN', 'Empresas del rubro inmobiliario, infraestructura y ferretería', 'CONS'),
+    (5, 'MINERÍA', 'Extracción y procesamiento de cobre, litio y otros minerales y servicios afines', 'MIN'),
+    (6, 'AGRICULTURA Y FRUTICULTURA', 'Cultivo, producción y exportación de frutas, hortalizas y productos agrícolas', 'AGRI'),
+    (7, 'ACUICULTURA Y PESCA', 'Crianza y captura de recursos del mar, producción de salmón y procesamiento de mariscos', 'PESCA'),
+    (8, 'FORESTAL', 'Silvicultura, explotación de maderas, producción de celulosa y derivados', 'FOR'),
+    (9, 'VITIVINÍCOLA', 'Cultivo de la vid, producción, embotellado y exportación de vinos', 'VITI'),
+    (10, 'TECNOLOGÍA Y SOFTWARE', 'Desarrollo de software, consultoría TI, servicios en la nube y ciberseguridad', 'TECH'),
+    (11, 'EDUCACIÓN', 'Instituciones de educación básica, media, técnica, universitaria y capacitación', 'EDUC'),
+    (12, 'TURISMO Y HOTELERÍA', 'Servicios de alojamiento, agencias de viaje, guías turísticos y gastronomía', 'TUR'),
+    (13, 'ENERGÍA Y SERVICIOS BÁSICOS', 'Generación, transmisión y distribución de energía eléctrica, gas, agua y energías renovables', 'ENER'),
+    (14, 'FINANCIERO Y SEGUROS', 'Bancos, instituciones financieras, corredoras de seguros y administradoras de fondos', 'FIN'),
+    (15, 'ALIMENTOS Y BEBIDAS', 'Fabricación, procesamiento y envasado de productos alimenticios y bebidas no alcohólicas', 'ALIM'),
+    (16, 'MANUFACTURA E INDUSTRIA', 'Fabricación de productos metálicos, plásticos, químicos y bienes de consumo industrial', 'MANU'),
+    (17, 'TELECOMUNICACIONES', 'Proveedores de telefonía e internet, infraestructura de redes y servicios de conectividad', 'TELE'),
+    (18, 'SERVICIOS PROFESIONALES', 'Consultorías legales, contables, auditorías, arquitectura, ingeniería y recursos humanos', 'SERV'),
+    (19, 'GASTRONOMÍA Y RESTAURANTES', 'Establecimientos de preparación y venta de alimentos y bebidas para consumo inmediato', 'GASTR'),
+    (20, 'ENTRETENIMIENTO Y CULTURA', 'Cines, teatros, productoras de eventos, museos, gimnasios y centros recreativos', 'ENTR'),
+    (21, 'MEDIOS DE COMUNICACIÓN Y PUBLICIDAD', 'Prensa escrita, televisión, radio, agencias de marketing digital y publicidad', 'MCOM'),
+    (22, 'SEGURIDAD', 'Servicios de vigilancia privada, transporte de valores y sistemas de seguridad electrónica', 'SEG'),
+    (23, 'AUTOMOTRIZ', 'Venta de vehículos, repuestos, talleres mecánicos y servicios de mantención automotriz', 'AUTO'),
+    (24, 'GANADERÍA', 'Crianza y producción de ganado bovino, porcino, ovino, avícola y derivados lácteos', 'GAN'),
+    (25, 'MEDIO AMBIENTE Y RECICLAJE', 'Gestión de residuos, reciclaje industrial, plantas de tratamiento y consultoría ambiental', 'MEDA'),
+    (26, 'TEXTILE', 'Empresas del rubro textil, confección y diseño de vestuario', 'TEXT');
+
 
 -- ============================================================
 -- 4.2. GIROS (referenciando el rubro correspondiente)
 -- ============================================================
 INSERT IGNORE INTO giros (giro_id, codigo_sii, nombre_giro, descripcion_giro, rubro_id) VALUES
-    (1, '521000', 'RETAIL',          'RETAIL Y VENTAS POR MENOR',         1),
-    (2, '861000', 'SALUD',           'SERVICIOS MÉDICOS Y LABORATORIO',   2),
-    (3, '492200', 'LOGÍSTICA',       'LOGÍSTICA Y TRANSPORTE',            3),
-    (4, '410000', 'CONSTRUCCIÓN',    'CONSTRUCCIÓN Y FERRETERÍA',         4);
-
+    (1, '521000', 'RETAIL', 'RETAIL Y VENTAS POR MENOR', 1),
+    (2, '861000', 'SALUD', 'SERVICIOS MÉDICOS Y LABORATORIO', 2),
+    (3, '492200', 'LOGÍSTICA', 'LOGÍSTICA Y TRANSPORTE', 3),
+    (4, '410000', 'CONSTRUCCIÓN', 'CONSTRUCCIÓN Y FERRETERÍA', 4),
+    (5, '13920', 'FABRICACION DE ARTICULOS CONFECCIONADOS DE MATERIALES TEXTILES',', EXCEPT, FABRICACION DE PRENDA DE VE',26 ),
+    -- MINERÍA (Rubro 5)
+    (6, '071000', 'EXTRACCIÓN DE MINERÁLES DE HIERRO', 'Extracción de minerales de hierro y concentrados', 5),
+    (7, '040000', 'EXTRACCIÓN DE COBRE', 'Extracción de minerales de cobre y sus concentrados', 5),
+    (8, '099002', 'SERVICIOS DE MINERÍA', 'Actividades de apoyo para la explotación de otras minas y canteras', 5),
+    -- AGRICULTURA Y FRUTICULTURA (Rubro 6)
+    (9, '011301', 'CULTIVO DE FRUTALES', 'Cultivo de frutas pomáceas y de carozo (manzanas, uvas, etc.)', 6),
+    (10, '016100', 'SERVICIOS AGRÍCOLAS', 'Actividades de apoyo a la agricultura y postcosecha', 6),
+    -- ACUICULTURA Y PESCA (Rubro 7)
+    (11, '032101', 'ACUICULTURA DE SALMÓNIDOS', 'Cultivo y crianza de salmones y truchas', 7),
+    (12, '031110', 'PESCA INDUSTRIAL', 'Pesca marítima de altura y costera a gran escala', 7),
+    -- FORESTAL (Rubro 8)
+    (13, '021001', 'SILVICULTURA Y EXPLOTACIÓN', 'Plantación, manejo de bosques y explotación de madera', 8),
+    -- VITIVINÍCOLA (Rubro 9)
+    (14, '110200', 'ELABORACIÓN DE VINOS', 'Producción de mostos, vinos y chicha a partir de uvas', 9),
+    -- TECNOLOGÍA Y SOFTWARE (Rubro 10)
+    (15, '620100', 'DESARROLLO DE SOFTWARE', 'Actividades de programación informática y desarrollo de apps', 10),
+    (16, '620200', 'CONSULTORÍA TI', 'Consultoría en informática y gestión de instalaciones informáticas', 10),
+    -- EDUCACIÓN (Rubro 11)
+    (17, '854200', 'EDUCACIÓN UNIVERSITARIA', 'Enseñanza superior universitaria y técnica de pre y postgrado', 11),
+    -- TURISMO Y HOTELERÍA (Rubro 12)
+    (18, '551001', 'HOTELES Y ALOJAMIENTO', 'Servicios de hospedaje en hoteles, moteles y cabañas', 12),
+    -- ENERGÍA (Rubro 13)
+    (19, '351011', 'GENERACIÓN ELÉCTRICA', 'Generación de energía eléctrica en centrales hidráulicas, solares o eólicas', 13),
+    -- FINANCIERO (Rubro 14)
+    (20, '641900', 'BANCA E INTERMEDIACIÓN', 'Otros tipos de intermediación monetaria y actividades bancarias', 14),
+    -- ALIMENTOS Y BEBIDAS (Rubro 15)
+    (21, '107100', 'PANADERÍA Y PASTELERÍA', 'Fabricación de productos de panadería, pasteles y masas', 15),
+    -- TELECOMUNICACIONES (Rubro 17)
+    (22, '611000', 'TELECOMUNICACIONES ALÁMBRICAS', 'Proveedores de internet fibra óptica y telefonía fija', 17),
+    (23, '612000', 'TELECOMUNICACIONES INALÁMBRICAS', 'Operadores de telefonía móvil y redes de datos inalámbricas', 17),
+    -- SERVICIOS PROFESIONALES (Rubro 18)
+    (24, '692000', 'CONTABILIDAD Y AUDITORÍA', 'Actividades de contabilidad, teneduría de libros y auditoría fiscal', 18),
+    (25, '711001', 'SERVICIOS DE ARQUITECTURA', 'Diseño de edificios, planificación urbana y dibujo de planos', 18),
+    -- GASTRONOMÍA (Rubro 19)
+    (26, '561000', 'RESTAURANTES Y SANGUCHERÍAS', 'Actividades de restaurantes y de servicio móvil de comidas', 19);
 -- ============================================================
 -- 4.3. PRODUCTOS
 -- ============================================================
 INSERT IGNORE INTO producto (producto_id, codigo_producto, nombre, descripcion, genero, color, creado_en, actualizado_en, activo) VALUES
-    (1, 'PROD-POL-001', 'Polerón Corporativo Premium', 'Polerón corporativo con gorro y bolsillos canguro', 'UNISEX', 'Azul Marino', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
-    (2, 'PROD-CHA-002', 'Chaqueta Impermeable Térmica', 'Chaqueta impermeable con forro micropolar interior', 'UNISEX', 'Gris Plata', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true);
+    (1, 'PROD-POL-001', 'POLERA PIQUÉ CORPORATIVA',      'POLERA PIQUÉ 100% ALGODÓN PEINADO 180G CON BORDADO PECHO',         'UNISEX',     'AZUL NAVY',    CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (2, 'PROD-PAN-002', 'PANTALÓN CARGO OPERARIO',        'PANTALÓN CARGO RIPSTOP IMPERMEABLE CON REFUERZO RODILLA Y BOLSILLOS','MASCULINO',  'VERDE OLIVA',  CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true);
 
 -- ============================================================
 -- 5. CLIENTES (Modelo normalizado sin campos planos de contacto)
 -- ============================================================
 INSERT IGNORE INTO clientes (cliente_id, activo, razon_social, run_cliente, sigla, fk_giro) VALUES
-    (1, true, 'HITES S.A.', '96947020-9', 'S.A.', 1),
-    (2, true, 'LABORATORIO MEDCELL', '96706320-7', 'LTDA.', 2),
-    (3, true, 'GEODIS WILSON', '79699520-3', 'S.A.', 3);
+    --CLIENTES SIMULADOS DE PRUEBA
+    (1, true, 'HITES S.A.', '96947020-9', 'HITES', 1),
+    (2, true, 'LABORATORIO MEDCELL', '96706320-7', 'MEDCELL', 2),
+    (3, true, 'GEODIS WILSON', '79699520-3', 'GEODIS', 3),
+    -- CONTINUACIÓN CLIENTES REALES ANTUAN S.A.
+    (4, true, 'SUPERINTENDENCIA DE SERVICIOS SANITARIOS', '61221000-4', 'SISS', 23),
+    (5, true, 'MUELLAJE DEL MAIPO S.A.', '99506030-2', 'MUELLAJE MAIPO', 3),
+    (6, true, 'I MUNICIPALIDAD LO BARNECHEA', '69255200-8', 'MUNICIPIO LO BARNECHEA', 23),
+    (7, true, 'TECH - MARINE AND LOGISTICS SPA', '76751597-9', 'TECH MARINE', 3),
+    (8, true, 'ACCIONA AIRPORT SERVICES CHILE SPA', '76611528-4', 'ACCIONA AIRPORT', 3),
+    (9, true, 'UFINET CHILE SPA', '76686154-7', 'UFINET', 22),
+    (10, true, 'ESMAX DISTRIBUCION SPA', '79588870-5', 'ESMAX', 1),
+    (11, true, 'GREEN CO. SPA', '77471974-1', 'GREEN CO', 1),
+    (12, true, 'SERVICIOS DE SEGURIDAD PROSEGUR REGIONES LTDA', '78570410-K', 'PROSEGUR REGIONES', 23),
+    (13, true, 'FIRST SECURITY SPA', '99528470-7', 'FIRST SECURITY', 23),
+    (14, true, 'COCA COLA EMBONOR S.A.', '93281000-K', 'COCA COLA EMBONOR', 20),
+    (15, true, 'EMBONOR S.A.', '96891720-K', 'EMBONOR', 20),
+    (16, true, 'MINERA FLORIDA LIMITADA', '76591160-5', 'MINERA FLORIDA', 7),
+    (17, true, 'SOUTH TRADE SHIPMANAGEMENT SPA', '76547433-7', 'SOUTH TRADE', 3),
+    (18, true, 'AUTOMOTRIZ CARTONI LIMITADA', '76019820-K', 'AUTOMOTRIZ CARTONI', 25),
+    (19, true, 'EMPRESAS CAROZZI S.A.', '96591040-9', 'CAROZZI', 20),
+    (20, true, 'INSTITUTO NACIONAL DE DEPORTES DE CHILE', '61107000-4', 'IND CHILE', 23),
+    (21, true, 'DISTRIBUIDORA BARRERA Y CIA LTDA', '85274100-7', 'DISTRIBUIDORA BARRERA', 1),
+    (22, true, 'BASF CHILE S.A.', '80043600-1', 'BASF', 1),
+    (23, true, 'COOKE AQUACULTURE CHILE SA', '96926970-8', 'COOKE AQUACULTURE', 10),
+    (24, true, 'SOSERVAL SPA', '88834700-3', 'SOSERVAL', 1),
+    (25, true, 'VEOLIA SOLUCIONES MARITIMAS CHILE SPA', '76395744-6', 'VEOLIA MARITIMAS', 3),
+    (26, true, 'VEOLIA RESPEL CHILE SPA', '76395745-4', 'VEOLIA RESPEL', 25),
+    (27, true, 'VEOLIA HOLDING CHILE S.A.', '96752730-0', 'VEOLIA HOLDING', 23),
+    (28, true, 'VEOLIA ENERGIA CHILE LIMITADA', '79841910-2', 'VEOLIA ENERGIA', 18),
+    (29, true, 'VEOLIA SI CHILE S.A.', '88842000-2', 'VEOLIA SI', 15),
+    (30, true, 'PROCESOS SANITARIOS SPA', '96697710-8', 'PROCESOS SANITARIOS', 2),
+    (31, true, 'KIMBERLY-CLARK CHILE S.A.', '96888460-3', 'KIMBERLY-CLARK', 1),
+    (32, true, 'ESCUELA DE INVESTIGACIONES POLICIALES PDTE A ALESSANDRI PALMA', '60506012-9', 'ESC INVESTIGACIONES', 16),
+    (33, true, 'GESTION INTEGRAL DE RESIDUOS SPA', '96964360-K', 'GIR RESIDUOS', 25),
+    (34, true, 'STYROPEK CHILE SPA', '76493147-5', 'STYROPEK', 1),
+    (35, true, 'COOP DE CONSUMOS CARABINEROS DE CHILE LTDA', '81242500-5', 'COOP CARABINEROS', 1),
+    (36, true, 'CEMENTO POLPAICO S.A.', '91337000-7', 'POLPAICO', 4),
+    (37, true, 'HORMIGONES BICENTENARIO S.A.', '99507430-3', 'HORMIGONES BICENTENARIO', 4),
+    (38, true, 'TEXORA S.A.', '76435650-0', 'TEXORA', 25),
+    (39, true, 'AIRPORT MAINTENANCE SERVICES SPA', '77371281-6', 'AIRPORT MAINTENANCE', 3),
+    (40, true, 'CEMENTOS BICENTENARIO S.A.', '76084154-4', 'CEMENTOS BICENTENARIO', 4),
+    (41, true, 'ARIDOS ACONCAGUA S.A.', '76414510-0', 'ARIDOS ACONCAGUA', 4),
+    (42, true, 'SOC PETREOS S.A.', '93933000-3', 'SOC PETREOS', 4),
+    (43, true, 'COMPANIA MINERA POLPAICO LIMITADA', '76420230-9', 'MINERA POLPAICO', 7),
+    (44, true, 'COACTIVA SPA', '77454381-3', 'COACTIVA', 15),
+    (45, true, 'INDUSTRIAL Y MINERA LOS ESTEROS DE MARGA MARGA S.A.', '96720190-1', 'MINERA MARGA MARGA', 7),
+    (46, true, 'VEOLIA RESIDUOS URBANOS VALPARAISO SPA', '76416769-4', 'VEOLIA VALPARAISO', 25),
+    (47, true, 'EFE CENTRAL S.A.', '96756320-K', 'EFE CENTRAL', 3),
+    (48, true, 'KATEMU S.A.', '99578450-5', 'KATEMU', 4),
+    (49, true, 'I MUNICIPALIDAD DE MAIPU', '69070900-7', 'MUNICIPIO MAIPU', 23),
+    (50, true, 'MUELLAJE STI S.A.', '96915770-5', 'MUELLAJE STI', 3),
+    (51, true, 'LIVISTER CHILE SPA', '77622841-9', 'LIVISTER', 1),
+    (52, true, 'TECNORED S.A.', '77302440-5', 'TECNORED', 15),
+    (53, true, 'THE MASTER ALBUM SPA', '77009747-9', 'THE MASTER ALBUM', 1),
+    (54, true, 'COMERCIAL SATEX LIMITADA', '80830500-3', 'COMERCIAL SATEX', 1),
+    (55, true, 'SAINT-GOBAIN WEBER CHILE S.A.', '80397900-6', 'WEBER CHILE', 4),
+    (56, true, 'SAAM TOWAGE CHILE SPA', '77777134-5', 'SAAM TOWAGE', 3),
+    (57, true, 'CONSTRUCCION, COMERCIO Y SERVICIOS SERGIO AGUILERA SOTO E.I.R.L.', '76756237-3', 'SERGIO AGUILERA EIRL', 4),
+    (58, true, 'SU BUS CHILE S.A.', '99554700-7', 'SU BUS', 3),
+    (59, true, 'SUBSECRETARIA DEL INTERIOR', '60501000-8', 'SUBSEC INTERIOR', 23),
+    (60, true, 'SQM INDUSTRIAL S.A.', '79947100-0', 'SQM INDUSTRIAL', 7),
+    (61, true, 'VEOLIA SU CHILE S.A.', '87803800-2', 'VEOLIA SU', 25),
+    (62, true, 'DISTRIBUIDORA ARIZONA LIMITADA', '76168557-0', 'DISTRIBUIDORA ARIZONA', 1),
+    (63, true, 'NESTOR TORREZ ROQUE', '22484385-2', 'NESTOR TORREZ', 25),
+    (64, true, 'JULIO CESAR TORREZ MAMANI', '25307887-1', 'JULIO TORREZ', 25),
+    (65, true, 'I MUNICIPALIDAD DE CONCON', '73568600-3', 'MUNICIPIO CONCON', 23),
+    (66, true, 'VALERIA PATRICIA BECERRA JORQUERA', '17202506-4', 'VALERIA BECERRA', 25),
+    (67, true, 'SERVICIOS Y CONFECCIONES TEXTIL COSTUMAR VICTOR PASCUAL HUAYHUA CORNE', '77331524-8', 'TEXTIL COSTUMAR', 25),
+    (68, true, 'ANTUAN JURY S.A.', '79724060-5', 'ANTUAN JURY', 1),
+    (69, true, 'GERMAN CHOQUE CONDORI', '23613270-6', 'GERMAN CHOQUE', 25),
+    (70, true, 'MANZANO Y CIA LTDA', '82164300-7', 'MANZANO Y CIA', 1),
+    (71, true, 'CARTONI VEHICULOS INDUSTRIALES LIMITADA', '76127589-5', 'CARTONI INDUSTRIALES', 25),
+    (72, true, 'CARTONI VIALE SPA', '77506924-4', 'CARTONI VIALE', 25),
+    (73, true, 'SEMI NUEVOS CARTONI LIMITADA', '76045671-3', 'SEMI NUEVOS CARTONI', 25),
+    (74, true, 'AUTOMOTRIZ CARTONI HERMANOS LIMITADA', '76543093-3', 'CARTONI HERMANOS', 25),
+    (75, true, 'CARTONI Y CARTONI S.A.', '85430500-K', 'CARTONI S.A.', 25),
+    (76, true, 'CORP MUNIC EDUC SALUD Y ATENCION', '70856400-1', 'CORP MUNICIPAL', 23),
+    (77, true, 'CALAMANI CONFECCIONES SPA', '77534264-1', 'CALAMANI CONFECCIONES', 25),
+    (78, true, 'ENVISION ENERGY CHILE SPA', '76364659-9', 'ENVISION ENERGY', 18),
+    (79, true, 'TAMARA ALEJANDRA PENA FIGUEROA', '15094712-K', 'TAMARA PENA', 25),
+    (80, true, 'ESTEFANIA DEL PILAR CACERES OLIVARES', '20359503-4', 'ESTEFANIA CACERES', 25),
+    (81, true, 'ISABELA PAZ MARTINEZ APABLAZA', '15097359-7', 'ISABELA MARTINEZ', 25),
+    (82, true, 'EMPRESAS DEMARIA S.A.', '90727000-9', 'DEMARIA', 1),
+    (83, true, 'INGENIERIA Y CONSTRUCCIONES JF SPA', '77204398-8', 'INGENIERIA JF', 4),
+    (84, true, 'CORP DE DEPORTES Y RECREACION CLU', '70692200-8', 'CORP DEPORTES', 23),
+    (85, true, 'FAUDI ELIO ZARATE CONDORI', '27521574-0', 'FAUDI ZARATE', 25),
+    (86, true, 'CONFECCIONES LAYME E IMPORTACIONES SPA', '77578619-1', 'CONFECCIONES LAYME', 25),
+    (87, true, 'CONFECCIONES MELYTEX SPA', '77670085-1', 'MELYTEX', 25),
+    (88, true, 'MARCO ANTONIO CACHI LOPEZ', '25397622-5', 'MARCO CACHI', 25),
+    (89, true, 'HORMIGONES POLPAICO S.A.', '76084154-4', 'HORMIGONES POLPAICO', 4),
+    (90, true, 'I MUNICIPALIDAD DE SANTIAGO', '69070100-6', 'MUNICIPIO SANTIAGO', 23),
+    (91, true, 'SOLUCIONES Y SERVICIOS INTEGRALES KARTIAN SPA', '77960309-1', 'KARTIAN', 15),
+    (92, true, 'JUAN CESAR SUXO APAZA', '23396737-8', 'JUAN SUXO', 25),
+    (93, true, 'ELVIS ALVARO TORREZ MAMANI', '25547689-0', 'ELVIS TORREZ', 25),
+    (94, true, 'GHATTAS ABUSADA E HIJOS Y CIA LTDA', '84108700-3', 'GHATTAS ABUSADA', 1),
+    (95, true, 'I MUNICIPALIDAD DE ZAPALLAR', '69050400-6', 'MUNICIPIO ZAPALLAR', 23),
+    (96, true, 'LA CASA DEL ESTAMPADO SPA', '77881919-8', 'CASA DEL ESTAMPADO', 25),
+    (97, true, 'IVONNE PAOLA ARAYA CORDERO', '09121214-5', 'IVONNE ARAYA', 25);
 
 -- ============================================================
 -- 5.1. TIPOS DE CONTACTO Y CONTACTOS
@@ -95,52 +256,852 @@ INSERT IGNORE INTO tipos_contacto (tipo_contacto_id, descripcion_tipo_contacto) 
     (2, 'COMERCIAL'),
     (3, 'FINANZAS');
 
-INSERT IGNORE INTO contactos (contacto_id, nombre_contacto, telefono_contacto, email_contacto, tipo_contacto_id, fk_contacto) VALUES
-    (1, 'CONTACTO HITES', '+56227275000', 'contacto.hites@hites.cl', 1, 1),
-    (2, 'CONTACTO MEDCELL', '+56224396000', 'compras@medcell.cl', 1, 2),
-    (3, 'CONTACTO GEODIS WILSON', '+56223816500', 'info.chile@geodis.com', 1, 3);
+INSERT IGNORE INTO contactos (contacto_id, nombre_contacto, telefono_contacto, email_contacto, tipo_contacto_id, fk_cliente_contacto) VALUES
+    (1, 'CONTACTO HITES',          '+56227275000', 'CONTACTO.HITES@HITES.CL',       1, 1),
+    (2, 'CONTACTO MEDCELL',        '+56224396000', 'COMPRAS@MEDCELL.CL',             1, 2),
+    (3, 'CONTACTO GEODIS WILSON',  '+56223816500', 'INFO.CHILE@GEODIS.COM',          1, 3),
+    (4, 'CONTACTO BASF',           '+5622812081',  'CONTACTO@BASF.CL',               1, 22);
 
 -- ============================================================
 -- 5.2. GEOGRAFÍA Y DIRECCIONES
 -- ============================================================
 INSERT IGNORE INTO pais (pais_id, nombre_pais) VALUES
-    (1, 'CHILE');
+    (1, 'CHILE'),
+    -- ASIA (Principales proveedores de manufactura, retail y tecnología)
+    (2, 'CHINA'),
+    (3, 'INDIA'),
+    (4, 'VIETNAM'),
+    (5, 'COREA DEL SUR'),
+    (6, 'JAPÓN'),
+    -- AMÉRICA DEL NORTE
+    (7, 'ESTADOS UNIDOS'),
+    (8, 'MÉXICO'),
+    (9, 'CANADÁ'),
+    -- AMÉRICA DEL SUR (Socios regionales clave y logística)
+    (10, 'BRASIL'),
+    (11, 'ARGENTINA'),
+    (12, 'PERÚ'),
+    (13, 'COLOMBIA'),
+    -- EUROPA (Zonas de importación premium y marcas globales)
+    (14, 'ESPAÑA'),
+    (15, 'ALEMANIA'),
+    (16, 'ITALIA'),
+    (17, 'FRANCIA');
 
 INSERT IGNORE INTO region (region_id, nombre_region, pais_id, creado_en, actualizado_en, activo) VALUES
-    (1, 'METROPOLITANA', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true);
+    (1, 'REGIIÓN METROPOLITANA DE SANTIAGO', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (2, 'REGIÓN DE ARICA Y PARINACOTA', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (3, 'REGIÓN DE TARAPACÁ', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (4, 'REGIÓN DE ANTOFAGASTA', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (5, 'REGIÓN DE ATACAMA', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (6, 'REGIÓN DE COQUIMBO', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (7, 'REGIÓN DE VALPARAÍSO', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (8, 'REGIÓN DEL LIBERTADOR GENERAL BERNARDO O''HIGGINS', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (9, 'REGIÓN DEL MAULE', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (10, 'REGIÓN DEL ÑUBLE', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (11, 'REGIÓN DEL BÍOBÍO', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (12, 'REGIÓN DE LA ARAUCANÍA', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (13, 'REGIÓN DE LOS RÍOS', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (14, 'REGIÓN DE LOS LAGOS', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (15, 'REGIÓN DE AYSÉN DEL GENERAL CARLOS IBÁÑEZ DEL CAMPO', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (16, 'REGIÓN DE MAGALLANES Y DE LA ANTÁRTICA CHILENA', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true);
 
 INSERT IGNORE INTO comuna (comuna_id, nombre_comuna, region_id, creado_en, actualizado_en, activo) VALUES
-    (1, 'SANTIAGO', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true);
+    -- REGIÓN METROPOLITANA (region_id = 1)
+    (1, 'SANTIAGO', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (2, 'CERRILLOS', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (3, 'CERRO NAVIA', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (4, 'CONCHALÍ', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (5, 'EL BOSQUE', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (6, 'ESTACIÓN CENTRAL', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (7, 'HUECHURABA', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (8, 'INDEPENDENCIA', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (9, 'LA CISTERNA', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (10, 'LA FLORIDA', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (11, 'LA GRANJA', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (12, 'LA PINTANA', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (13, 'LA REINA', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (14, 'LAS CONDES', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (15, 'LO BARNECHEA', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (16, 'LO ESPEJO', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (17, 'LO PRADO', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (18, 'MACUL', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (19, 'MAIPÚ', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (20, 'ÑUÑOA', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (21, 'PEDRO AGUIRRE CERDA', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (22, 'PEÑALOLÉN', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (23, 'PROVIDENCIA', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (24, 'PUDAHUEL', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (25, 'QUILICURA', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (26, 'QUINTA NORMAL', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (27, 'RECOLETA', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (28, 'RENCA', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (29, 'SAN JOAQUÍN', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (30, 'SAN MIGUEL', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (31, 'SAN RAMÓN', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (32, 'VITACURA', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (33, 'PUENTE ALTO', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (34, 'PIRQUE', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (35, 'SAN JOSÉ DE MAIPO', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (36, 'COLINA', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (37, 'LAMPA', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (38, 'TILTIL', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (39, 'SAN BERNARDO', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (40, 'BUIN', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (41, 'CALERA DE TANGO', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (42, 'PAINE', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (43, 'MELIPILLA', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (44, 'ALHUÉ', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (45, 'CURACAVÍ', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (46, 'MARÍA PINTO', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (47, 'SAN PEDRO', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (48, 'TALAGANTE', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (49, 'EL MONTE', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (50, 'ISLA DE MAIPO', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (51, 'PADRE HURTADO', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (52, 'PEÑAFLOR', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+
+    -- REGIÓN DE ARICA Y PARINACOTA (region_id = 2)
+    (53, 'ARICA', 2, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (54, 'CAMARONES', 2, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (55, 'PUTRE', 2, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (56, 'GENERAL LAGOS', 2, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+
+    -- REGIÓN DE TARAPACÁ (region_id = 3)
+    (57, 'IQUIQUE', 3, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (58, 'ALTO HOSPICIO', 3, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (59, 'POZO ALMONTE', 3, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (60, 'CAMIÑA', 3, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (61, 'COLCHANE', 3, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (62, 'HUARA', 3, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (63, 'PICA', 3, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+
+    -- REGIÓN DE ANTOFAGASTA (region_id = 4)
+    (64, 'ANTOFAGASTA', 4, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (65, 'CALAMA', 4, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (66, 'MEJILLONES', 4, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (67, 'TOCOPILLA', 4, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (68, 'MARÍA ELENA', 4, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (69, 'OLLAGÜE', 4, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (70, 'SAN PEDRO DE ATACAMA', 4, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (71, 'SIERRA GORDA', 4, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (72, 'TALTAL', 4, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+
+    -- REGIÓN DE ATACAMA (region_id = 5)
+    (73, 'COPIAPÓ', 5, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (74, 'VALLENAR', 5, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (75, 'CALDERA', 5, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (76, 'CHAÑARAL', 5, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (77, 'DIEGO DE ALMAGRO', 5, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (78, 'FREIRINA', 5, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (79, 'HUASCO', 5, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (80, 'TIERRA AMARILLA', 5, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (81, 'ALTO DEL CARMEN', 5, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+
+    -- REGIÓN DE COQUIMBO (region_id = 6)
+    (82, 'LA SERENA', 6, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (83, 'COQUIMBO', 6, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (84, 'OVALLE', 6, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (85, 'ANDACOLLO', 6, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (86, 'CANELA', 6, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (87, 'COMBARBALÁ', 6, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (88, 'ILLAPEL', 6, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (89, 'LA HIGUERA', 6, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (90, 'LOS VILOS', 6, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (91, 'MONTE PATRIA', 6, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (92, 'PAIHUANO', 6, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (93, 'PUNITAQUI', 6, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (94, 'RÍO HURTADO', 6, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (95, 'SALAMANCA', 6, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (96, 'VICUÑA', 6, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+
+    -- REGIÓN DE VALPARAÍSO (region_id = 7)
+    (97, 'VALPARAÍSO', 7, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (98, 'VIÑA DEL MAR', 7, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (99, 'CONCÓN', 7, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (100, 'QUILPUÉ', 7, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (101, 'VILLA ALEMANA', 7, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (102, 'QUILLOTA', 7, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (103, 'CALERA', 7, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (104, 'HIJUELAS', 7, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (105, 'LA CRUZ', 7, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (106, 'NOGALES', 7, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (107, 'SAN ANTONIO', 7, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (108, 'ALGARROBO', 7, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (109, 'CARTAGENA', 7, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (110, 'EL QUISCO', 7, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (111, 'EL TABO', 7, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (112, 'SANTO DOMINGO', 7, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (113, 'LOS ANDES', 7, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (114, 'CALLE LARGA', 7, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (115, 'RINCONADA', 7, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (116, 'SAN ESTEBAN', 7, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (117, 'SAN FELIPE', 7, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (118, 'CATEMU', 7, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (119, 'LLAILLAY', 7, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (120, 'PANQUEHUE', 7, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (121, 'PUTAENDO', 7, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (122, 'SANTA MARÍA', 7, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (123, 'PETORCA', 7, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (124, 'CABILDO', 7, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (125, 'LA LIGUA', 7, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (126, 'PAPUDO', 7, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (127, 'ZAPALLAR', 7, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (128, 'LIMACHE', 7, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (129, 'OLMUÉ', 7, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (130, 'ISLA DE PASCUA', 7, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (131, 'JUAN FERNÁNDEZ', 7, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (132, 'CASABLANCA', 7, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (133, 'PUCHUNCAVÍ', 7, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (134, 'QUINTERO', 7, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+
+    -- REGIÓN DE O'HIGGINS (region_id = 8)
+    (135, 'RANCAGUA', 8, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (136, 'SAN FERNANDO', 8, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (137, 'CHIMBARONGO', 8, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (138, 'CODEGUA', 8, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (139, 'COINCO', 8, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (140, 'COLTAUCO', 8, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (141, 'DOÑIHUE', 8, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (142, 'GRANEROS', 8, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (143, 'LAS CABRAS', 8, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (144, 'LITUECHE', 8, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (145, 'LOLOL', 8, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (146, 'MACHALÍ', 8, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (147, 'MALLOA', 8, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (148, 'MARCHIGÜE', 8, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (149, 'MOSTAZAL', 8, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (150, 'NANCAGUA', 8, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (151, 'NAVIDAD', 8, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (152, 'OLIVAR', 8, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (153, 'PALMILLA', 8, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (154, 'PAREDONES', 8, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (155, 'PERALILLO', 8, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (156, 'PEUMO', 8, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (157, 'PICHIDEGUA', 8, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (158, 'PICHILEMU', 8, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (159, 'PLACILLA', 8, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (160, 'PUMANQUE', 8, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (161, 'QUINTA DE TILCOCO', 8, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (162, 'RENGO', 8, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (163, 'REQUÍNOA', 8, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (164, 'SAN VICENTE', 8, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (165, 'SANTA CRUZ', 8, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (166, 'LA ESTRELLA', 8, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (167, 'CHEPICA', 8, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+
+    -- REGIÓN DEL MAULE (region_id = 9)
+    (168, 'TALCA', 9, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (169, 'CURICÓ', 9, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (170, 'LINARES', 9, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (171, 'CAUQUENES', 9, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (172, 'COLBÚN', 9, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (173, 'CONSTITUCIÓN', 9, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (174, 'CUREPTO', 9, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (175, 'EMPEDRADO', 9, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (176, 'HUALAÑÉ', 9, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (177, 'LICANTÉN', 9, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (178, 'LONGAVÍ', 9, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (179, 'MAULE', 9, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (180, 'MOLINA', 9, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (181, 'PARRAL', 9, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (182, 'PELARCO', 9, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (183, 'PELLUHUE', 9, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (184, 'PENCAHUE', 9, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (185, 'RAUCO', 9, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (186, 'RETIRO', 9, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (187, 'RÍO CLARO', 9, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (188, 'ROMERAL', 9, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (189, 'SAGRADA FAMILIA', 9, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (190, 'SAN CLEMENTE', 9, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (191, 'SAN JAVIER', 9, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (192, 'SAN RAFAEL', 9, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (193, 'TENO', 9, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (194, 'VICHUQUÉN', 9, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (195, 'VILLA ALEGRE', 9, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (196, 'YERBAS BUENAS', 9, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (197, 'CHANCO', 9, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+
+    -- REGIÓN DE ÑUBLE (region_id = 10)
+    (198, 'CHILLÁN', 10, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (199, 'BULNES', 10, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (200, 'COBQUECURA', 10, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (201, 'COELEMU', 10, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (202, 'COIHUECO', 10, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (203, 'CHILLÁN VIEJO', 10, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (204, 'EL CARMEN', 10, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (205, 'NINHUE', 10, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (206, 'ÑIQUÉN', 10, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (207, 'PEMUCO', 10, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (208, 'PINTO', 10, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (209, 'PORTEZUELO', 10, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (210, 'QUILLÓN', 10, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (211, 'QUIRIHUE', 10, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (212, 'RÁNQUIL', 10, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (213, 'SAN CARLOS', 10, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (214, 'SAN FABIÁN', 10, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (215, 'SAN IGNACIO', 10, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (216, 'SAN NICOLÁS', 10, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (217, 'TREHUACO', 10, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (218, 'YUNGAY', 10, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+
+    -- REGIÓN DEL BÍOBÍO (region_id = 11)
+    (219, 'CONCEPCIÓN', 11, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (220, 'TALCAHUANO', 11, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (221, 'SAN PEDRO DE LA PAZ', 11, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (222, 'LOS ÁNGELES', 11, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (223, 'ANTUCO', 11, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (224, 'ARAUCO', 11, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (225, 'CABRERO', 11, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (226, 'CAÑETE', 11, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (227, 'CHIGUAYANTE', 11, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (228, 'CONTULMO', 11, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (229, 'CORONEL', 11, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (230, 'CURANILAHUE', 11, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (231, 'FLORIDA', 11, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (232, 'HUALPÉN', 11, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (233, 'HUALQUI', 11, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (234, 'LAJA', 11, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (235, 'LEBU', 11, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (236, 'LOTA', 11, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (237, 'MULCHÉN', 11, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (238, 'NACIMIENTO', 11, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (239, 'NEGRETE', 11, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (240, 'PENCO', 11, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (241, 'QUILACO', 11, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (242, 'QUILLECO', 11, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (243, 'SAN ROSENDO', 11, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (244, 'SANTA BÁRBARA', 11, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (245, 'SANTA JUANA', 11, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (246, 'TIRÚA', 11, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (247, 'TOMÉ', 11, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (248, 'TUCAPEL', 11, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (249, 'YUMBEL', 11, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (250, 'ALTO BIOBÍO', 11, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (251, 'HUALPÉN', 11, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+
+    -- REGIÓN DE LA ARAUCANÍA (region_id = 12)
+    (252, 'TEMUCO', 12, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (253, 'PADRE LAS CASAS', 12, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (254, 'VILLARRICA', 12, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (255, 'ANGOL', 12, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (256, 'CARAHUE', 12, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (257, 'CHOLCHOL', 12, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (258, 'COLLIPULLI', 12, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (259, 'CURACAUTÍN', 12, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (260, 'CURARREHUE', 12, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (261, 'ERCILLA', 12, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (262, 'FREIRE', 12, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (263, 'GALVARINO', 12, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (264, 'GORBEA', 12, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (265, 'LAUTARO', 12, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (266, 'LONCOCHE', 12, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (267, 'LONQUIMAY', 12, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (268, 'LOS SAUCES', 12, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (269, 'LUMACO', 12, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (270, 'MELIPEUCO', 12, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (271, 'NUEVA IMPERIAL', 12, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (272, 'PERQUENCO', 12, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (273, 'PITRUFQUÉN', 12, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (274, 'PUCÓN', 12, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (275, 'PUREN', 12, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (276, 'RENAICO', 12, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (277, 'SAAVEDRA', 12, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (278, 'TEODORO SCHMIDT', 12, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (279, 'TOLTÉN', 12, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (280, 'TRAIGUÉN', 12, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (281, 'VICTORIA', 12, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (282, 'CURACAUTÍN', 12, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (283, 'VILCÚN', 12, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+
+    -- REGIÓN DE LOS RÍOS (region_id = 13)
+    (284, 'VALDIVIA', 13, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (285, 'CORRAL', 13, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (286, 'FUTRONO', 13, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (287, 'LAGO RANCO', 13, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (288, 'LANCO', 13, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (289, 'LA UNIÓN', 13, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (290, 'LOS LAGOS', 13, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (291, 'MAFIL', 13, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (292, 'MARIQUINA', 13, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (293, 'PAILLACO', 13, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (294, 'PANGUIPULLI', 13, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (295, 'RÍO BUENO', 13, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+
+    -- REGIÓN DE LOS LAGOS (region_id = 14)
+    (296, 'PUERTO MONTT', 14, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (297, 'OSORNO', 14, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (298, 'PUERTO VARAS', 14, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (299, 'CASTRO', 14, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (300, 'ANCUD', 14, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (301, 'CALBUCO', 14, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (302, 'CHAITÉN', 14, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (303, 'CHONCHI', 14, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (304, 'COCHAMÓ', 14, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (305, 'CURACO DE VÉLEZ', 14, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (306, 'DALCAHUE', 14, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (307, 'FRESIA', 14, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (308, 'FRUTILLAR', 14, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (309, 'FUTALEUFÚ', 14, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (310, 'HUALAIHUÉ', 14, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (311, 'LLANQUIHUE', 14, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (312, 'LOS MUERMOS', 14, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (313, 'MAULLÍN', 14, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (314, 'PALENA', 14, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (315, 'PUERTO OCTAY', 14, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (316, 'PUQUELDÓN', 14, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (317, 'PURRANQUE', 14, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (318, 'PUYEHUE', 14, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (319, 'QUEILÉN', 14, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (320, 'QUELLÓN', 14, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (321, 'QUEMCHI', 14, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (322, 'QUINCHAO', 14, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (323, 'RÍO NEGRO', 14, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (324, 'SAN JUAN DE LA COSTA', 14, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (325, 'SAN PABLO', 14, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+
+    -- REGIÓN DE AYSÉN (region_id = 15)
+    (326, 'COYHAIQUE', 15, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (327, 'AYSÉN', 15, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (328, 'CHILE CHICO', 15, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (329, 'CISNES', 15, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (330, 'COCHRANE', 15, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (331, 'GUAITECAS', 15, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (332, 'LAGO VERDE', 15, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (333, 'O''HIGGINS', 15, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (334, 'RÍO IBÁÑEZ', 15, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (335, 'TORTEL', 15, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+
+    -- REGIÓN DE MAGALLANES Y DE LA ANTÁRTICA CHILENA (region_id = 16)
+    (336, 'PUNTA ARENAS', 16, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (337, 'CABO DE HORNOS', 16, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (338, 'LAGUNA BLANCA', 16, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (339, 'NATALES', 16, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (340, 'PORVENIR', 16, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (341, 'PRIMAVERA', 16, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (342, 'RÍO VERDE', 16, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (343, 'SAN GREGORIO', 16, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (344, 'TIMAUKEL', 16, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (345, 'TORRES DEL PAINE', 16, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true),
+    (346, 'ANTÁRTICA', 16, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, true);
 
 INSERT IGNORE INTO tipo_direccion (tipo_direccion_id, descripcion) VALUES
     (1, 'PRINCIPAL'),
     (2, 'SUCURSAL');
 
-INSERT IGNORE INTO direccion (direccion_id, calle, numero, depto, tipo_direccion_id, comuna_id, fk_direccion) VALUES
-    (1, 'AV. KENNEDY', '5413', 'OF. 201', 1, 1, 1),
-    (2, 'HOLANDA', '64', NULL, 1, 1, 2),
-    (3, 'LO BOZA', '110', NULL, 1, 1, 3);
+INSERT IGNORE INTO direccion (direccion_id, calle, numero, depto, tipo_direccion_id, comuna_id, fk_cliente_direccion) VALUES
+    (1, 'AV. KENNEDY',   '5413', 'OF. 201', 1, 2, 1),
+    (2, 'HOLANDA',       '64',   NULL,       1, 2, 2),
+    (3, 'LO BOZA',       '110',  NULL,       1, 3, 3);
 
 -- ============================================================
--- 6. PROVEEDORES (Modelo normalizado con giros asociados)
+-- 6. PROVEEDORES TEXTILES (Realistas para industria confección Chile)
 -- ============================================================
 INSERT IGNORE INTO proveedores (proveedor_id, activo, creado_en, actualizado_en, horario_atencion, razon_social_proveedor, run_proveedor, sigla, tipo_proveedor, fk_provee_giro) VALUES
-    (1, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'PARQUE ARAUCO S.A.', '99581960-0', 'S.A.', 'NACIONAL', 1),
-    (2, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'C.C. LOS HEROES', '70016330-K', 'LTDA.', 'NACIONAL', 1),
-    (3, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'MEDIPHARM LTDA.', '96599510-2', 'LTDA.', 'NACIONAL', 2),
-    (4, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'SODIMAC S.A.', '96792430-K', 'S.A.', 'NACIONAL', 4);
+    (1, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '08:30 - 18:00', 'TEXTIL CENTRAL LTDA.', '76123450-1', 'TEXTIL CENTRAL', 'NACIONAL', 1),
+    (2, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 17:30', 'AVÍOS Y ACCESORIOS DEL SUR LTDA.', '76234561-2', 'AVÍOS DEL SUR', 'NACIONAL', 1),
+    (3, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'INDUSTRIAS TEXTILES DEL PACÍFICO S.A.', '76345672-3', 'TEXTILES PACÍFICO', 'NACIONAL', 1),
+    (4, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '08:00 - 17:00', 'HILOS Y BORDADOS INDUSTRIALES S.A.', '76456783-4', 'HILOS INDUSTRIALES', 'NACIONAL', 1),
+    
+    -- CONTINUACIÓN PROVEEDORES REALES NORMALIZADOS
+    (5, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'IMPORTADORA Y EXPORTADORA FULLTEX LTDA', '78762180-5', 'FULLTEX', 'NACIONAL', 1),
+    (6, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'TELEFONICA CHILE S.A.', '90635000-9', 'TELEFONICA', 'NACIONAL', 21),
+    (7, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'MARCO ANTONIO ELTIT RABI', '07979922-K', 'MARCO ELTIT', 'NACIONAL', 1),
+    (8, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'COMERCIAL LAS AMERICAS S.A.', '76014543-2', 'LAS AMERICAS', 'NACIONAL', 1),
+    (9, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'COMERCIAL SATEX LTDA', '80830500-3', 'SATEX', 'NACIONAL', 1),
+    (10, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'IMPORTADORA DILIDO SPA', '86521400-6', 'DILIDO', 'NACIONAL', 1),
+    (11, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'INDUSTRIAS MECANICAS Y PLASTICAS ALUPLAST S.A.C. E.I.', '93640000-0', 'ALUPLAST S.A.C.', 'NACIONAL', 16),
+    (12, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'VICTOR DAWABE LTDA.', '81153800-0', 'VICTOR DAWABE', 'NACIONAL', 1),
+    (13, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'CARMELO TALA Y CIA LTDA.', '80960800-K', 'CARMELO TALA', 'NACIONAL', 1),
+    (14, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'JUAN CESAR SUXO APAZA', '23396737-8', 'JUAN SUXO', 'NACIONAL', 1),
+    (15, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'DIMERC S.A.', '96670840-9', 'DIMERC', 'NACIONAL', 1),
+    (16, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'TRANSPORTES TECNOLOGIA Y GIROS EGT LTDA.', '76211240-K', 'EGT TRANSPORTES', 'NACIONAL', 3),
+    (17, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'SOCIEDAD COMERCIAL E INDUSTRIAL GITEX SPA', '78463330-6', 'GITEX', 'NACIONAL', 1),
+    (18, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'ASESORIA INTEGRAL CAL-TEX SPA', '79815690-K', 'CAL-TEX', 'NACIONAL', 18),
+    (19, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'ACABADOS TEXTILES KHAREN ADRIANA HIDALGO ALVARADO E.I.R.L.', '77453808-9', 'KHAREN HIDALGO', 'NACIONAL', 16),
+    (20, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'A-LIM SPA', '79730790-4', 'A-LIM', 'NACIONAL', 1),
+    (21, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'TRANSPORTES ANDOSO LIMITADA', '76032124-9', 'TRANSPORTES ANDOSO', 'NACIONAL', 3),
+    (22, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'SOCIEDAD COMERCIAL DE MARKETING MV SPA', '77990830-5', 'MARKETING MV', 'NACIONAL', 21),
+    (23, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'FABRICA DE ELASTICOS Y CINTAS SPA', '77157824-1', 'ELASTICOS Y CINTAS', 'NACIONAL', 16),
+    (24, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'SOCIEDAD IMPORTADORA MARITEX SPA', '76090530-5', 'MARITEX', 'NACIONAL', 1),
+    (25, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'TEXORA S.A.', '76435650-0', 'TEXORA', 'NACIONAL', 1),
+    (26, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'RUBEN ALEJANDRO AWAD GOSEN', '17598453-4', 'RUBEN AWAD', 'NACIONAL', 1),
+    (27, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'SOCIEDAD TEXORA WORKWEAR STORE CHILE SPA', '76991545-1', 'TEXORA STORE', 'NACIONAL', 1),
+    (28, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'FIRST SECURITY SPA', '99528470-7', 'FIRST SECURITY', 'NACIONAL', 22),
+    (29, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'COMERCIALIZADORA JAIME SALVADOR ABOID E.I.R.L.', '76090386-8', 'JAIME ABOID', 'NACIONAL', 1),
+    (30, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'SEGUROS GENERALES SURAMERICANA S.A.', '99017000-2', 'SURA SEGUROS', 'NACIONAL', 14),
+    (31, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'BUSINESS INFORMATION PROCESSING S.A.', '78371600-3', 'BIP S.A.', 'NACIONAL', 10),
+    (32, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'ISMAEL RUBIN Y CIA LTDA', '85254800-2', 'ISMAEL RUBIN', 'NACIONAL', 1),
+    (33, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'ISAAC SINANI ARUQUIPA', '23075545-0', 'ISAAC SINANI', 'NACIONAL', 1),
+    (34, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'BANCO SANTANDER - CHILE', '97036000-K', 'SANTANDER', 'NACIONAL', 14),
+    (35, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'GERMAN CHOQUE CONDORI', '23613270-6', 'GERMAN CHOQUE', 'NACIONAL', 1),
+    (36, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'COMERCIALIZADORA TEXTIL SERGATEX S.A.', '96665830-4', 'SERGATEX', 'NACIONAL', 1),
+    (37, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'COMERCIAL ALAMEDA SPA', '79845390-4', 'COMERCIAL ALAMEDA', 'NACIONAL', 1),
+    (38, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'SODIMAC S.A.', '96792430-K', 'SODIMAC', 'NACIONAL', 4),
+    (39, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'TELEFONICA MOVILES CHILE S.A.', '76124890-1', 'MOVISTAR', 'NACIONAL', 17),
+    (40, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'CALAMANI CONFECCIONES SPA', '77534264-1', 'CALAMANI', 'NACIONAL', 16),
+    (41, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'INVERSIONES Y COMERCIALIZADORA R 4 SPA', '76485585-K', 'INVERSIONES R4', 'NACIONAL', 1),
+    (42, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'IMPORTADORA Y COMERCIALIZADORA INCORPTEX LIMITADA', '76209474-6', 'INCORPTEX', 'NACIONAL', 1),
+    (43, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'INVERSIONES ADAM SPA', '76503412-4', 'INVERSIONES ADAM', 'NACIONAL', 1),
+    (44, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'BORDADOS Y CONFECCION MM SPA', '77077542-6', 'BORDADOS MM', 'NACIONAL', 16),
+    (45, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'CASSIS HERMANOS LTDA.', '76201205-7', 'CASSIS HERMANOS', 'NACIONAL', 1),
+    (46, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'ESTAMPADOS OVEJA NEGRA SPA', '77379025-6', 'OVEJA NEGRA', 'NACIONAL', 16),
+    (47, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'IMPORTADORA Y COMERCIALIZADORA TEXTIL LIMITADA', '77798542-6', 'IMPO TEXTIL', 'NACIONAL', 1),
+    (48, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'RONALD RODRIGO ARRIAGADA PENA', '13467291-9', 'RONALD ARRIAGADA', 'NACIONAL', 1),
+    (49, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'RONNY ERICK PINTO QUIJON', '12227927-8', 'RONNY PINTO', 'NACIONAL', 1),
+    (50, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'CGE S.A.', '76411321-7', 'CGE', 'NACIONAL', 13),
+    (51, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'ACETOGEN GAS CHILE S.A.', '93333000-1', 'ACETOGEN GAS', 'NACIONAL', 16),
+    (52, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'CONSTRUCCION COMERCIO Y SERVICIOS SERGIO AGUILERA SOTO E.I.R.L.', '76756237-3', 'SERGIO AGUILERA', 'NACIONAL', 4),
+    (53, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'LICITALAB', '77040264-6', 'LICITALAB', 'NACIONAL', 10),
+    (54, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'COMERCIAL STP SPA', '78596540-K', 'COMERCIAL STP', 'NACIONAL', 1),
+    (55, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'FABRICA DE BOTONES LA MODA LIMITADA', '79850510-6', 'BOTONES LA MODA', 'NACIONAL', 16),
+    (56, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'ETIQUETAS ZALAQUETT CHILE S.A.', '76029927-8', 'ZALAQUETT', 'NACIONAL', 16),
+    (57, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'K WEGNER Y COMPANIA LIMITADA', '79523750-K', 'K WEGNER', 'NACIONAL', 1),
+    (58, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'GARMENDIA MACUS S.A.', '96889950-3', 'GARMENDIA MACUS', 'NACIONAL', 16),
+    (59, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'GLOBAL SUPLY SPA', '77113459-9', 'GLOBAL SUPLY', 'NACIONAL', 1),
+    (60, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'KCL COMERCIAL SPA', '76185953-6', 'KCL COMERCIAL', 'NACIONAL', 1),
+    (61, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'CONFECCIONES MARGARITA SPA', '76757538-6', 'CONFECCIONES MARGARITA', 'NACIONAL', 16),
+    (62, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'CINTAS Y ETIQUETAS NALLAR LIMITADA', '79693100-0', 'ETIQUETAS NALLAR', 'NACIONAL', 16),
+    (63, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'SOC COMERCIALIZADORA INTER KRAFT LIMITADA', '77952910-K', 'INTER KRAFT', 'NACIONAL', 1),
+    (64, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'ESVAL S.A.', '76000739-0', 'ESVAL', 'NACIONAL', 13),
+    (65, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'FEDEX EXPRESS CHILE SPA', '76754296-8', 'FEDEX CHILE', 'NACIONAL', 3),
+    (66, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'GYRO SPA', '77066816-6', 'GYRO SPA', 'NACIONAL', 1),
+    (67, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'NESTOR TORREZ ROQUE', '22484385-2', 'NESTOR TORREZ', 'NACIONAL', 1),
+    (68, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'TITO YARAD S.A.', '96949900-2', 'TITO YARAD', 'NACIONAL', 1),
+    (69, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'FINFAST S.A.G.R.', '76120063-1', 'FINFAST', 'NACIONAL', 14),
+    (70, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'DIMERC S.A. (ALT)', '55555555-5', 'DIMERC SECUNDARIO', 'NACIONAL', 1),
+    (71, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'IMPORTACION', '77663765-3', 'IMPORTACION GRAL', 'EXTRANJERO', 1),
+    (72, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'COMERCIALIZADORA Y DISTRIBUIDORA FIKUS LIMITADA', '86718800-2', 'FIKUS LTDA', 'NACIONAL', 1),
+    (73, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'TRANSPORTES ESPINOZA HNOS LTDA', '96574510-6', 'TRANSPORTES ESPINOZA', 'NACIONAL', 3),
+    (74, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'TINTORERIA INDUSTRIAL PEDRO DE VALDIVIA S.A.', '76242324-3', 'TINTORERIA P DE V', 'NACIONAL', 16),
+    (75, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'VICSA SAFETY COMERCIAL LTDA.', '76868714-5', 'VICSA SAFETY', 'NACIONAL', 16),
+    (76, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'IMPORTACIONES YARNABETH LIMITADA', '76881586-0', 'YARNABETH', 'NACIONAL', 1),
+    (77, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'COMERCIALIZADORA R J LIMITADA', '76292620-2', 'COMERCIALIZADORA RJ', 'NACIONAL', 1),
+    (78, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'ARATA Y ARATA COMERCIAL LIMITADA', '76493391-5', 'ARATA Y ARATA', 'NACIONAL', 1),
+    (79, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'VILLANUEVA ERICES Y COMPANIA LIMITADA', '06454425-K', 'VILLANUEVA ERICES', 'NACIONAL', 1),
+    (80, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'GONZALO GUILLERMO GONZALEZ GORDON', '76823471-K', 'GONZALO GONZALEZ', 'NACIONAL', 1),
+    (81, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'COMERCIALIZADORA Y TEXTIL ILLARI SPA', '14415746-K', 'TEXTIL ILLARI', 'NACIONAL', 16),
+    (82, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'MARY ALEJANDRA TORO SALGADO', '26689606-9', 'MARY TORO', 'NACIONAL', 1),
+    (83, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'ROLANDO ELOY TORREZ MAMANI', '76377325-6', 'ROLANDO TORREZ', 'NACIONAL', 1),
+    (84, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'DISTRIBUIDORA BYP VINA LTDA.', '77603314-6', 'BYP VINA', 'NACIONAL', 1),
+    (85, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'INVERSIONES FARAH LIMITADA', '76903238-K', 'INVERSIONES FARAH', 'NACIONAL', 1),
+    (86, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'IMPORTADORA CHINA KING DORADO SPA', '77207492-1', 'CHINA KING DORADO', 'EXTRANJERO', 1),
+    (87, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'TRANSPORTES FELIPE ORELLANA E.I.R.L.', '77025866-9', 'TRANSPORTES ORELLANA', 'NACIONAL', 3),
+    (88, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'SOCIEDAD INDUMIL SPA', '92171000-3', 'INDUMIL SPA', 'NACIONAL', 16),
+    (89, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'MANUFACTURAS INTERAMERICANA S.A.', '76660942-2', 'MANUFACTURAS INTER', 'NACIONAL', 16),
+    (90, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'LACONIC LOGISTICS LIMITADA', '76529454-1', 'LACONIC LOGISTICS', 'NACIONAL', 3),
+    (91, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'IMPORTADORA ANDESLAND LIMITADA', '25547689-0', 'ANDESLAND', 'NACIONAL', 1),
+    (92, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'ELVIS ALVARO TORREZ MAMANI', '77877755-K', 'ELVIS TORREZ', 'NACIONAL', 1),
+    (93, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'CASA ROSITA SPA', '76468424-9', 'CASA ROSITA', 'NACIONAL', 1),
+    (94, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'B2B WEB DISTRIBUICAO DE PRODUCTO CHILE SPA', '96542490-3', 'B2B WEB DIST', 'NACIONAL', 1),
+    (95, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'TRECK S.A.', '76542967-6', 'TRECK S.A.', 'NACIONAL', 16),
+    (96, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'HI VIZ LTDA.', '96957890-5', 'HI VIZ LTDA', 'NACIONAL', 16),
+    (97, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'MOULINSART S.A.', '77398220-1', 'MOULINSART', 'NACIONAL', 1),
+    (98, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'INDUSTRIAS MECANICAS Y PLASTICAS ALUPLAST S.A. COMERCIAL E INDUS.', '60503000-9', 'ALUPLAST S.A.', 'NACIONAL', 16),
+    (99, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'MERCADOLIBRE CHILE LTDA.', '76079342-6', 'MERCADOLIBRE', 'NACIONAL', 1),
+    (100, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'EMPRESA DE CORREOS DE CHILE', '78619800-3', 'CORREOS CHILE', 'NACIONAL', 3),
+    (101, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'MASAVAL SAGR', '76507443-6', 'MASAVAL', 'NACIONAL', 14),
+    (102, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'INDUSTRIA DE BORDADO LIMITADA', '76489703-K', 'INDUSTRIA BORDADO', 'NACIONAL', 16),
+    (103, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'DECATHLON CHILE SPA', '77123944-7', 'DECATHLON', 'NACIONAL', 1),
+    (104, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'KAISER LUBRICENTRO SPA', '77442094-0', 'KAISER LUBRICENTRO', 'NACIONAL', 23),
+    (105, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'SOLUCIONES NP SPA', '79911860-2', 'SOLUCIONES NP', 'NACIONAL', 10),
+    (106, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'CMC TECNOLOGIAS Y SERVICIOS SPA', '82728500-5', 'CMC TECNOLOGIAS', 'NACIONAL', 10),
+    (107, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'LENI LEON Y BOGDANIC LIMITADA', '14674351-K', 'LENI LEON', 'NACIONAL', 1),
+    (108, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'IAN TAYLOR CHILE S.A.', '76081507-1', 'IAN TAYLOR', 'NACIONAL', 3),
+    (109, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'VILMA LUZ BRUCIL LEON', '76348242-1', 'VILMA BRUCIL', 'NACIONAL', 1),
+    (110, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'TEXTIL JADUE LTDA.', '76852143-3', 'TEXTIL JADUE', 'NACIONAL', 1),
+    (111, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'COMERCIALIZADORA RMH SPA', '77563314-K', 'COMERCIAL RMH', 'NACIONAL', 1),
+    (112, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'BORDADOS Y CONFECCIONES ARUQUIPA SPA', '96667560-8', 'ARUQUIPA SPA', 'NACIONAL', 16),
+    (113, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'VRF RECICLAJE Y TRANSPORTE SPA', '97004000-5', 'VRF RECICLAJE', 'NACIONAL', 25),
+    (114, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'KAUDAT SPA', '96908970-K', 'KAUDAT SPA', 'NACIONAL', 10),
+    (115, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'TANNER SERVICIOS FINANCIEROS S.A.', '76681869-2', 'TANNER FINANZAS', 'NACIONAL', 14),
+    (116, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'BANCO DE CHILE', '77359603-4', 'BANCO CHILE', 'NACIONAL', 14),
+    (117, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'SAN ANTONIO TERMINAL INTERNACIONAL S.A.', '89848400-9', 'STI TERMINAL', 'NACIONAL', 3),
+    (118, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'YATAI SPA', '78057250-7', 'YATAI SPA', 'NACIONAL', 1),
+    (119, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'SOCIEDAD DE TRANSPORTES PANIMAVIDA SPA', '81201000-K', 'TRANSP PANIMAVIDA', 'NACIONAL', 3),
+    (120, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'AGENCIA DE ADUANA JORGE VIO ARIS Y CIA LTDA.', '79993310-1', 'ADUANA JORGE VIO', 'NACIONAL', 3),
+    (121, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'YKK CHILE', '25307887-1', 'YKK CHILE', 'NACIONAL', 16),
+    (122, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'CENCOSUD RETAIL S.A.', '88192900-7', 'CENCOSUD', 'NACIONAL', 1),
+    (123, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'COMERCIAL VERSLUYS LTDA.', '84249300-5', 'VERSLUYS LTDA', 'NACIONAL', 1),
+    (124, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'JULIO CESAR TORREZ MAMANI', '76124255-5', 'JULIO TORREZ', 'NACIONAL', 1),
+    (125, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'TNT EXPRESS CHILE LTDA.', '76762101-3', 'TNT EXPRESS', 'NACIONAL', 3),
+    (126, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'QUIMICA UNIVERSAL LTDA.', '96720830-2', 'QUIMICA UNIVERSAL', 'NACIONAL', 16),
+    (127, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'COMERCIALIZADORA ROBERTO IBANEZ PARRA E.I.R.L.', '97030000-7', 'ROBERTO IBANEZ', 'NACIONAL', 1),
+    (128, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'COMERCIALIZADORA Y DISTRIBUIDORA GOLD SPA', '96798520-1', 'GOLD SPA', 'NACIONAL', 1),
+    (129, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'BCI FACTORING S.A.', '77700237-6', 'BCI FACTORING', 'NACIONAL', 14),
+    (130, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'BANCO DEL ESTADO DE CHILE', '77296654-7', 'BANCO ESTADO', 'NACIONAL', 14),
+    (131, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'SAAM EXTRAPORTUARIOS S.A.', '76158513-4', 'SAAM EXTRAPORT', 'NACIONAL', 3),
+    (132, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'COMERCIALIZADORA MIGUEL ANDRES PALTA ARAYA E.I.R.L.', '76942889-5', 'MIGUEL PALTA', 'NACIONAL', 1),
+    (133, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'PMG OUTLET SPA', '96582950-4', 'PMG OUTLET', 'NACIONAL', 1),
+    (134, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'DP WORLD SAN ANTONIO S.A.', '77331524-8', 'DP WORLD', 'NACIONAL', 3),
+    (135, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'PURO ALGODON SPA', '22570764-2', 'PURO ALGODON', 'NACIONAL', 16),
+    (136, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'NUEVOS ALMACENES INTERNACIONALES SA', '04827332-7', 'NASA INTERNACIONAL', 'NACIONAL', 3),
+    (137, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'SERVICIOS Y CONFECCIONES TEXTIL COSTUMAR VICTOR PASCUAL HUAYHUA CORNE', '77704530-K', 'TEXTIL COSTUMAR', 'NACIONAL', 16),
+    (138, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'DAVID FREDY CALIZAYA CHIPANA', '77881919-8', 'DAVID CALIZAYA', 'NACIONAL', 1),
+    (139, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'HECTOR JUAN SEPULVEDA BUSTAMANTE', '76360977-4', 'HECTOR SEPULVEDA', 'NACIONAL', 1),
+    (140, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'JOSE MORENO Y COMPANIA LIMITADA', '77346752-8', 'JOSE MORENO', 'NACIONAL', 1),
+    (141, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'LA CASA DEL ESTAMPADO SPA', '22706522-2', 'CASA ESTAMPADO', 'NACIONAL', 16),
+    (142, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'PRIMUS CAPITAL S.A.', '77777978-8', 'PRIMUS CAPITAL', 'NACIONAL', 14),
+    (143, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'NUEVO GENESIS SPA', '96928510-K', 'NUEVO GENESIS', 'NACIONAL', 1),
+    (144, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'HUGO JIMENEZ CHUI', '76987743-6', 'HUGO JIMENEZ', 'NACIONAL', 1),
+    (145, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'DECO BAZAR SPA', '78278230-4', 'DECO BAZAR', 'NACIONAL', 1),
+    (146, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'EMPRESAS LIPIGAS S.A.', '76762046-2', 'LIPIGAS', 'NACIONAL', 13),
+    (147, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'COMERCIAL RODRITEX SPA', '77685577-4', 'RODRITEX', 'NACIONAL', 1),
+    (148, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'DISTRIBUIDORA VOLCANO LTDA.', '22397193-8', 'VOLCANO LTDA', 'NACIONAL', 1),
+    (149, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'INFORMACION COMERCIAL LTDA.', '76011209-7', 'DICOM INFORMACION', 'NACIONAL', 18),
+    (150, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'DISTRIBUIDOR QISHENG SPA', '86137300-2', 'QISHENG SPA', 'NACIONAL', 1),
+    (151, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'PRUDENCIO QUISPE GARCIA', '76264505-K', 'PRUDENCIO QUISPE', 'NACIONAL', 1),
+    (152, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'COMERCIAL E INVERSIONES SAGU LIMITADA', '77124273-1', 'SAGU LTDA', 'NACIONAL', 1),
+    (153, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'TEXTIL COHEN Y GOMBEROFF LIMITADA', '76134941-4', 'COHEN GOMBEROFF', 'NACIONAL', 1),
+    (154, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'PREVENCION E ILUMINACION LIMITADA', '76746495-9', 'PREVENCION ILUM', 'NACIONAL', 16),
+    (155, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'EMPRESA DE CORREOS CHILE (ALT)', '11959273-9', 'CORREOS RES', 'NACIONAL', 3),
+    (156, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'ACOLCHADOS EXPRESSO SPA', '25458794-K', 'ACOLCHADOS EXPRESS', 'NACIONAL', 16),
+    (157, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'ADMIN DE SUPERMERCADOS HIPER LIMITADA', '06538077-3', 'LIDER HIPER', 'NACIONAL', 1),
+    (158, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'INN BRANDS SPA', '77799645-2', 'INN BRANDS', 'NACIONAL', 1),
+    (159, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'OLIVERIO DEL TRANSITO ITURRA GONZALEZ', '76764355-1', 'OLIVERIO ITURRA', 'NACIONAL', 1),
+    (160, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'MARCO ANTONIO BONIFACIO ACHO', '96953410-K', 'MARCO BONIFACIO', 'NACIONAL', 1),
+    (161, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'JORGE DANIEL VALENZUELA MUNOZ', '14679071-2', 'JORGE VALENZUELA', 'NACIONAL', 1),
+    (162, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'SOFTPRO AGV SPA', '77409600-0', 'SOFTPRO AGV', 'NACIONAL', 10),
+    (163, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'EXTINTORES OLMUE SPA', '79615590-6', 'EXTINTORES OLMUE', 'NACIONAL', 16),
+    (164, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'ARTIKOS CHILE S.A.', '79600640-4', 'ARTIKOS CHILE', 'NACIONAL', 10),
+    (165, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'ESTHER JANET CULQUICHICON CAMPOS', '94058000-5', 'ESTHER CULQUICHICON', 'NACIONAL', 1),
+    (166, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'SERVICIOS INTERNET LTDA.', '78950040-1', 'SERVICIOS INTERNET', 'NACIONAL', 10),
+    (167, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'ROSSELOT Y FIGUEROA LIMITADA', '77004053-1', 'ROSSELOT FIGUEROA', 'NACIONAL', 1),
+    (168, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'NERVI Y COMPANIA LIMITADA', '12679896-2', 'NERVI LTDA', 'NACIONAL', 1),
+    (169, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'SERVICIOS AEROPORTUARIOS AEROSAN SA', '76173410-5', 'AEROSAN SA', 'NACIONAL', 3),
+    (170, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'COMERCIAL MUNDO TRANSFER LTDA.', '76778923-8', 'MUNDO TRANSFER', 'NACIONAL', 1),
+    (171, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'COMERCIALIZADORA ALEJANDRO MARCELO DIAZ ARAVENA E.I.R.L.', '76010909-6', 'ALEJANDRO DIAZ', 'NACIONAL', 1),
+    (172, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'JEANNETTE SOLEDAD BASCUNAN BARRIA', '92198000-0', 'JEANNETTE BASCUNAN', 'NACIONAL', 1),
+    (173, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'QWANTEC INGENIERIA LTDA.', '78703410-1', 'QWANTEC', 'NACIONAL', 10),
+    (174, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'COMERCIALIZADORA JSV SPA', '77041867-4', 'JSV SPA', 'NACIONAL', 1),
+    (175, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'EMPRESAS LIPIGAS S.A. (ALT)', '77261280-K', 'LIPIGAS CENTRAL', 'NACIONAL', 13),
+    (176, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'ZEAL SOCIEDAD CONCESIONARIA S.A.', '76812093-5', 'ZEAL VALPARAISO', 'NACIONAL', 3),
+    (177, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'HILADOS Y TEJIDOS GARIB SA', '76897068-8', 'TEJIDOS GARIB', 'NACIONAL', 16),
+    (178, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'TELEFONICA EMPRESAS CHILE S.A.', '76760697-4', 'TELEFONICA EMPRESAS', 'NACIONAL', 17),
+    (179, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'AMSEC SPA', '70017820-K', 'AMSEC SPA', 'NACIONAL', 22),
+    (180, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'FALABELLA RETAIL S.A.', '78385640-9', 'FALABELLA', 'NACIONAL', 1),
+    (181, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'INVERSIONES MH LIMITADA', '21705442-7', 'INVERSIONES MH', 'NACIONAL', 1),
+    (182, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'COMERCIAL CHINA MALL LIMITADA', '76314646-4', 'CHINA MALL', 'EXTRANJERO', 1),
+    (183, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'DISTRIBUIDORA Y COMERCIAL DIPROELEC LIMITADA', '77637205-6', 'DIPROELEC', 'NACIONAL', 1),
+    (184, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'CAMARA DE COMERCIO DE SANTIAGO A.G.', '07367965-6', 'CCS SANTIAGO', 'NACIONAL', 18),
+    (185, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'BELL TELEPHONE COMUNICACIONES LIMITADA', '76873931-5', 'BELL TELEPHONE', 'NACIONAL', 17),
+    (186, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'BERTHA QUISPE YUJRA', '79685670-K', 'BERTHA QUISPE', 'NACIONAL', 1),
+    (187, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'CENCOSUD RETAIL S.A. (ALT)', '77504004-1', 'CENCOSUD JUMBO', 'NACIONAL', 1),
+    (188, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'COMERCIALIZADORA Y DISTRIBUIDORA HERESI LIMITADA', '78950790-2', 'HERESI LTDA', 'NACIONAL', 1),
+    (189, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'AGC EPP Y VESTUARIO SPA', '85274100-7', 'AGC EPP VESTUARIO', 'NACIONAL', 16),
+    (190, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'MONICA ALEJANDRA DEL ROSARIO AGUIRRE YANEZ', '96662540-6', 'MONICA AGUIRRE', 'NACIONAL', 1),
+    (191, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'DIRECCION ANDRES BELLO QUILPUE', '14745892-4', 'ANDRES BELLO PROV', 'NACIONAL', 1),
+    (192, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'GRUPO 212 SPA', '76756768-5', 'GRUPO 212', 'NACIONAL', 1),
+    (193, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'CONFECCIONES HERRS LIMITADA', '96716060-1', 'CONFECCIONES HERRS', 'NACIONAL', 16),
+    (194, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'MC2 LOGISTICA SPA', '96820170-0', 'MC2 LOGISTICA', 'NACIONAL', 3),
+    (195, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'COMERCIAL E INDUSTRIAL CALPER SPA', '76440150-6', 'CALPER SPA', 'NACIONAL', 16),
+    (196, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'DISTRIBUIDORA BARRERA Y CIA LTDA.', '79735920-3', 'DIST BARRERA', 'NACIONAL', 1),
+    (197, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'MAERSK LOGISTICS SERVICES CHILE SPA', '85896100-9', 'MAERSK LOGISTICS', 'NACIONAL', 3),
+    (198, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'ADELMA MAXIMA HUAYLINOS FLORES', '78206910-1', 'ADELMA HUAYLINOS', 'NACIONAL', 1),
+    (199, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'SEGURIDAD INDUSTRIAL SPA', '76363883-9', 'SEGURIDAD IND SPA', 'NACIONAL', 16),
+    (200, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'CANON CHILE S.A.', '09402187-1', 'CANON CHILE', 'NACIONAL', 10),
+    (201, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'ADECCO RECURSOS HUMANOS S.A.', '76415589-0', 'ADECCO', 'NACIONAL', 18),
+    (202, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'EUROESPECIALISTA S.A.', '77071146-0', 'EUROESPECIALISTA', 'NACIONAL', 1),
+    (203, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'DISTRIBUIDORA DARCOTEX SPA', '77769490-1', 'DARCOTEX SPA', 'NACIONAL', 1),
+    (204, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'SERVICIOS EQUIFAX CHILE LIMITADA', '76762740-8', 'EQUIFAX DICOM', 'NACIONAL', 18),
+    (205, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'MANUFACTURAS TEXTILES ACCOR LTDA.', '96712310-2', 'TEXTILES ACCOR', 'NACIONAL', 16),
+    (206, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'TECNO BOGA COMERCIAL LIMITADA', '78386580-7', 'TECNO BOGA', 'NACIONAL', 1),
+    (207, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'MARIA EUGENIA SALAZAR GUTIERREZ', '97006000-6', 'MARIA SALAZAR', 'NACIONAL', 1),
+    (208, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'KYOCERA DOCUMENT SOLUTIONS CHILE SPA', '76845966-5', 'KYOCERA CHILE', 'NACIONAL', 10),
+    (209, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'CONFECCIONES Y BORDADOS YANDRI LIMITADA', '78039511-7', 'YANDRI LTDA', 'NACIONAL', 16),
+    (210, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'MELLA Y TELLEZ LTDA.', '76638320-3', 'MELLA TELLEZ', 'NACIONAL', 1),
+    (211, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'SOC COMERC DE REPUESTOS SPA', '79970830-2', 'REPUESTOS SPA', 'NACIONAL', 23),
+    (212, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'CINTEGRAL SISTEMAS S.A.', '76594629-8', 'CINTEGRAL SISTEMAS', 'NACIONAL', 10),
+    (213, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'COMERCIAL BRAVO LIMITADA', '76255245-0', 'COMERCIAL BRAVO', 'NACIONAL', 1),
+    (214, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'INDUSTRIAS MECANICAS Y PLASTICAS ALUPLAST S.A. COMERCIAL E INDUSTRIAL', '76455273-3', 'ALUPLAST MATRIZ', 'NACIONAL', 16),
+    (215, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'BANCO DE CREDITO E INVERSIONES', '09121214-5', 'BANCO BCI', 'NACIONAL', 14),
+    (216, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'METALFER SPA', '76568660-1', 'METALFER SPA', 'NACIONAL', 16),
+    (217, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'MART BORDADOS SPA', '27521574-0', 'MART BORDADOS', 'NACIONAL', 16),
+    (218, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'ABANICO ETIQUETACION LIMITADA', '23736863-0', 'ABANICO ETIQUETAS', 'NACIONAL', 16),
+    (219, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'LA LIBRERIA LTDA.', '78381520-6', 'LA LIBRERIA', 'NACIONAL', 1),
+    (220, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'SERVICIOS Y PROMOCIONES TURISTICAS ADN VIAJES SPA', '16989936-3', 'ADN VIAJES', 'NACIONAL', 12),
+    (221, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'SIDESA CHILE S.A.', '76502041-7', 'SIDESA CHILE', 'NACIONAL', 1),
+    (222, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'GYMPRO SPA', '94510000-1', 'GYMPRO SPA', 'NACIONAL', 20),
+    (223, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'IVONNE PAOLA ARAYA CORDERO', '77593351-8', 'IVONNE ARAYA', 'NACIONAL', 1),
+    (224, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'EASY RETAIL S.A.', '76055044-2', 'EASY RETAIL', 'NACIONAL', 1),
+    (225, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'FAUDI ELIO ZARATE CONDORI', '96689970-0', 'FAUDI ZARATE', 'NACIONAL', 1),
+    (226, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'WILSON MAMANI MAMANI', '81706600-3', 'WILSON MAMANI', 'NACIONAL', 1),
+    (227, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'ALBORNOZ Y LAMA SPA', '07561854-9', 'ALBORNOZ Y LAMA', 'NACIONAL', 1),
+    (228, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'METALFER SPA (ALT)', '77253407-8', 'METALFER CENTRAL', 'NACIONAL', 16),
+    (229, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'JAVIERA NICOLL MARCHANT HIDALGO', '78885550-8', 'JAVIERA MARCHANT', 'NACIONAL', 1),
+    (230, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'MUNDO ETIQUETAS SPA', '77266631-4', 'MUNDO ETIQUETAS', 'NACIONAL', 16),
+    (231, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'TELEFONICA CHILE S.A. (ALT)', '96871890-8', 'TELEFONICA FIJA', 'NACIONAL', 17),
+    (232, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'CARMELO TALA Y CIA LTDA (ALT)', '76811607-5', 'CARMELO TALA SEC', 'NACIONAL', 1),
+    (233, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'RENTA NACIONAL COMPANIA DE SEGUROS GENERALES S.A.', '77272222-2', 'RENTA NACIONAL', 'NACIONAL', 14),
+    (234, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'COMERCIALIZADORA VALIENTE Y MATAMALA SPA', '96868900-2', 'VALIENTE MATAMALA', 'NACIONAL', 1),
+    (235, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'SOCIEDAD LA ACADEMIA LIMITADA', '77179879-9', 'LA ACADEMIA LTDA', 'NACIONAL', 11),
+    (236, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'COMPUTACION INTEGRAL S.A.', '76057657-3', 'COMPUTACION INT', 'NACIONAL', 10),
+    (237, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'W JACOB SPA', '77471974-1', 'W JACOB SPA', 'NACIONAL', 1),
+    (238, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'DONNEBAUM S.A.', '80537000-9', 'DONNEBAUM S.A.', 'NACIONAL', 1),
+    (239, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'RUBEN MIGUEL AWAD HANNA', '09475898-K', 'RUBEN AWAD HANNA', 'NACIONAL', 1),
+    (240, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'EL COSTURERO CHILE SPA', '96661420-K', 'EL COSTURERO', 'NACIONAL', 16),
+    (241, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'PERSONAL COMPUTER FACTORY S.A.', '76224568-K', 'PC FACTORY', 'NACIONAL', 10),
+    (242, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'PROGARANTIA S.A.G.R.', '76358760-6', 'PROGARANTIA', 'NACIONAL', 14),
+    (243, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'COMERCIAL TOP LINE SPA', '77009747-9', 'TOP LINE SPA', 'NACIONAL', 1),
+    (244, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'DIMERC S.A. (TERC)', '76619610-1', 'DIMERC EXPRESS', 'NACIONAL', 1),
+    (245, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'IMPRESIONES LUIS IGNACIO MORALES HARTMANN E.I.R.L.', '77670085-1', 'LUIS MORALES IMP', 'NACIONAL', 16),
+    (246, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'SUPER CAJAS SPA', '24311714-3', 'SUPER CAJAS SPA', 'NACIONAL', 1),
+    (247, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'LOS NAVEGANTES S.A.', '77374446-7', 'LOS NAVEGANTES', 'NACIONAL', 3),
+    (248, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'GRUPO ROMANS SPA', '82511000-3', 'GRUPO ROMANS', 'NACIONAL', 1),
+    (249, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'INCORPTEX', '77719738-K', 'INCORPTEX ADM', 'NACIONAL', 1),
+    (250, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'TEXTIL SUMEY LTDA.', '77145763-0', 'TEXTIL SUMEY', 'NACIONAL', 1),
+    (251, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'GREEN CO. SPA', '22143501-K', 'GREEN CO CL', 'NACIONAL', 1),
+    (252, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'ESTAMPADOS FELIPE MILLAR VASQUEZ E.I.R.L.', '96570750-6', 'FELIPE MILLAR EST', 'NACIONAL', 16),
+    (253, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'LARRAIN VIAL S.A. CORREDORA DE BOLSA', '88837800-K', 'LARRAIN VIAL', 'NACIONAL', 14),
+    (254, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'CARLOS ENRIQUE AGUILAR ORELLANA', '07666256-8', 'CARLOS AGUILAR', 'NACIONAL', 1),
+    (255, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'SERVICIOS COMPUTACIONALES GLOBAL SA', '89563800-5', 'GLOBAL COMPUTACION', 'NACIONAL', 10),
+    (256, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'IMPORTADORA OXS LIMITADA', '11049261-8', 'IMPORTADORA OXS', 'NACIONAL', 1),
+    (257, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'SOC SERVICIO Y COMERCIO VALPARAISO LTDA.', '76895912-9', 'COMERCIO VALPO', 'NACIONAL', 1),
+    (258, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'THE MASTER ALBUM SPA', '76926424-8', 'MASTER ALBUM SPA', 'NACIONAL', 1),
+    (259, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'ESTACION DE SERVICIO FANDOS LTDA.', '14598244-8', 'COPEC FANDOS', 'NACIONAL', 23),
+    (260, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'CONFECCIONES MELYTEX SPA', '78248640-3', 'MELYTEX SPA', 'NACIONAL', 16),
+    (261, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'ELIAS 448 464', '77312282-2', 'ELIAS INMUEBLE', 'NACIONAL', 4),
+    (262, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'SAUL VEGA CASTILLO', '08189910-K', 'SAUL VEGA', 'NACIONAL', 1),
+    (263, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'COMERCIAL SEBASTIAN DELGADO MONARDEZ E.I.R.L.', '77044454-3', 'SEBASTIAN DELGADO', 'NACIONAL', 1),
+    (264, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'SAIEG COMPANIA LIMITADA', '84922000-4', 'SAIEG COLOMBIA', 'NACIONAL', 1),
+    (265, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'CONFECCIONES MERYJEANS SPA', '96806110-0', 'MERYJEANS SPA', 'NACIONAL', 16),
+    (266, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'COMERCIAL GONZALO RUBIO E.I.R.L.', '80192600-2', 'GONZALO RUBIO COM', 'NACIONAL', 1),
+    (267, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'HENRY ALEXANDER MONTALVO JON', '80478200-1', 'HENRY MONTALVO', 'NACIONAL', 1),
+    (268, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'DSV AIR SEA S.A.', '76363534-1', 'DSV LOGISTICS', 'NACIONAL', 3),
+    (269, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'DIRECCION PLINIO VALPARAISO', '76342433-2', 'PLINIO LOGISTICA', 'NACIONAL', 3),
+    (270, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'AUTOFRAM S.A.', '07829543-0', 'AUTOFRAM S.A.', 'NACIONAL', 23),
+    (271, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'PEDRO ENRIQUE GUERRERO ORELLANA', '76027695-2', 'PEDRO GUERRERO', 'NACIONAL', 1),
+    (272, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'IMPORTADORA IND MOLYCHILE LIMITADA', '77184395-6', 'MOLYCHILE IMPO', 'NACIONAL', 1),
+    (273, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'JEANNETTE YOLANDA ZUNIGA LAGOS', '76282191-5', 'JEANNETTE ZUNIGA', 'NACIONAL', 1),
+    (274, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'TEXTILES SOFTY SPA', '76875816-6', 'TEXTILES SOFTY', 'NACIONAL', 16),
+    (275, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'COMERCIALIZADORA CHILETRANSFERPRO SPA', '96501500-0', 'CHILETRANSFERPRO', 'NACIONAL', 1),
+    (276, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'CARLOS BENJAMIN BECERRA ALARCON', '86172900-1', 'CARLOS BECERRA', 'NACIONAL', 1),
+    (277, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'SOCIEDAD COMERCIAL MANCINI Y COLEMAN LIMITADA', '77563326-3', 'MANCINI Y COLEMAN', 'NACIONAL', 1),
+    (278, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'SOCIEDAD DE CONSTRUCCION Y CONFECCIONES DINAGAP LIMITADA', '76203242-2', 'DINAGAP CONFECC', 'NACIONAL', 16),
+    (279, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'LUISA MARTA BAHAMONDEZ OJEDA', '77683453-K', 'LUISA BAHAMONDEZ', 'NACIONAL', 1),
+    (280, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'CONFECCIONES ALICIA TALLERE SPA', '77965030-8', 'ALICIA TALLERE', 'NACIONAL', 16),
+    (281, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'TAUFIG HALES Y CIA LTDA.', '77219706-3', 'TAUFIG HALES', 'NACIONAL', 1),
+    (282, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'DARTEL S.A.', '76619355-2', 'DARTEL S.A.', 'NACIONAL', 1),
+    (283, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'TEXTIL CHAFIK NALLAR HIJOS SPA', '96707720-8', 'CHAFIK NALLAR', 'NACIONAL', 1),
+    (284, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'ILOP S.A.', '76172595-5', 'ILOP OPTICAS', 'NACIONAL', 2),
+    (285, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'AVLA SEGUROS DE CREDITO Y GARANTIA S.A.', '96756310-2', 'AVLA SEGUROS', 'NACIONAL', 14),
+    (286, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'GLOBAT INVERSIONES LIMITADA', '76008959-1', 'GLOBAT INVERSIONES', 'NACIONAL', 1),
+    (287, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'LUIS HUMBERTO TOLEDO PEREIRA', '77931120-1', 'LUIS TOLEDO', 'NACIONAL', 1),
+    (288, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'GG INFORMATICA SERVICIOS COMPUTACIONALES LTDA.', '77509077-4', 'GG INFORMATICA', 'NACIONAL', 10),
+    (289, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'PATRONATO TELAS SPA', '76490172-K', 'PATRONATO TELAS', 'NACIONAL', 1),
+    (290, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'BUPA COMPANIA DE SEGUROS DE VIDA S.A.', '76132984-7', 'BUPA SEGUROS', 'NACIONAL', 14),
+    (291, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'SERVICIOS PUBLICITARIOS LORENZO GUILLERMO POZO VIGUERA E.I.R.L.', '76895992-7', 'LORENZO POZO PUB', 'NACIONAL', 21),
+    (292, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'PLASTICOS DE INGENIERIA SPA', '76768138-0', 'PLASTICOS INGENIERIA', 'NACIONAL', 16),
+    (293, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'SOCIEDAD IMPORT HISPANA LTDA.', '14731843-K', 'IMPORT HISPANA', 'NACIONAL', 1),
+    (294, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'IMPORTADORA Y DISTRIBUIDORA ENVIO STOCK SPA', '04985294-0', 'ENVIO STOCK SPA', 'NACIONAL', 1),
+    (295, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'TRANSPORTES TECNOLOGIA Y GIROS EGT LTDA. (SEC)', '77578619-1', 'EGT LOGISTICA', 'NACIONAL', 3),
+    (296, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'PROYECTOS Y CONSULTORIAS DE INGENIERIA E INFORMATICA IMPORTADORA', '09295044-1', 'PROYECTOS INF', 'NACIONAL', 10),
+    (297, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'HR INSUMOS COMPUTACIONALES SPA', '76856463-9', 'HR INSUMOS', 'NACIONAL', 10),
+    (298, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'BALUT HERMANOS LTDA.', '76155767-K', 'BALUT HERMANOS', 'NACIONAL', 1),
+    (299, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'MASTER ELEVATOR SPA', '76356246-8', 'MASTER ELEVATOR', 'NACIONAL', 16),
+    (300, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'COMERCIAL LUPE EXPRESS SPA', '76886587-6', 'LUPE EXPRESS', 'NACIONAL', 1),
+    (301, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'MEDITERRANEAN SHIPPING CO S.A.', '84108700-3', 'MSC SHIPPING', 'NACIONAL', 3),
+    (302, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'MEDLOG CHILE S.A.', '76462027-5', 'MEDLOG CHILE', 'NACIONAL', 3),
+    (303, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'FERROCARRILES SUBURBANOS DE CONCEPCION S.A.', '90844000-5', 'BIOTREN CONCE', 'NACIONAL', 3),
+    (304, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'PUERTO COLUMBO S.A.', '77470065-K', 'PUERTO COLUMBO', 'NACIONAL', 3),
+    (305, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'HOMS', '96908870-3', 'HOMS ADM', 'NACIONAL', 1),
+    (306, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'MUNDO TRONIC CHILE JOSE MENESES E.I.R.L.', '84879700-6', 'MUNDO TRONIC', 'NACIONAL', 10),
+    (307, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'COMERCIALIZADORA BOOKSTORE LIMITADA', '78126750-3', 'BOOKSTORE LTDA', 'NACIONAL', 1),
+    (308, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'VER+ CONSULTORES Y COMPANIA LIMITADA', '77511900-4', 'VER+ CONSULTORES', 'NACIONAL', 18),
+    (309, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'CORANTO INFORMATICA LIMITADA', '77424226-0', 'CORANTO INF', 'NACIONAL', 10),
+    (310, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', '6180 COMUNICACIONES SPA', '76223936-1', '6180 COMUNICACIONES', 'NACIONAL', 21),
+    (311, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'EDGAR GUTIERREZ CALIZAYA', '79716540-9', 'EDGAR GUTIERREZ', 'NACIONAL', 1),
+    (312, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'ALFREDO DEL TRANSITO TORDESILLA ARAYA', '85973300-K', 'ALFREDO TORDESILLA', 'NACIONAL', 1),
+    (313, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'CONFECCIONES LAYME E IMPORTACIONES SPA', '97011000-3', 'LAYME IMPORT', 'NACIONAL', 16),
+    (314, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'MARIA EDITH ARAYA TORRES', '76488070-6', 'MARIA EDITH ARAYA', 'NACIONAL', 1),
+    (315, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'COMERCIAL KUPPEL SPA', '78177660-2', 'COMERCIAL KUPPEL', 'NACIONAL', 1),
+    (316, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'CHILECOSTURA LIMITADA', '10661694-9', 'CHILECOSTURA', 'NACIONAL', 16),
+    (317, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'SERVICIOS TI RIFFO Y VILLEGAS LIMITADA', '96919050-8', 'RIFFO VILLEGAS TI', 'NACIONAL', 10),
+    (318, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'REVICENTRO VALPARAISO SPA', '76163495-K', 'REVICENTRO VALPO', 'NACIONAL', 23),
+    (319, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'GHATTAS ABUSADA E HIJOS Y CIA LTDA.', '83030600-5', 'GHATTAS PROV', 'NACIONAL', 1),
+    (320, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'COMERCIALIZADORA DE PRENDAS DE VESTIR REY LIMITADA', '96556940-5', 'PRENDAS REY', 'NACIONAL', 16),
+    (321, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'KUPFER HERMANOS S.A.', '76651103-1', 'KUPFER HERMANOS', 'NACIONAL', 16),
+    (322, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'COMERCIALIZADORA LOS LAGOS SPA', '81634800-5', 'LOS LAGOS COMERCIAL', 'NACIONAL', 1),
+    (323, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'TERMINAL PACIFICO SUR VAP S.A.', '13226482-1', 'TPS VALPARAISO', 'NACIONAL', 3),
+    (324, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'ASPILLAGA', '77019126-2', 'ASPILLAGA PROV', 'NACIONAL', 1),
+    (325, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'CONFECCIONES BUTKA LTDA.', '77173048-5', 'CONFECCIONES BUTKA', 'NACIONAL', 16),
+    (326, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'HOMEVAN SERVICES SPA', '99225000-3', 'HOMEVAN SERVICES', 'NACIONAL', 3),
+    (327, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'PRINT SOLUTIONS SPA', '78087553-4', 'PRINT SOLUTIONS', 'NACIONAL', 16),
+    (328, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'COMERCIAL J B L LIMITADA', '76562768-0', 'COMERCIAL JBL', 'NACIONAL', 1),
+    (329, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'SOC COMERCIAL EOUNG OK AN BAN LIMITADA', '77480452-8', 'EOUNG OK AN BAN', 'NACIONAL', 1),
+    (330, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'COMERCIAL SUEZ CATAN LTDA.', '96665360-4', 'SUEZ CATAN', 'NACIONAL', 1),
+    (331, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'BANCO INTERNACIONAL', '23667249-2', 'BCO INTERNACIONAL', 'NACIONAL', 14),
+    (332, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'INGENIERIA Y SEGURIDAD INDUSTRIAL KS LIMITADA', '76542147-0', 'SEGURIDAD KS', 'NACIONAL', 16),
+    (333, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'COMERCIAL SABA S.A.', '06997526-7', 'COMERCIAL SABA', 'NACIONAL', 1),
+    (334, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'JUVENAL RUFINO ESCALONA ORTIZ', '78008691-2', 'JUVENAL ESCALONA', 'NACIONAL', 1),
+    (335, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'ACEPTA COM SPA', '83382700-6', 'ACEPTA CHILE', 'NACIONAL', 10),
+    (336, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'ELECTROLUX DE CHILE S.A.', '76560761-2', 'ELECTROLUX', 'NACIONAL', 1),
+    (337, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'ELECTRONICA RETAIL LIMITADA', '77105819-1', 'ELECTRONICA RETAIL', 'NACIONAL', 1),
+    (338, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'PROVEEDORES INTEGRALES PRISA S.A.', '76759733-9', 'PRISA DISTRIBUCION', 'NACIONAL', 1),
+    (339, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'HOJALATERIA Y CLINICA DEL HOGAR LIMITADA', '77708618-9', 'CLINICA DEL HOGAR', 'NACIONAL', 4),
+    (340, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'SKYWAY SPA', '77404174-5', 'SKYWAY SPA', 'NACIONAL', 3),
+    (341, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'ALISON PAULA DEL CARMEN IBARRA GONZALEZ', '76095623-6', 'ALISON IBARRA', 'NACIONAL', 1),
+    (342, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'CASA PINO INVERSIONES SPA', '77758021-3', 'CASA PINO', 'NACIONAL', 1),
+    (343, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'DANK SPA', '96566940-K', 'DANK SPA', 'NACIONAL', 1),
+    (344, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'CHUBB SEGUROS CHILE S.A.', '76447245-4', 'CHUBB SEGUROS', 'NACIONAL', 14),
+    (345, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'COMERCIALIZADORA MARCO CACHI SPA', '78189906-2', 'MARCO CACHI PROV', 'NACIONAL', 1),
+    (346, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'COMERCIAL Y SERVICIOS V Y A LIMITADA', '99510910-7', 'COMERCIAL VYA', 'NACIONAL', 1),
+    (347, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'COMERCILIZADORA ALIWEN SPA', '76942437-7', 'ALIWEN SPA', 'NACIONAL', 1),
+    (348, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'MERIGGI TELAS LIMITADA', '77831768-0', 'MERIGGI TELAS', 'NACIONAL', 1),
+    (349, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'MANUEL ALEJO BARRETO', '78088375-8', 'MANUEL BARRETO', 'NACIONAL', 1),
+    (350, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'INVERSIONES BAZAR PREMIUM SPA', '77519769-2', 'BAZAR PREMIUM', 'NACIONAL', 1),
+    (351, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'YOLANDA INES BRITO POBLETE', '77468936-2', 'YOLANDA BRITO', 'NACIONAL', 1),
+    (352, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'AUTOMOTRIZ IGNACIO ANDRADE CANO E.I.R.L.', '96974580-1', 'IGNACIO ANDRADE', 'NACIONAL', 23),
+    (353, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'COMERCIAL ECCSA S.A.', '77078264-3', 'RIPLEY ECCSA', 'NACIONAL', 1),
+    (354, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'EXPORTADORA E IMPORTADORA PAI SHA LIMITADA', '86963200-7', 'PAI SHA', 'EXTRANJERO', 1),
+    (355, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'MAX SERVICE SEGURIDAD INDUSTRIAL SPA', '76187337-7', 'MAX SERVICE SEG', 'NACIONAL', 16),
+    (356, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'BOLPECH CONFECCIONES SPA', '76026378-8', 'BOLPECH CONFECC', 'NACIONAL', 16),
+    (357, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'SERVICIOS INTEGRALES LIMITADA', '76577354-7', 'SERVICIOS INTEGRALES', 'NACIONAL', 18),
+    (358, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'PROVEEDORES INTEGRALES PRISA S.A. (ALT)', '77232606-8', 'PRISA EXPRESS', 'NACIONAL', 1),
+    (359, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'IMPORTADORA REMAQUI SPA', '77204398-8', 'REMAQUI SPA', 'NACIONAL', 1),
+    (360, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'DISTRIBUIDORA PLASTICOS ARIRANG SPA', '76871462-2', 'PLASTICOS ARIRANG', 'NACIONAL', 1),
+    (361, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'SERVI-GRAF S.A.', '77961841-2', 'SERVI-GRAF S.A.', 'NACIONAL', 16),
+    (362, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'ASMAC SPA', '78238811-8', 'ASMAC SPA', 'NACIONAL', 1),
+    (363, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'AGENCIAS UNIVERSALES S.A.', '15767281-9', 'AGUNSA ADM', 'NACIONAL', 3),
+    (364, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'HUBER Y HUBER LIMITADA', '77691013-9', 'HUBER Y HUBER', 'NACIONAL', 1),
+    (365, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'SANTA BEATRIZ INGENIERIA Y CONSTRUCCION SPA', '77384014-8', 'SANTA BEATRIZ ING', 'NACIONAL', 4),
+    (366, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'SEGURYCEL S.A.', '77534153-4', 'SEGURYCEL S.A.', 'NACIONAL', 16),
+    (367, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'HEAVEN STORE SPA', '76207208-4', 'HEAVEN STORE', 'NACIONAL', 1),
+    (368, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'TRANSPORTE Y ARRIENDO DE MAQUINARIAS CROCCO HERMANOS SPA', '79553100-9', 'CROCCO HNOS', 'NACIONAL', 3),
+    (369, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'MC NAMARA WORK STORE SPA', '77779228-8', 'MCNAMARA STORE', 'NACIONAL', 1),
+    (370, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'FABRICADORA DE ESTRUCTURAS SERGIO ANDRES MONDACA SALAZAR E.I.R.L.', '77844703-7', 'SERGIO MONDACA FAB', 'NACIONAL', 16),
+    (371, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'TEXORA S.A. (ALT)', '77329609-K', 'TEXORA MATRIZ', 'NACIONAL', 16),
+    (372, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'IMPORTADORA Y EXPORTADORA FUMI ZZ LIMITADA', '77761166-6', 'FUMI ZZ', 'EXTRANJERO', 1),
+    (373, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'COHEN Y GOMBEROFF TINTORERIA S.A.', '78204678-0', 'TINTORERIA COHEN', 'NACIONAL', 16),
+    (374, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'SOCIEDAD COMERCIAL E INDUSTRIAL AUSTRAL TACTICAL SPA', '92681000-6', 'AUSTRAL TACTICAL', 'NACIONAL', 16),
+    (375, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'FORUS S.A.', '76838890-3', 'FORUS CHILE', 'NACIONAL', 1),
+    (376, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'COMERCIAL 3OR SPA', '76853485-3', 'COMERCIAL 3OR', 'NACIONAL', 1),
+    (377, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'COMERCIAL ANDES SPORT LTDA.', '24043330-3', 'ANDES SPORT', 'NACIONAL', 1),
+    (378, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'IMPORTADORA Y COMERCIALIZADORA MEGA ZIGZAG SPA', '76002437-6', 'MEGA ZIGZAG', 'NACIONAL', 1),
+    (379, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'TECH GRAN SOLUTION SPA', '76006999-K', 'TECH GRAN SOL', 'NACIONAL', 10),
+    (380, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'INGENIERIA Y CONSTRUCCIONES JF SPA', '50092210-9', 'INGENIERIA JF PROV', 'NACIONAL', 4),
+    (381, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'SOCIEDAD DE INVERSIONES NICOMA SPA', '76451351-7', 'INVERSIONES NICOMA', 'NACIONAL', 1),
+    (382, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'CM IMPRESIONES SPA', '93049000-8', 'CM IMPRESIONES', 'NACIONAL', 16),
+    (383, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '09:00 - 18:00', 'Antuan Jury S.A.', '79724060-5', 'S.A.', 'NACIONAL', 5);
 
 -- ============================================================
 -- 6.1. BANCOS Y ENTIDADES FINANCIERAS
 -- ============================================================
 INSERT IGNORE INTO banco (banco_id, nombre_banco, codigo_banco) VALUES
-    (1, 'BANCO DE CHILE',         'BCH'),
-    (2, 'BANCO ESTADO',           'BEST'),
-    (3, 'SANTANDER CHILE',        'SAN'),
-    (4, 'BCI',                    'BCI'),
-    (5, 'SCOTIABANK CHILE',       'SCOT'),
-    (6, 'BANCO SECURITY',         'SEC'),
-    (7, 'ITAÚ CORPBANCA',         'ITA');
+    (1, 'BANCO DE CHILE', '001'),
+    (2, 'BANCO ESTADO', '012'),
+    (3, 'BANCO SANTANDER CHILE', '037'),
+    (4, 'BANCO DE CREDITO E INVERSIONES (BCI)', '016'),
+    (5, 'SCOTIABANK CHILE', '014'),
+    (6, 'BANCO SECURITY', '049'),
+    (7, 'BANCO ITAÚ CHILE', '039'),
+    (8, 'BANCO INTERNACIONAL', '009'),
+    (9, 'BANCO BICE', '028'),
+    (10, 'HSBC BANK CHILE', '031'),
+    (11, 'BANCO FALABELLA', '051'),
+    (12, 'BANCO RIPLEY', '053'),
+    (13, 'BANCO CONSORCIO', '055'),
+    (14, 'BANCO BTG PACTUAL CHILE', '059');
 
 INSERT IGNORE INTO tipo_cuenta_bancaria (tipo_cuenta_id, denominacion_cuenta) VALUES
     (1, 'CUENTA CORRIENTE'),
@@ -160,306 +1121,1034 @@ INSERT IGNORE INTO dato_bancario (dato_bancario_id, numero_cuenta, banco_id, tip
 -- ============================================================
 -- 7. CATEGORÍAS Y SUBCATEGORÍAS DE TEXTIL
 -- ============================================================
-
 INSERT IGNORE INTO categoria_tela (id_categoria_tela, codigo_categoria_tela, nombre_categoria_tela) VALUES
-    (1, 'TEJ-PLN', 'Tejido Plano'),
-    (2, 'TEJ-PNT', 'Tejido de Punto'),
-    (3, 'NO-TEJ',  'No Tejido / Técnico');
+    (1, 'TEJ-PLN', 'TEJIDO PLANO'),
+    (2, 'TEJ-PNT', 'TEJIDO DE PUNTO'),
+    (3, 'NO-TEJ',  'NO TEJIDO / TÉCNICO');
 
 INSERT IGNORE INTO subcategoria_tela (id_subcategoria_tela, codigo_subcategoria_tela, nombre_subcategoria_tela, id_categoria_tela) VALUES
-    (1, 'PLN-COTT', 'Algodón Plano',     1),
-    (2, 'PLN-SYNT', 'Sintético Plano',   1),
-    (3, 'PNT-FLEE', 'Fleece / Polar',    2),
-    (4, 'PNT-JRSY', 'Jersey',            2),
-    (5, 'TEC-IMPR', 'Impermeable Tech',  3);
+    (1, 'PLN-COTT', 'ALGODÓN PLANO',     1),
+    (2, 'PLN-SYNT', 'SINTÉTICO PLANO',   1),
+    (3, 'PNT-FLEE', 'FLEECE / POLAR',    2),
+    (4, 'PNT-JRSY', 'JERSEY',            2),
+    (5, 'TEC-IMPR', 'IMPERMEABLE TECH',  3);
+
+-- ============================================================
+-- 7.0.1 PARAMETRÍA TEXTIL (Familias, Clasificaciones, Composiciones,
+-- Gramajes, Colores, Atributos Técnicos)
+-- ============================================================
+
+INSERT IGNORE INTO familia_tela (id_familia_tela, codigo_familia, nombre_familia) VALUES
+    (1,  'T-GAB', 'GABARDINA'),
+    (2,  'T-POP', 'POPELINA'),
+    (3,  'T-OXF', 'OXFORD'),
+    (4,  'T-MEZ', 'MEZCLILLA / DENIM'),
+    (5,  'T-TAF', 'TAFETA'),
+    (6,  'T-TSL', 'TASLAN'),
+    (7,  'T-NYL', 'NYLON'),
+    (8,  'T-HIP', 'HIPORA'),
+    (9,  'T-MAL', 'MALLA'),
+    (10, 'T-SOF', 'SOFTSHELL'),
+    (11, 'T-POL', 'POLAR'),
+    (12, 'T-MIC', 'MICROPOLAR'),
+    (13, 'T-CHI', 'CHIPORRO'),
+    (14, 'T-FRA', 'FRANELA'),
+    (15, 'T-PIQ', 'PIQUÉ'),
+    (16, 'T-RIB', 'RIB / PUÑO'),
+    (17, 'T-BIO', 'BIO STRETCH / BISTRECH'),
+    (18, 'T-CUE', 'CUELLO (TEJIDO)'),
+    (19, 'T-AIS', 'AISLANTE TERMICO'),
+    (20, 'T-ENT', 'ENTRETELA FUSIBLE'),
+    (21, 'T-COR', 'CORDURA'),
+    (22, 'T-QDR', 'DRYFIT'),
+    (23, 'T-JEY', 'JERSEY'),
+    (24, 'T-TRV', 'TREVIRA');
+
+INSERT IGNORE INTO clasificacion_tecnica (id_clasificacion_tecnica, nombre_clasificacion) VALUES
+    (1,  'TEJIDO PLANO ESTÁNDAR'),
+    (2,  'TEJIDO PLANO LIVIANO'),
+    (3,  'TEJIDO PLANO CAMISERÍA'),
+    (4,  'TEJIDO PLANO PESADO'),
+    (5,  'FORRERÍA / TEJIDO PLANO'),
+    (6,  'SINTÉTICO / CORTAVIENTOS'),
+    (7,  'SINTÉTICO LIVIANO'),
+    (8,  'TÉCNICO IMPERMEABLE'),
+    (9,  'SINTÉTICO PERFORADO / FORRO'),
+    (10, 'TÉCNICO MULTICAPA'),
+    (11, 'TÉRMICO SINTÉTICO'),
+    (12, 'TÉRMICO SINTÉTICO LIVIANO'),
+    (13, 'TÉRMICO AISLANTE'),
+    (14, 'TÉRMICO BASE / PUNTO'),
+    (15, 'TEJIDO DE PUNTO'),
+    (16, 'TEJIDO DE PUNTO ELÁSTICO'),
+    (17, 'COMPONENTE TEJIDO'),
+    (18, 'AISLANTE / RELLENO'),
+    (19, 'INSUMO ESTRUCTURAL'),
+    (20, 'MOCHILAS'),
+    (21, 'TELA DEPORTIVA'),
+    (22, 'POLERAS');
+
+INSERT IGNORE INTO composicion (id_composicion, codigo_composicion, descripcion_composicion, clasificacion, uso_tipico) VALUES
+    (1,  'C-100AL',  '100% ALGODÓN',                                'PURA',                'IGNÍFUGO BASE, FRANELA PURA'),
+    (2,  'C-100DE',  '100% ALGODÓN (14OZ)',                         'DENIM',               'MEZCLILLA INDUSTRIAL PESADA'),
+    (3,  'C-100NY',  '100% NYLON',                                  'PURA',                'TASLAN, CORTAVIENTOS'),
+    (4,  'C-100PA',  '100% POLIAMIDA',                              'REFUERZO TÉCNICO',    'CORDURA / REFUERZO DE RODILLAS Y CODOS'),
+    (5,  'C-100PO',  '100% POLIÉSTER',                              'PURA',                'POLAR, OXFORD ECONÓMICO, MALLA'),
+    (6,  'C-NPA',    '100% POLIÉSTER ("NAPA")',                     'AISLANTE BASE',       '"NAPA" ESTÁNDAR. RELLENO ECONÓMICO.'),
+    (7,  'C-5050',   '50% ALGODÓN / 50% POLIÉSTER',                 'TEJIDO DE PUNTO',     'PIQUÉ DE ALTA DURABILIDAD'),
+    (8,  'C-544303', '54% POLIÉSTER / 43% ALGODÓN / 3% ELASTANO',   'MEZCLA ELÁSTICA',     'POPELINA / GABARDINA STRETCH'),
+    (9,  'C-593506', '59% POLIÉSTER / 35% VISCOSA / 6% ELASTANO',   'MEZCLA ELÁSTICA',     'POPELINA / GABARDINA STRETCH'),
+    (10, 'C-6040',   '60% ALGODÓN / 40% POLIÉSTER',                 'MEZCLA CONFORT',      'ROPA DE TRABAJO PREMIUM'),
+    (11, 'C-653302', '65% POLIÉSTER / 33% ALGODÓN / 2% ELASTANO',   'MEZCLA ELÁSTICA',     'POPELINA / GABARDINA STRETCH'),
+    (12, 'C-6535',   '65% POLIÉSTER / 35% ALGODÓN',                 'MEZCLA ESTÁNDAR',     'POPELINA, GABARDINA (WORKWEAR)'),
+    (13, 'C-702802', '70% ALGODÓN / 28% POLIÉSTER / 2% ELASTANO',   'DENIM ELÁSTICO',      'MEZCLILLA FLEX'),
+    (14, 'C-8020AL', '80% ALGODÓN / 20% POLIÉSTER',                 'ALTA RESPIRABILIDAD', 'FRANELAS DE ALTO GRAMAJE O CANVAS'),
+    (15, 'C-8020PO', '80% POLIÉSTER / 20% ALGODÓN',                 'MEZCLA ECONÓMICA',    'POPELINA PROMOCIONAL'),
+    (16, 'C-9010',   '90% POLIÉSTER / 10% ELASTANO',                'ELÁSTICA',            'SOFTSHELL, ROPA TÉCNICA'),
+    (17, 'C-9208',   '92% POLIÉSTER / 8% ELASTANO',                 'MEZCLA ELÁSTICA',     'POPELINA / GABARDINA STRETCH'),
+    (18, 'C-9505',   '95% POLIÉSTER / 5% ELASTANO',                 'MEZCLA ELÁSTICA',     'POPELINA / GABARDINA STRETCH'),
+    (19, 'C-9703',   '97% POLIÉSTER / 3% ELASTANO',                 'MEZCLA ELÁSTICA',     'POPELINA / GABARDINA STRETCH'),
+    (20, 'C-9802',   '98% ALGODÓN / 2% ELASTANO',                   'ELÁSTICA',            'BIO STRETCH, GABARDINA FLEX'),
+    (21, 'C-FLP',    'FIBRA HUECA SILICONADA ("FLOPY")',            'AISLANTE VOLUMEN',    'ALTO VOLUMEN (LOFT), TACTO PLUMA, PARKAS GRUESAS.'),
+    (22, 'C-TRM',    'MICROFIBRA TÉRMICA ("TERMALOFT")',            'AISLANTE TÉCNICO',    'RETENCIÓN DE CALOR PREMIUM, BAJO VOLUMEN, ALTA DENSIDAD.'),
+    (23, 'C-ARAM',   'MODACRÍLICO / ALGODÓN / ARAMIDA',             'ANTIARCO ELÉCTRICO',  'ROPA IGNÍFUGA CERTIFICADA');
+
+INSERT IGNORE INTO gramaje_tela (id_gramaje, codigo_gramaje, valor_gramos_m2, categoria_vestuario) VALUES
+    (1,  'G-100',  100.00, NULL),
+    (2,  'G-115',  115.00, 'POPELINA / MICROFIBRA (LIVIANA)'),
+    (3,  'G-120',  120.00, 'RELLENO TERMICO'),
+    (4,  'G-150',  150.00, 'OXFORD / POPELINA (ESTÁNDAR) / RELLENO TERMICO'),
+    (5,  'G-165',  165.00, 'HIPORA / OXFORD / POPELINA (PESADAS)'),
+    (6,  'G-175',  175.00, 'RELLENO TERMICO'),
+    (7,  'G-190',  190.00, 'GABARDINA LIVIANA (VERANO / SALUD)'),
+    (8,  'G-210',  210.00, 'PIQUÉ / POLERAS BASE'),
+    (9,  'G-300',  300.00, 'SOFTSHELL / POLAR'),
+    (10, 'G-7OZ',  237.00, 'GABARDINA / TWILL ESTÁNDAR'),
+    (11, 'G-8OZ',  271.00, 'GABARDINA PESADA / PANTALÓN CARGO'),
+    (12, 'G-9OZ',  305.00, 'GABARDINA ALTA RESISTENCIA'),
+    (13, 'G-10OZ', 339.00, 'MEZCLILLA LIVIANA / GABARDINA EXTREMA'),
+    (14, 'G-14OZ', 475.00, 'MEZCLILLA INDUSTRIAL PESADA (MINERÍA)');
+
+INSERT IGNORE INTO color_tela (id_color, codigo_color, descripcion_color, es_pantone) VALUES
+    (1,  '0',    'CRUDO / BASE / SIN COLOR',    false),
+    (2,  'BCO',  'BLANCO',                      false),
+    (3,  'NEG',  'NEGRO',                       false),
+    (4,  'AZMA', 'AZUL MARINO',                 false),
+    (5,  'AZFR', 'AZUL FRANCIA',                false),
+    (6,  'AZRE', 'AZUL REY / AZULINO',          false),
+    (7,  'AZVI', 'AZUL VIGILANTE / GUARDIA',    false),
+    (8,  'AZCL', 'CELESTE / AZUL CLARO',        false),
+    (9,  'ROJ',  'ROJO',                        false),
+    (10, 'BEO',  'BURDEO',                      false),
+    (11, 'GRCL', 'GRIS CLARO',                  false),
+    (12, 'GRME', 'GRIS MEDIO',                  false),
+    (13, 'GROS', 'GRIS OSCURO',                 false),
+    (14, 'MELG', 'MELANGE (GRIS/MIXTO)',        false),
+    (15, 'VEBO', 'VERDE BOTELLA / OSCURO',      false),
+    (16, 'VEES', 'VERDE ESMERALDA',             false),
+    (17, 'CALP', 'CALIPSO',                     false),
+    (18, 'TURQ', 'TURQUESA',                    false),
+    (19, 'BGE',  'BEIGE / CAQUI',               false),
+    (20, 'CAF',  'CAFÉ / MARRÓN',               false),
+    (21, 'AMA',  'AMARILLO',                    false),
+    (22, 'NAR',  'NARANJA',                     false),
+    (23, 'PET',  'PETRÓLEO',                    false),
+    (24, 'AMFL', 'AMARILLO FLÚOR',              false),
+    (25, 'NAFL', 'NARANJA FLÚOR',               false),
+    (26, 'ROFL', 'ROJO FLÚOR',                  false),
+    (27, 'EST',  'ESTAMPADO (VARIOS)',          false);
+
+INSERT IGNORE INTO atributo_tecnico (id_atributo, codigo_atributo, clasificacion, descripcion_tecnica, impacto_erp) VALUES
+    (1,  'A-000',   'ESTÁNDAR',     'SIN TRATAMIENTOS ESPECIALES',         'TELA BASE POR DEFECTO.'),
+    (2,  'A-RIP',   'CONSTRUCCIÓN', 'RIPSTOP (ANTIDESGARRO)',              'MODIFICA LA CUADRÍCULA DEL TEJIDO PLANO.'),
+    (3,  'A-UV',    'QUÍMICO',      'PROTECCIÓN UV (UPF 50+)',             'BAÑO PROTECTOR CORPORATIVO ESTÁNDAR.'),
+    (4,  'A-WR',    'FÍSICO',       'REPELENCIA AL AGUA',                  'ACABADO SUPERFICIAL (RESISTENCIA AL ROCÍO).'),
+    (5,  'A-BRT',   'FISICO',       'RESPIRABILIDAD',                      'MEMBRANA INTERNA RESPIRABLE'),
+    (6,  'A-WP',    'FÍSICO',       'IMPERMEABILIDAD',                     'MEMBRANA INTERNA O RECUBRIMIENTO (EJ. PU).'),
+    (7,  'A-FR',    'QUÍMICO',      'FIRE RETARDANT (IGNÍFUGO)',           'CERTIFICACIÓN DE SEGURIDAD. MULTIPLICA EL COSTO.'),
+    (8,  'A-100FR', 'QUIMICO',      'TRATAMIENTO FR',                      'ROPA IGNÍFUGA BÁSICA'),
+    (9,  'A-ACI',   'QUÍMICO',      'ANTIÁCIDO',                           'REQUISITO MINERO O DE LABORATORIO.'),
+    (10, 'A-AFLUD', 'QUÍMICO',      'ANTIFLUIDO',                          'ACABADO DE FÁCIL LAVADO (ROPA CLÍNICA/GASTRONÓMICA).'),
+    (11, 'A-ANT',   'FÍSICO',       'ANTIESTÁTICO',                        'INSERCIÓN DE HILO DE CARBONO PARA DISIPACIÓN.'),
+    (12, 'A-ALU',   'FISICO',       'REFLECTIVO ALUMINIZADO (FORRO)',      'PARA TERMICIDAD INTERNA'),
+    (13, 'A-ACOL',  'FISICO',       'ACOLCHADO ESPECIAL',                  'PARA RELLENOS TERMICOS + FORRO'),
+    (14, 'A-ABACT', 'FISICO',       'ANTIBACTERIANO',                      'ROPA CLÍNICA');
+
+-- ============================================================
+-- 7.0.2 INSUMOS Y ACCESORIOS — Tipos y sus atributos dinámicos
+-- ============================================================
+
+INSERT IGNORE INTO tipo_accesorio (id_tipo_accesorio, codigo, nombre) VALUES
+    (1,  'CIE', 'CIERRE'),
+    (2,  'BRO', 'BROCHE'),
+    (3,  'BOT', 'BOTÓN'),
+    (4,  'TAN', 'TANKA'),
+    (5,  'OJE', 'OJETILLOS'),
+    (6,  'TIR', 'TIRADOR'),
+    (7,  'VEL', 'VELCRO'),
+    (8,  'CHV', 'CHAVETA DE AJUSTE'),
+    (9,  'TTP', 'TIP-TOP'),
+    (10, 'ESC', 'ESCALERILLA REGULADORA'),
+    (11, 'ELA', 'ELÁSTICO'),
+    (12, 'COR', 'CORDÓN'),
+    (13, 'VIV', 'VIVO'),
+    (14, 'SES', 'SESGO'),
+    (15, 'CNE', 'CINTA ESPIGA'),
+    (16, 'CNF', 'CINTA FALLA (MOCHILA)'),
+    (17, 'CNR', 'CINTA REFLECTANTE'),
+    (18, 'CSC', 'CINTA SELLADO DE COSTURA');
+
+INSERT IGNORE INTO atributo_accesorio_definicion (id_definicion, id_tipo_accesorio, nombre_campo, tipo_dato, opciones, orden, requerido) VALUES
+    (1,  1,  'TIPO',             'LISTA',            'DP|NY|NY Invertido|Impermeable|Bronce|Ignífugo', 1, true),
+    (2,  1,  'N°',               'LISTA',            '3|5|7', 2, false),
+    (3,  1,  'TERMINAL',         'LISTA',            'Fijo|Separable', 3, true),
+    (4,  1,  'CARRO',            'LISTA',            'Simple|Doble|Reversible', 4, true),
+    (5,  1,  'MEDIDA',           'LISTA',            '12cm|15cm|18cm|20cm|50cm|55cm|60cm|65cm|70cm|75cm|80cm|85cm|90cm|95cm|100cm', 5, true),
+    (6,  1,  'COLOR',            'REFERENCIA_COLOR', NULL, 6, true),
+    (7,  2,  'MATERIAL',         'LISTA',            'Plástico|Metálico', 1, true),
+    (8,  2,  'TIPO',             'LISTA',            'Corriente|Punta de bola|Envejecido', 2, true),
+    (9,  2,  'COLOR',            'REFERENCIA_COLOR', NULL, 3, true),
+    (10, 3,  'MATERIAL',         'LISTA',            'Plástico', 1, true),
+    (11, 3,  'DIÁMETRO (LÍNEA)', 'LISTA',            '18|24|28', 2, true),
+    (12, 3,  'COLOR',            'REFERENCIA_COLOR', NULL, 3, true),
+    (13, 4,  'MATERIAL',         'LISTA',            'Plástico|Metálica', 1, true),
+    (14, 4,  'TIPO',             'LISTA',            'Simple|Doble|Envejecido', 2, true),
+    (15, 4,  'COLOR',            'REFERENCIA_COLOR', NULL, 3, true),
+    (16, 5,  'MATERIAL',         'LISTA',            'Plástico|Metálico', 1, true),
+    (17, 5,  'COLOR',            'LISTA',            'Mismos colores que las telas|Metal|Envejecido', 2, true),
+    (18, 6,  'TIPO',             'LISTA',            'Corriente|Marca de Cliente|Logo Antuan', 1, true),
+    (19, 6,  'COLOR',            'REFERENCIA_COLOR', NULL, 2, true),
+    (20, 7,  'MEDIDA (ANCHO)',   'LISTA',            '1.0cm|1.5cm|2.0cm|2.5cm|4.0cm|5.0cm', 1, true),
+    (21, 7,  'COLOR',            'REFERENCIA_COLOR', NULL, 2, true),
+    (22, 8,  'MATERIAL',         'LISTA',            'Plástica', 1, true),
+    (23, 8,  'COLOR',            'LISTA',            'Negro', 2, true),
+    (24, 9,  'MATERIAL',         'LISTA',            'Plástico', 1, true),
+    (25, 9,  'COLOR',            'LISTA',            'Negro', 2, true),
+    (26, 10, 'MATERIAL',         'LISTA',            'Plástica|Metálica', 1, true),
+    (27, 10, 'COLOR',            'LISTA',            'Negro|Metal', 2, true),
+    (28, 11, 'MEDIDA (ANCHO)',   'LISTA',            '1.0cm|1.5cm|2.0cm|2.5cm|3.0cm|4.0cm|5.0cm', 1, true),
+    (29, 11, 'COLOR',            'LISTA',            'Blanco|Negro', 2, true),
+    (30, 12, 'MATERIAL',         'LISTA',            'Elasticado|Rígido', 1, true),
+    (31, 12, 'COLOR',            'REFERENCIA_COLOR', NULL, 2, true),
+    (32, 13, 'MATERIAL',         'LISTA',            'Tela|Reflectante', 1, true),
+    (33, 13, 'COLOR',            'LISTA',            'Gris|Día y Noche', 2, true),
+    (34, 14, 'MATERIAL',         'LISTA',            'Elasticado|Rígido', 1, true),
+    (35, 14, 'COLOR',            'REFERENCIA_COLOR', NULL, 2, true),
+    (36, 15, 'COMPOSICIÓN',      'LISTA',            '50% Poliéster - 50% Algodón|100% Poliéster|100% Algodón', 1, true),
+    (37, 15, 'MEDIDA (ANCHO)',   'LISTA',            '1.0cm|1.5cm|2.0cm', 2, true),
+    (38, 15, 'COLOR',            'REFERENCIA_COLOR', NULL, 3, true),
+    (39, 16, 'COMPOSICIÓN',      'LISTA',            '50% Poliéster - 50% Algodón|100% Poliéster|100% Algodón', 1, true),
+    (40, 16, 'MEDIDA (ANCHO)',   'LISTA',            '1.0cm|1.5cm|2.0cm|2.5cm|3.0cm|4.0cm', 2, true),
+    (41, 17, 'MATERIAL',         'LISTA',            'Tela|PET - Poliéster', 1, true),
+    (42, 17, 'DISEÑO',           'LISTA',            'Lisa|Segmentada', 2, true),
+    (43, 17, 'COLOR',            'LISTA',            'Gris|Día y Noche', 3, true),
+    (44, 17, 'MEDIDA (ANCHO)',   'LISTA',            '1"|2"', 4, true),
+    (45, 17, 'PEGADO',           'LISTA',            'Cosida|Termofusionada|Corriente', 5, true),
+    (46, 17, 'OBSERVACIONES',    'TEXTO',            NULL, 6, false);
 
 -- ============================================================
 -- 7.1. ARTÍCULOS (Catálogo Base)
 -- ============================================================
 INSERT IGNORE INTO articulo (id_articulo, codigo_articulo, nombre_articulo, descripcion_articulo, codigo_barra, id_tipo_articulo, activo, id_categoria_tela, id_subcategoria_tela) VALUES
-    (1, 'ART-FLEE-001', 'Polar Fleece 280 GSM',      'Tela polar fleece gramaje 280 g/m²',    NULL, 1, true, 2, 3),
-    (2, 'ART-IMPR-001', 'Ripstop Impermeable',        'Tejido técnico ripstop impermeabilizado', NULL, 1, true, 3, 5),
-    (3, 'ART-JRSY-001', 'Jersey Piqué Algodón',       'Jersey piqué 100% algodón peinado',      NULL, 1, true, 2, 4),
-    (4, 'ART-ACC-001',  'Cierre YKK 60cm Metálico',   'Cierre metálico YKK 60 cm',             NULL, 3, true, NULL, NULL),
-    (5, 'ART-ACC-002',  'Botón Snap 15mm Nácar',       'Botón tipo snap nacarado 15 mm',        NULL, 3, true, NULL, NULL);
+    (1, 'ART-FLEE-001', 'POLAR FLEECE 280 GSM',        'TELA POLAR FLEECE GRAMAJE 280 G/M², ANTI-PILLING',         NULL, 1, true, 2, 3),
+    (2, 'ART-IMPR-001', 'RIPSTOP IMPERMEABLE 150 GSM', 'TEJIDO TÉCNICO RIPSTOP 150G IMPERMEABILIZADO DWR',          NULL, 1, true, 3, 5),
+    (3, 'ART-JRSY-001', 'JERSEY PIQUÉ ALGODÓN 180 GSM','JERSEY PIQUÉ 100% ALGODÓN PEINADO COMPACTO 180G',          NULL, 1, true, 2, 4),
+    (4, 'ART-ACC-001',  'CIERRE YKK 60CM METÁLICO',    'CIERRE METÁLICO YKK NYLON NO. 5, LONGITUD 60CM',           NULL, 3, true, NULL, NULL),
+    (5, 'ART-ACC-002',  'BOTÓN SNAP 15MM NÁCAR',        'BOTÓN TIPO SNAP NACARADO RESISTENTE AL LAVADO, 15MM',      NULL, 3, true, NULL, NULL),
+    (6, 'ART-ACC-003',  'HILO INDUSTRIAL 40/2 POLIÉSTER','HILO COSTURA INDUSTRIAL POLIÉSTER 40/2 CONE 5000M',       NULL, 3, true, NULL, NULL),
+    (7, 'ART-ACC-004',  'CINTA REFLECTANTE 50MM',       'CINTA REFLECTANTE CERTIFICADA EN ISO 20471, ANCHO 50MM',   NULL, 3, true, NULL, NULL),
+    -- Prendas a confeccionar (id_tipo_articulo = 4)
+    (8,  'ART-PRC-001', 'POLERÓN',  'Prenda tipo polerón / sudadera con capucha',   NULL, 4, true, NULL, NULL),
+    (9,  'ART-PRC-002', 'PARKA',    'Prenda tipo parka con aislación',               NULL, 4, true, NULL, NULL),
+    (10, 'ART-PRC-003', 'CHALECO',  'Chaleco sin mangas funcional o corporativo',    NULL, 4, true, NULL, NULL),
+    (11, 'ART-PRC-004', 'POLERA',   'Polera manga corta o larga',                    NULL, 4, true, NULL, NULL),
+    (12, 'ART-PRC-005', 'PANTALÓN', 'Pantalón de trabajo o corporativo',             NULL, 4, true, NULL, NULL);
+
+-- ============================================================
+-- 7.1.1. DETALLE TELA (articulo_tela) — completa el maestro de
+--        Composición/Familia/Gramaje de los 3 artículos tipo TELA,
+--        requerido para que el combo de Tela en EVN/NV pueda
+--        autocompletar la Composición al seleccionarlos.
+--        IDs verificados contra el esquema "simple" de familia_tela/
+--        composicion/gramaje_tela que efectivamente persiste en este
+--        proyecto (hay un segundo bloque duplicado de esos maestros
+--        más abajo en este archivo con IDs iguales pero nombres
+--        distintos — ver nota en 7.12 — así que no asumir el bloque
+--        "PARAMETRÍA TEXTIL" de más arriba como ganador sin verificar).
+--        clasificacion_tecnica id=15 NO existe (choque de nombre único
+--        con el id=1 "TEJIDO DE PUNTO" al sembrar) — no referenciarlo.
+--        Usa ON DUPLICATE KEY UPDATE para que un ajuste futuro de estos
+--        valores sí se aplique en el próximo reinicio.
+-- ============================================================
+INSERT INTO articulo_tela (id_articulo, id_familia_tela, id_clasificacion_tecnica, id_composicion, id_gramaje) VALUES
+    (1, 5,  1, 2,  9),
+    (2, 16, 8, 10, 3),
+    (3, 7,  1, 1,  4)
+ON DUPLICATE KEY UPDATE
+    id_familia_tela          = VALUES(id_familia_tela),
+    id_clasificacion_tecnica = VALUES(id_clasificacion_tecnica),
+    id_composicion           = VALUES(id_composicion),
+    id_gramaje               = VALUES(id_gramaje);
 
 -- ============================================================
 -- 7.2. CATÁLOGO DE CAMPOS DE PLANTILLA
 -- ============================================================
 INSERT IGNORE INTO plantilla (id_plantilla, nombre_campo) VALUES
-    (1,  'forro'),
-    (2,  'relleno'),
-    (3,  'colorForro'),
-    (4,  'gorro'),
-    (5,  'cuello'),
-    (6,  'abotonaduraCierre'),
-    (7,  'cortesAplicaciones'),
-    (8,  'fuelles'),
-    (9,  'mangas'),
-    (10, 'pretinasRuedo'),
-    (11, 'bolsillos'),
-    (12, 'cintaDetalle'),
-    (13, 'logoDetalle'),
-    (14, 'accesoriosDetalle'),
-    (15, 'obsModelo');
+    (1,  'GORRO'),
+    (2,  'CUELLO'),
+    (3,  'ABOTONADURA / CIERRE'),
+    (4,  'CORTES Y APLICACIONES'),
+    (5,  'FUELLES'),
+    (6,  'MANGAS'),
+    (7,  'PUÑOS'),
+    (8,  'PRETINAS / RUEDO'),
+    (9,  'BOLSILLOS'),
+    (10, 'OBS. DEL MODELO');
 
 -- ============================================================
 -- 7.3. MODELO PLANTILLA (Mapeo Artículo e Id Plantilla)
 -- ============================================================
--- Una sola fila por artículo: los campos de su plantilla en CSV (nombres de `plantilla`).
 INSERT IGNORE INTO modelo_plantilla (id_modelo_plantilla, id_articulo, campos) VALUES
-    (1, 1, 'gorro,bolsillos,mangas,forro'),                  -- Polar Fleece
-    (2, 2, 'cuello,relleno,bolsillos,abotonaduraCierre'),    -- Ripstop
-    (3, 3, 'mangas,pretinasRuedo');                          -- Jersey
+    (1, 1, 'GORRO,BOLSILLOS,MANGAS,PUÑOS'),
+    (2, 2, 'CUELLO,BOLSILLOS,ABOTONADURA / CIERRE,FUELLES'),
+    (3, 3, 'MANGAS,PRETINAS / RUEDO,CUELLO'),
+    -- Plantillas prendas a confeccionar (nombres display en mayúsculas)
+    (4, 8,  'GORRO,CUELLO,ABOTONADURA / CIERRE,CORTES Y APLICACIONES,MANGAS,PUÑOS,BOLSILLOS,OBS. DEL MODELO'),
+    (5, 9,  'GORRO,CUELLO,ABOTONADURA / CIERRE,FUELLES,MANGAS,PUÑOS,BOLSILLOS,OBS. DEL MODELO'),
+    (6, 10, 'CUELLO,ABOTONADURA / CIERRE,CORTES Y APLICACIONES,BOLSILLOS,OBS. DEL MODELO'),
+    (7, 11, 'CUELLO,MANGAS,PRETINAS / RUEDO,OBS. DEL MODELO'),
+    (8, 12, 'ABOTONADURA / CIERRE,FUELLES,PRETINAS / RUEDO,BOLSILLOS,OBS. DEL MODELO');
 
 -- ============================================================
 -- 7.4. SOLICITUDES DE COSTOS (SCOS)
 -- ============================================================
-INSERT IGNORE INTO solicitudes_costos (idscos, numero, estado, tipo, cliente_id, vendedor_id, articulo_descripcion, nombre_prenda, genero, tallaje, es_muestra, has_logo, cantidad, fecha, costo_total) VALUES
-    (1, 'SCOS-000001', 'PENDIENTE', 'SCOS', 1, 1, 'POLERA', 'Polera Piqué Corporativa', 'UNISEX', 'Antuan SA', false, true,  100, CURRENT_DATE, 150000.00),
-    (2, 'SCOS-000002', 'APROBADA',  'SCOS', 2, 2, 'PANTALON', 'Pantalón Cargo Operario', 'MASCULINO', 'Cliente', false, false, 50, CURRENT_DATE, 250000.00);
+-- SCOS-000001: 100 Poleras Piqué para HITES — aprobado, con costo real
+-- SCOS-000002: 50 Pantalones Cargo para MEDCELL — aprobado, con costo real
+INSERT INTO solicitudes_costos (id_scos, numero, estado, tipo, cliente_id, vendedor_id, articulo_descripcion, nombre_prenda, genero, tallaje, es_muestra, has_logo, cantidad, fecha, costo_total) VALUES
+    (1, 'SCOS-000001', 'PENDIENTE', 'SCOS', 1, 1, 'POLERA',   'POLERA PIQUÉ CORPORATIVA',  'UNISEX',    'ANTUAN SA', false, true,  100, CURRENT_DATE, 1060000.00),
+    (2, 'SCOS-000002', 'APROBADA', 'SCOS', 2, 2, 'PANTALON', 'PANTALÓN CARGO OPERARIO',   'MASCULINO', 'CLIENTE',   false, false,  50, CURRENT_DATE,  858550.00)
+ON DUPLICATE KEY UPDATE
+    estado = VALUES(estado),
+    costo_total = VALUES(costo_total);
+
+-- Telas de la SCOS-000001 (Polera Piqué)
+INSERT IGNORE INTO scos_telas (id_scos_tela, solicitud_costos_id, aplicacion, descripcion, composicion, color, peso, unidad_medida) VALUES
+    (1, 1, 'CUERPO', 'JERSEY PIQUÉ ALGODÓN 180 GSM', '100% ALGODÓN PEINADO', 'AZUL NAVY', 180, 'MTRS');
+
+-- Telas de la SCOS-000002 (Pantalón Cargo)
+INSERT IGNORE INTO scos_telas (id_scos_tela, solicitud_costos_id, aplicacion, descripcion, composicion, color, peso, unidad_medida) VALUES
+    (2, 2, 'CUERPO', 'RIPSTOP IMPERMEABLE 150 GSM', '100% POLIÉSTER DWR', 'VERDE OLIVA', 150, 'MTRS');
 
 -- ============================================================
 -- 7.5. EVALUACIONES DE NEGOCIO (EVN)
 -- ============================================================
-INSERT IGNORE INTO evaluaciones_negocio (idevn, numero, referencia, cliente_nombre, cliente_id, vendedor_id, estado, fecha_evaluacion, porcentaje_comision, created_at, updated_at) VALUES
-    (1, 'EVN-000001', 'Cotización Poleras Hites', 'HITES S.A.', 1, 1, 'EVALUACION', CURRENT_DATE, 5.00, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-    (2, 'EVN-000002', 'Licitación Pantalones', 'LABORATORIO MEDCELL', 2, 2, 'APROBADA', CURRENT_DATE, 3.50, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+INSERT IGNORE INTO evaluaciones_negocio (id_evn, numero, referencia, cliente_nombre, cliente_id, vendedor_id, estado, fecha_evaluacion, porcentaje_comision, created_at, updated_at) VALUES
+    (1, 'EVN-000001', 'COTIZACIÓN POLERAS CORPORATIVAS TEMPORADA 2024', 'HITES S.A.',          1, 1, 'ADJUDICADA', CURRENT_DATE, 20.00, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+    (2, 'EVN-000002', 'LICITACIÓN PANTALONES CARGO PERSONAL OPERATIVO',  'LABORATORIO MEDCELL', 2, 2, 'ADJUDICADA', CURRENT_DATE, 20.00, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+
+-- Items de EVN-000001 (100 Poleras Piqué para HITES) — articulo_id=3: Jersey Piqué
+INSERT IGNORE INTO evaluacion_negocio_items (idevni, evaluacion_negocio_id, proveedor_id, articulo_id, nro_item, descripcion, modelo, tela, genero, cantidad, precio_unitario, moneda_precio_unitario, costo_unitario, moneda_costo_unitario, costo_producto, costo_logo, tipo_item) VALUES
+    (1, 1, 1, 3, 1, 'POLERA PIQUÉ CORPORATIVA BORDADA', 'SLIM FIT MANGA CORTA', 'JERSEY PIQUÉ 180G', 'UNISEX', 100, 10600.00, 'CLP', 8400.00, 'CLP', 6200.00, 2200.00, 'OP');
+
+-- Items de EVN-000002 (50 Pantalones Cargo para MEDCELL) — articulo_id=2: Ripstop Impermeable
+INSERT IGNORE INTO evaluacion_negocio_items (idevni, evaluacion_negocio_id, proveedor_id, articulo_id, nro_item, descripcion, modelo, tela, genero, cantidad, precio_unitario, moneda_precio_unitario, costo_unitario, moneda_costo_unitario, costo_producto, tipo_item) VALUES
+    (2, 2, 1, 2, 1, 'PANTALÓN CARGO OPERARIO REFORZADO', 'CARGO 6 BOLSILLOS', 'RIPSTOP IMPERMEABLE 150G', 'MASCULINO', 50, 23100.00, 'CLP', 17171.00, 'CLP', 17171.00, 'OP');
+
+-- Condiciones comerciales EVN-000001 (HITES)
+-- anticipo 50%, flete incluido, garantía 30 días, validez oferta 30 días
+-- (Se guarda vía metadatos en la entidad EVN, no hay tabla separada aquí)
 
 -- ============================================================
 -- 7.6. NOTAS DE VENTA (NV)
 -- ============================================================
-INSERT IGNORE INTO notas_venta (idnv, numeronv, evaluacion_negocio_id, cliente_id, vendedor_id, estado, es_kit, fecha_emision, fecha_entrega_estimada, monto_subtotal, moneda_subtotal, monto_iva, moneda_iva, monto_total, moneda_total, created_at, updated_at) VALUES
-    (1, 'NV-00001', 2, 2, 2, 'BORRADOR', false, CURRENT_DATE, DATE_ADD(CURRENT_DATE, INTERVAL 30 DAY), 300000.00, 'CLP', 57000.00, 'CLP', 357000.00, 'CLP', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-    (2, 'NV-00002', 1, 1, 1, 'EN_PRODUCCION', false, CURRENT_DATE, DATE_ADD(CURRENT_DATE, INTERVAL 45 DAY), 850000.00, 'CLP', 161500.00, 'CLP', 1011500.00, 'CLP', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+-- NV-0000001: MEDCELL, 50 pantalones → EN_PRODUCCION (tiene OP activa)
+-- NV-0000002: HITES, 100 poleras    → EMITIDA (sin OP aún, comercial adjudicada)
+INSERT IGNORE INTO notas_venta (id_nv, numeronv, evaluacion_negocio_id, cliente_id, vendedor_id, estado, es_kit, fecha_emision, fecha_entrega_estimada, monto_subtotal, moneda_subtotal, monto_iva, moneda_iva, monto_total, moneda_total, created_at, updated_at) VALUES
+    (1, 'NV-0000001', 2, 2, 2, 'EN_PRODUCCION', false, CURRENT_DATE, DATE_ADD(CURRENT_DATE, INTERVAL 45 DAY),  858550.00, 'CLP', 163124.50, 'CLP', 1021674.50, 'CLP', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+    (2, 'NV-0000002', 1, 1, 1, 'EMITIDA',        false, CURRENT_DATE, DATE_ADD(CURRENT_DATE, INTERVAL 30 DAY), 1060000.00, 'CLP', 201400.00, 'CLP', 1261400.00, 'CLP', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+
+-- Items de NV-0000001 (50 Pantalones Cargo para MEDCELL — 2 tallas) — articulo_id=2: Ripstop
+INSERT IGNORE INTO notas_venta_items (id_item_nv, nota_venta_id, nro_item, modelo, tela, composicion, color, talla, genero, codigo, proveedor_id, lleva_logo, tipo_item, requiere_ot, cantidad, precio_unitario, moneda_precio_unitario, total, moneda_total, articulo_id) VALUES
+    (1, 1, 1, 'CARGO 6 BOLSILLOS', 'RIPSTOP IMPERMEABLE 150G', '100% POLIÉSTER DWR', 'VERDE OLIVA', 'M', 'MASCULINO', 'PAN-CARGO-M', 1, 'NO', 'OP', false, 25, 17171.00, 'CLP', 429275.00, 'CLP', 2),
+    (2, 1, 2, 'CARGO 6 BOLSILLOS', 'RIPSTOP IMPERMEABLE 150G', '100% POLIÉSTER DWR', 'VERDE OLIVA', 'L', 'MASCULINO', 'PAN-CARGO-L', 1, 'NO', 'OP', false, 25, 17171.00, 'CLP', 429275.00, 'CLP', 2);
+
+-- Tallas NV-0000001
+INSERT IGNORE INTO notas_venta_item_tallas (id_item_talla, item_id, talla, cantidad) VALUES
+    (1, 1, 'M', 25),
+    (2, 2, 'L', 25);
+
+-- Items de NV-0000002 (100 Poleras Piqué para HITES — distribución de tallas) — articulo_id=3: Jersey Piqué
+INSERT IGNORE INTO notas_venta_items (id_item_nv, nota_venta_id, nro_item, modelo, tela, composicion, color, talla, genero, codigo, proveedor_id, lleva_logo, tipo_item, requiere_ot, cantidad, precio_unitario, moneda_precio_unitario, total, moneda_total, articulo_id) VALUES
+    (3, 2, 1, 'SLIM FIT MANGA CORTA', 'JERSEY PIQUÉ 180G', '100% ALGODÓN PEINADO', 'AZUL NAVY', 'S',  'UNISEX', 'POL-PIQUE-S',  1, 'SI', 'OP', false, 20, 10600.00, 'CLP', 212000.00, 'CLP', 3),
+    (4, 2, 2, 'SLIM FIT MANGA CORTA', 'JERSEY PIQUÉ 180G', '100% ALGODÓN PEINADO', 'AZUL NAVY', 'M',  'UNISEX', 'POL-PIQUE-M',  1, 'SI', 'OP', false, 40, 10600.00, 'CLP', 424000.00, 'CLP', 3),
+    (5, 2, 3, 'SLIM FIT MANGA CORTA', 'JERSEY PIQUÉ 180G', '100% ALGODÓN PEINADO', 'AZUL NAVY', 'L',  'UNISEX', 'POL-PIQUE-L',  1, 'SI', 'OP', false, 30, 10600.00, 'CLP', 318000.00, 'CLP', 3),
+    (6, 2, 4, 'SLIM FIT MANGA CORTA', 'JERSEY PIQUÉ 180G', '100% ALGODÓN PEINADO', 'AZUL NAVY', 'XL', 'UNISEX', 'POL-PIQUE-XL', 1, 'SI', 'OP', false, 10, 10600.00, 'CLP', 106000.00, 'CLP', 3);
+
+-- Tallas NV-0000002
+INSERT IGNORE INTO notas_venta_item_tallas (id_item_talla, item_id, talla, cantidad) VALUES
+    (3, 3, 'S',  20),
+    (4, 4, 'M',  40),
+    (5, 5, 'L',  30),
+    (6, 6, 'XL', 10);
 
 -- ============================================================
--- 7.7. PLANIFICACIÓN DE PRODUCCIÓN Y HOJAS DE COMPRA
+-- 7.7. COSTEO: PANTALÓN CARGO OPERARIO (50 unidades — MEDCELL)
 -- ============================================================
-INSERT IGNORE INTO produccion_costeos (id_costeo, solicitud_costos_id, numero_costeo, estado, version) VALUES
-    (1, 2, 'COST-000001', 'APROBADO', 1);
+-- Costeo asociado a SCOS-000002 (Pantalón Cargo), estado APROBADO
+INSERT INTO produccion_costeos (id_costeo, solicitud_costos_id, numero_costeo, estado, version,
+    costo_hilos, costo_mano_obra, costo_etiquetas, costo_embalaje, costo_flete,
+    porcentaje_costo_fijo, costo_total_materia_prima, margen_bruto_sugerido, precio_venta_sugerido) VALUES
+    (1, 2, 'COST-0000001', 'APROBADO', 1,
+    12500.00, 190000.00, 7500.00, 10800.00, 25000.00,
+    10.00, 586250.00, 25.00, 1220340.00)
+ON DUPLICATE KEY UPDATE
+    estado                    = VALUES(estado),
+    version                   = VALUES(version),
+    costo_hilos               = VALUES(costo_hilos),
+    costo_mano_obra           = VALUES(costo_mano_obra),
+    costo_etiquetas           = VALUES(costo_etiquetas),
+    costo_embalaje            = VALUES(costo_embalaje),
+    costo_flete               = VALUES(costo_flete),
+    porcentaje_costo_fijo     = VALUES(porcentaje_costo_fijo),
+    costo_total_materia_prima = VALUES(costo_total_materia_prima),
+    margen_bruto_sugerido     = VALUES(margen_bruto_sugerido),
+    precio_venta_sugerido     = VALUES(precio_venta_sugerido);
 
-INSERT IGNORE INTO produccion_costeo_versiones (id_costeo_version, costeo_id, numero_version, fecha_creacion, usuario_creador) VALUES
-    (1, 1, 1, CURRENT_TIMESTAMP, 'SISTEMA');
+-- Items del costeo (consumos y costos POR UNIDAD de prenda)
+--   Ripstop Impermeable:  1.80 m/prenda × $4,800/m  = $8,640
+--   Cierre YKK 60cm:      1.00 u/prenda × $1,350/u  = $1,350
+--   Botón Snap 15mm:      4.00 u/prenda × $180/u    =   $720
+--   Hilo Industrial 40/2: 0.15 co/prenda × $3,500/co=   $525  (0.15 conos)
+--   Cinta Reflectante:    0.50 m/prenda × $980/m    =   $490
+--   ─────────────────────────────────────────────────────────────
+--   Total materia prima por prenda: $11,725
+INSERT INTO produccion_costeo_items (id_costeo_item, costeo_id, tipo_insumo, articulo_id, nombre_insumo, consumo, precio_unitario, costo_total) VALUES
+    (1, 1, 'TELAS',      2, 'RIPSTOP IMPERMEABLE 150 GSM', 1.8000, 4800.00,  8640.00),
+    (2, 1, 'ACCESORIOS', 4, 'CIERRE YKK 60CM METÁLICO',   1.0000, 1350.00,  1350.00),
+    (3, 1, 'ACCESORIOS', 5, 'BOTÓN SNAP 15MM NÁCAR',       4.0000,  180.00,   720.00),
+    (4, 1, 'ACCESORIOS', 6, 'HILO INDUSTRIAL 40/2',        0.1500, 3500.00,   525.00),
+    (5, 1, 'ACCESORIOS', 7, 'CINTA REFLECTANTE 50MM',      0.5000,  980.00,   490.00)
+ON DUPLICATE KEY UPDATE
+    tipo_insumo     = VALUES(tipo_insumo),
+    articulo_id     = VALUES(articulo_id),
+    nombre_insumo   = VALUES(nombre_insumo),
+    consumo         = VALUES(consumo),
+    precio_unitario = VALUES(precio_unitario),
+    costo_total     = VALUES(costo_total);
 
-INSERT IGNORE INTO orden_produccion (idop, costeo_version_id, numeroop, nota_venta_id, estado, fecha_inicio, fecha_entrega_programada, observaciones, created_at, updated_at) VALUES
-    (1, 1, 'OP- 00001', 2, 'EN_PROCESO', CURRENT_DATE, DATE_ADD(CURRENT_DATE, INTERVAL 30 DAY), 'Producción Pantalón Cargo Operario - Laboratorio Medcell', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+-- Versión 1 del costeo con totales consolidados (base: 50 prendas)
+--   Materia prima total: $11,725 × 50               = $586,250
+--   Mano de obra (corte + confección + acabado):     = $190,000  ($3,800/prenda)
+--   Hilo (ya en items, acá MO hilo bordado logo):    =  $12,500  ($250/prenda)
+--   Flete a bodega cliente:                          =  $25,000  ($500/prenda)
+--   Embalaje (bolsa + caja individual):              =  $10,800  ($216/prenda)
+--   Etiquetas (tejida + lavado + talla):             =   $7,500  ($150/prenda)
+--   Costo fijo 10% sobre total directo:             ~  $83,205
+--   ─────────────────────────────────────────────────
+--   Costo total directo: $832,050
+--   Con overhead 10%:    $915,255
+--   Precio venta (margen 25%): $915,255 / 0.75 = $1,220,340  → ~$24,407/prenda
+--   (NV usa $23,100 acordado en negociación comercial, 20% margen efectivo)
+INSERT IGNORE INTO produccion_costeo_versiones (id_costeo_version, costeo_id, numero_version, fecha_creacion, usuario_creador,
+    total_mano_obra, total_hilo, total_flete, total_embalaje, total_etiquetas,
+    porcentaje_costo_fijo, costo_total_materia_prima, margen_bruto_sugerido, precio_venta_sugerido) VALUES
+    (1, 1, 1, CURRENT_TIMESTAMP, 'SISTEMA',
+    190000.00, 12500.00, 25000.00, 10800.00, 7500.00,
+    10.00, 586250.00, 25.00, 1220340.00);
 
-INSERT IGNORE INTO produccion_orden_items (idopitem, orden_produccion_id, articulo_id, nro_item, modelo, tela, color, talla, genero, codigo, lleva_logo, cantidad) VALUES
-    (1, 1, 2, 1, 'Pantalón Cargo', 'Ripstop Impermeable', 'Verde', 'M', 'MASCULINO', 'PANT-CARGO-M', 'SI', 25),
-    (2, 1, 2, 2, 'Pantalón Cargo', 'Ripstop Impermeable', 'Verde', 'L', 'MASCULINO', 'PANT-CARGO-L', 'SI', 25);
+-- Items de la versión 1 del costeo (snapshot por versión)
+INSERT INTO produccion_costeo_item_versiones (id_costeo_item_version, costeo_version_id, costeo_item_id, tipo_insumo, articulo_id, nombre_insumo, consumo, precio_unitario, costo_total, activo) VALUES
+    (1, 1, 1, 'TELAS',      2, 'RIPSTOP IMPERMEABLE 150 GSM', 1.8000, 4800.00,  8640.00, true),
+    (2, 1, 2, 'ACCESORIOS', 4, 'CIERRE YKK 60CM METÁLICO',   1.0000, 1350.00,  1350.00, true),
+    (3, 1, 3, 'ACCESORIOS', 5, 'BOTÓN SNAP 15MM NÁCAR',       4.0000,  180.00,   720.00, true),
+    (4, 1, 4, 'ACCESORIOS', 6, 'HILO INDUSTRIAL 40/2',        0.1500, 3500.00,   525.00, true),
+    (5, 1, 5, 'ACCESORIOS', 7, 'CINTA REFLECTANTE 50MM',      0.5000,  980.00,   490.00, true)
+ON DUPLICATE KEY UPDATE
+    tipo_insumo     = VALUES(tipo_insumo),
+    articulo_id     = VALUES(articulo_id),
+    nombre_insumo   = VALUES(nombre_insumo),
+    consumo         = VALUES(consumo),
+    precio_unitario = VALUES(precio_unitario),
+    costo_total     = VALUES(costo_total),
+    activo          = VALUES(activo);
 
+-- ============================================================
+-- 7.7.1. COSTEO: POLERA PIQUÉ CORPORATIVA (100 unidades — HITES)
+-- ============================================================
+-- Costeo asociado a SCOS-000001 (Polera Piqué), estado APROBADO.
+-- Toda SCOS creada vía la app recibe automáticamente un Costeo
+-- (generatePreCosteo) — esta fila evita que SCOS-000001 quede sin el suyo.
+INSERT INTO produccion_costeos (id_costeo, solicitud_costos_id, numero_costeo, estado, version,
+    costo_hilos, costo_mano_obra, costo_etiquetas, costo_embalaje, costo_flete,
+    porcentaje_costo_fijo, costo_total_materia_prima, margen_bruto_sugerido, precio_venta_sugerido) VALUES
+    (2, 1, 'COST-0000002', 'APROBADO', 1,
+    8000.00, 220000.00, 12000.00, 15000.00, 20000.00,
+    10.00, 620000.00, 25.00, 1312667.00)
+ON DUPLICATE KEY UPDATE
+    estado                    = VALUES(estado),
+    version                   = VALUES(version),
+    costo_hilos               = VALUES(costo_hilos),
+    costo_mano_obra           = VALUES(costo_mano_obra),
+    costo_etiquetas           = VALUES(costo_etiquetas),
+    costo_embalaje            = VALUES(costo_embalaje),
+    costo_flete               = VALUES(costo_flete),
+    porcentaje_costo_fijo     = VALUES(porcentaje_costo_fijo),
+    costo_total_materia_prima = VALUES(costo_total_materia_prima),
+    margen_bruto_sugerido     = VALUES(margen_bruto_sugerido),
+    precio_venta_sugerido     = VALUES(precio_venta_sugerido);
+
+INSERT INTO produccion_costeo_items (id_costeo_item, costeo_id, tipo_insumo, articulo_id, nombre_insumo, consumo, precio_unitario, costo_total) VALUES
+    (6, 2, 'TELAS',      3, 'JERSEY PIQUÉ ALGODÓN 180 GSM', 1.2000, 4500.00, 540000.00),
+    (7, 2, 'ACCESORIOS', 6, 'HILO INDUSTRIAL 40/2',         0.1000, 3500.00,  35000.00),
+    (8, 2, 'ACCESORIOS', 7, 'CINTA REFLECTANTE 50MM',       0.4500,  980.00,  44100.00)
+ON DUPLICATE KEY UPDATE
+    tipo_insumo     = VALUES(tipo_insumo),
+    articulo_id     = VALUES(articulo_id),
+    nombre_insumo   = VALUES(nombre_insumo),
+    consumo         = VALUES(consumo),
+    precio_unitario = VALUES(precio_unitario),
+    costo_total     = VALUES(costo_total);
+
+-- Versión 1 del costeo de poleras — usada por OP-00002 (ver 8.4)
+INSERT IGNORE INTO produccion_costeo_versiones (id_costeo_version, costeo_id, numero_version, fecha_creacion, usuario_creador,
+    total_mano_obra, total_hilo, total_flete, total_embalaje, total_etiquetas,
+    porcentaje_costo_fijo, costo_total_materia_prima, margen_bruto_sugerido, precio_venta_sugerido) VALUES
+    (2, 2, 1, CURRENT_TIMESTAMP, 'SISTEMA',
+    220000.00, 8000.00, 20000.00, 15000.00, 12000.00,
+    10.00, 620000.00, 25.00, 1312667.00);
+
+INSERT INTO produccion_costeo_item_versiones (id_costeo_item_version, costeo_version_id, costeo_item_id, tipo_insumo, articulo_id, nombre_insumo, consumo, precio_unitario, costo_total, activo) VALUES
+    (6, 2, 6, 'TELAS',      3, 'JERSEY PIQUÉ ALGODÓN 180 GSM', 1.2000, 4500.00, 540000.00, true),
+    (7, 2, 7, 'ACCESORIOS', 6, 'HILO INDUSTRIAL 40/2',         0.1000, 3500.00,  35000.00, true),
+    (8, 2, 8, 'ACCESORIOS', 7, 'CINTA REFLECTANTE 50MM',       0.4500,  980.00,  44100.00, true)
+ON DUPLICATE KEY UPDATE
+    tipo_insumo     = VALUES(tipo_insumo),
+    articulo_id     = VALUES(articulo_id),
+    nombre_insumo   = VALUES(nombre_insumo),
+    consumo         = VALUES(consumo),
+    precio_unitario = VALUES(precio_unitario),
+    costo_total     = VALUES(costo_total),
+    activo          = VALUES(activo);
+
+-- ============================================================
+-- 7.8. ORDEN DE PRODUCCIÓN (OP)
+-- ============================================================
+-- OP-00001: Pantalón Cargo MEDCELL → referencia NV-0000001 (cliente MEDCELL, EN_PRODUCCION)
+INSERT IGNORE INTO orden_produccion (id_op, costeo_version_id, numero_op, nota_venta_id, estado, fecha_inicio, fecha_entrega_programada, observaciones, created_at, updated_at) VALUES
+    (1, 1, 'OP-00001', 1, 'EN_PROCESO', CURRENT_DATE, DATE_ADD(CURRENT_DATE, INTERVAL 30 DAY),
+     'PANTALÓN CARGO OPERARIO — LABORATORIO MEDCELL — 50 UNIDADES TALLAS M/L', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+
+-- Items de la OP (artículos a producir, desglosados por talla)
+INSERT IGNORE INTO produccion_orden_items (id_op_item, orden_produccion_id, articulo_id, nro_item, modelo, tela, color, talla, genero, codigo, lleva_logo, cantidad) VALUES
+    (1, 1, 2, 1, 'CARGO 6 BOLSILLOS', 'RIPSTOP IMPERMEABLE 150G', 'VERDE OLIVA', 'M', 'MASCULINO', 'PAN-CARGO-M', 'NO', 25),
+    (2, 1, 2, 2, 'CARGO 6 BOLSILLOS', 'RIPSTOP IMPERMEABLE 150G', 'VERDE OLIVA', 'L', 'MASCULINO', 'PAN-CARGO-L', 'NO', 25);
+
+-- ============================================================
+-- 7.9. HOJA DE COMPRA (HC)
+-- ============================================================
+-- HC-000001 generada desde OP-00001 con costeo versión 1
+-- Cantidades = consumo_unitario × 50 prendas (con 5% holgura redondeado)
 INSERT IGNORE INTO produccion_hojas_compra (id_hc, numero_hc, op_id, costeo_version_id, estado, fecha_generacion, observaciones) VALUES
-    (1, 'HC-000001', 1, 1, 'APROBADA', CURRENT_DATE, 'HC generada para OP-000001');
+    (1, 'HC-000001', 1, 1, 'APROBADA', CURRENT_DATE, 'HC GENERADA AUTOMÁTICAMENTE DESDE COSTEO VERSIÓN 1 — OP-00001');
 
 INSERT IGNORE INTO produccion_hoja_compra_items (id_hc_item, hc_id, tipo_insumo, articulo_id, proveedor_id, nombre_insumo, consumo_unitario, cantidad_op, cantidad_requerida, precio_unitario_ref) VALUES
-    (1, 1, 'TELA',      2, 1, 'Ripstop Impermeable',         1.8000, 50, 90.0000,  4500.00),
-    (2, 1, 'ACCESORIO', 4, 2, 'Cierre YKK 60cm Metálico',    1.0000, 50, 50.0000,  1200.00),
-    (3, 1, 'ACCESORIO', 5, 2, 'Botón Snap 15mm Nácar',       4.0000, 50, 200.0000, 150.00);
+    (1, 1, 'TELA',      2, 1, 'RIPSTOP IMPERMEABLE 150 GSM', 1.8000, 50,  90.0000,  4800.00),
+    (2, 1, 'ACCESORIO', 4, 2, 'CIERRE YKK 60CM METÁLICO',   1.0000, 50,  50.0000,  1350.00),
+    (3, 1, 'ACCESORIO', 5, 2, 'BOTÓN SNAP 15MM NÁCAR',       4.0000, 50, 200.0000,   180.00),
+    (4, 1, 'ACCESORIO', 6, 4, 'HILO INDUSTRIAL 40/2',        0.1500, 50,   8.0000,  3500.00),
+    (5, 1, 'ACCESORIO', 7, 4, 'CINTA REFLECTANTE 50MM',      0.5000, 50,  26.0000,   980.00);
 
 -- ============================================================
--- 7.8. CONTADORES DE DOCUMENTOS (document_counter)
+-- 7.10. CONTADORES DE DOCUMENTOS (document_counter)
 -- ============================================================
--- Cada documento genera su propio correlativo vía NumeroDocumentoService.siguiente(tipo).
--- El contador parte en 0 (se crea on-demand), por lo que el primer documento sería
--- el número 1 y CHOCARÍA con los registros ya sembrados arriba. Por eso inicializamos
--- 'ultimo_numero' por ENCIMA del máximo existente por tipo: el próximo correlativo
--- continúa la secuencia (NV-0000003, OP-0000002, ...) sin colisionar ni reiniciar.
--- 'ultimo_numero' = cantidad de documentos ya existentes de ese tipo en este seed.
 INSERT IGNORE INTO document_counter (tipo, ultimo_numero) VALUES
     ('NV',   2),
     ('EVN',  2),
     ('SCOS', 2),
     ('SCOT', 0),
-    ('C',    1),
+    ('COST', 4),
     ('OP',   1),
     ('HC',   1);
 
 -- ============================================================
--- 7.8. MAESTROS GLOBALES (Moneda, Unidad de Medida)
+-- 8. DATOS DE PRUEBA DASHBOARD — FLUJO END-TO-END
+--    Objetivo: poblar KPIs y gráficos del Welcome con valores
+--    representativos que reflejen el flujo real del ERP.
+-- ============================================================
+
+-- ── 8.1. SCOS ADICIONALES EN ESTADO PENDIENTE ──────────────
+-- Agrega 2 SCOS para que el KPI "SCOS Pendientes" muestre 3
+INSERT IGNORE INTO solicitudes_costos
+    (id_scos, numero, estado, tipo, cliente_id, vendedor_id,
+     articulo_descripcion, nombre_prenda, genero, tallaje,
+     es_muestra, has_logo, cantidad, fecha, costo_total)
+VALUES
+    (3, 'SCOS-000003', 'PENDIENTE', 'SCOS', 3, 1,
+     'POLERON', 'POLERÓN CORPORATIVO CON CAPUCHA', 'UNISEX', 'ESTANDAR',
+     false, true, 200, CURRENT_DATE, 0.00),
+    (4, 'SCOS-000004', 'PENDIENTE', 'SCOS', 1, 2,
+     'CHALECO', 'CHALECO CORPORATIVO ACOLCHADO', 'UNISEX', 'TALLA UNICA',
+     true, false, 50, CURRENT_DATE, 0.00)
+ON DUPLICATE KEY UPDATE estado = VALUES(estado);
+
+-- Costeos en blanco (BORRADOR) para SCOS-000003 y SCOS-000004 — toda SCOS
+-- creada vía la app recibe automáticamente un Costeo vacío (generatePreCosteo),
+-- aunque siga PENDIENTE de costear.
+INSERT IGNORE INTO produccion_costeos (id_costeo, solicitud_costos_id, numero_costeo, estado, version) VALUES
+    (3, 3, 'COST-0000003', 'BORRADOR', 1),
+    (4, 4, 'COST-0000004', 'BORRADOR', 1);
+
+-- ── 8.2. EVN EN BORRADOR / EVALUACIÓN ──────────────────────
+-- Agrega 2 EVN activas para que el KPI "EVN en Evaluación" muestre 2
+-- (el código filtra estado IN ['BORRADOR', 'EVALUACION'])
+INSERT IGNORE INTO evaluaciones_negocio
+    (id_evn, numero, referencia, cliente_nombre, cliente_id, vendedor_id,
+     estado, fecha_evaluacion, porcentaje_comision, created_at, updated_at)
+VALUES
+    (3, 'EVN-000003',
+     'COTIZACIÓN POLERÓN CORPORATIVO CON CAPUCHA — GEODIS WILSON',
+     'GEODIS WILSON', 3, 1,
+     'BORRADOR', CURRENT_DATE, 20.00, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+    (4, 'EVN-000004',
+     'PROPUESTA CHALECO ACOLCHADO CORPORATIVO — HITES S.A.',
+     'HITES S.A.', 1, 2,
+     'EVALUACION', CURRENT_DATE, 20.00, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+ON DUPLICATE KEY UPDATE estado = VALUES(estado), porcentaje_comision = VALUES(porcentaje_comision);
+
+-- Items básicos EVN-000003 (Polerón para GEODIS)
+INSERT IGNORE INTO evaluacion_negocio_items
+    (idevni, evaluacion_negocio_id, proveedor_id, articulo_id, nro_item,
+     descripcion, modelo, tela, genero,
+     cantidad, precio_unitario, moneda_precio_unitario,
+     costo_unitario, moneda_costo_unitario,
+     costo_producto, costo_logo, tipo_item)
+VALUES
+    (3, 3, 1, 8, 1,
+     'POLERÓN CORPORATIVO CAPUCHA BORDADO', 'HOODIE REGULAR FIT', 'POLAR FLEECE 280G', 'UNISEX',
+     200, 18500.00, 'CLP', 13800.00, 'CLP', 11200.00, 2600.00, 'OP');
+
+-- Items básicos EVN-000004 (Chaleco para HITES)
+INSERT IGNORE INTO evaluacion_negocio_items
+    (idevni, evaluacion_negocio_id, proveedor_id, articulo_id, nro_item,
+     descripcion, modelo, tela, genero,
+     cantidad, precio_unitario, moneda_precio_unitario,
+     costo_unitario, moneda_costo_unitario,
+     costo_producto, tipo_item)
+VALUES
+    (4, 4, 3, 10, 1,
+     'CHALECO CORPORATIVO ACOLCHADO IMPERMEABLE', 'VEST SOFTSHELL', 'RIPSTOP IMPERMEABLE 150G', 'UNISEX',
+     50, 32000.00, 'CLP', 23500.00, 'CLP', 23500.00, 'OP');
+
+-- ── 8.2.1. EVN CERRADAS PARA LAS NV HISTÓRICAS ─────────────
+-- Una EVN solo es plantilla comercial válida para generar una NV cuando ya
+-- fue ADJUDICADA (y, al cerrar el ciclo, CERRADA). EVN-000003 (BORRADOR) y
+-- EVN-000004 (EVALUACION) de 8.2 son negociaciones AÚN ABIERTAS —no pueden
+-- ser el origen de una NV ya ENTREGADA—, así que las NV históricas de 8.3
+-- necesitan su propia EVN, ya CERRADA, en vez de reutilizar esas dos.
+INSERT IGNORE INTO evaluaciones_negocio
+    (id_evn, numero, referencia, cliente_nombre, cliente_id, vendedor_id,
+     estado, fecha_evaluacion, porcentaje_comision, created_at, updated_at)
+VALUES
+    (5, 'EVN-000005',
+     'COTIZACIÓN POLERA BÁSICA MANGA CORTA — GEODIS WILSON',
+     'GEODIS WILSON', 3, 1,
+     'CERRADA', '2026-01-15', 20.00, '2026-01-15 09:00:00', '2026-01-15 09:00:00'),
+    (6, 'EVN-000006',
+     'COTIZACIÓN POLERA SLIM FIT MANGA CORTA — GEODIS WILSON',
+     'GEODIS WILSON', 3, 2,
+     'CERRADA', '2026-04-15', 20.00, '2026-04-15 09:00:00', '2026-04-15 09:00:00'),
+    (7, 'EVN-000007',
+     'COTIZACIÓN CHALECO VEST SOFTSHELL — HITES S.A.',
+     'HITES S.A.', 1, 1,
+     'CERRADA', '2026-05-05', 20.00, '2026-05-05 09:00:00', '2026-05-05 09:00:00')
+ON DUPLICATE KEY UPDATE estado = VALUES(estado), porcentaje_comision = VALUES(porcentaje_comision);
+
+INSERT IGNORE INTO evaluacion_negocio_items
+    (idevni, evaluacion_negocio_id, proveedor_id, articulo_id, nro_item,
+     descripcion, modelo, tela, genero,
+     cantidad, precio_unitario, moneda_precio_unitario,
+     costo_unitario, moneda_costo_unitario,
+     costo_producto, tipo_item)
+VALUES
+    (5, 5, 1, 3, 1,
+     'POLERA BÁSICA MANGA CORTA CORPORATIVA', 'BÁSICA MANGA CORTA', 'JERSEY PIQUÉ 180G', 'UNISEX',
+     80, 9125.00, 'CLP', 6844.00, 'CLP', 6844.00, 'OP'),
+    (6, 6, 1, 3, 1,
+     'POLERA SLIM FIT MANGA CORTA CORPORATIVA', 'SLIM FIT MANGA CORTA', 'JERSEY PIQUÉ 180G', 'UNISEX',
+     150, 10600.00, 'CLP', 7950.00, 'CLP', 7950.00, 'OP'),
+    (7, 7, 3, 10, 1,
+     'CHALECO VEST SOFTSHELL CORPORATIVO', 'VEST SOFTSHELL', 'RIPSTOP IMPERMEABLE 150G', 'UNISEX',
+     60, 32000.00, 'CLP', 23500.00, 'CLP', 23500.00, 'OP')
+ON DUPLICATE KEY UPDATE cantidad = VALUES(cantidad);
+
+-- ── 8.3. NOTAS DE VENTA HISTÓRICAS (Ene–May 2026) ──────────
+-- Pobla el gráfico "Ventas Mensuales" con datos de los meses anteriores.
+-- Estas NV representan negocios ya cerrados (estado ENTREGADA).
+-- Cada una usa una EVN ya CERRADA (1, 2 o las nuevas de 8.2.1) como origen
+-- comercial — nunca EVN-000003/000004, que siguen en negociación.
+INSERT IGNORE INTO notas_venta
+    (id_nv, numeronv, evaluacion_negocio_id, cliente_id, vendedor_id,
+     estado, es_kit,
+     fecha_emision, fecha_entrega_estimada,
+     monto_subtotal, moneda_subtotal,
+     monto_iva,     moneda_iva,
+     monto_total,   moneda_total,
+     created_at, updated_at)
+VALUES
+    -- Enero 2026 — GEODIS, 80 poleras basic
+    (3, 'NV-0000003', 5, 3, 1,
+     'ENTREGADA', false,
+     '2026-01-20', '2026-02-10',
+     730000.00, 'CLP', 138700.00, 'CLP', 868700.00, 'CLP',
+     '2026-01-20 09:00:00', '2026-01-20 09:00:00'),
+    -- Febrero 2026 — HITES, 120 poleras
+    (4, 'NV-0000004', 1, 1, 1,
+     'ENTREGADA', false,
+     '2026-02-14', '2026-03-05',
+     1272000.00, 'CLP', 241680.00, 'CLP', 1513680.00, 'CLP',
+     '2026-02-14 10:00:00', '2026-02-14 10:00:00'),
+    -- Marzo 2026 — MEDCELL, 30 pantalones cargo
+    (5, 'NV-0000005', 2, 2, 2,
+     'ENTREGADA', false,
+     '2026-03-08', '2026-04-01',
+     515130.00, 'CLP', 97874.70, 'CLP', 613004.70, 'CLP',
+     '2026-03-08 11:00:00', '2026-03-08 11:00:00'),
+    -- Abril 2026 — GEODIS, 150 poleras corporativas
+    (6, 'NV-0000006', 6, 3, 2,
+     'ENTREGADA', false,
+     '2026-04-22', '2026-05-15',
+     1590000.00, 'CLP', 302100.00, 'CLP', 1892100.00, 'CLP',
+     '2026-04-22 08:30:00', '2026-04-22 08:30:00'),
+    -- Mayo 2026 — HITES, 60 chalecos acolchados
+    (7, 'NV-0000007', 7, 1, 1,
+     'ENTREGADA', false,
+     '2026-05-10', '2026-06-01',
+     1920000.00, 'CLP', 364800.00, 'CLP', 2284800.00, 'CLP',
+     '2026-05-10 14:00:00', '2026-05-10 14:00:00')
+ON DUPLICATE KEY UPDATE estado = VALUES(estado), evaluacion_negocio_id = VALUES(evaluacion_negocio_id);
+
+-- Items simplificados de las NV históricas (un ítem por NV)
+INSERT IGNORE INTO notas_venta_items
+    (id_item_nv, nota_venta_id, nro_item, modelo, tela, composicion, color,
+     talla, genero, codigo, proveedor_id, lleva_logo, tipo_item,
+     requiere_ot, cantidad, precio_unitario, moneda_precio_unitario,
+     total, moneda_total, articulo_id)
+VALUES
+    (7, 3, 1, 'BÁSICA MANGA CORTA',    'JERSEY PIQUÉ 180G', '100% ALGODÓN', 'BLANCO',     'M', 'UNISEX',    'POL-BAS-M',   1, 'NO', 'OP', false,  80, 9125.00, 'CLP',  730000.00, 'CLP', 3),
+    (8, 4, 1, 'SLIM FIT MANGA CORTA',  'JERSEY PIQUÉ 180G', '100% ALGODÓN', 'AZUL NAVY',  'M', 'UNISEX',    'POL-PIQUE-M', 1, 'SI', 'OP', false, 120, 10600.00, 'CLP', 1272000.00, 'CLP', 3),
+    (9, 5, 1, 'CARGO 6 BOLSILLOS',     'RIPSTOP 150G',      '100% POLIÉSTER','VERDE OLIVA','M', 'MASCULINO', 'PAN-CARGO-M', 1, 'NO', 'OP', false,  30, 17171.00, 'CLP',  515130.00, 'CLP', 2),
+    (10, 6, 1,'SLIM FIT MANGA CORTA',  'JERSEY PIQUÉ 180G', '100% ALGODÓN', 'NEGRO',      'L', 'UNISEX',    'POL-PIQUE-L', 1, 'SI', 'OP', false, 150, 10600.00, 'CLP', 1590000.00, 'CLP', 3),
+    (11, 7, 1,'VEST SOFTSHELL',        'RIPSTOP 150G',      '100% POLIÉSTER','NEGRO',      'M', 'UNISEX',    'CHL-SOFT-M',  3, 'NO', 'OP', false,  60, 32000.00, 'CLP', 1920000.00, 'CLP', 10)
+ON DUPLICATE KEY UPDATE cantidad = VALUES(cantidad);
+
+-- ── 8.4. OP ADICIONAL EN ESTADO PENDIENTE ──────────────────
+-- Agrega una segunda OP (poleras HITES) para que el KPI "OPs en Planta" muestre 2.
+-- Usa costeo_version_id=2 (costeo de poleras, ver 7.7.1) — antes reutilizaba
+-- por error el costeo_version_id=1 del pantalón cargo de otra OP/cliente.
+INSERT IGNORE INTO orden_produccion
+    (id_op, costeo_version_id, numero_op, nota_venta_id, estado,
+     fecha_inicio, fecha_entrega_programada, observaciones,
+     created_at, updated_at)
+VALUES
+    (2, 2, 'OP-00002', 2, 'PENDIENTE',
+     DATE_ADD(CURRENT_DATE, INTERVAL 3 DAY),
+     DATE_ADD(CURRENT_DATE, INTERVAL 12 DAY),
+     'POLERA PIQUÉ CORPORATIVA — HITES S.A. — 100 UNIDADES — EN ESPERA DE INSUMOS',
+     CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+ON DUPLICATE KEY UPDATE estado = VALUES(estado), fecha_entrega_programada = VALUES(fecha_entrega_programada);
+
+-- ── 8.5. SEGUIMIENTO DE OPs (produccion_seguimiento_op) ────
+-- Estas fechas generan valores reales en el dashboard operacional:
+--   OP-00001 (EN_PROCESO): recibida hace 5d sin OC confirmada → opAtrasada
+--                           logo enviado hace 4d sin retorno  → recepcionLogoAtrasado
+--   OP-00002 (PENDIENTE):  recibida hace 4d sin OC confirmada → opAtrasada
+--   entregas7d: OP-00002 vence en 12d (fuera de ventana 7d por diseño)
+--   Resultado esperado: opAtrasada=2, recepcionLogoAtrasado=1, resto=0, entregas7d=1
+INSERT IGNORE INTO produccion_seguimiento_op
+    (id_seguimiento, orden_produccion_id,
+     fecha_recepcion_op, fin_tizado, estado_oc_mp, recepcion_compras,
+     inicio_corte, fin_corte,
+     inicio_logo, estado_ida_logo, regreso_logo, estado_rec_logo,
+     inicio_taller_externo, fin_taller_externo, calidad_taller, obs_taller,
+     fin_terminacion, fin_personalizado)
+VALUES
+    -- Seguimiento OP-00001 (Pantalón Cargo MEDCELL)
+    (1, 1,
+     DATE_SUB(CURRENT_DATE, INTERVAL 5 DAY),   -- fecha_recepcion_op: 5 días atrás
+     DATE_SUB(CURRENT_DATE, INTERVAL 4 DAY),   -- fin_tizado
+     NULL,                                      -- sin OC confirmada → ALERTA opAtrasada
+     NULL,
+     DATE_SUB(CURRENT_DATE, INTERVAL 3 DAY),   -- inicio_corte
+     DATE_SUB(CURRENT_DATE, INTERVAL 1 DAY),   -- fin_corte (2 días — dentro del límite 10d)
+     DATE_SUB(CURRENT_DATE, INTERVAL 4 DAY),   -- inicio_logo: hace 4d > límite 3d → ALERTA
+     'IDA_COMPLETA',
+     NULL,                                      -- regreso_logo: aún no retorna
+     NULL,
+     NULL, NULL, NULL, NULL,
+     NULL, NULL),
+    -- Seguimiento OP-00002 (Polera Piqué HITES — recién recibida)
+    (2, 2,
+     DATE_SUB(CURRENT_DATE, INTERVAL 4 DAY),   -- fecha_recepcion_op: 4 días atrás
+     NULL,                                      -- sin tizado aún
+     NULL,                                      -- sin OC confirmada → ALERTA opAtrasada
+     NULL,
+     NULL, NULL,
+     NULL, NULL, NULL, NULL,
+     NULL, NULL, NULL, NULL,
+     NULL, NULL)
+ON DUPLICATE KEY UPDATE
+    fecha_recepcion_op   = VALUES(fecha_recepcion_op),
+    estado_oc_mp   = VALUES(estado_oc_mp),
+    inicio_logo          = VALUES(inicio_logo),
+    estado_ida_logo      = VALUES(estado_ida_logo),
+    regreso_logo         = VALUES(regreso_logo);
+
+-- ── 8.5. ACTUALIZAR CONTADORES ─────────────────────────────
+INSERT INTO document_counter (tipo, ultimo_numero) VALUES
+    ('NV',   7),
+    ('EVN',  10),
+    ('SCOS', 10),
+    ('OP',   10)
+ON DUPLICATE KEY UPDATE ultimo_numero = GREATEST(ultimo_numero, VALUES(ultimo_numero));
+
+-- ── 8.6. CADENA DE PRODUCCIÓN COMPLETA PARA NVs HISTÓRICAS ──
+-- Las NV-0000003 a NV-0000007 (ver 8.3) se insertaron directo en estado
+-- ENTREGADA solo para poblar el gráfico de ventas históricas, pero sus items
+-- son tipo OP y por lo tanto SIEMPRE deberían tener OP+HC+OC+Recepción (así
+-- lo garantiza CrearNVUseCase en el flujo real). Esta sección completa esa
+-- cadena retroactivamente para que la Trazabilidad muestre el ciclo
+-- EVN → NV → OP → HC → OC → Recepción de punta a punta, sin huecos.
+INSERT INTO produccion_costeos (id_costeo, solicitud_costos_id, numero_costeo, estado, version,
+    costo_hilos, costo_mano_obra, costo_etiquetas, costo_embalaje, costo_flete,
+    porcentaje_costo_fijo, costo_total_materia_prima, margen_bruto_sugerido, precio_venta_sugerido,
+    nota_venta_id) VALUES
+    (5, NULL, 'COST-0000005', 'APROBADO', 1,  6400.00, 176000.00,  9600.00, 12000.00, 16000.00, 10.00, 432000.00, 25.00,  956267.00, 3),
+    (6, NULL, 'COST-0000006', 'APROBADO', 1,  9600.00, 264000.00, 14400.00, 18000.00, 24000.00, 10.00, 648000.00, 25.00, 1434400.00, 4),
+    (7, NULL, 'COST-0000007', 'APROBADO', 1,  7500.00, 114000.00,  4500.00,  6480.00, 15000.00, 10.00, 259200.00, 25.00,  596464.00, 5),
+    (8, NULL, 'COST-0000008', 'APROBADO', 1, 12000.00, 330000.00, 18000.00, 22500.00, 30000.00, 10.00, 810000.00, 25.00, 1793000.00, 6),
+    (9, NULL, 'COST-0000009', 'APROBADO', 1, 15000.00, 228000.00,  9000.00, 12960.00, 30000.00, 10.00, 518400.00, 25.00, 1192928.00, 7)
+ON DUPLICATE KEY UPDATE estado = VALUES(estado);
+
+INSERT INTO produccion_costeo_items (id_costeo_item, costeo_id, tipo_insumo, articulo_id, nombre_insumo, consumo, precio_unitario, costo_total) VALUES
+    ( 9, 5, 'TELAS', 3, 'JERSEY PIQUÉ ALGODÓN 180 GSM', 1.2000, 4500.00, 5400.00),
+    (10, 6, 'TELAS', 3, 'JERSEY PIQUÉ ALGODÓN 180 GSM', 1.2000, 4500.00, 5400.00),
+    (11, 7, 'TELAS', 2, 'RIPSTOP IMPERMEABLE 150 GSM',  1.8000, 4800.00, 8640.00),
+    (12, 8, 'TELAS', 3, 'JERSEY PIQUÉ ALGODÓN 180 GSM', 1.2000, 4500.00, 5400.00),
+    (13, 9, 'TELAS', 2, 'RIPSTOP IMPERMEABLE 150 GSM',  1.8000, 4800.00, 8640.00)
+ON DUPLICATE KEY UPDATE costo_total = VALUES(costo_total);
+
+INSERT IGNORE INTO produccion_costeo_versiones (id_costeo_version, costeo_id, numero_version, fecha_creacion, usuario_creador,
+    total_mano_obra, total_hilo, total_flete, total_embalaje, total_etiquetas,
+    porcentaje_costo_fijo, costo_total_materia_prima, margen_bruto_sugerido, precio_venta_sugerido) VALUES
+    (3, 5, 1, '2026-01-20 09:00:00', 'SISTEMA', 176000.00,  6400.00, 16000.00, 12000.00,  9600.00, 10.00, 432000.00, 25.00,  956267.00),
+    (4, 6, 1, '2026-02-14 10:00:00', 'SISTEMA', 264000.00,  9600.00, 24000.00, 18000.00, 14400.00, 10.00, 648000.00, 25.00, 1434400.00),
+    (5, 7, 1, '2026-03-08 11:00:00', 'SISTEMA', 114000.00,  7500.00, 15000.00,  6480.00,  4500.00, 10.00, 259200.00, 25.00,  596464.00),
+    (6, 8, 1, '2026-04-22 08:30:00', 'SISTEMA', 330000.00, 12000.00, 30000.00, 22500.00, 18000.00, 10.00, 810000.00, 25.00, 1793000.00),
+    (7, 9, 1, '2026-05-10 14:00:00', 'SISTEMA', 228000.00, 15000.00, 30000.00, 12960.00,  9000.00, 10.00, 518400.00, 25.00, 1192928.00);
+
+INSERT INTO produccion_costeo_item_versiones (id_costeo_item_version, costeo_version_id, costeo_item_id, tipo_insumo, articulo_id, nombre_insumo, consumo, precio_unitario, costo_total, activo) VALUES
+    ( 9, 3,  9, 'TELAS', 3, 'JERSEY PIQUÉ ALGODÓN 180 GSM', 1.2000, 4500.00, 5400.00, true),
+    (10, 4, 10, 'TELAS', 3, 'JERSEY PIQUÉ ALGODÓN 180 GSM', 1.2000, 4500.00, 5400.00, true),
+    (11, 5, 11, 'TELAS', 2, 'RIPSTOP IMPERMEABLE 150 GSM',  1.8000, 4800.00, 8640.00, true),
+    (12, 6, 12, 'TELAS', 3, 'JERSEY PIQUÉ ALGODÓN 180 GSM', 1.2000, 4500.00, 5400.00, true),
+    (13, 7, 13, 'TELAS', 2, 'RIPSTOP IMPERMEABLE 150 GSM',  1.8000, 4800.00, 8640.00, true)
+ON DUPLICATE KEY UPDATE costo_total = VALUES(costo_total);
+
+INSERT IGNORE INTO orden_produccion (id_op, costeo_version_id, numero_op, nota_venta_id, estado, fecha_inicio, fecha_entrega_programada, observaciones, created_at, updated_at) VALUES
+    (3, 3, 'OP-00003', 3, 'COMPLETADA', '2026-01-20', '2026-02-10', 'POLERA BÁSICA MANGA CORTA — GEODIS WILSON — 80 UNIDADES',           '2026-01-20 09:00:00', '2026-01-20 09:00:00'),
+    (4, 4, 'OP-00004', 4, 'COMPLETADA', '2026-02-14', '2026-03-05', 'POLERA SLIM FIT MANGA CORTA — HITES S.A. — 120 UNIDADES',           '2026-02-14 10:00:00', '2026-02-14 10:00:00'),
+    (5, 5, 'OP-00005', 5, 'COMPLETADA', '2026-03-08', '2026-04-01', 'PANTALÓN CARGO 6 BOLSILLOS — MEDCELL — 30 UNIDADES',                '2026-03-08 11:00:00', '2026-03-08 11:00:00'),
+    (6, 6, 'OP-00006', 6, 'COMPLETADA', '2026-04-22', '2026-05-15', 'POLERA SLIM FIT MANGA CORTA — GEODIS WILSON — 150 UNIDADES',        '2026-04-22 08:30:00', '2026-04-22 08:30:00'),
+    (7, 7, 'OP-00007', 7, 'COMPLETADA', '2026-05-10', '2026-06-01', 'CHALECO VEST SOFTSHELL — HITES S.A. — 60 UNIDADES',                 '2026-05-10 14:00:00', '2026-05-10 14:00:00');
+
+INSERT IGNORE INTO produccion_orden_items (id_op_item, orden_produccion_id, articulo_id, nro_item, modelo, tela, color, talla, genero, codigo, lleva_logo, cantidad) VALUES
+    (3, 3,  3, 1, 'BÁSICA MANGA CORTA',   'JERSEY PIQUÉ 180G', 'BLANCO',     'M', 'UNISEX',    'POL-BAS-M',   'NO',  80),
+    (4, 4,  3, 1, 'SLIM FIT MANGA CORTA', 'JERSEY PIQUÉ 180G', 'AZUL NAVY',  'M', 'UNISEX',    'POL-PIQUE-M', 'SI', 120),
+    (5, 5,  2, 1, 'CARGO 6 BOLSILLOS',    'RIPSTOP 150G',      'VERDE OLIVA','M', 'MASCULINO', 'PAN-CARGO-M', 'NO',  30),
+    (6, 6,  3, 1, 'SLIM FIT MANGA CORTA', 'JERSEY PIQUÉ 180G', 'NEGRO',      'L', 'UNISEX',    'POL-PIQUE-L', 'SI', 150),
+    (7, 7, 10, 1, 'VEST SOFTSHELL',       'RIPSTOP 150G',      'NEGRO',      'M', 'UNISEX',    'CHL-SOFT-M',  'NO',  60);
+
+INSERT IGNORE INTO produccion_hojas_compra (id_hc, numero_hc, op_id, costeo_version_id, estado, fecha_generacion, observaciones) VALUES
+    (2, 'HC-000002', 3, 3, 'APROBADA', '2026-01-20', 'HC GENERADA AUTOMÁTICAMENTE DESDE COSTEO VERSIÓN 3 — OP-00003'),
+    (3, 'HC-000003', 4, 4, 'APROBADA', '2026-02-14', 'HC GENERADA AUTOMÁTICAMENTE DESDE COSTEO VERSIÓN 4 — OP-00004'),
+    (4, 'HC-000004', 5, 5, 'APROBADA', '2026-03-08', 'HC GENERADA AUTOMÁTICAMENTE DESDE COSTEO VERSIÓN 5 — OP-00005'),
+    (5, 'HC-000005', 6, 6, 'APROBADA', '2026-04-22', 'HC GENERADA AUTOMÁTICAMENTE DESDE COSTEO VERSIÓN 6 — OP-00006'),
+    (6, 'HC-000006', 7, 7, 'APROBADA', '2026-05-10', 'HC GENERADA AUTOMÁTICAMENTE DESDE COSTEO VERSIÓN 7 — OP-00007');
+
+INSERT IGNORE INTO produccion_ordenes_compra (id_oc, estado, fecha_emision, fecha_entrega_estimada, motivo_rechazo, numero_oc, observaciones, total_neto, version, proveedor_id) VALUES
+    (1, 'RECEPCIONADA', '2026-01-20', '2026-01-25', NULL, 'OC-000001', 'OC CONSOLIDADA DESDE HC-000002 — NV-0000003', 432000.00, 1, 1),
+    (2, 'RECEPCIONADA', '2026-02-14', '2026-02-19', NULL, 'OC-000002', 'OC CONSOLIDADA DESDE HC-000003 — NV-0000004', 648000.00, 1, 1),
+    (3, 'RECEPCIONADA', '2026-03-08', '2026-03-13', NULL, 'OC-000003', 'OC CONSOLIDADA DESDE HC-000004 — NV-0000005', 259200.00, 1, 1),
+    (4, 'RECEPCIONADA', '2026-04-22', '2026-04-27', NULL, 'OC-000004', 'OC CONSOLIDADA DESDE HC-000005 — NV-0000006', 810000.00, 1, 1),
+    (5, 'RECEPCIONADA', '2026-05-10', '2026-05-15', NULL, 'OC-000005', 'OC CONSOLIDADA DESDE HC-000006 — NV-0000007', 518400.00, 1, 3);
+
+INSERT IGNORE INTO produccion_orden_compra_items (id_oc_item, articulo_id, cantidad_comprada, cantidad_requerida, cantidad_stock, nombre_insumo, precio_unitario, subtotal, tipo_insumo, oc_id) VALUES
+    (1, 3,  96.0000,  96.0000, 0.0000, 'JERSEY PIQUÉ ALGODÓN 180 GSM', 4500.00, 432000.00, 'TELA', 1),
+    (2, 3, 144.0000, 144.0000, 0.0000, 'JERSEY PIQUÉ ALGODÓN 180 GSM', 4500.00, 648000.00, 'TELA', 2),
+    (3, 2,  54.0000,  54.0000, 0.0000, 'RIPSTOP IMPERMEABLE 150 GSM',  4800.00, 259200.00, 'TELA', 3),
+    (4, 3, 180.0000, 180.0000, 0.0000, 'JERSEY PIQUÉ ALGODÓN 180 GSM', 4500.00, 810000.00, 'TELA', 4),
+    (5, 2, 108.0000, 108.0000, 0.0000, 'RIPSTOP IMPERMEABLE 150 GSM',  4800.00, 518400.00, 'TELA', 5);
+
+-- Ítems de HC ya vinculados a su OC (denormalizado, usado por la vista de HC)
+INSERT IGNORE INTO produccion_hoja_compra_items (id_hc_item, hc_id, tipo_insumo, articulo_id, proveedor_id, nombre_insumo, consumo_unitario, cantidad_op, cantidad_requerida, precio_unitario_ref, numero_oc, oc_id) VALUES
+    ( 6, 2, 'TELA', 3, 1, 'JERSEY PIQUÉ ALGODÓN 180 GSM', 1.2000,  80,  96.0000, 4500.00, 'OC-000001', 1),
+    ( 7, 3, 'TELA', 3, 1, 'JERSEY PIQUÉ ALGODÓN 180 GSM', 1.2000, 120, 144.0000, 4500.00, 'OC-000002', 2),
+    ( 8, 4, 'TELA', 2, 1, 'RIPSTOP IMPERMEABLE 150 GSM',  1.8000,  30,  54.0000, 4800.00, 'OC-000003', 3),
+    ( 9, 5, 'TELA', 3, 1, 'JERSEY PIQUÉ ALGODÓN 180 GSM', 1.2000, 150, 180.0000, 4500.00, 'OC-000004', 4),
+    (10, 6, 'TELA', 2, 3, 'RIPSTOP IMPERMEABLE 150 GSM',  1.8000,  60, 108.0000, 4800.00, 'OC-000005', 5);
+
+INSERT IGNORE INTO produccion_hc_item_oc_item (id_link, cantidad_asignada, hc_item_id, oc_item_id) VALUES
+    (1,  96.0000,  6, 1),
+    (2, 144.0000,  7, 2),
+    (3,  54.0000,  8, 3),
+    (4, 180.0000,  9, 4),
+    (5, 108.0000, 10, 5);
+
+INSERT IGNORE INTO produccion_recepciones_oc (id_recepcion, fecha_recepcion, numero_guia, observaciones, responsable, oc_id) VALUES
+    (1, '2026-01-23', 'GUIA-0001', 'RECEPCIÓN CONFORME', 'BODEGA CENTRAL', 1),
+    (2, '2026-02-17', 'GUIA-0002', 'RECEPCIÓN CONFORME', 'BODEGA CENTRAL', 2),
+    (3, '2026-03-11', 'GUIA-0003', 'RECEPCIÓN CONFORME', 'BODEGA CENTRAL', 3),
+    (4, '2026-04-25', 'GUIA-0004', 'RECEPCIÓN CONFORME', 'BODEGA CENTRAL', 4),
+    (5, '2026-05-13', 'GUIA-0005', 'RECEPCIÓN CONFORME', 'BODEGA CENTRAL', 5);
+
+INSERT IGNORE INTO produccion_recepcion_oc_items (id_recepcion_item, cantidad_conforme, cantidad_rechazada, cantidad_recibida, motivo_rechazo, oc_item_id, recepcion_id) VALUES
+    (1,  96.0000, 0.0000,  96.0000, NULL, 1, 1),
+    (2, 144.0000, 0.0000, 144.0000, NULL, 2, 2),
+    (3,  54.0000, 0.0000,  54.0000, NULL, 3, 3),
+    (4, 180.0000, 0.0000, 180.0000, NULL, 4, 4),
+    (5, 108.0000, 0.0000, 108.0000, NULL, 5, 5);
+
+INSERT INTO document_counter (tipo, ultimo_numero) VALUES
+    ('COST', 9),
+    ('HC',   6),
+    ('OP',   10),
+    ('OC',   5)
+ON DUPLICATE KEY UPDATE ultimo_numero = GREATEST(ultimo_numero, VALUES(ultimo_numero));
+
+-- ============================================================
+-- 7.11. MAESTROS GLOBALES (Moneda, Unidad de Medida)
 -- ============================================================
 INSERT IGNORE INTO moneda (id_moneda, codigo_moneda, nombre_moneda, simbolo) VALUES
-    (1, 'CLP', 'Peso Chileno', '$'),
-    (2, 'USD', 'Dólar Estadounidense', 'US$'),
-    (3, 'EUR', 'Euro', '€');
+    (1, 'CLP', 'PESO CHILENO',          '$'),
+    (2, 'USD', 'DÓLAR ESTADOUNIDENSE',  'US$'),
+    (3, 'EUR', 'EURO',                  '€');
 
 INSERT IGNORE INTO unidad_medida (id_unidad_medida, nombre_unidad, abreviatura) VALUES
-    (1, 'Metro',          'M'),
-    (2, 'Metro Cuadrado', 'M2'),
-    (3, 'Kilogramo',      'KG'),
-    (4, 'Unidad',         'UN'),
-    (5, 'Par',            'PAR'),
-    (6, 'Caja',           'CJA'),
-    (7, 'Rollo',          'ROL');
+    (1, 'METRO',          'M'),
+    (2, 'METRO CUADRADO', 'M2'),
+    (3, 'KILOGRAMO',      'KG'),
+    (4, 'UNIDAD',         'UN'),
+    (5, 'PAR',            'PAR'),
+    (6, 'CAJA',           'CJA'),
+    (7, 'ROLLO',          'ROL');
 
 -- ============================================================
--- 7.9. MAESTROS DE TELA (Familia, Clasificación, etc)
+-- 7.12. MAESTROS DE TELA
 -- ============================================================
 INSERT IGNORE INTO familia_tela (id_familia_tela, codigo_familia, nombre_familia) VALUES
-    (1, 'FT-01', 'Jersey'),
-    (2, 'FT-02', 'Rib'),
-    (3, 'FT-03', 'Interlock'),
-    (4, 'FT-04', 'Fleece / French Terry'),
-    (5, 'FT-05', 'Polar / Sherpa'),
-    (6, 'FT-06', 'Scuba / Neoprene'),
-    (7, 'FT-07', 'Piqué / Lacoste'),
-    (8, 'FT-08', 'Tafetán / Popelín'),
-    (9, 'FT-09', 'Sarga / Drill'),
-    (10, 'FT-10', 'Denim'),
-    (11, 'FT-11', 'Gabardina'),
-    (12, 'FT-12', 'Terciopelo / Velvet'),
-    (13, 'FT-13', 'Punto Roma / Bengalina'),
-    (14, 'FT-14', 'Licra / Spandex plano'),
-    (15, 'FT-15', 'Malla deportiva / Mesh'),
-    (16, 'FT-16', 'Oxford / Ripstop'),
-    (17, 'FT-17', 'Lana / Paño'),
-    (18, 'FT-18', 'Lino / Ramio'),
-    (19, 'FT-19', 'Seda / Satén'),
-    (20, 'FT-20', 'Microfibra / Softshell');
+    (1,  'FT-01', 'JERSEY'),
+    (2,  'FT-02', 'RIB'),
+    (3,  'FT-03', 'INTERLOCK'),
+    (4,  'FT-04', 'FLEECE / FRENCH TERRY'),
+    (5,  'FT-05', 'POLAR / SHERPA'),
+    (6,  'FT-06', 'SCUBA / NEOPRENE'),
+    (7,  'FT-07', 'PIQUÉ / LACOSTE'),
+    (8,  'FT-08', 'TAFETÁN / POPELÍN'),
+    (9,  'FT-09', 'SARGA / DRILL'),
+    (10, 'FT-10', 'DENIM'),
+    (11, 'FT-11', 'GABARDINA'),
+    (12, 'FT-12', 'TERCIOPELO / VELVET'),
+    (13, 'FT-13', 'PUNTO ROMA / BENGALINA'),
+    (14, 'FT-14', 'LICRA / SPANDEX PLANO'),
+    (15, 'FT-15', 'MALLA DEPORTIVA / MESH'),
+    (16, 'FT-16', 'OXFORD / RIPSTOP'),
+    (17, 'FT-17', 'LANA / PAÑO'),
+    (18, 'FT-18', 'LINO / RAMIO'),
+    (19, 'FT-19', 'SEDA / SATÉN'),
+    (20, 'FT-20', 'MICROFIBRA / SOFTSHELL');
 
 INSERT IGNORE INTO clasificacion_tecnica (id_clasificacion_tecnica, nombre_clasificacion) VALUES
-    (1, 'Tejido de Punto'),
-    (2, 'Tejido Plano'),
-    (3, 'No Tejido / TNT'),
-    (4, 'Técnico / Funcional'),
-    (5, 'Alta Prestación');
+    (1, 'TEJIDO DE PUNTO'),
+    (2, 'TEJIDO PLANO'),
+    (3, 'NO TEJIDO / TNT'),
+    (4, 'TÉCNICO / FUNCIONAL'),
+    (5, 'ALTA PRESTACIÓN');
 
 INSERT IGNORE INTO composicion (id_composicion, codigo_composicion, descripcion_composicion, clasificacion, uso_tipico) VALUES
-    (1, 'CO-01',  '100% Algodón',                      'Natural',       'Poleras, básicos, ropa interior'),
-    (2, 'CO-02',  '100% Poliéster',                    'Sintético',     'Deportivo, sublimación, forro'),
-    (3, 'CO-03',  '50% Algodón / 50% Poliéster',       'Mixto',         'Poleras mix, uso general'),
-    (4, 'CO-04',  '65% Poliéster / 35% Algodón',       'Mixto',         'Uniformes corporativos'),
-    (5, 'CO-05',  '95% Algodón / 5% Elastano',         'Natural-Elást', 'Poleras ajustadas, casualwear'),
-    (6, 'CO-06',  '95% Poliéster / 5% Elastano',       'Sint-Elást',    'Deportivo técnico, leggings'),
-    (7, 'CO-07',  '60% Algodón / 40% Poliéster',       'Mixto',         'Prendas escolares, uniformes'),
-    (8, 'CO-08',  '80% Algodón / 20% Poliéster',       'Mixto',         'Camisas, poleras premium mix'),
-    (9, 'CO-09',  '100% Viscosa / Rayón',              'Celulósico',    'Blusas, vestidos, forro liviano'),
-    (10, 'CO-10',  '100% Nylon / Poliamida',            'Sintético',     'Chaquetas, cortavientos'),
-    (11, 'CO-11',  '88% Poliéster / 12% Elastano',      'Sint-Elást',    'Ropa deportiva compresión'),
-    (12, 'CO-12',  '70% Algodón / 30% Poliéster',       'Mixto',         'Poleras escolares'),
-    (13, 'CO-13',  '100% Lana Merino',                  'Natural',       'Paños, abrigos premium'),
-    (14, 'CO-14',  '100% Lino',                         'Natural',       'Verano, guayaberas'),
-    (15, 'CO-15',  '55% Lino / 45% Algodón',            'Natural',       'Ropa verano premium'),
-    (16, 'CO-16',  '50% Viscosa / 50% Poliéster',       'Mixto',         'Vestidos, blusas'),
-    (17, 'CO-17',  '90% Poliéster / 10% Elastano',      'Sint-Elást',    'Mallas, cycling'),
-    (18, 'CO-18',  '100% Algodón Orgánico',             'Natural',       'Línea eco, bebé');
+    (1,  'CO-01',  '100% ALGODÓN',                       'NATURAL',       'POLERAS, BÁSICOS, ROPA INTERIOR'),
+    (2,  'CO-02',  '100% POLIÉSTER',                     'SINTÉTICO',     'DEPORTIVO, SUBLIMACIÓN, FORRO'),
+    (3,  'CO-03',  '50% ALGODÓN / 50% POLIÉSTER',        'MIXTO',         'POLERAS MIX, USO GENERAL'),
+    (4,  'CO-04',  '65% POLIÉSTER / 35% ALGODÓN',        'MIXTO',         'UNIFORMES CORPORATIVOS'),
+    (5,  'CO-05',  '95% ALGODÓN / 5% ELASTANO',          'NATURAL-ELÁST', 'POLERAS AJUSTADAS, CASUALWEAR'),
+    (6,  'CO-06',  '95% POLIÉSTER / 5% ELASTANO',        'SINT-ELÁST',    'DEPORTIVO TÉCNICO, LEGGINGS'),
+    (7,  'CO-07',  '60% ALGODÓN / 40% POLIÉSTER',        'MIXTO',         'PRENDAS ESCOLARES, UNIFORMES'),
+    (8,  'CO-08',  '80% ALGODÓN / 20% POLIÉSTER',        'MIXTO',         'CAMISAS, POLERAS PREMIUM MIX'),
+    (9,  'CO-09',  '100% VISCOSA / RAYÓN',                'CELULÓSICO',    'BLUSAS, VESTIDOS, FORRO LIVIANO'),
+    (10, 'CO-10',  '100% NYLON / POLIAMIDA',              'SINTÉTICO',     'CHAQUETAS, CORTAVIENTOS'),
+    (11, 'CO-11',  '88% POLIÉSTER / 12% ELASTANO',        'SINT-ELÁST',    'ROPA DEPORTIVA COMPRESIÓN'),
+    (12, 'CO-12',  '70% ALGODÓN / 30% POLIÉSTER',         'MIXTO',         'POLERAS ESCOLARES'),
+    (13, 'CO-13',  '100% LANA MERINO',                    'NATURAL',       'PAÑOS, ABRIGOS PREMIUM'),
+    (14, 'CO-14',  '100% LINO',                           'NATURAL',       'VERANO, GUAYABERAS'),
+    (15, 'CO-15',  '55% LINO / 45% ALGODÓN',              'NATURAL',       'ROPA VERANO PREMIUM'),
+    (16, 'CO-16',  '50% VISCOSA / 50% POLIÉSTER',         'MIXTO',         'VESTIDOS, BLUSAS'),
+    (17, 'CO-17',  '90% POLIÉSTER / 10% ELASTANO',        'SINT-ELÁST',    'MALLAS, CYCLING'),
+    (18, 'CO-18',  '100% ALGODÓN ORGÁNICO',               'NATURAL',       'LÍNEA ECO, BEBÉ');
 
 INSERT IGNORE INTO gramaje_tela (id_gramaje, codigo_gramaje, valor_gramos_m2, categoria_vestuario) VALUES
-    (1, 'GR-01',  120.00, 'Verano / Ropa interior liviana'),
-    (2, 'GR-02',  140.00, 'Camisetas básicas verano'),
-    (3, 'GR-03',  160.00, 'Poleras estándar'),
-    (4, 'GR-04',  180.00, 'Poleras premium / escolares'),
-    (5, 'GR-05',  200.00, 'Poleras gruesas / licra deportiva'),
-    (6, 'GR-06',  220.00, 'Rib / uniformes corporativos'),
-    (7, 'GR-07',  240.00, 'Interlock / prendas doble cara'),
-    (8, 'GR-08',  260.00, 'Fleece liviano / jogger'),
-    (9, 'GR-09',  280.00, 'Buzo / French Terry'),
-    (10, 'GR-10',  300.00, 'Fleece grueso / parka interior'),
-    (11, 'GR-11',  320.00, 'Polar ligero'),
-    (12, 'GR-12',  350.00, 'Polar medio / Sherpa'),
-    (13, 'GR-13',  380.00, 'Polar grueso / abrigo'),
-    (14, 'GR-14',  400.00, 'Paño / gabardina gruesa'),
-    (15, 'GR-15',  450.00, 'Lana / abrigo invernal'),
-    (16, 'GR-16',  500.00, 'Tapicería / lona técnica');
+    (1,  'GR-01',  120.00, 'VERANO / ROPA INTERIOR LIVIANA'),
+    (2,  'GR-02',  140.00, 'CAMISETAS BÁSICAS VERANO'),
+    (3,  'GR-03',  160.00, 'POLERAS ESTÁNDAR'),
+    (4,  'GR-04',  180.00, 'POLERAS PREMIUM / ESCOLARES'),
+    (5,  'GR-05',  200.00, 'POLERAS GRUESAS / LICRA DEPORTIVA'),
+    (6,  'GR-06',  220.00, 'RIB / UNIFORMES CORPORATIVOS'),
+    (7,  'GR-07',  240.00, 'INTERLOCK / PRENDAS DOBLE CARA'),
+    (8,  'GR-08',  260.00, 'FLEECE LIVIANO / JOGGER'),
+    (9,  'GR-09',  280.00, 'BUZO / FRENCH TERRY'),
+    (10, 'GR-10',  300.00, 'FLEECE GRUESO / PARKA INTERIOR'),
+    (11, 'GR-11',  320.00, 'POLAR LIGERO'),
+    (12, 'GR-12',  350.00, 'POLAR MEDIO / SHERPA'),
+    (13, 'GR-13',  380.00, 'POLAR GRUESO / ABRIGO'),
+    (14, 'GR-14',  400.00, 'PAÑO / GABARDINA GRUESA'),
+    (15, 'GR-15',  450.00, 'LANA / ABRIGO INVERNAL'),
+    (16, 'GR-16',  500.00, 'TAPICERÍA / LONA TÉCNICA');
 
 INSERT IGNORE INTO color_tela (id_color, codigo_color, descripcion_color, es_pantone) VALUES
-    (1, 'COL-01',  'Blanco',           FALSE),
-    (2, 'COL-02',  'Negro',            FALSE),
-    (3, 'COL-03',  'Gris Claro',       FALSE),
-    (4, 'COL-04',  'Gris Oscuro',      FALSE),
-    (5, 'COL-05',  'Azul Navy',        FALSE),
-    (6, 'COL-06',  'Azul Royal',       FALSE),
-    (7, 'COL-07',  'Azul Petróleo',    FALSE),
-    (8, 'COL-08',  'Rojo',             FALSE),
-    (9, 'COL-09',  'Burdeo',           FALSE),
-    (10, 'COL-10',  'Verde Botella',    FALSE),
-    (11, 'COL-11',  'Verde Menta',      FALSE),
-    (12, 'COL-12',  'Amarillo',         FALSE),
-    (13, 'COL-13',  'Naranjo',          FALSE),
-    (14, 'COL-14',  'Café',             FALSE),
-    (15, 'COL-15',  'Beige / Arena',    FALSE),
-    (16, 'COL-16',  'Celeste',          FALSE),
-    (17, 'COL-17',  'Lila / Malva',     FALSE),
-    (18, 'COL-18',  'Rosado',           FALSE),
-    (19, 'COL-19',  'Fucsia',           FALSE),
-    (20, 'COL-20',  'Caqui / Olive',    FALSE),
-    (21, 'COL-21',  'Melange Gris',     FALSE),
-    (22, 'COL-22',  'Melange Azul',     FALSE),
-    (23, 'COL-23',  'Marino Melange',   FALSE);
+    (1,  'COL-01',  'BLANCO',         FALSE),
+    (2,  'COL-02',  'NEGRO',          FALSE),
+    (3,  'COL-03',  'GRIS CLARO',     FALSE),
+    (4,  'COL-04',  'GRIS OSCURO',    FALSE),
+    (5,  'COL-05',  'AZUL NAVY',      FALSE),
+    (6,  'COL-06',  'AZUL ROYAL',     FALSE),
+    (7,  'COL-07',  'AZUL PETRÓLEO',  FALSE),
+    (8,  'COL-08',  'ROJO',           FALSE),
+    (9,  'COL-09',  'BURDEO',         FALSE),
+    (10, 'COL-10',  'VERDE BOTELLA',  FALSE),
+    (11, 'COL-11',  'VERDE OLIVA',    FALSE),
+    (12, 'COL-12',  'AMARILLO',       FALSE),
+    (13, 'COL-13',  'NARANJO',        FALSE),
+    (14, 'COL-14',  'CAFÉ',           FALSE),
+    (15, 'COL-15',  'BEIGE / ARENA',  FALSE),
+    (16, 'COL-16',  'CELESTE',        FALSE),
+    (17, 'COL-17',  'LILA / MALVA',   FALSE),
+    (18, 'COL-18',  'ROSADO',         FALSE),
+    (19, 'COL-19',  'FUCSIA',         FALSE),
+    (20, 'COL-20',  'CAQUI / OLIVE',  FALSE),
+    (21, 'COL-21',  'MELANGE GRIS',   FALSE),
+    (22, 'COL-22',  'MELANGE AZUL',   FALSE),
+    (23, 'COL-23',  'MARINO MELANGE', FALSE);
 
 INSERT IGNORE INTO atributo_tecnico (id_atributo, codigo_atributo, clasificacion, descripcion_tecnica, impacto_erp) VALUES
-    (1, 'AT-01', 'Funcional',    'Antimicrobiano',                    'Certificado requerido para exportación'),
-    (2, 'AT-02', 'Funcional',    'Transpirable / Moisture Wicking',   'Indicar en ficha técnica deportiva'),
-    (3, 'AT-03', 'Funcional',    'UPF 50+ Protección Solar',          'Aplica a prendas outdoor/verano'),
-    (4, 'AT-04', 'Funcional',    'Ignifugo / Retardante de Llama',    'Homologación obligatoria para EPP'),
-    (5, 'AT-05', 'Funcional',    'Antiestático',                      'Requerido en ambientes industriales'),
-    (6, 'AT-06', 'Funcional',    'Impermeable / DWR',                 'Aplica a softshell y cortavientos'),
-    (7, 'AT-07', 'Funcional',    'Termorregulador / PCM',             'Indicar rango temperatura en ficha'),
-    (8, 'AT-08', 'Acabado',      'Suavizado Enzimático',              'Proceso post-confección, afecta gramaje final'),
-    (9, 'AT-09', 'Acabado',      'Sanforizado / Pre-Lavado',          'Control de encogimiento en orden de compra'),
-    (10, 'AT-10', 'Acabado',      'Pilling Reducido',                  'Norma Martindale mínima 5000 ciclos'),
-    (11, 'AT-11', 'Acabado',      'Easy Care / Anti-Arrugas',          'Indicar instrucción lavado en etiqueta'),
-    (12, 'AT-12', 'Sustentable',  'GOTS Certified (Orgánico)',         'Código certificación en PO de compra'),
-    (13, 'AT-13', 'Sustentable',  'Reciclado (GRS Certified)',         'Trazabilidad requerida desde proveedor');
+    (1,  'AT-01', 'FUNCIONAL',   'ANTIMICROBIANO',                      'CERTIFICADO REQUERIDO PARA EXPORTACIÓN'),
+    (2,  'AT-02', 'FUNCIONAL',   'TRANSPIRABLE / MOISTURE WICKING',     'INDICAR EN FICHA TÉCNICA DEPORTIVA'),
+    (3,  'AT-03', 'FUNCIONAL',   'UPF 50+ PROTECCIÓN SOLAR',            'APLICA A PRENDAS OUTDOOR/VERANO'),
+    (4,  'AT-04', 'FUNCIONAL',   'IGNÍFUGO / RETARDANTE DE LLAMA',      'HOMOLOGACIÓN OBLIGATORIA PARA EPP'),
+    (5,  'AT-05', 'FUNCIONAL',   'ANTIESTÁTICO',                        'REQUERIDO EN AMBIENTES INDUSTRIALES'),
+    (6,  'AT-06', 'FUNCIONAL',   'IMPERMEABLE / DWR',                   'APLICA A SOFTSHELL Y CORTAVIENTOS'),
+    (7,  'AT-07', 'FUNCIONAL',   'TERMORREGULADOR / PCM',               'INDICAR RANGO TEMPERATURA EN FICHA'),
+    (8,  'AT-08', 'ACABADO',     'SUAVIZADO ENZIMÁTICO',                'PROCESO POST-CONFECCIÓN, AFECTA GRAMAJE FINAL'),
+    (9,  'AT-09', 'ACABADO',     'SANFORIZADO / PRE-LAVADO',            'CONTROL DE ENCOGIMIENTO EN ORDEN DE COMPRA'),
+    (10, 'AT-10', 'ACABADO',     'PILLING REDUCIDO',                    'NORMA MARTINDALE MÍNIMA 5000 CICLOS'),
+    (11, 'AT-11', 'ACABADO',     'EASY CARE / ANTI-ARRUGAS',            'INDICAR INSTRUCCIÓN LAVADO EN ETIQUETA'),
+    (12, 'AT-12', 'SUSTENTABLE', 'GOTS CERTIFIED (ORGÁNICO)',           'CÓDIGO CERTIFICACIÓN EN PO DE COMPRA'),
+    (13, 'AT-13', 'SUSTENTABLE', 'RECICLADO (GRS CERTIFIED)',           'TRAZABILIDAD REQUERIDA DESDE PROVEEDOR');
 
--- ============================================================
--- 8. REINICIO DE SECUENCIAS (Consolidado)
--- ============================================================
-ALTER TABLE areas AUTO_INCREMENT = 50;
-ALTER TABLE roles AUTO_INCREMENT = 100;
-ALTER TABLE usuarios AUTO_INCREMENT = 100;
-ALTER TABLE clientes AUTO_INCREMENT = 100;
-ALTER TABLE vendedores AUTO_INCREMENT = 200;
-ALTER TABLE proveedores AUTO_INCREMENT = 100;
-ALTER TABLE giros AUTO_INCREMENT = 100;
-ALTER TABLE producto AUTO_INCREMENT = 100;
-
--- Artículos y catálogo
-ALTER TABLE articulo AUTO_INCREMENT = 1000;
-ALTER TABLE categoria_tela AUTO_INCREMENT = 100;
-ALTER TABLE subcategoria_tela AUTO_INCREMENT = 100;
-
--- Plantillas
-ALTER TABLE plantilla AUTO_INCREMENT = 100;
-ALTER TABLE modelo_plantilla AUTO_INCREMENT = 1000;
-ALTER TABLE descripcion_plantilla AUTO_INCREMENT = 5000;
-
--- SCOS / Costeos
-ALTER TABLE solicitudes_costos AUTO_INCREMENT = 2000;
-ALTER TABLE scos_telas AUTO_INCREMENT = 2000;
-ALTER TABLE scos_logotipos AUTO_INCREMENT = 2000;
-ALTER TABLE scos_plantilla_material_vinculo AUTO_INCREMENT = 5000;
-ALTER TABLE produccion_costeos AUTO_INCREMENT = 100;
-ALTER TABLE produccion_costeo_versiones AUTO_INCREMENT = 100;
-ALTER TABLE produccion_costeo_items AUTO_INCREMENT = 5000;
-
--- EVN / NV / OP
-ALTER TABLE evaluaciones_negocio AUTO_INCREMENT = 1000;
-ALTER TABLE notas_venta AUTO_INCREMENT = 1000;
-ALTER TABLE orden_produccion AUTO_INCREMENT = 100;
-ALTER TABLE produccion_orden_items AUTO_INCREMENT = 1000;
-ALTER TABLE produccion_hojas_compra AUTO_INCREMENT = 100;
-ALTER TABLE produccion_hoja_compra_items AUTO_INCREMENT = 1000;
-
--- Contactos, Direcciones y Financieros
-ALTER TABLE tipos_contacto AUTO_INCREMENT = 10;
-ALTER TABLE contactos AUTO_INCREMENT = 10;
-ALTER TABLE pais AUTO_INCREMENT = 10;
-ALTER TABLE region AUTO_INCREMENT = 10;
-ALTER TABLE comuna AUTO_INCREMENT = 10;
-ALTER TABLE tipo_direccion AUTO_INCREMENT = 10;
-ALTER TABLE direccion AUTO_INCREMENT = 10;
-ALTER TABLE rubros AUTO_INCREMENT = 10;
-ALTER TABLE banco AUTO_INCREMENT = 20;
-ALTER TABLE tipo_cuenta_bancaria AUTO_INCREMENT = 10;
-ALTER TABLE dato_bancario AUTO_INCREMENT = 10;
-
--- Maestros adicionales
-ALTER TABLE moneda AUTO_INCREMENT = 10;
-ALTER TABLE unidad_medida AUTO_INCREMENT = 10;
-ALTER TABLE familia_tela AUTO_INCREMENT = 50;
-ALTER TABLE clasificacion_tecnica AUTO_INCREMENT = 20;
-ALTER TABLE composicion AUTO_INCREMENT = 50;
-ALTER TABLE gramaje_tela AUTO_INCREMENT = 50;
-ALTER TABLE color_tela AUTO_INCREMENT = 50;
-ALTER TABLE atributo_tecnico AUTO_INCREMENT = 50;

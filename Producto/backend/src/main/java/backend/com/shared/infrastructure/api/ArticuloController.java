@@ -13,10 +13,10 @@ import java.util.List;
 
 /**
  * Controlador REST para la gestión maestra de Artículos.
- * Base URL: {@code /api/v3/maestros/articulos}
+ * Base URL: {@code /api/v1/maestros/articulos}
  */
 @RestController
-@RequestMapping("/api/v3/maestros/articulos")
+@RequestMapping("/api/v1/maestros/articulos")
 @RequiredArgsConstructor
 public class ArticuloController {
 

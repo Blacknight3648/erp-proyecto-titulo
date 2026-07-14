@@ -2,8 +2,8 @@ package backend.com.shared.application.service.impl;
 
 import backend.com.shared.application.dto.AtributoTecnicoDTO;
 import backend.com.shared.application.service.AtributoTecnicoService;
+import backend.com.shared.application.service.CodigoGeneratorService;
 import backend.com.shared.domain.model.AtributoTecnico;
-import backend.com.shared.exception.DuplicadoException;
 import backend.com.shared.exception.EntityNotFoundException;
 import backend.com.shared.infrastructure.mapper.AtributoTecnicoMapper;
 import backend.com.shared.infrastructure.persistence.repository.AtributoTecnicoRepository;
@@ -18,16 +18,18 @@ import java.util.List;
 @Transactional
 public class AtributoTecnicoServiceImpl implements AtributoTecnicoService {
 
+    private static final String PREFIJO_CODIGO = "A-";
+
     private final AtributoTecnicoRepository atributoRepository;
     private final AtributoTecnicoMapper mapper;
+    private final CodigoGeneratorService codigoGeneratorService;
 
     @Override
     public AtributoTecnicoDTO crear(AtributoTecnicoDTO dto) {
-        if (atributoRepository.existsByCodigoAtributo(dto.getCodigoAtributo())) {
-            throw new DuplicadoException("código de atributo", dto.getCodigoAtributo());
-        }
+        String codigo = codigoGeneratorService.generarPorAbreviatura(
+                PREFIJO_CODIGO, dto.getDescripcionTecnica(), atributoRepository::existsByCodigoAtributo);
         AtributoTecnico nuevo = AtributoTecnico.builder()
-                .codigoAtributo(dto.getCodigoAtributo())
+                .codigoAtributo(codigo)
                 .clasificacion(dto.getClasificacion())
                 .descripcionTecnica(dto.getDescripcionTecnica())
                 .impactoErp(dto.getImpactoErp())

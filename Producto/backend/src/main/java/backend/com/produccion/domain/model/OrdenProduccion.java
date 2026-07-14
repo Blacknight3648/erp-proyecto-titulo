@@ -19,6 +19,7 @@ public class OrdenProduccion {
     private LocalDate fechaInicio;
     private LocalDate fechaEntregaProgramada;
     private String observaciones;
+    private SeguimientoOP seguimiento;
     private List<OrdenProduccionItem> items = new ArrayList<>();
 
     public OrdenProduccion(Long id, Long costeoVersionId, DocumentNumber numero, Long notaVentaId, EstadoOP estado,
@@ -38,8 +39,10 @@ public class OrdenProduccion {
     }
 
     public static OrdenProduccion crearNueva(DocumentNumber numero, Long notaVentaId, LocalDate fechaEntrega) {
-        return new OrdenProduccion(null, null, numero, notaVentaId, EstadoOP.PENDIENTE, null, fechaEntrega, null,
+        OrdenProduccion op = new OrdenProduccion(null, null, numero, notaVentaId, EstadoOP.PENDIENTE, null, fechaEntrega, null,
                 new ArrayList<>());
+        op.seguimiento = new SeguimientoOP();
+        return op;
     }
 
     public void vincularCosteoVersion(Long costeoVersionId) {
@@ -63,5 +66,12 @@ public class OrdenProduccion {
 
     public List<OrdenProduccionItem> getItems() {
         return Collections.unmodifiableList(items);
+    }
+
+    public void setSeguimiento(SeguimientoOP seguimiento) {
+        this.seguimiento = seguimiento;
+        if (seguimiento != null) {
+            seguimiento.setOrdenProduccionId(this.idOP);
+        }
     }
 }

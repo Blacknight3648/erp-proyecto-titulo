@@ -1,8 +1,13 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useMemo } from 'react';
 import { toast } from 'sonner';
-import { mockOpDetails, mockNVs } from '../data/mockData';
 import { validateNumericInput } from '../utils/validations';
 import { OrdenProduccionService } from '../remote/service/OrdenProduccionService';
+import {
+    FIELD_KEY_TO_BACKEND,
+    normalizeDateToISO,
+    buildSeguimientoPayload,
+    mapSeguimientoToDetails,
+} from '../utils/seguimientoAdapter';
 
 export const useOpRegistroState = () => {
     const [selectedOP, setSelectedOP] = useState(null);
@@ -14,27 +19,38 @@ export const useOpRegistroState = () => {
     const [tempValue, setTempValue] = useState('');
     const [showConfirmModal, setShowConfirmModal] = useState(false);
     const [isReadOnly, setIsReadOnly] = useState(false);
+    const [searchTerm, setSearchTerm] = useState('');
+    const [clientFilter, setClientFilter] = useState('');
     const [isManualCutting, setIsManualCutting] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [ordenes, setOrdenes] = useState([]);
     const [isLoadingOrdenes, setIsLoadingOrdenes] = useState(true);
+    // Map opId → SeguimientoOPDTO; permite construir payload completo al guardar
+    const [seguimientos, setSeguimientos] = useState({});
 
     useEffect(() => {
         let active = true;
         setIsLoadingOrdenes(true);
         OrdenProduccionService.getAll()
             .then(async (ops) => {
-                const conAvance = await Promise.all(
+                const conSeguimiento = await Promise.all(
                     ops.map(async (op) => {
                         try {
-                            const avance = await OrdenProduccionService.getAvance(op.idOP);
-                            return { ...op, id: op.idOP, progreso: Number(avance?.porcentajeGlobal) || 0 };
+                            const dto = await OrdenProduccionService.getSeguimiento(op.idOP);
+                            return { op: { ...op, id: op.idOP, progreso: dto?.porcentajeAvance ?? 0 }, dto };
                         } catch {
-                            return { ...op, id: op.idOP, progreso: 0 };
+                            return { op: { ...op, id: op.idOP, progreso: 0 }, dto: null };
                         }
                     })
                 );
-                if (active) setOrdenes(conAvance);
+                if (!active) return;
+                const nuevasOrdenes = conSeguimiento.map(r => r.op);
+                const nuevosSeguimientos = {};
+                conSeguimiento.forEach(r => {
+                    if (r.dto) nuevosSeguimientos[r.op.id] = r.dto;
+                });
+                setOrdenes(nuevasOrdenes);
+                setSeguimientos(nuevosSeguimientos);
             })
             .catch((err) => {
                 console.error('Error fetching Ordenes de Producción:', err);
@@ -46,7 +62,7 @@ export const useOpRegistroState = () => {
     }, []);
 
     const opFields = [
-        { key: 'recepcionOP', title: 'Recepción OP', type: 'date', hasData: true },
+        { key: 'recepcionOP', title: 'Recepción OP', type: 'date' },
         { key: 'finTizado', title: 'Fin de Tizado', type: 'date' },
         { key: 'estadoOcMP', title: 'Estado emisión OC MP', type: 'select', options: ['sin tela en mercado', 'OC emitida', 'tela en stock', 'en stock y OC emitida', 'N/A'] },
         { key: 'recepcionCompra', title: 'Recepc. de Compra', type: 'date' },
@@ -65,21 +81,14 @@ export const useOpRegistroState = () => {
         { key: 'entregaBodega', title: 'Entrega a Bodega', type: 'date' },
     ];
 
-    const formatDateToBackend = (dateStr) => {
-        if (!dateStr) return null;
-        const [year, month, day] = dateStr.split('-');
-        return `${day}-${month}-${year}`;
-    };
+    // El backend espera YYYY-MM-DD (java.time.LocalDate, ISO 8601). El <input type="date">
+    // nativo ya entrega ese formato, pero se normaliza por si el valor viene de otra fuente.
+    const formatDateToBackend = (dateStr) => normalizeDateToISO(dateStr);
 
     const calculateTotalQty = useCallback((opId) => {
         const op = ordenes.find(o => o.id === opId);
-        if (op?.items?.length) {
-            return op.items.reduce((acc, item) => acc + (item.cantidad || 0), 0);
-        }
-        if (!op || !op.notaVentaId) return 0;
-        const nv = mockNVs.find(n => (n.idNV || n.id) === op.notaVentaId);
-        if (!nv || !nv.items) return 0;
-        return nv.items.reduce((acc, item) => acc + (item.qty || item.quantity || item.cantidad || 0), 0);
+        if (!op?.items?.length) return 0;
+        return op.items.reduce((acc, item) => acc + (item.cantidad || 0), 0);
     }, [ordenes]);
 
     const handleModificarRegistro = () => {
@@ -117,7 +126,9 @@ export const useOpRegistroState = () => {
     };
 
     const handleSaveInline = (field) => {
-        const hasExistingData = field.hasData;
+        const currentData = seguimientoDetails[selectedOP?.id]?.[field.key];
+        const hasExistingData = !!currentData;
+        
         if (hasExistingData) {
             setShowConfirmModal(true);
         } else {
@@ -125,35 +136,95 @@ export const useOpRegistroState = () => {
         }
     };
 
-    const finalizeSave = () => {
+    const finalizeSave = async () => {
         setIsSubmitting(true);
         const field = opFields[editingFieldIdx];
         const formattedValue = (field.type === 'date')
             ? formatDateToBackend(tempValue)
             : tempValue;
 
-        console.log(`Guardando campo ${field.key} con valor: ${formattedValue}`);
-
         setShowConfirmModal(false);
         setEditingFieldIdx(null);
 
         if (view === 'bulk_edit' || showSelectionModal) {
+            // Guardar el campo editado en cada OP seleccionada
+            const opIdsCopy = [...selectedOPIds];
             setIsSelectionMode(false);
             setSelectedOPIds([]);
             setShowSelectionModal(false);
             setView('loading');
+
+            const results = await Promise.allSettled(
+                opIdsCopy.map(async (opId) => {
+                    const payload = buildSeguimientoPayload(seguimientos[opId], field.key, formattedValue);
+                    const dto = await OrdenProduccionService.actualizarSeguimiento(opId, payload);
+                    return { opId, dto };
+                })
+            );
+
+            const exitosas = results.filter(r => r.status === 'fulfilled').map(r => r.value);
+            const fallidas = results.filter(r => r.status === 'rejected').length;
+
+            if (exitosas.length > 0) {
+                setOrdenes(prev => prev.map(op => {
+                    const res = exitosas.find(e => e.opId === op.id);
+                    return res ? { ...op, progreso: res.dto.porcentajeAvance } : op;
+                }));
+                setSeguimientos(prev => {
+                    const next = { ...prev };
+                    exitosas.forEach(({ opId, dto }) => { next[opId] = dto; });
+                    return next;
+                });
+            }
+
+            if (fallidas > 0) {
+                toast.error(`${fallidas} OP(s) no pudieron guardarse.`);
+            }
+            if (exitosas.length > 0) {
+                toast.success(`${exitosas.length} OP(s) actualizadas.`);
+            }
+
             setTimeout(() => {
                 setView('list');
                 setIsSubmitting(false);
-            }, 1200);
+            }, 400);
         } else {
-            if (selectedOP) {
-                if (!mockOpDetails[selectedOP.id]) mockOpDetails[selectedOP.id] = {};
-                mockOpDetails[selectedOP.id][field.key] = formattedValue;
+            // Guardado individual
+            if (!selectedOP) {
+                setIsSubmitting(false);
+                return;
             }
-            setIsSubmitting(false);
+
+            // Si el campo no tiene equivalente en backend, simplemente cerramos sin llamar al backend
+            const backendKey = FIELD_KEY_TO_BACKEND[field.key];
+            if (!backendKey) {
+                setIsSubmitting(false);
+                return;
+            }
+
+            try {
+                const payload = buildSeguimientoPayload(seguimientos[selectedOP.id], field.key, formattedValue);
+                const dto = await OrdenProduccionService.actualizarSeguimiento(selectedOP.id, payload);
+
+                setSeguimientos(prev => ({ ...prev, [selectedOP.id]: dto }));
+                setOrdenes(prev => prev.map(op =>
+                    op.id === selectedOP.id ? { ...op, progreso: dto.porcentajeAvance } : op
+                ));
+                setSelectedOP(prev => ({ ...prev, progreso: dto.porcentajeAvance }));
+                toast.success('Campo guardado correctamente.');
+            } catch (err) {
+                console.error('Error guardando seguimiento:', err);
+                toast.error('No se pudo guardar el campo. Intente nuevamente.');
+            } finally {
+                setIsSubmitting(false);
+            }
         }
     };
+
+    const seguimientoDetails = useMemo(
+        () => mapSeguimientoToDetails(seguimientos),
+        [seguimientos]
+    );
 
     return {
         selectedOP, setSelectedOP,
@@ -178,6 +249,9 @@ export const useOpRegistroState = () => {
         calculateTotalQty,
         ordenes,
         isLoadingOrdenes,
-        mockOpDetails
+        seguimientos,
+        seguimientoDetails,
+        searchTerm, setSearchTerm,
+        clientFilter, setClientFilter,
     };
 };

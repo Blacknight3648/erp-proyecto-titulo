@@ -9,7 +9,6 @@ import backend.com.gestionUsuarios.application.service.impl.ClienteServiceImpl;
 import backend.com.gestionUsuarios.domain.model.Cliente;
 import backend.com.gestionUsuarios.domain.repository.ClienteRepository;
 import backend.com.gestionUsuarios.infrastructure.exception.ClienteNotFoundException;
-import backend.com.shared.domain.model.Giro;
 import backend.com.shared.infrastructure.mapper.GiroMapper;
 import backend.com.shared.infrastructure.persistence.repository.GiroRepository;
 import org.junit.jupiter.api.DisplayName;

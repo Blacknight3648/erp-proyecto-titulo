@@ -1,10 +1,14 @@
 package backend.com.produccion.infrastructure.api;
 
 import backend.com.produccion.application.dto.GenerarOCConsolidadaRequest;
+import backend.com.produccion.application.dto.GenerarOCLoteRequest;
+import backend.com.produccion.application.dto.HistorialVersionOCDTO;
 import backend.com.produccion.application.dto.OrdenCompraDTO;
 import backend.com.produccion.application.dto.OrdenCompraItemDTO;
+import backend.com.produccion.application.dto.ReingresarOCRequest;
 import backend.com.produccion.application.service.OrdenCompraService;
 import backend.com.produccion.domain.enums.EstadoOC;
+import backend.com.shared.application.dto.FirmaAprobacionRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -26,6 +30,13 @@ public class OrdenCompraController {
             @Valid @RequestBody GenerarOCConsolidadaRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(ordenCompraService.generarConsolidada(request));
+    }
+
+    @PostMapping("/consolidar-lote")
+    public ResponseEntity<List<OrdenCompraDTO>> generarLote(
+            @Valid @RequestBody GenerarOCLoteRequest request) {
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(ordenCompraService.generarLote(request));
     }
 
     @GetMapping
@@ -52,6 +63,15 @@ public class OrdenCompraController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
+    /**
+     * Historial de versiones de la OC (snapshots congelados en cada rechazo),
+     * más reciente primero.
+     */
+    @GetMapping("/{idOC}/versiones")
+    public ResponseEntity<List<HistorialVersionOCDTO>> obtenerHistorialVersiones(@PathVariable Long idOC) {
+        return ResponseEntity.ok(ordenCompraService.obtenerHistorialVersiones(idOC));
+    }
+
     @PatchMapping("/{idOC}/enviar")
     public ResponseEntity<OrdenCompraDTO> marcarEnviada(@PathVariable Long idOC) {
         return ResponseEntity.ok(ordenCompraService.marcarEnviada(idOC));
@@ -65,6 +85,30 @@ public class OrdenCompraController {
     @PatchMapping("/{idOC}/cerrar")
     public ResponseEntity<OrdenCompraDTO> cerrar(@PathVariable Long idOC) {
         return ResponseEntity.ok(ordenCompraService.cerrar(idOC));
+    }
+
+    /**
+     * Rechaza la OC (solo desde EMITIDA): exige motivo, firma del actor y rol
+     * autorizado (403 si no).
+     */
+    @PatchMapping("/{idOC}/rechazar")
+    public ResponseEntity<OrdenCompraDTO> rechazar(@PathVariable Long idOC,
+            @Valid @RequestBody FirmaAprobacionRequest body) {
+        return ResponseEntity.ok(
+                ordenCompraService.rechazar(idOC, body.getMotivo(), body.getAprobador(), body.getRol()));
+    }
+
+    /**
+     * Reingresa una OC RECHAZADA: vuelve a EMITIDA con el mismo número de
+     * documento e incrementa la versión. Exige firma del actor y rol autorizado.
+     * Permite corregir el proveedor en el mismo paso (proveedorId opcional).
+     */
+    @PatchMapping("/{idOC}/reingresar")
+    public ResponseEntity<OrdenCompraDTO> reingresar(@PathVariable Long idOC,
+            @Valid @RequestBody ReingresarOCRequest body) {
+        return ResponseEntity.ok(
+                ordenCompraService.reingresar(idOC, body.getAprobador(), body.getRol(), body.getProveedorId(),
+                        body.getItemsCambiados()));
     }
 
     @PatchMapping("/{idOC}/items/{idOCItem}/precio")

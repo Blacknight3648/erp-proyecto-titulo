@@ -19,4 +19,8 @@ public class CamposPlantillaJpaEntity {
 
     @Column(name = "nombre_campo", nullable = false, unique = true, length = 100)
     private String nombreCampo;
+
+    @Builder.Default
+    @Column(name = "activo", nullable = false)
+    private boolean activo = true;
 }

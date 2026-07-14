@@ -6,8 +6,8 @@ import { ItemNVDTO } from './ItemNVDTO';
  */
 export class NotaVentaDTO {
     constructor(data = {}) {
-        this.idNV = data.id || data.idNV || null;
-        this.numeroNV = data.numero || (data.numeroNV ? data.numeroNV.value : '');
+        this.idNV = data.idNV || data.id || null;
+        this.numeroNV = data.numeroNV || data.numero || '';
         this.evaluacionNegocioId = data.evaluacionNegocioId || null;
         this.clienteId = data.clienteId || null;
         this.vendedorId = data.vendedorId || null;

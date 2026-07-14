@@ -40,13 +40,16 @@ public class ClienteJpaEntity {
     @JoinColumn(name = "fk_giro")
     private GiroJpaEntity giro;
 
+    // Nombres de columna propios (distintos de los `fk_provee_*` que usa Proveedor sobre
+    // las mismas tablas compartidas `direccion`/`contactos`) para que cada dueño tenga su
+    // propia FK y no haya colisión ni ambigüedad en el esquema.
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "fk_direccion")
+    @JoinColumn(name = "fk_cliente_direccion")
     @Builder.Default
     private List<DireccionJpaEntity> direccion = new ArrayList<>();
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "fk_contacto")
+    @JoinColumn(name = "fk_cliente_contacto")
     @Builder.Default
     private List<ContactoJpaEntity> contacto = new ArrayList<>();
 }

@@ -53,7 +53,6 @@ class CamposPlantillaServiceImplTest {
                 .nombreCampo("Forro")
                 .build();
 
-        CamposPlantilla nueva = plantilla(null, "Forro");
         CamposPlantilla guardada = plantilla(1L, "Forro");
         CamposPlantillaDTO esperado = CamposPlantillaDTO.builder()
                 .idPlantilla(1L)
@@ -193,14 +192,14 @@ class CamposPlantillaServiceImplTest {
     // ---------------- listarTodas ----------------
 
     @Test
-    @DisplayName("listarTodas mapea correctamente la lista completa")
+    @DisplayName("listarTodas retorna solo los campos activos")
     void listarTodas_ok() {
         CamposPlantilla p1 = plantilla(1L, "Forro");
         CamposPlantilla p2 = plantilla(2L, "Capucha");
         CamposPlantillaDTO dto1 = CamposPlantillaDTO.builder().idPlantilla(1L).nombreCampo("Forro").build();
         CamposPlantillaDTO dto2 = CamposPlantillaDTO.builder().idPlantilla(2L).nombreCampo("Capucha").build();
 
-        when(plantillaRepository.findAll()).thenReturn(List.of(p1, p2));
+        when(plantillaRepository.findAllActivos()).thenReturn(List.of(p1, p2));
         when(mapper.toDTO(p1)).thenReturn(dto1);
         when(mapper.toDTO(p2)).thenReturn(dto2);
 
@@ -212,23 +211,27 @@ class CamposPlantillaServiceImplTest {
     // ---------------- eliminar ----------------
 
     @Test
-    @DisplayName("eliminar elimina correctamente cuando la plantilla existe")
+    @DisplayName("eliminar hace soft delete (activo=false) cuando la plantilla existe")
     void eliminar_ok() {
-        when(plantillaRepository.existsById(1L)).thenReturn(true);
+        CamposPlantilla existente = plantilla(1L, "Forro");
+        when(plantillaRepository.findById(1L)).thenReturn(Optional.of(existente));
 
         camposPlantillaServiceImpl.eliminar(1L);
 
-        verify(plantillaRepository).deleteById(1L);
+        assertThat(existente.isActivo()).isFalse();
+        verify(plantillaRepository).save(existente);
+        verify(plantillaRepository, never()).deleteById(any());
     }
 
     @Test
     @DisplayName("eliminar lanza excepción si la plantilla no existe")
     void eliminar_noExiste() {
-        when(plantillaRepository.existsById(1L)).thenReturn(false);
+        when(plantillaRepository.findById(1L)).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> camposPlantillaServiceImpl.eliminar(1L))
                 .isInstanceOf(EntityNotFoundException.class);
 
         verify(plantillaRepository, never()).deleteById(any());
+        verify(plantillaRepository, never()).save(any());
     }
 }

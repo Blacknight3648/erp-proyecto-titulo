@@ -1,9 +1,9 @@
 package backend.com.shared.application.service.impl;
 
 import backend.com.shared.application.dto.ColorTelaDTO;
+import backend.com.shared.application.service.CodigoGeneratorService;
 import backend.com.shared.application.service.ColorTelaService;
 import backend.com.shared.domain.model.ColorTela;
-import backend.com.shared.exception.DuplicadoException;
 import backend.com.shared.exception.EntityNotFoundException;
 import backend.com.shared.infrastructure.mapper.ColorTelaMapper;
 import backend.com.shared.infrastructure.persistence.repository.ColorTelaRepository;
@@ -20,16 +20,18 @@ public class ColorTelaServiceImpl implements ColorTelaService {
 
     private final ColorTelaRepository colorTelaRepository;
     private final ColorTelaMapper mapper;
+    private final CodigoGeneratorService codigoGeneratorService;
 
     @Override
     public ColorTelaDTO crear(ColorTelaDTO dto) {
-        if (colorTelaRepository.existsByCodigoColor(dto.getCodigoColor())) {
-            throw new DuplicadoException("código de color", dto.getCodigoColor());
-        }
+        boolean esPantone = dto.getEsPantone() != null && dto.getEsPantone();
+        String prefijo = esPantone ? "PANT-" : "";
+        String codigo = codigoGeneratorService.generarPorAbreviatura(
+                prefijo, dto.getDescripcionColor(), colorTelaRepository::existsByCodigoColor);
         ColorTela nuevo = ColorTela.builder()
-                .codigoColor(dto.getCodigoColor())
+                .codigoColor(codigo)
                 .descripcionColor(dto.getDescripcionColor())
-                .esPantone(dto.getEsPantone() != null ? dto.getEsPantone() : false)
+                .esPantone(esPantone)
                 .build();
         return mapper.toDTO(colorTelaRepository.save(nuevo));
     }

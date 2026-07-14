@@ -1,9 +1,9 @@
 package backend.com.shared.service;
 
 import backend.com.shared.application.dto.FamiliaTelaDTO;
+import backend.com.shared.application.service.CodigoGeneratorService;
 import backend.com.shared.application.service.impl.FamiliaTelaServiceImpl;
 import backend.com.shared.domain.model.FamiliaTela;
-import backend.com.shared.exception.DuplicadoException;
 import backend.com.shared.exception.EntityNotFoundException;
 import backend.com.shared.infrastructure.mapper.FamiliaTelaMapper;
 import backend.com.shared.infrastructure.persistence.repository.FamiliaTelaRepository;
@@ -20,6 +20,7 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -31,6 +32,9 @@ class FamiliaTelaServiceImplTest {
 
     @Mock
     private FamiliaTelaMapper mapper;
+
+    @Mock
+    private CodigoGeneratorService codigoGeneratorService;
 
     @InjectMocks
     private FamiliaTelaServiceImpl familiaTelaServiceImpl;
@@ -62,30 +66,14 @@ class FamiliaTelaServiceImplTest {
                 .nombreFamilia("Algodón")
                 .build();
 
-        when(familiaTelaRepository.existsByCodigoFamilia("ALG")).thenReturn(false);
+        when(codigoGeneratorService.generarPorAbreviatura(eq("T-"), eq("Algodón"), any())).thenReturn("ALG");
         when(familiaTelaRepository.save(any(FamiliaTela.class))).thenReturn(guardada);
         when(mapper.toDTO(guardada)).thenReturn(esperado);
 
         FamiliaTelaDTO resultado = familiaTelaServiceImpl.crear(dto);
 
         assertThat(resultado).isEqualTo(esperado);
-        verify(familiaTelaRepository).save(any(FamiliaTela.class));
-    }
-
-    @Test
-    @DisplayName("crear lanza excepción si el código de familia ya existe")
-    void crear_duplicado() {
-        FamiliaTelaDTO dto = FamiliaTelaDTO.builder()
-                .codigoFamilia("ALG")
-                .nombreFamilia("Algodón")
-                .build();
-
-        when(familiaTelaRepository.existsByCodigoFamilia("ALG")).thenReturn(true);
-
-        assertThatThrownBy(() -> familiaTelaServiceImpl.crear(dto))
-                .isInstanceOf(DuplicadoException.class);
-
-        verify(familiaTelaRepository, never()).save(any());
+        verify(familiaTelaRepository).save(argThat(f -> "ALG".equals(f.getCodigoFamilia())));
     }
 
     // ---------------- actualizar ----------------

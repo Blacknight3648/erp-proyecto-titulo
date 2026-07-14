@@ -31,8 +31,12 @@ public class CosteoJpaEntity {
     @Column(name = "solicitud_costos_id")
     private Long solicitudCostosId;
 
-    /** Referencia suave a la NV (solo para costeos auto-creados sin solicitud de costos). */
-    @Column(name = "nota_venta_id", unique = true)
+    /**
+     * Referencia suave a la NV (solo para costeos auto-creados sin solicitud de costos).
+     * No es única: una NV puede tener varios ítems tipo OP, cada uno con su propio
+     * Costeo auto-creado de respaldo.
+     */
+    @Column(name = "nota_venta_id")
     private Long notaVentaId;
 
     @OneToMany(mappedBy = "costeo", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -46,6 +50,27 @@ public class CosteoJpaEntity {
 
     @Column(name = "costo_mano_obra", precision = 12, scale = 2)
     private BigDecimal costoManoObra;
+
+    @Column(name = "mo_prenda", precision = 12, scale = 2)
+    private BigDecimal moPrenda;
+
+    @Column(name = "mo_cinta", precision = 12, scale = 2)
+    private BigDecimal moCinta;
+
+    @Column(name = "mo_costura_sellada", precision = 12, scale = 2)
+    private BigDecimal moCosturaSellada;
+
+    @Column(name = "mo_acolchado", precision = 12, scale = 2)
+    private BigDecimal moAcolchado;
+
+    @Column(name = "costo_mo_propia", precision = 12, scale = 2)
+    private BigDecimal costoMoPropia;
+
+    @Column(name = "costo_gratificacion", precision = 12, scale = 2)
+    private BigDecimal costoGratificacion;
+
+    @Column(name = "observaciones_mano_obra", length = 1000)
+    private String observacionesManoObra;
 
     @Column(name = "costo_etiquetas", precision = 12, scale = 2)
     private BigDecimal costoEtiquetas;

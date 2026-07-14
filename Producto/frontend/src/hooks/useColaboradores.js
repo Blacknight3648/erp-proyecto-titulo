@@ -25,6 +25,7 @@ export function useColaboradores() {
         usuarioApellidos: c.usuarioApellidos,
         usuarioEmail: c.usuarioEmail,
         usuarioPassword: c.usuarioPassword || "",
+        passwordChangeConsent: c.passwordChangeConsent ?? false,
         telefono: c.telefono || "",
         fechaNacimiento: c.fechaNacimiento || null,
         direccion: c.direccion || "",
@@ -60,7 +61,7 @@ export function useColaboradores() {
             toast.success("Colaborador actualizado correctamente");
         } catch (error) {
             console.error("Error al actualizar colaborador:", error);
-            toast.error("Error al actualizar colaborador");
+            toast.error(error.response?.data?.message || "Error al actualizar colaborador");
         }
     };
 
@@ -75,9 +76,11 @@ export function useColaboradores() {
         }
     };
 
-    const toggleColaborador = async (colaborador) => {
+    const toggleColaborador = async (colaboradorOrId) => {
         try {
-            const id = colaborador.id || colaborador.usuarioId;
+            const id = typeof colaboradorOrId === 'object' && colaboradorOrId !== null
+                ? (colaboradorOrId.id || colaboradorOrId.usuarioId)
+                : colaboradorOrId;
             await api.patch(`/usuarios/${id}/toggle-enabled`);
             await loadColaboradores();
             toast.success("Estado actualizado");

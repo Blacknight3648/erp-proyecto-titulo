@@ -1,9 +1,9 @@
 package backend.com.shared.service;
 
 import backend.com.shared.application.dto.GramajeTelaDTO;
+import backend.com.shared.application.service.CodigoGeneratorService;
 import backend.com.shared.application.service.impl.GramajeTelaServiceImpl;
 import backend.com.shared.domain.model.GramajeTela;
-import backend.com.shared.exception.DuplicadoException;
 import backend.com.shared.exception.EntityNotFoundException;
 import backend.com.shared.infrastructure.mapper.GramajeTelaMapper;
 import backend.com.shared.infrastructure.persistence.repository.GramajeTelaRepository;
@@ -21,6 +21,7 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -32,6 +33,9 @@ class GramajeTelaServiceImplTest {
 
     @Mock
     private GramajeTelaMapper mapper;
+
+    @Mock
+    private CodigoGeneratorService codigoGeneratorService;
 
     @InjectMocks
     private GramajeTelaServiceImpl gramajeTelaServiceImpl;
@@ -66,7 +70,7 @@ class GramajeTelaServiceImplTest {
                 .categoriaVestuario("Liviano")
                 .build();
 
-        when(gramajeRepository.existsByCodigoGramaje("G180")).thenReturn(false);
+        when(codigoGeneratorService.generarGramaje(eq("G-"), eq(new BigDecimal("180.00")), any())).thenReturn("G180");
         when(gramajeRepository.save(any(GramajeTela.class))).thenReturn(guardado);
         when(mapper.toDTO(guardado)).thenReturn(esperado);
 
@@ -77,22 +81,6 @@ class GramajeTelaServiceImplTest {
                 g.getCodigoGramaje().equals("G180")
                         && g.getValorGramosM2().equals(new BigDecimal("180.00"))
                         && g.getCategoriaVestuario().equals("Liviano")));
-    }
-
-    @Test
-    @DisplayName("crear lanza excepción si el código de gramaje ya existe")
-    void crear_duplicado() {
-        GramajeTelaDTO dto = GramajeTelaDTO.builder()
-                .codigoGramaje("G180")
-                .valorGramosM2(new BigDecimal("180.00"))
-                .build();
-
-        when(gramajeRepository.existsByCodigoGramaje("G180")).thenReturn(true);
-
-        assertThatThrownBy(() -> gramajeTelaServiceImpl.crear(dto))
-                .isInstanceOf(DuplicadoException.class);
-
-        verify(gramajeRepository, never()).save(any());
     }
 
     // ---------------- actualizar ----------------

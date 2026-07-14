@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class SCOSTelaDTO {
-    private Long id;
+    private Long idSCOSTela;
     private String tempId;
     private String aplicacion;
     private String nombre;

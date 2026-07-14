@@ -88,4 +88,32 @@ export const HojaCompraService = {
             throw error;
         }
     },
+
+    /**
+     * Modifica cantidad, precio o justificación de un ítem de la Hoja de Compra.
+     */
+    modificarItem: async (idHC, idHCItem, payload) => {
+        try {
+            const response = await api.put(`/hojas-compra/${idHC}/items/${idHCItem}/modificar`, payload);
+            return HojaCompraDTO.fromResponse(response);
+        } catch (error) {
+            console.error(`Error modificando ítem ${idHCItem} de HC ${idHC}:`, error?.response?.data || error);
+            throw error;
+        }
+    },
+
+    /**
+     * Agrega un insumo "no presupuestado" (no vino del cálculo automático desde
+     * el Costeo/OP) a una HC ya APROBADA.
+     * Payload: { tipoInsumo, articuloId?, nombreInsumo, cantidadRequerida, precioUnitarioRef }
+     */
+    agregarItemManual: async (idHC, itemPayload) => {
+        try {
+            const response = await api.post(`/hojas-compra/${idHC}/items`, itemPayload);
+            return HojaCompraDTO.fromResponse(response);
+        } catch (error) {
+            console.error(`Error agregando insumo no presupuestado a HC ${idHC}:`, error?.response?.data || error);
+            throw error;
+        }
+    },
 };

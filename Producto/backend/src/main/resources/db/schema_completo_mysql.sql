@@ -3,6 +3,7 @@
 -- Base de datos: BD_ERP (MariaDB/MySQL)
 -- Generado desde entidades JPA (Spring Boot 3.x / Hibernate)
 -- Nombrado de columnas: SpringPhysicalNamingStrategy (camelCase → snake_case)
+-- Sincronizado con migraciones Flyway V1–V23 (2026-07-01)
 --
 -- NOTA: Para las columnas PK sin @Column(name=...) Spring aplica:
 --   idNV → id_nv  |  idOP → id_op  |  idEVN → id_evn
@@ -55,7 +56,9 @@ CREATE TABLE IF NOT EXISTS rubros (
     rubro_id          BIGINT       NOT NULL AUTO_INCREMENT,
     nombre_rubro      VARCHAR(255),
     descripcion_rubro VARCHAR(255),
-    PRIMARY KEY (rubro_id)
+    sigla_rubro       VARCHAR(10),
+    PRIMARY KEY (rubro_id),
+    UNIQUE KEY uk_rubros_sigla_rubro (sigla_rubro)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Materias primas (extienden BaseEntity: creado_en, actualizado_en, activo)
@@ -283,6 +286,7 @@ CREATE TABLE IF NOT EXISTS contactos (
     email_contacto     VARCHAR(100),
     tipo_contacto_id   BIGINT,
     fk_provee_contacto BIGINT,
+    fk_cliente_contacto BIGINT,
     PRIMARY KEY (contacto_id),
     CONSTRAINT fk_contacto_tipo FOREIGN KEY (tipo_contacto_id) REFERENCES tipos_contacto (tipo_contacto_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -420,6 +424,241 @@ CREATE TABLE IF NOT EXISTS catalogo_proveedor (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ============================================================
+-- CAPA 6B: CATÁLOGO DE ARTÍCULOS (materiales normalizados)
+-- Catálogos auxiliares, supertipo articulo y sus subtablas.
+-- articulo reemplaza a tela/accesorio/prenda_lista como maestro.
+-- ============================================================
+
+CREATE TABLE IF NOT EXISTS moneda (
+    id_moneda     INT         NOT NULL AUTO_INCREMENT,
+    codigo_moneda VARCHAR(5)  NOT NULL,
+    nombre_moneda VARCHAR(40) NOT NULL,
+    simbolo       VARCHAR(5),
+    PRIMARY KEY (id_moneda),
+    UNIQUE KEY uk_moneda_codigo (codigo_moneda)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS unidad_medida (
+    id_unidad_medida INT         NOT NULL AUTO_INCREMENT,
+    nombre_unidad    VARCHAR(30) NOT NULL,
+    abreviatura      VARCHAR(5)  NOT NULL,
+    PRIMARY KEY (id_unidad_medida),
+    UNIQUE KEY uk_um_nombre (nombre_unidad),
+    UNIQUE KEY uk_um_abrev  (abreviatura)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS tipo_articulo (
+    id_tipo_articulo INT         NOT NULL,
+    codigo           VARCHAR(20) NOT NULL,
+    nombre           VARCHAR(60) NOT NULL,
+    PRIMARY KEY (id_tipo_articulo),
+    UNIQUE KEY uk_tipa_codigo (codigo)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS categoria_tela (
+    id_categoria_tela     INT          NOT NULL AUTO_INCREMENT,
+    codigo_categoria_tela VARCHAR(10)  NOT NULL,
+    nombre_categoria_tela VARCHAR(255) NOT NULL,
+    PRIMARY KEY (id_categoria_tela),
+    UNIQUE KEY uk_cat_codigo (codigo_categoria_tela),
+    UNIQUE KEY uk_cat_nombre (nombre_categoria_tela)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS subcategoria_tela (
+    id_subcategoria_tela     INT          NOT NULL AUTO_INCREMENT,
+    codigo_subcategoria_tela VARCHAR(15)  NOT NULL,
+    nombre_subcategoria_tela VARCHAR(255) NOT NULL,
+    id_categoria_tela        INT,
+    PRIMARY KEY (id_subcategoria_tela),
+    UNIQUE KEY uk_subcat_codigo (codigo_subcategoria_tela),
+    CONSTRAINT fk_subcat_cat FOREIGN KEY (id_categoria_tela) REFERENCES categoria_tela (id_categoria_tela)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS familia_tela (
+    id_familia_tela INT         NOT NULL AUTO_INCREMENT,
+    codigo_familia  VARCHAR(10) NOT NULL,
+    nombre_familia  VARCHAR(60) NOT NULL,
+    PRIMARY KEY (id_familia_tela),
+    UNIQUE KEY uk_fam_codigo (codigo_familia)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS clasificacion_tecnica (
+    id_clasificacion_tecnica INT         NOT NULL AUTO_INCREMENT,
+    nombre_clasificacion     VARCHAR(40) NOT NULL,
+    PRIMARY KEY (id_clasificacion_tecnica),
+    UNIQUE KEY uk_clas_nombre (nombre_clasificacion)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS composicion (
+    id_composicion          INT          NOT NULL AUTO_INCREMENT,
+    codigo_composicion      VARCHAR(10)  NOT NULL,
+    descripcion_composicion VARCHAR(60)  NOT NULL,
+    clasificacion           VARCHAR(20),
+    uso_tipico              VARCHAR(60),
+    PRIMARY KEY (id_composicion),
+    UNIQUE KEY uk_comp_codigo (codigo_composicion)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS gramaje_tela (
+    id_gramaje          INT           NOT NULL AUTO_INCREMENT,
+    codigo_gramaje      VARCHAR(10)   NOT NULL,
+    valor_gramos_m2     DECIMAL(8,2)  NOT NULL,
+    categoria_vestuario VARCHAR(60),
+    PRIMARY KEY (id_gramaje),
+    UNIQUE KEY uk_gram_codigo (codigo_gramaje)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS color_tela (
+    id_color          INT         NOT NULL AUTO_INCREMENT,
+    codigo_color      VARCHAR(10) NOT NULL,
+    descripcion_color VARCHAR(40) NOT NULL,
+    es_pantone        TINYINT(1)  NOT NULL DEFAULT 0,
+    PRIMARY KEY (id_color),
+    UNIQUE KEY uk_color_codigo (codigo_color)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS atributo_tecnico (
+    id_atributo         INT          NOT NULL AUTO_INCREMENT,
+    codigo_atributo     VARCHAR(10)  NOT NULL,
+    clasificacion       VARCHAR(20),
+    descripcion_tecnica VARCHAR(60)  NOT NULL,
+    impacto_erp         VARCHAR(100),
+    PRIMARY KEY (id_atributo),
+    UNIQUE KEY uk_atr_codigo (codigo_atributo)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Supertipo unificado de material: TELA, ACCESORIO, PRENDA_LISTA
+CREATE TABLE IF NOT EXISTS articulo (
+    id_articulo          INT          NOT NULL AUTO_INCREMENT,
+    codigo_articulo      VARCHAR(20)  NOT NULL,
+    nombre_articulo      VARCHAR(100) NOT NULL,
+    descripcion_articulo VARCHAR(200),
+    codigo_barra         VARCHAR(50),
+    id_tipo_articulo     INT          NOT NULL,
+    activo               TINYINT(1)   NOT NULL DEFAULT 1,
+    id_categoria_tela    INT,
+    id_subcategoria_tela INT,
+    PRIMARY KEY (id_articulo),
+    UNIQUE KEY uk_art_codigo (codigo_articulo),
+    CONSTRAINT fk_art_tipo    FOREIGN KEY (id_tipo_articulo)     REFERENCES tipo_articulo     (id_tipo_articulo),
+    CONSTRAINT fk_art_cat     FOREIGN KEY (id_categoria_tela)    REFERENCES categoria_tela    (id_categoria_tela),
+    CONSTRAINT fk_art_subcat  FOREIGN KEY (id_subcategoria_tela) REFERENCES subcategoria_tela (id_subcategoria_tela)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Detalle de artículo tipo TELA
+CREATE TABLE IF NOT EXISTS articulo_tela (
+    id_articulo               INT          NOT NULL,
+    id_familia_tela           INT,
+    id_clasificacion_tecnica  INT,
+    id_composicion            INT,
+    id_gramaje                INT,
+    abreviaturas_historicas   VARCHAR(60),
+    uso_tipico                VARCHAR(60),
+    observacion_proveedor     VARCHAR(200),
+    PRIMARY KEY (id_articulo),
+    CONSTRAINT fk_atela_art  FOREIGN KEY (id_articulo)             REFERENCES articulo              (id_articulo),
+    CONSTRAINT fk_atela_fam  FOREIGN KEY (id_familia_tela)         REFERENCES familia_tela          (id_familia_tela),
+    CONSTRAINT fk_atela_clas FOREIGN KEY (id_clasificacion_tecnica) REFERENCES clasificacion_tecnica (id_clasificacion_tecnica),
+    CONSTRAINT fk_atela_comp FOREIGN KEY (id_composicion)          REFERENCES composicion           (id_composicion),
+    CONSTRAINT fk_atela_gram FOREIGN KEY (id_gramaje)              REFERENCES gramaje_tela          (id_gramaje)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Detalle de artículo tipo PRENDA_LISTA
+CREATE TABLE IF NOT EXISTS articulo_prenda (
+    id_articulo           INT         NOT NULL,
+    marca                 VARCHAR(60),
+    tallas_disponibles    VARCHAR(100),
+    proveedor             VARCHAR(100),
+    codigo_proveedor      VARCHAR(30),
+    requiere_logo_cliente TINYINT(1)  NOT NULL DEFAULT 0,
+    tiene_estampado       TINYINT(1)  NOT NULL DEFAULT 0,
+    ubicacion_logo        VARCHAR(60),
+    PRIMARY KEY (id_articulo),
+    CONSTRAINT fk_aprenda_art FOREIGN KEY (id_articulo) REFERENCES articulo (id_articulo)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Catálogo de Tipos de Accesorio (Cierre, Botón, Broche, Velcro, ...)
+CREATE TABLE IF NOT EXISTS tipo_accesorio (
+    id_tipo_accesorio INT         NOT NULL AUTO_INCREMENT,
+    codigo            VARCHAR(10) NOT NULL,
+    nombre            VARCHAR(60) NOT NULL,
+    PRIMARY KEY (id_tipo_accesorio),
+    UNIQUE KEY uk_tipoacc_codigo (codigo),
+    UNIQUE KEY uk_tipoacc_nombre (nombre)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Definición de los campos/atributos dinámicos que aplican a cada Tipo de
+-- Accesorio (ej. Cierre: Tipo/N°/Terminal/Carro/Medida/Color). "opciones" es
+-- una lista separada por "|" cuando tipo_dato = LISTA.
+CREATE TABLE IF NOT EXISTS atributo_accesorio_definicion (
+    id_definicion     INT          NOT NULL AUTO_INCREMENT,
+    id_tipo_accesorio INT          NOT NULL,
+    nombre_campo      VARCHAR(40)  NOT NULL,
+    tipo_dato         VARCHAR(20)  NOT NULL, -- LISTA | TEXTO | NUMERO | REFERENCIA_COLOR
+    opciones          VARCHAR(500),
+    orden             INT          NOT NULL DEFAULT 0,
+    requerido         TINYINT(1)   NOT NULL DEFAULT 0,
+    PRIMARY KEY (id_definicion),
+    CONSTRAINT fk_atrdef_tipo FOREIGN KEY (id_tipo_accesorio) REFERENCES tipo_accesorio (id_tipo_accesorio)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Detalle de artículo tipo ACCESORIO
+CREATE TABLE IF NOT EXISTS articulo_accesorio (
+    id_articulo           INT         NOT NULL,
+    id_tipo_accesorio     INT,
+    proveedor             VARCHAR(100),
+    codigo_proveedor      VARCHAR(30),
+    requiere_logo_cliente TINYINT(1)  NOT NULL DEFAULT 0,
+    PRIMARY KEY (id_articulo),
+    CONSTRAINT fk_aacc_art  FOREIGN KEY (id_articulo)       REFERENCES articulo       (id_articulo),
+    CONSTRAINT fk_aacc_tipo FOREIGN KEY (id_tipo_accesorio) REFERENCES tipo_accesorio (id_tipo_accesorio)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Valor concreto de un atributo dinámico para un accesorio puntual
+-- (ej. para el Cierre "CIE-004": Tipo=DP, Terminal=Fijo, Medida=15cm, Color=Blanco).
+CREATE TABLE IF NOT EXISTS articulo_accesorio_atributo_valor (
+    id_valor            INT         NOT NULL AUTO_INCREMENT,
+    id_articulo         INT         NOT NULL,
+    id_definicion       INT         NOT NULL,
+    valor_texto         VARCHAR(100),
+    id_color_referencia INT,
+    PRIMARY KEY (id_valor),
+    CONSTRAINT fk_atrval_art   FOREIGN KEY (id_articulo)         REFERENCES articulo_accesorio             (id_articulo),
+    CONSTRAINT fk_atrval_def   FOREIGN KEY (id_definicion)       REFERENCES atributo_accesorio_definicion  (id_definicion),
+    CONSTRAINT fk_atrval_color FOREIGN KEY (id_color_referencia) REFERENCES color_tela                     (id_color)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Precios por artículo y moneda
+CREATE TABLE IF NOT EXISTS precio (
+    id_precio   INT           NOT NULL AUTO_INCREMENT,
+    id_articulo INT           NOT NULL,
+    id_moneda   INT           NOT NULL,
+    tipo_precio VARCHAR(10)   NOT NULL,
+    valor       DECIMAL(18,2) NOT NULL,
+    PRIMARY KEY (id_precio),
+    CONSTRAINT fk_precio_art    FOREIGN KEY (id_articulo) REFERENCES articulo (id_articulo),
+    CONSTRAINT fk_precio_moneda FOREIGN KEY (id_moneda)   REFERENCES moneda   (id_moneda)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Tabla puente: telas ↔ colores
+CREATE TABLE IF NOT EXISTS tela_color (
+    id_articulo INT NOT NULL,
+    id_color    INT NOT NULL,
+    PRIMARY KEY (id_articulo, id_color),
+    CONSTRAINT fk_telacolor_art   FOREIGN KEY (id_articulo) REFERENCES articulo_tela (id_articulo),
+    CONSTRAINT fk_telacolor_color FOREIGN KEY (id_color)    REFERENCES color_tela    (id_color)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Tabla puente: telas ↔ atributos técnicos
+CREATE TABLE IF NOT EXISTS tela_atributo_tecnico (
+    id_articulo INT NOT NULL,
+    id_atributo INT NOT NULL,
+    PRIMARY KEY (id_articulo, id_atributo),
+    CONSTRAINT fk_telaatrib_art FOREIGN KEY (id_articulo) REFERENCES articulo_tela    (id_articulo),
+    CONSTRAINT fk_telaatrib_atr FOREIGN KEY (id_atributo) REFERENCES atributo_tecnico (id_atributo)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ============================================================
 -- CAPA 7: SOLICITUDES COMERCIALES (COSTOS Y COTIZACIÓN)
 -- ============================================================
 
@@ -478,7 +717,7 @@ CREATE TABLE IF NOT EXISTS solicitudes_cotizacion (
 CREATE TABLE IF NOT EXISTS notas_venta (
     id_nv                  BIGINT        NOT NULL AUTO_INCREMENT,
     numero_nv              VARCHAR(20)   NOT NULL,
-    evaluacion_negocio_id  BIGINT,
+    evaluacion_negocio_id  BIGINT        NOT NULL,
     cliente_id             BIGINT        NOT NULL,
     vendedor_id            BIGINT,
     estado                 VARCHAR(20)   NOT NULL,
@@ -585,7 +824,7 @@ CREATE TABLE IF NOT EXISTS scos_accesorios (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS scos_logotipos (
-    id                      BIGINT        NOT NULL AUTO_INCREMENT,
+    id_scos_logotipo        BIGINT        NOT NULL AUTO_INCREMENT,
     solicitud_costos_id     BIGINT,
     solicitud_cotizacion_id BIGINT,
     tipo                    VARCHAR(50),
@@ -595,7 +834,7 @@ CREATE TABLE IF NOT EXISTS scos_logotipos (
     tamano                  VARCHAR(50),
     cantidad                INT,
     precio                  DECIMAL(12,2),
-    PRIMARY KEY (id),
+    PRIMARY KEY (id_scos_logotipo),
     CONSTRAINT fk_scologo_scos FOREIGN KEY (solicitud_costos_id)     REFERENCES solicitudes_costos    (id_scos),
     CONSTRAINT fk_scologo_scot FOREIGN KEY (solicitud_cotizacion_id) REFERENCES solicitudes_cotizacion (id_scot)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -623,104 +862,54 @@ CREATE TABLE IF NOT EXISTS scot_prendas (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ============================================================
--- CAPA 8C: PLANTILLAS DINÁMICAS
+-- CAPA 8C: SISTEMA DE PLANTILLAS (normalizado — V7/V19/V21)
+-- Las tablas legacy scos_plantilla, scos_plantilla_*, configuracion_plantilla*
+-- fueron eliminadas en V8. Este bloque contiene el modelo actual.
 -- ============================================================
 
-CREATE TABLE IF NOT EXISTS scos_plantilla (
-    id                    BIGINT        NOT NULL AUTO_INCREMENT,
-    solicitud_costos_id   BIGINT,
-    nombre                VARCHAR(255)  NOT NULL,
-    descripcion           TEXT,
-    nombre_prenda         VARCHAR(255),
-    genero                VARCHAR(50),
-    detalles_prenda       JSON,
-    campos_personalizados JSON,
-    mo_prenda             DECIMAL(12,2),
-    mo_costura_sellada    DECIMAL(12,2),
-    mo_acolchado          DECIMAL(12,2),
-    PRIMARY KEY (id),
-    CONSTRAINT fk_plantilla_scos FOREIGN KEY (solicitud_costos_id) REFERENCES solicitudes_costos (id_scos)
+-- Catálogo de campos posibles para describir una prenda (ej: "Forro", "Mangas")
+CREATE TABLE IF NOT EXISTS plantilla (
+    id_plantilla BIGINT       NOT NULL AUTO_INCREMENT,
+    nombre_campo VARCHAR(100) NOT NULL,
+    activo       TINYINT(1)   NOT NULL DEFAULT 1,
+    PRIMARY KEY (id_plantilla),
+    UNIQUE KEY uk_plantilla_campo (nombre_campo)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-CREATE TABLE IF NOT EXISTS scos_plantilla_campos_activos (
-    plantilla_id BIGINT       NOT NULL,
-    campo_key    VARCHAR(100),
-    CONSTRAINT fk_pcampos_plantilla FOREIGN KEY (plantilla_id) REFERENCES scos_plantilla (id) ON DELETE CASCADE
+-- Configuración por artículo: campos que aplica, en CSV (una fila por artículo)
+-- Reestructurado en V19: de N filas (artículo, campo) a 1 fila (artículo, campos CSV)
+CREATE TABLE IF NOT EXISTS modelo_plantilla (
+    id_modelo_plantilla BIGINT NOT NULL AUTO_INCREMENT,
+    id_articulo         INT    NOT NULL,
+    campos              TEXT   NOT NULL,
+    PRIMARY KEY (id_modelo_plantilla),
+    UNIQUE KEY uk_modelo_articulo (id_articulo)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-CREATE TABLE IF NOT EXISTS scos_plantilla_telas (
-    plantilla_id  BIGINT       NOT NULL,
-    aplicacion    VARCHAR(100),
-    nombre        VARCHAR(255),
-    composicion   VARCHAR(255),
-    color         VARCHAR(100),
-    peso          DOUBLE,
-    unidad_medida VARCHAR(20),
-    CONSTRAINT fk_ptela_plantilla FOREIGN KEY (plantilla_id) REFERENCES scos_plantilla (id) ON DELETE CASCADE
+-- Valor concreto de un campo de plantilla en una SolicitudCostos
+CREATE TABLE IF NOT EXISTS descripcion_plantilla (
+    id_descripcion_plantilla BIGINT       NOT NULL AUTO_INCREMENT,
+    id_scos                  BIGINT       NOT NULL,
+    id_plantilla             BIGINT       NOT NULL,
+    valor_descripcion        VARCHAR(500),
+    activo                   TINYINT(1)   NOT NULL DEFAULT 1,
+    PRIMARY KEY (id_descripcion_plantilla),
+    KEY idx_descripcion_scos (id_scos),
+    CONSTRAINT fk_descripcion_scos      FOREIGN KEY (id_scos)      REFERENCES solicitudes_costos (id_scos) ON DELETE CASCADE,
+    CONSTRAINT fk_descripcion_plantilla FOREIGN KEY (id_plantilla) REFERENCES plantilla          (id_plantilla)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-CREATE TABLE IF NOT EXISTS scos_plantilla_accesorios (
-    plantilla_id     BIGINT       NOT NULL,
-    tipo             VARCHAR(100),
-    nombre_accesorio VARCHAR(255),
-    cantidad         INT,
-    CONSTRAINT fk_pacc_plantilla FOREIGN KEY (plantilla_id) REFERENCES scos_plantilla (id) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
-CREATE TABLE IF NOT EXISTS scos_plantilla_logotipos (
-    plantilla_id BIGINT        NOT NULL,
-    tipo         VARCHAR(50),
-    nombre       VARCHAR(255),
-    ubicacion    VARCHAR(100),
-    color        VARCHAR(100),
-    tamano       VARCHAR(50),
-    cantidad     INT,
-    precio       DECIMAL(12,2),
-    CONSTRAINT fk_plogo_plantilla FOREIGN KEY (plantilla_id) REFERENCES scos_plantilla (id) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
-CREATE TABLE IF NOT EXISTS scos_plantilla_material_vinculos (
-    id            BIGINT       NOT NULL AUTO_INCREMENT,
-    plantilla_id  BIGINT       NOT NULL,
-    field_name    VARCHAR(100),
-    material_type VARCHAR(20),
-    material_id   BIGINT,
-    cantidad      DECIMAL(10,4),
-    PRIMARY KEY (id),
-    CONSTRAINT fk_pvinculo_plantilla FOREIGN KEY (plantilla_id) REFERENCES scos_plantilla (id) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
-CREATE TABLE IF NOT EXISTS configuracion_plantillas (
-    id            BIGINT        NOT NULL AUTO_INCREMENT,
-    nombre_prenda VARCHAR(255)  NOT NULL,
-    custom_fields TEXT,
-    PRIMARY KEY (id),
-    UNIQUE KEY uk_config_plantilla (nombre_prenda)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
-CREATE TABLE IF NOT EXISTS configuracion_plantilla_campos_activos (
-    configuracion_id BIGINT       NOT NULL,
-    campo_activo     VARCHAR(100),
-    CONSTRAINT fk_cpca_config FOREIGN KEY (configuracion_id) REFERENCES configuracion_plantillas (id) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
-CREATE TABLE IF NOT EXISTS configuracion_plantilla_telas (
-    configuracion_id BIGINT        NOT NULL,
-    aplicacion       VARCHAR(100),
-    nombre           VARCHAR(255),
-    composicion      VARCHAR(255),
-    color            VARCHAR(100),
-    peso             DOUBLE,
-    unidad_medida    VARCHAR(20),
-    CONSTRAINT fk_cpt_config FOREIGN KEY (configuracion_id) REFERENCES configuracion_plantillas (id) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
-CREATE TABLE IF NOT EXISTS configuracion_plantilla_accesorios (
-    configuracion_id BIGINT        NOT NULL,
-    tipo             VARCHAR(100),
-    nombre_accesorio VARCHAR(255),
-    cantidad         INT,
-    CONSTRAINT fk_cpa_config FOREIGN KEY (configuracion_id) REFERENCES configuracion_plantillas (id) ON DELETE CASCADE
+-- Materiales (telas/accesorios) vinculados a un campo de plantilla
+CREATE TABLE IF NOT EXISTS scos_plantilla_material_vinculo (
+    id_scos_plantilla_material_vinculo BIGINT      NOT NULL AUTO_INCREMENT,
+    id_descripcion_plantilla           BIGINT      NOT NULL,
+    material_type                      VARCHAR(20) NOT NULL,
+    material_id                        BIGINT      NOT NULL,
+    cantidad                           INT,
+    PRIMARY KEY (id_scos_plantilla_material_vinculo),
+    KEY idx_vinculo_descripcion (id_descripcion_plantilla),
+    CONSTRAINT fk_vinculo_descripcion FOREIGN KEY (id_descripcion_plantilla)
+        REFERENCES descripcion_plantilla (id_descripcion_plantilla) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ============================================================
@@ -729,10 +918,15 @@ CREATE TABLE IF NOT EXISTS configuracion_plantilla_accesorios (
 
 CREATE TABLE IF NOT EXISTS produccion_costeos (
     id_costeo                 BIGINT        NOT NULL AUTO_INCREMENT,
-    solicitud_costos_id       BIGINT        NOT NULL,
+    solicitud_costos_id       BIGINT,
+    nota_venta_id             BIGINT,
     numero_costeo             VARCHAR(20)   NOT NULL,
+    estado                    VARCHAR(20)   NOT NULL DEFAULT 'BORRADOR',
+    motivo_rechazo            VARCHAR(300),
+    version                   INT           NOT NULL DEFAULT 1,
     costo_hilos               DECIMAL(12,2),
     costo_mano_obra           DECIMAL(12,2),
+    observaciones_mano_obra   VARCHAR(1000) NULL,
     costo_etiquetas           DECIMAL(12,2),
     costo_embalaje            DECIMAL(12,2),
     costo_flete               DECIMAL(12,2),
@@ -754,13 +948,14 @@ CREATE TABLE IF NOT EXISTS produccion_costeo_items (
     id_costeo_item  BIGINT        NOT NULL AUTO_INCREMENT,
     costeo_id       BIGINT        NOT NULL,
     tipo_insumo     VARCHAR(30),
-    insumo_id       BIGINT,
+    articulo_id     INT,
     nombre_insumo   VARCHAR(255),
     consumo         DECIMAL(10,4),
     precio_unitario DECIMAL(12,2),
     costo_total     DECIMAL(12,2),
     PRIMARY KEY (id_costeo_item),
-    CONSTRAINT fk_citem_costeo FOREIGN KEY (costeo_id) REFERENCES produccion_costeos (id_costeo)
+    CONSTRAINT fk_citem_costeo    FOREIGN KEY (costeo_id)   REFERENCES produccion_costeos (id_costeo),
+    CONSTRAINT fk_citem_articulo  FOREIGN KEY (articulo_id) REFERENCES articulo           (id_articulo) ON DELETE RESTRICT
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS produccion_costeo_versiones (
@@ -771,6 +966,7 @@ CREATE TABLE IF NOT EXISTS produccion_costeo_versiones (
     motivo_cambio             VARCHAR(500),
     usuario_creador           VARCHAR(100)  NOT NULL,
     total_mano_obra           DECIMAL(12,2),
+    observaciones_mano_obra   VARCHAR(1000) NULL,
     total_hilo                DECIMAL(12,2),
     total_flete               DECIMAL(12,2),
     total_embalaje            DECIMAL(12,2),
@@ -789,7 +985,7 @@ CREATE TABLE IF NOT EXISTS produccion_costeo_item_versiones (
     costeo_version_id             BIGINT        NOT NULL,
     costeo_item_id                BIGINT,
     tipo_insumo                   VARCHAR(30),
-    insumo_id                     BIGINT,
+    articulo_id                   INT,
     nombre_insumo                 VARCHAR(255),
     consumo                       DECIMAL(10,4),
     precio_unitario               DECIMAL(12,2),
@@ -797,7 +993,8 @@ CREATE TABLE IF NOT EXISTS produccion_costeo_item_versiones (
     costeo_item_version_id_padre  BIGINT,
     activo                        TINYINT(1),
     PRIMARY KEY (id_costeo_item_version),
-    CONSTRAINT fk_civs_cver FOREIGN KEY (costeo_version_id) REFERENCES produccion_costeo_versiones (id_costeo_version)
+    CONSTRAINT fk_civs_cver          FOREIGN KEY (costeo_version_id) REFERENCES produccion_costeo_versiones (id_costeo_version),
+    CONSTRAINT fk_civs_articulo      FOREIGN KEY (articulo_id)       REFERENCES articulo                    (id_articulo) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ============================================================
@@ -900,7 +1097,7 @@ CREATE TABLE IF NOT EXISTS orden_produccion (
     created_at               DATETIME,
     updated_at               DATETIME,
     PRIMARY KEY (id_op),
-    UNIQUE KEY uk_op_numero (numero_op),
+    UNIQUE KEY uk_op_numero     (numero_op),
     CONSTRAINT fk_op_costeo_version FOREIGN KEY (costeo_version_id) REFERENCES produccion_costeo_versiones (id_costeo_version),
     CONSTRAINT fk_op_nota_venta     FOREIGN KEY (nota_venta_id)     REFERENCES notas_venta                  (id_nv)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -923,14 +1120,37 @@ CREATE TABLE IF NOT EXISTS produccion_orden_items (
     CONSTRAINT fk_opitem_op FOREIGN KEY (orden_produccion_id) REFERENCES orden_produccion (id_op)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+CREATE TABLE IF NOT EXISTS produccion_seguimiento_op (
+    id_seguimiento BIGINT AUTO_INCREMENT PRIMARY KEY,
+    orden_produccion_id BIGINT NOT NULL UNIQUE,
+    fecha_recepcion_op DATE,
+    fin_tizado DATE,
+    estado_oc_mp VARCHAR(50),
+    recepcion_compras DATE,
+    inicio_corte DATE,
+    fin_corte DATE,
+    inicio_logo DATE,
+    estado_ida_logo VARCHAR(50),
+    regreso_logo DATE,
+    estado_rec_logo VARCHAR(50),
+    inicio_taller_externo DATE,
+    fin_taller_externo DATE,
+    calidad_taller VARCHAR(50),
+    obs_taller TEXT,
+    fin_terminacion DATE,
+    fin_personalizado DATE,
+    CONSTRAINT fk_seguimiento_op FOREIGN KEY (orden_produccion_id)
+        REFERENCES orden_produccion(id_op) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 -- ============================================================
 -- CAPA 12: ORDEN DE TRABAJO Y REGISTRO DE AVANCE
 -- ============================================================
 
 CREATE TABLE IF NOT EXISTS produccion_orden_trabajo (
     id_ot               BIGINT       NOT NULL AUTO_INCREMENT,
-    numero_ot           VARCHAR(30)  NOT NULL,
     nota_venta_id       BIGINT       NOT NULL,
+    item_nv_id          BIGINT,
     orden_produccion_id BIGINT,
     nro_item            INT,
     tipo_ot             VARCHAR(20)  NOT NULL,
@@ -943,8 +1163,9 @@ CREATE TABLE IF NOT EXISTS produccion_orden_trabajo (
     created_at          DATETIME,
     updated_at          DATETIME,
     PRIMARY KEY (id_ot),
-    CONSTRAINT fk_ot_nota_venta       FOREIGN KEY (nota_venta_id)      REFERENCES notas_venta    (id_nv),
-    CONSTRAINT fk_ot_orden_produccion FOREIGN KEY (orden_produccion_id) REFERENCES orden_produccion (id_op)
+    CONSTRAINT fk_ot_nota_venta       FOREIGN KEY (nota_venta_id)      REFERENCES notas_venta       (id_nv),
+    CONSTRAINT fk_ot_orden_produccion FOREIGN KEY (orden_produccion_id) REFERENCES orden_produccion  (id_op),
+    CONSTRAINT fk_ot_item_nv          FOREIGN KEY (item_nv_id)         REFERENCES notas_venta_items (id_item_nv) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS produccion_registro_avance (
@@ -981,15 +1202,19 @@ CREATE TABLE IF NOT EXISTS produccion_hojas_compra (
 CREATE TABLE IF NOT EXISTS produccion_hoja_compra_items (
     id_hc_item          BIGINT        NOT NULL AUTO_INCREMENT,
     hc_id               BIGINT        NOT NULL,
-    tipo_insumo         VARCHAR(30),
-    insumo_id           BIGINT,
-    nombre_insumo       VARCHAR(255),
-    consumo_unitario    DECIMAL(10,4),
+    tipo_insumo         VARCHAR(50),
+    articulo_id         INT,
+    proveedor_id        BIGINT,
+    nombre_insumo       VARCHAR(200),
+    consumo_unitario    DECIMAL(12,4),
     cantidad_op         INT,
-    cantidad_requerida  DECIMAL(10,4),
+    cantidad_requerida  DECIMAL(12,4),
     precio_unitario_ref DECIMAL(12,2),
     PRIMARY KEY (id_hc_item),
-    CONSTRAINT fk_hcitem_hc FOREIGN KEY (hc_id) REFERENCES produccion_hojas_compra (id_hc)
+    KEY idx_hci_proveedor (proveedor_id),
+    CONSTRAINT fk_hcitem_hc       FOREIGN KEY (hc_id)        REFERENCES produccion_hojas_compra (id_hc),
+    CONSTRAINT fk_hc_item_articulo   FOREIGN KEY (articulo_id)  REFERENCES articulo             (id_articulo) ON DELETE SET NULL,
+    CONSTRAINT fk_hc_item_proveedor  FOREIGN KEY (proveedor_id) REFERENCES proveedores          (proveedor_id) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ============================================================
@@ -1013,16 +1238,17 @@ CREATE TABLE IF NOT EXISTS produccion_ordenes_compra (
 CREATE TABLE IF NOT EXISTS produccion_orden_compra_items (
     id_oc_item         BIGINT        NOT NULL AUTO_INCREMENT,
     oc_id              BIGINT        NOT NULL,
-    tipo_insumo        VARCHAR(30),
-    insumo_id          BIGINT,
-    nombre_insumo      VARCHAR(255),
-    cantidad_requerida DECIMAL(10,4),
-    cantidad_stock     DECIMAL(10,4),
-    cantidad_comprada  DECIMAL(10,4),
+    tipo_insumo        VARCHAR(50),
+    articulo_id        INT,
+    nombre_insumo      VARCHAR(200),
+    cantidad_requerida DECIMAL(12,4),
+    cantidad_stock     DECIMAL(12,4),
+    cantidad_comprada  DECIMAL(12,4),
     precio_unitario    DECIMAL(12,2),
-    subtotal           DECIMAL(12,2),
+    subtotal           DECIMAL(14,2),
     PRIMARY KEY (id_oc_item),
-    CONSTRAINT fk_ocitem_oc FOREIGN KEY (oc_id) REFERENCES produccion_ordenes_compra (id_oc)
+    CONSTRAINT fk_ocitem_oc      FOREIGN KEY (oc_id)       REFERENCES produccion_ordenes_compra (id_oc),
+    CONSTRAINT fk_oc_item_articulo FOREIGN KEY (articulo_id) REFERENCES articulo               (id_articulo) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS produccion_hc_item_oc_item (
@@ -1116,7 +1342,7 @@ CREATE INDEX IF NOT EXISTS idx_oc_estado     ON produccion_ordenes_compra     (e
 CREATE INDEX IF NOT EXISTS idx_oc_proveedor  ON produccion_ordenes_compra     (proveedor_id);
 CREATE INDEX IF NOT EXISTS idx_oc_fecha      ON produccion_ordenes_compra     (fecha_emision);
 CREATE INDEX IF NOT EXISTS idx_oci_oc        ON produccion_orden_compra_items (oc_id);
-CREATE INDEX IF NOT EXISTS idx_oci_insumo    ON produccion_orden_compra_items (insumo_id);
+CREATE INDEX IF NOT EXISTS idx_oci_articulo  ON produccion_orden_compra_items (articulo_id);
 CREATE INDEX IF NOT EXISTS idx_link_hci      ON produccion_hc_item_oc_item    (hc_item_id);
 CREATE INDEX IF NOT EXISTS idx_link_oci      ON produccion_hc_item_oc_item    (oc_item_id);
 CREATE INDEX IF NOT EXISTS idx_os_estado     ON produccion_ordenes_servicio   (estado);

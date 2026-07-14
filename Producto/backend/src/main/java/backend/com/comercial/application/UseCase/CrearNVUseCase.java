@@ -76,6 +76,7 @@ public class CrearNVUseCase {
                         null, // idItemNV: lo asigna la BD al persistir
                         i + 1,
                         dto.getArticuloId(),
+                        "Prenda",
                         dto.getModelo(),
                         dto.getTela(),
                         dto.getComposicion(),
@@ -84,6 +85,7 @@ public class CrearNVUseCase {
                         dto.getGenero(),
                         null, // codigo (adding it as null for now if not in DTO)
                         dto.getProveedorId(),
+                        "PENDIENTE",
                         dto.getLlevaLogo(),
                         dto.getItemType() != null ? dto.getItemType() : TipoItem.OP,
                         dto.getRequiereOt(),
@@ -92,21 +94,42 @@ public class CrearNVUseCase {
                         dto.getCantidad(),
                         new Money(dto.getPrecioUnitario(), "CLP"),
                         tallas);
+
+                // Costeo elegido manualmente para este ítem OP (si no hereda uno de la EVN).
+                if (dto.getCosteoId() != null) {
+                    item.setCosteoIdManual(dto.getCosteoId());
+                }
                 nv.addItem(item);
 
             }
         }
 
+        if (Boolean.TRUE.equals(command.getEmitir())) {
+            nv.emitir();
+        }
+
+        // Borrador: reservar números de OP para cada ítem tipo OP nuevo (sin número aún).
+        // El número se consume del contador atómico para que nadie más pueda usarlo.
+        if (!Boolean.TRUE.equals(command.getEmitir())) {
+            if (nv.getItems() != null) {
+                for (ItemNV item : nv.getItems()) {
+                    if (TipoItem.OP == item.getTipoItem()
+                            && item.getNumeroOPReservado() == null
+                            && item.getOpId() == null) {
+                        DocumentNumber reservado = numeroDocumentoService.siguienteFormateado("OP");
+                        item.setNumeroOPReservado(reservado.getValue());
+                    }
+                }
+            }
+        }
+
         NotaVenta guardada = nvRepository.save(nv);
 
-        // Crear OP y obtener el id asignado para vincularlo a los ítems de la NV
-        boolean tieneItemsOP = guardada.getItems() != null &&
-                guardada.getItems().stream().anyMatch(i -> TipoItem.OP == i.getTipoItem());
-
-        if (tieneItemsOP) {
-            backend.com.produccion.domain.model.OrdenProduccion op = crearOPUseCase.execute(guardada);
-            // Trazabilidad: registrar qué OP fue generada para cada ítem OP de esta NV
-            nvRepository.vincularOpAItems(guardada.getIdNV(), op.getIdOP());
+        // Solo al emitir se crean las OPs reales (con costeo, fases, etc.).
+        if (Boolean.TRUE.equals(command.getEmitir())) {
+            crearOPUseCase.execute(guardada);
+            // Re-leer desde BD para que el NVResponse incluya los opId asignados por vincularOpAItem.
+            guardada = nvRepository.findById(guardada.getIdNV()).orElse(guardada);
         }
 
         return NVResponse.fromDomain(guardada);

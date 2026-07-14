@@ -23,6 +23,11 @@ public class CamposPlantillaRepositoryImpl implements CamposPlantillaRepository 
     }
 
     @Override
+    public List<CamposPlantilla> findAllActivos() {
+        return jpaRepository.findAllByActivoTrue().stream().map(mapper::toDomain).toList();
+    }
+
+    @Override
     public Optional<CamposPlantilla> findById(Long id) {
         if (id == null) return Optional.empty();
         return jpaRepository.findById(id).map(mapper::toDomain);

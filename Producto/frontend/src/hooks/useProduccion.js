@@ -58,6 +58,28 @@ export const useProduccion = () => {
         }
     }, []);
 
+    // Costeos disponibles (APROBADO, sin vínculo a EVN ni a otra OP) para vincular manualmente al crear una NV
+    const getCosteosDisponiblesOP = useCallback(async () => {
+        try {
+            const res = await api.get('/produccion/costeos/disponibles-op');
+            return res.data || [];
+        } catch (error) {
+            console.error("Error fetching costeos disponibles para OP:", error);
+            return [];
+        }
+    }, []);
+
+    // OP(s) de una Nota de Venta, con el número/estado del costeo vinculado ya resuelto
+    const getOrdenesProduccionPorNotaVenta = useCallback(async (notaVentaId) => {
+        try {
+            const res = await api.get(`/produccion/ordenes-produccion/por-nota-venta/${notaVentaId}`);
+            return res.data || [];
+        } catch (error) {
+            console.error("Error fetching OP por nota de venta:", error);
+            return [];
+        }
+    }, []);
+
     // Resumen de un costeo para auto-rellenar un ítem OP (modelo/tela/composición/género)
     const getCosteoResumenEVN = useCallback(async (idCosteo) => {
         try {
@@ -135,6 +157,8 @@ export const useProduccion = () => {
         getAllCosteosBySCOS,
         getAllCosteos,
         getCosteosDisponiblesEVN,
+        getCosteosDisponiblesOP,
+        getOrdenesProduccionPorNotaVenta,
         getCosteoResumenEVN,
         saveCosteo,
         costearCosteo,

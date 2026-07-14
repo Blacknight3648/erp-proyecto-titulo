@@ -13,6 +13,7 @@ public class CamposPlantillaMapper {
         return CamposPlantilla.builder()
                 .idPlantilla(entity.getIdPlantilla())
                 .nombreCampo(entity.getNombreCampo())
+                .activo(entity.isActivo())
                 .build();
     }
 
@@ -21,6 +22,7 @@ public class CamposPlantillaMapper {
         return CamposPlantillaJpaEntity.builder()
                 .idPlantilla(domain.getIdPlantilla())
                 .nombreCampo(domain.getNombreCampo())
+                .activo(domain.isActivo())
                 .build();
     }
 
@@ -29,6 +31,7 @@ public class CamposPlantillaMapper {
         return CamposPlantillaDTO.builder()
                 .idPlantilla(domain.getIdPlantilla())
                 .nombreCampo(domain.getNombreCampo())
+                .activo(domain.isActivo())
                 .build();
     }
 
@@ -37,6 +40,7 @@ public class CamposPlantillaMapper {
         return CamposPlantilla.builder()
                 .idPlantilla(dto.getIdPlantilla())
                 .nombreCampo(dto.getNombreCampo())
+                .activo(dto.isActivo())
                 .build();
     }
 }

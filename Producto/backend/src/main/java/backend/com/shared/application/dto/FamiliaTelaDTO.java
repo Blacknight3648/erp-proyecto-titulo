@@ -12,8 +12,7 @@ public class FamiliaTelaDTO {
 
     private Integer idFamiliaTela;
 
-    @NotBlank(message = "El código de familia es obligatorio")
-    @Size(max = 10)
+    @Size(max = 10, message = "El código no puede superar 10 caracteres")
     private String codigoFamilia;
 
     @NotBlank(message = "El nombre de familia es obligatorio")

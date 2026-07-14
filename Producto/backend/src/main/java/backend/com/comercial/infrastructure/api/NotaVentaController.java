@@ -1,10 +1,13 @@
 package backend.com.comercial.infrastructure.api;
 
+import backend.com.comercial.application.UseCase.ActualizarNVUseCase;
+import backend.com.comercial.application.UseCase.ConsultarTrazabilidadResumenUseCase;
 import backend.com.comercial.application.UseCase.ConsultarTrazabilidadUseCase;
 import backend.com.comercial.application.UseCase.CrearNVUseCase;
 import backend.com.comercial.application.UseCase.GestionarNVUseCase;
 import backend.com.comercial.application.dto.CrearNVCommand;
 import backend.com.comercial.application.dto.NVResponse;
+import backend.com.comercial.application.dto.NVTrazabilidadResumenDTO;
 import backend.com.comercial.domain.repository.NotaVentaRepository;
 import backend.com.shared.application.dto.DocumentTraceDTO;
 import backend.com.shared.application.dto.FirmaAprobacionRequest;
@@ -25,7 +28,9 @@ import java.util.stream.Collectors;
 public class NotaVentaController {
 
     private final CrearNVUseCase crearNVUseCase;
+    private final ActualizarNVUseCase actualizarNVUseCase;
     private final ConsultarTrazabilidadUseCase consultarTrazabilidadUseCase;
+    private final ConsultarTrazabilidadResumenUseCase consultarTrazabilidadResumenUseCase;
     private final GestionarNVUseCase gestionarNVUseCase;
     private final NotaVentaRepository repository;
     private final HistorialEstadoService historialService;
@@ -53,6 +58,11 @@ public class NotaVentaController {
         return crearNVUseCase.ejecutar(command);
     }
 
+    @PutMapping("/{id}")
+    public NVResponse actualizar(@PathVariable Long id, @Valid @RequestBody CrearNVCommand command) {
+        return actualizarNVUseCase.ejecutar(id, command);
+    }
+
     @GetMapping("/{id}")
     public NVResponse obtenerPorId(@PathVariable Long id) {
         return repository.findById(id)
@@ -65,9 +75,14 @@ public class NotaVentaController {
         return consultarTrazabilidadUseCase.ejecutar(id);
     }
 
-    @PatchMapping("/{id}/aprobar")
-    public NVResponse aprobar(@PathVariable Long id, @Valid @RequestBody FirmaAprobacionRequest body) {
-        return gestionarNVUseCase.aprobar(id, body.getAprobador(), body.getObservacion());
+    @GetMapping("/trazabilidad-resumen")
+    public List<NVTrazabilidadResumenDTO> getTrazabilidadResumen() {
+        return consultarTrazabilidadResumenUseCase.ejecutar();
+    }
+
+    @PatchMapping("/{id}/emitir")
+    public NVResponse emitir(@PathVariable Long id, @Valid @RequestBody FirmaAprobacionRequest body) {
+        return gestionarNVUseCase.emitir(id, body.getAprobador(), body.getObservacion());
     }
 
     @PatchMapping("/{id}/cancelar")
@@ -79,5 +94,10 @@ public class NotaVentaController {
     @GetMapping("/{id}/historial")
     public List<HistorialEstadoDTO> historial(@PathVariable Long id) {
         return historialService.consultar("NV", id);
+    }
+
+    @DeleteMapping("/{id}")
+    public void eliminarBorrador(@PathVariable Long id) {
+        gestionarNVUseCase.eliminarBorrador(id);
     }
 }

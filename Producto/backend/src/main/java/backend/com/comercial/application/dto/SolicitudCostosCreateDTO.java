@@ -41,4 +41,7 @@ public class SolicitudCostosCreateDTO {
     private Boolean esMuestra;
     private Boolean hasLogo;
     private java.math.BigDecimal costoTotal;
+
+    private Boolean esPrendaNueva;
+    private List<String> camposPlantilla;
 }

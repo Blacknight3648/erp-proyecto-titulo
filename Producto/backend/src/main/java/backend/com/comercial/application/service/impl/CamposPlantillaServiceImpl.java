@@ -52,15 +52,14 @@ public class CamposPlantillaServiceImpl implements CamposPlantillaService {
     @Override
     @Transactional(readOnly = true)
     public List<CamposPlantillaDTO> listarTodas() {
-        return plantillaRepository.findAll().stream().map(mapper::toDTO).toList();
+        return plantillaRepository.findAllActivos().stream().map(mapper::toDTO).toList();
     }
 
     @Override
     public void eliminar(Long id) {
-        if (!plantillaRepository.existsById(id)) {
-            throw new EntityNotFoundException("Plantilla con id " + id + " no encontrada");
-        }
-        plantillaRepository.deleteById(id);
+        CamposPlantilla existente = findOrThrow(id);
+        existente.setActivo(false);
+        plantillaRepository.save(existente);
     }
 
     private CamposPlantilla findOrThrow(Long id) {

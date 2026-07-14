@@ -15,6 +15,7 @@ public class RubroMapper {
                 .rubroId(entity.getRubroId())
                 .descripcionRubro(entity.getDescripcionRubro())
                 .nombreRubro(entity.getNombreRubro())
+                .siglaRubro(entity.getSiglaRubro())
                 .build();
     }
 
@@ -25,6 +26,7 @@ public class RubroMapper {
                 .rubroId(domain.getRubroId())
                 .descripcionRubro(domain.getDescripcionRubro())
                 .nombreRubro(domain.getNombreRubro())
+                .siglaRubro(domain.getSiglaRubro())
                 .build();
     }
 
@@ -35,6 +37,7 @@ public class RubroMapper {
                 .rubroId(domain.getRubroId())
                 .descripcionRubro(domain.getDescripcionRubro())
                 .nombreRubro(domain.getNombreRubro())
+                .siglaRubro(domain.getSiglaRubro())
                 .build();
     }
 
@@ -45,6 +48,7 @@ public class RubroMapper {
                 .rubroId(dto.getRubroId())
                 .descripcionRubro(dto.getDescripcionRubro())
                 .nombreRubro(dto.getNombreRubro())
+                .siglaRubro(dto.getSiglaRubro())
                 .build();
     }
 

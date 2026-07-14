@@ -28,7 +28,6 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
-import static backend.com.comercial.domain.enums.EstadoEVN.ADJUDICADA;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;

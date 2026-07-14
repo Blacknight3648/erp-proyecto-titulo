@@ -7,12 +7,14 @@ import backend.com.gestionUsuarios.domain.model.Role;
 import backend.com.gestionUsuarios.infrastructure.exception.RoleDuplicadoException;
 import backend.com.gestionUsuarios.infrastructure.exception.RoleNotFoundException;
 import backend.com.gestionUsuarios.domain.repository.RoleRepository;
+import backend.com.shared.domain.model.Permiso;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -83,6 +85,14 @@ public class RoleServiceImpl implements RoleService {
             role.setArea(area);
         }
 
+        return roleRepository.save(role);
+    }
+
+    @Override
+    @Transactional
+    public Role actualizarPermisos(Long id, Set<Permiso> permisos) {
+        Role role = obtenerRole(id);
+        role.setPermisos(permisos != null ? permisos : new java.util.HashSet<>());
         return roleRepository.save(role);
     }
 

@@ -8,6 +8,7 @@ import { useProduccion } from './useProduccion';
 import { useClientes } from './useClientes';
 import { useVendedores } from './useVendedores';
 import { validateNumericInput } from '../utils/validations';
+import { getApiErrorMessage } from '../utils/apiError';
 
 export const DEFAULT_ITEM = {
     id: 1,
@@ -23,6 +24,8 @@ export const DEFAULT_ITEM = {
     genero: "",
     tela: "",
     composicion: "",
+    color: "",
+    coloresDisponibles: [],
     costeoId: null,
     solicitudCostosId: null,
     costoProducto: 0,
@@ -63,7 +66,8 @@ export const DEFAULT_OTROS_COSTOS = {
         { id: 1, etiqueta: 'PANTALON', costoCinta: 400, costoMO: 2600, mtsCinta: 2.4, total: 3560 },
         { id: 2, etiqueta: 'TOP', costoCinta: 400, costoMO: 2500, mtsCinta: 2.0, total: 3300 }
     ],
-    porcentajeComision: 0.05
+    // Comisión ejecutivo estandarizada: 20% fijo para todos los vendedores, no editable.
+    porcentajeComision: 20.0
 };
 
 export const parseId = (id) => {
@@ -87,7 +91,7 @@ export const useEVNState = (initialEval = null) => {
     // States
     const [items, setItems] = useState([{ ...DEFAULT_ITEM }]);
     const [otrosCostos, setOtrosCostos] = useState(DEFAULT_OTROS_COSTOS);
-    const [solicitud, setSolicitud] = useState({ clienteNombre: "" });
+    const [solicitud, setSolicitud] = useState({ clienteNombre: "", clienteId: null, vendedorId: null });
     const [evalData, setEvalData] = useState({
         referencia: "",
         condiciones: {
@@ -145,6 +149,7 @@ export const useEVNState = (initialEval = null) => {
                 modelo: it.modelo || "",
                 tela: it.tela || "",
                 composicion: it.composicion || "",
+                color: it.color || "",
                 genero: it.genero || "",
                 codigoInterno: it.codigoInterno || "",
                 codigoProveedor: it.codigoProveedor || "",
@@ -254,7 +259,7 @@ export const useEVNState = (initialEval = null) => {
                 referencia: initialEval.referencia || "",
                 condiciones: {
                     ...prev.condiciones,
-                    plazoEntrega: initialEval.fechaEvaluacion || ""
+                    plazoEntrega: ""
                 }
             }));
         } else {
@@ -326,7 +331,9 @@ export const useEVNState = (initialEval = null) => {
 
         const totalNeto = itemsConCostos.reduce((acc, item) => acc + (item.precioVentaTotal || 0), 0);
         const totalCostoGeneral = itemsConCostos.reduce((acc, item) => acc + (item.costoTotal || 0), 0);
-        const margenPesos = totalNeto - totalCostoGeneral;
+        const comisionPct = currentOtros.porcentajeComision || 0;
+        const comisionMonto = totalNeto * (comisionPct / 100);
+        const margenPesos = totalNeto - totalCostoGeneral - comisionMonto;
         const margenPorc = totalNeto > 0 ? (margenPesos / totalNeto) * 100 : 0;
 
         return {
@@ -388,7 +395,7 @@ export const useEVNState = (initialEval = null) => {
                 return;
             }
         }
-        setItems(prev => prev.map(item => item.id === id ? { ...item, [field]: (typeof value === 'string' && field !== 'tipo' && field !== 'producto' && field !== 'modelo' && field !== 'tela' && field !== 'composicion' && field !== 'genero' && field !== 'codigoInterno' && field !== 'codigoProveedor' && field !== 'proveedor') ? (parseFloat(value) || 0) : value } : item));
+        setItems(prev => prev.map(item => item.id === id ? { ...item, [field]: (typeof value === 'string' && field !== 'tipo' && field !== 'producto' && field !== 'modelo' && field !== 'tela' && field !== 'composicion' && field !== 'color' && field !== 'genero' && field !== 'codigoInterno' && field !== 'codigoProveedor' && field !== 'proveedor') ? (parseFloat(value) || 0) : value } : item));
     }, []);
 
     /**
@@ -460,6 +467,7 @@ export const useEVNState = (initialEval = null) => {
             clienteNombre: doc.clienteNombre
         }));
 
+        const cant = doc.cantidad || 1;
         const totalCosto = quote ? (
             (quote.costoHilos || 0) +
             (quote.costoManoObra || 0) +
@@ -469,6 +477,8 @@ export const useEVNState = (initialEval = null) => {
             (quote.costoTotalMateriaPrima || 0)
         ) : (doc.costoTotal || 0);
 
+        const unitCosto = totalCosto / cant;
+
         const newItem = {
             ...DEFAULT_ITEM,
             id: Date.now() + Math.random(),
@@ -477,9 +487,9 @@ export const useEVNState = (initialEval = null) => {
             cant: doc.cantidad || 0,
             tipo: 'SC',
             codigoInterno: doc.numero || "",
-            costoProducto: totalCosto,
-            costoTotalUnitario: totalCosto,
-            costoTotal: totalCosto * (doc.cantidad || 0)
+            costoProducto: unitCosto,
+            costoTotalUnitario: unitCosto,
+            costoTotal: totalCosto
         };
 
         setItems(prev => [...prev.filter(i => i.producto !== ""), newItem]);
@@ -529,6 +539,7 @@ export const useEVNState = (initialEval = null) => {
         }
 
         const newItems = selectedDocs.map((doc, index) => {
+            const cant = doc.cantidad || doc.cant || 1;
             const costoPersistido = doc.costoTotal || 0;
             const totalMateriales = costoPersistido > 0 ? costoPersistido : (
                 (doc.telas || []).reduce((sum, t) => sum + (t.precioTotal || t.costoTotal || ((t.precioUnitario || 0) * (t.consumo || 0))), 0) +
@@ -547,9 +558,9 @@ export const useEVNState = (initialEval = null) => {
                 proveedor: doc.clienteNombre || "",
                 tela: doc.telas?.[0]?.descripcion || "",
                 composicion: doc.telas?.[0]?.composicion || "",
-                costoProducto: totalMateriales,
-                costoLogo: totalLogo,
-                costoOrdenTrabajo: doc.costoFijo?.total || 0,
+                costoProducto: totalMateriales / cant,
+                costoLogo: totalLogo / cant,
+                costoOrdenTrabajo: (doc.costoFijo?.total || 0) / cant,
             };
         });
 
@@ -667,7 +678,7 @@ export const useEVNState = (initialEval = null) => {
             return true;
         } catch (error) {
             console.error("Error al guardar la propuesta:", error);
-            const msg = error.response?.data?.message || error.message;
+            const msg = getApiErrorMessage(error, 'Error desconocido');
             toast.error(`Error al guardar: ${msg}`);
             return false;
         } finally {
@@ -682,7 +693,7 @@ export const useEVNState = (initialEval = null) => {
             toast.success("EVN adjudicada con éxito");
             return true;
         } catch (error) {
-            toast.error('Error al adjudicar: ' + (error.response?.data?.message || error.message));
+            toast.error('Error al adjudicar: ' + getApiErrorMessage(error, 'Error desconocido'));
             return false;
         }
     };

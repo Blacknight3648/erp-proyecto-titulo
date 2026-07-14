@@ -89,24 +89,23 @@ public class SolicitudCostosMapper {
 
     private SCOSAccesorio mapAccesorioToDomain(SCOSAccesorioJpaEntity entity) {
         if (entity == null) return null;
+        String nombre = entity.getArticulo() != null
+                ? entity.getArticulo().getNombreArticulo()
+                : entity.getDescripcion();
         return new SCOSAccesorio(
                 entity.getArticulo() != null ? entity.getArticulo().getIdArticulo() : null,
                 entity.getTipo(),
-                entity.getDescripcion(),
-                entity.getCantidad(),
-                entity.getProveedor() != null ? entity.getProveedor().getProveedorId() : null,
+                nombre,
                 entity.getProveedorReferencia(),
-                entity.getConsumo(),
-                entity.getUnidadMedida(),
-                new Money(entity.getPrecioUnitario() != null ? entity.getPrecioUnitario() : BigDecimal.ZERO,
-                        entity.getMonedaPrecioUnitario() != null ? entity.getMonedaPrecioUnitario() : "CLP"),
+                entity.getCantidad(),
                 null);
     }
 
     private SCOSLogotipo mapLogotipoToDomain(SCOSLogotipoJpaEntity entity) {
-        return new SCOSLogotipo(entity.getId(), entity.getTipo(), entity.getNombre(),
+        return new SCOSLogotipo(entity.getIdSCOSLogotipo(), entity.getTipo(), entity.getNombre(),
                 entity.getUbicacion(), entity.getColor(), entity.getTamano(),
                 entity.getCantidad(), entity.getPrecio());
+        // tamano ya es String (VARCHAR 50) — puede contener "6 cm", "10 in", etc.
     }
 
     private SCOSLogotipoJpaEntity toLogotipoEntity(SCOSLogotipo domain) {
@@ -115,6 +114,7 @@ public class SolicitudCostosMapper {
         entity.setNombre(domain.getNombre());
         entity.setUbicacion(domain.getUbicacion());
         entity.setColor(domain.getColor());
+        // tamano es String: viene con unidad incluida, p.e. "6 cm" o "10 in"
         entity.setTamano(domain.getTamano());
         entity.setCantidad(domain.getCantidad());
         entity.setPrecio(domain.getPrecio());
@@ -193,14 +193,9 @@ public class SolicitudCostosMapper {
             }
             ae.setTipo(a.getTipo());
             ae.setDescripcion(a.getDescripcion());
-            ae.setCantidad(a.getCantidad());
             ae.setProveedorReferencia(a.getProveedorReferencia());
-            ae.setConsumo(a.getConsumo());
-            ae.setUnidadMedida(a.getUnidadMedida());
-            if (a.getPrecioUnitario() != null) {
-                ae.setPrecioUnitario(a.getPrecioUnitario().getAmount());
-                ae.setMonedaPrecioUnitario(a.getPrecioUnitario().getCurrency());
-            }
+            ae.setCantidad(a.getCantidad());
+            ae.setTempId(a.getTempId());
             entity.addAccesorio(ae);
         });
 

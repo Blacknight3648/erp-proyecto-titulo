@@ -1,65 +1,79 @@
 package backend.com.produccion.application.UseCase;
 
 import backend.com.produccion.application.dto.AvanceOPResponse;
-import backend.com.produccion.domain.model.OrdenTrabajo;
-import backend.com.produccion.domain.repository.OrdenTrabajoRepository;
+import backend.com.produccion.domain.model.SeguimientoOP;
+import backend.com.produccion.domain.repository.SeguimientoOPRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class CalcularAvanceUseCase {
 
-    private final OrdenTrabajoRepository otRepository;
+    private final SeguimientoOPRepository seguimientoOPRepository;
 
     public AvanceOPResponse calcular(Long ordenProduccionId) {
-        List<OrdenTrabajo> ots = otRepository.findByOrdenProduccionId(ordenProduccionId);
-
+        Optional<SeguimientoOP> optSeg = seguimientoOPRepository.findByOrdenProduccionId(ordenProduccionId);
         AvanceOPResponse resp = new AvanceOPResponse();
         resp.setOrdenProduccionId(ordenProduccionId);
 
-        int totalUnidades = 0;
-        int totalProducidas = 0;
-        int totalMermas = 0;
-        for (OrdenTrabajo ot : ots) {
-            totalUnidades += ot.getCantidadTotal() != null ? ot.getCantidadTotal() : 0;
-            totalProducidas += ot.getCantidadProducida() != null ? ot.getCantidadProducida() : 0;
-            totalMermas += ot.getCantidadMerma() != null ? ot.getCantidadMerma() : 0;
+        if (optSeg.isEmpty()) {
+            resp.setPorcentajeGlobal(BigDecimal.ZERO);
+            resp.setSemaforo(semaforo(BigDecimal.ZERO));
+            return resp;
         }
-        resp.setTotalUnidades(totalUnidades);
-        resp.setTotalProducidas(totalProducidas);
-        resp.setTotalMermas(totalMermas);
 
-        BigDecimal pct = BigDecimal.ZERO;
-        if (totalUnidades > 0) {
-            pct = new BigDecimal(totalProducidas + totalMermas)
-                    .multiply(new BigDecimal("100"))
-                    .divide(new BigDecimal(totalUnidades), 2, RoundingMode.HALF_UP);
-        }
+        SeguimientoOP seg = optSeg.get();
+        resp.setFechaRecepcionOp(seg.getFechaRecepcionOp());
+        resp.setFinTizado(seg.getFinTizado());
+        resp.setEstadoOcMp(seg.getEstadoOcMp() != null ? seg.getEstadoOcMp().name() : null);
+        resp.setRecepcionCompras(seg.getRecepcionCompras());
+        resp.setInicioCorte(seg.getInicioCorte());
+        resp.setFinCorte(seg.getFinCorte());
+        resp.setInicioLogo(seg.getInicioLogo());
+        resp.setEstadoIdaLogo(seg.getEstadoIdaLogo() != null ? seg.getEstadoIdaLogo().name() : null);
+        resp.setRegresoLogo(seg.getRegresoLogo());
+        resp.setEstadoRecLogo(seg.getEstadoRecLogo() != null ? seg.getEstadoRecLogo().name() : null);
+        resp.setInicioTallerExterno(seg.getInicioTallerExterno());
+        resp.setFinTallerExterno(seg.getFinTallerExterno());
+        resp.setCalidadTaller(seg.getCalidadTaller() != null ? seg.getCalidadTaller().name() : null);
+        resp.setObsTaller(seg.getObsTaller());
+        resp.setFinTerminacion(seg.getFinTerminacion());
+        resp.setFinPersonalizado(seg.getFinPersonalizado());
+
+        int camposLlenos = 0;
+        int totalCampos = 15;
+
+        if (seg.getFechaRecepcionOp() != null) camposLlenos++;
+        if (seg.getFinTizado() != null) camposLlenos++;
+        if (seg.getEstadoOcMp() != null) camposLlenos++;
+        if (seg.getRecepcionCompras() != null) camposLlenos++;
+        if (seg.getInicioCorte() != null) camposLlenos++;
+        if (seg.getFinCorte() != null) camposLlenos++;
+        if (seg.getInicioLogo() != null) camposLlenos++;
+        if (seg.getEstadoIdaLogo() != null) camposLlenos++;
+        if (seg.getRegresoLogo() != null) camposLlenos++;
+        if (seg.getEstadoRecLogo() != null) camposLlenos++;
+        if (seg.getInicioTallerExterno() != null) camposLlenos++;
+        if (seg.getFinTallerExterno() != null) camposLlenos++;
+        if (seg.getCalidadTaller() != null) camposLlenos++;
+        if (seg.getFinTerminacion() != null) camposLlenos++;
+        if (seg.getFinPersonalizado() != null) camposLlenos++;
+
+        BigDecimal pct = new BigDecimal(camposLlenos)
+                .multiply(new BigDecimal("100"))
+                .divide(new BigDecimal(totalCampos), 2, RoundingMode.HALF_UP);
+
         resp.setPorcentajeGlobal(pct);
         resp.setSemaforo(semaforo(pct));
-
-        resp.setOrdenesTrabajo(ots.stream().map(this::toAvanceOT).collect(Collectors.toList()));
+        
         return resp;
-    }
-
-    private AvanceOPResponse.AvanceOT toAvanceOT(OrdenTrabajo ot) {
-        AvanceOPResponse.AvanceOT a = new AvanceOPResponse.AvanceOT();
-        a.setIdOT(ot.getIdOT());
-        a.setFase(ot.getFase() != null ? ot.getFase().name() : null);
-        a.setEstado(ot.getEstadoOT() != null ? ot.getEstadoOT().name() : null);
-        a.setCantidadTotal(ot.getCantidadTotal());
-        a.setCantidadProducida(ot.getCantidadProducida());
-        a.setCantidadMerma(ot.getCantidadMerma());
-        a.setPorcentajeAvance(ot.getPorcentajeAvance());
-        return a;
     }
 
     private String semaforo(BigDecimal pct) {

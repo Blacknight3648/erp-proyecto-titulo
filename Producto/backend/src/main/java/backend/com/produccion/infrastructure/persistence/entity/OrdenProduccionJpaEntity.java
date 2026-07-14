@@ -18,13 +18,14 @@ public class OrdenProduccionJpaEntity extends AuditableJpaEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id_op")
     private Long idOP;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "costeo_version_id", nullable = false, foreignKey = @ForeignKey(name = "fk_op_costeo_version"))
     private CosteoVersionJpaEntity costeoVersion;
 
-    @Column(unique = true, length = 20, nullable = false)
+    @Column(name = "numero_op", unique = true, length = 20, nullable = false)
     private String numeroOP;
 
     @Column(name = "nota_venta_id", nullable = false)
@@ -45,4 +46,7 @@ public class OrdenProduccionJpaEntity extends AuditableJpaEntity {
 
     @OneToMany(mappedBy = "ordenProduccion", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OrdenProduccionItemJpaEntity> items = new ArrayList<>();
+
+    @OneToOne(mappedBy = "ordenProduccion", cascade = CascadeType.ALL, orphanRemoval = true)
+    private SeguimientoOPJpaEntity seguimiento;
 }

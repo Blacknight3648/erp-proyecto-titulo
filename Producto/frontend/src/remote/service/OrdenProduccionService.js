@@ -42,5 +42,31 @@ export const OrdenProduccionService = {
             console.error(`Error fetching OP ${id} avance:`, error);
             throw error;
         }
+    },
+
+    /**
+     * Obtiene el seguimiento (hitos) de una OP. Retorna SeguimientoOPDTO con porcentajeAvance.
+     */
+    getSeguimiento: async (id) => {
+        try {
+            const response = await api.get(`/produccion/ordenes-produccion/${id}/seguimiento`);
+            return response.data;
+        } catch (error) {
+            console.error(`Error fetching OP ${id} seguimiento:`, error);
+            throw error;
+        }
+    },
+
+    /**
+     * Actualiza el seguimiento (hitos) de una OP. Retorna SeguimientoOPDTO actualizado.
+     */
+    actualizarSeguimiento: async (id, data) => {
+        try {
+            const response = await api.put(`/produccion/ordenes-produccion/${id}/seguimiento`, data);
+            return response.data;
+        } catch (error) {
+            console.error(`Error updating OP ${id} seguimiento:`, error);
+            throw error;
+        }
     }
 };

@@ -14,7 +14,7 @@ import java.util.List;
  * Controlador REST para la gestión del catálogo de Familias de Tela.
  *
  * <p>
- * Base URL: {@code /api/v3/maestros/familias-tela}
+ * Base URL: {@code /api/v1/maestros/familias-tela}
  * </p>
  *
  * <p>
@@ -35,7 +35,7 @@ import java.util.List;
  * </ul>
  */
 @RestController
-@RequestMapping("/api/v3/maestros/familias-tela")
+@RequestMapping("/api/v1/maestros/familias-tela")
 @RequiredArgsConstructor
 public class FamiliaTelaController {
 

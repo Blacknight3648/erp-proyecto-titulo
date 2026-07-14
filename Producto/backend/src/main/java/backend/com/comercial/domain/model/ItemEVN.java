@@ -24,6 +24,7 @@ public class ItemEVN {
     String codigoInterno;
     String codigoProveedor;
     String proveedorNombre;
+    String color;
 
     Integer cantidad;
     Money precioUnitario;
@@ -45,6 +46,7 @@ public class ItemEVN {
     public ItemEVN(Integer articuloId, Long proveedorId, Integer nroItem,
             String descripcion, String modelo, String tela, String composicion,
             String genero, String codigoInterno, String codigoProveedor, String proveedorNombre,
+            String color,
             Integer cantidad, Money precioUnitario, Money costoUnitario,
             BigDecimal costoProducto, BigDecimal costoLogo, BigDecimal costoOrdenTrabajo,
             TipoItem tipoItem, List<ItemEspecificacion> technicalSpecs,
@@ -66,6 +68,7 @@ public class ItemEVN {
         this.codigoInterno = codigoInterno;
         this.codigoProveedor = codigoProveedor;
         this.proveedorNombre = proveedorNombre;
+        this.color = color;
         this.cantidad = cantidad;
         this.precioUnitario = precioUnitario;
         this.costoUnitario = costoUnitario;

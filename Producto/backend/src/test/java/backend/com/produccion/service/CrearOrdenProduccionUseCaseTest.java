@@ -8,6 +8,7 @@ import backend.com.comercial.domain.model.ItemEVN;
 import backend.com.comercial.domain.model.ItemNV;
 import backend.com.comercial.domain.model.NotaVenta;
 import backend.com.comercial.domain.repository.EvaluacionNegocioRepository;
+import backend.com.comercial.domain.repository.NotaVentaRepository;
 import backend.com.produccion.application.UseCase.CrearOrdenProduccionUseCase;
 import backend.com.produccion.application.UseCase.CrearVersionCosteoUseCase;
 import backend.com.produccion.domain.enums.FaseProduccion;
@@ -66,6 +67,8 @@ class CrearOrdenProduccionUseCaseTest {
     @Mock
     private OrdenTrabajoRepository otRepository;
     @Mock
+    private NotaVentaRepository nvRepository;
+    @Mock
     private CrearVersionCosteoUseCase crearVersionCosteoUseCase;
     @Mock
     private backend.com.shared.application.service.NumeroDocumentoService numeroDocumentoService;
@@ -99,32 +102,32 @@ class CrearOrdenProduccionUseCaseTest {
     private NotaVenta notaVenta(Long evaluacionNegocioId, List<ItemNV> items) {
         Long evnId = evaluacionNegocioId != null ? evaluacionNegocioId : 7L;
         return new NotaVenta(1L, new DocumentNumber("NV-001"), evnId, 10L, 20L,
-                EstadoNV.APROBADA, false, null, LocalDate.now(), LocalDate.now().plusDays(10),
+                EstadoNV.EMITIDA, false, null, LocalDate.now(), LocalDate.now().plusDays(10),
                 Money.zero("CLP"), Money.zero("CLP"), Money.zero("CLP"), items);
     }
 
     private ItemNV itemOP(int nroItem, Integer cantidad, String llevaLogo, String logoDetalle) {
-        return new ItemNV((long) (100 + nroItem), nroItem, 1, "Polera Basica", "Algodón", "100% Algodón",
-                "Azul", "M", "Unisex", "COD-" + nroItem, 5L, llevaLogo, TipoItem.OP, true, "Detalle OT",
+        return new ItemNV((long) (100 + nroItem), nroItem, 1, "Polera Basica", "Polera Basica", "Algodón", "100% Algodón",
+                "Azul", "M", "Unisex", "COD-" + nroItem, 5L, null, llevaLogo, TipoItem.OP, true, "Detalle OT",
                 logoDetalle, cantidad, new Money(new BigDecimal("5000"), "CLP"), List.of());
     }
 
     private ItemNV itemNoOP(int nroItem) {
         return new ItemNV((long) (200 + nroItem), nroItem, 2, "Tela Insumo", null, null, null, null, null,
-                "COD-X" + nroItem, null, "N/A", TipoItem.SC, false, null, null, 10,
+                null, "COD-X" + nroItem, null, null, "N/A", TipoItem.SC, false, null, null, 10,
                 new Money(new BigDecimal("1000"), "CLP"), List.of());
     }
 
     private ItemEVN itemEvnConCosteo(Integer nroItem, Long costeoId) {
         return new ItemEVN(1, 5L, nroItem, "Polera", "Polera Basica", "Algodón", "100% Algodón", "Unisex",
-                "COD-INT", "COD-PROV", "Proveedor", 50, new Money(new BigDecimal("5000"), "CLP"),
+                "COD-INT", "COD-PROV", "Proveedor", "Azul", 50, new Money(new BigDecimal("5000"), "CLP"),
                 new Money(new BigDecimal("3000"), "CLP"), BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO,
                 TipoItem.OP, List.of(), costeoId, 30L);
     }
 
     private ItemEVN itemEvnSinCosteo(Integer nroItem) {
         return new ItemEVN(1, 5L, nroItem, "Polera", "Polera Basica", "Algodón", "100% Algodón", "Unisex",
-                "COD-INT", "COD-PROV", "Proveedor", 50, new Money(new BigDecimal("5000"), "CLP"),
+                "COD-INT", "COD-PROV", "Proveedor", "Rojo", 50, new Money(new BigDecimal("5000"), "CLP"),
                 new Money(new BigDecimal("3000"), "CLP"), BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO,
                 TipoItem.OP, List.of(), null, 30L);
     }
@@ -138,14 +141,14 @@ class CrearOrdenProduccionUseCaseTest {
     private Costeo costeo(Long idCosteo, String numeroCosteo) {
         return new Costeo(idCosteo, numeroCosteo != null ? new DocumentNumber(numeroCosteo) : null,
                 30L, 10L, "Cliente Test", 20L, "Vendedor Test",
-                Money.zero("CLP"), Money.zero("CLP"), Money.zero("CLP"), Money.zero("CLP"), Money.zero("CLP"),
+                Money.zero("CLP"), Money.zero("CLP"), "", Money.zero("CLP"), Money.zero("CLP"), Money.zero("CLP"),
                 BigDecimal.ZERO, null, null, null, null, null, null,
                 Money.zero("CLP"), BigDecimal.ZERO, Money.zero("CLP"), new ArrayList<>());
     }
 
     private CosteoVersion costeoVersion(Long id, Long costeoId, int numeroVersion) {
         return new CosteoVersion(id, costeoId, numeroVersion, LocalDateTime.now(), "Versión inicial al crear OP",
-                "SYSTEM", new ArrayList<>(), Money.zero("CLP"), Money.zero("CLP"), Money.zero("CLP"),
+                "SYSTEM", new ArrayList<>(), Money.zero("CLP"), "", Money.zero("CLP"), Money.zero("CLP"),
                 Money.zero("CLP"), Money.zero("CLP"), BigDecimal.ZERO, Money.zero("CLP"), BigDecimal.ZERO,
                 Money.zero("CLP"));
     }
@@ -166,7 +169,9 @@ class CrearOrdenProduccionUseCaseTest {
         ItemNV item = itemOP(1, 10, "N/A", null);
         NotaVenta nv = notaVenta(7L, List.of(item));
 
-        OrdenProduccion result = useCase.execute(nv);
+        List<OrdenProduccion> resultados = useCase.execute(nv);
+        assertThat(resultados).hasSize(1);
+        OrdenProduccion result = resultados.get(0);
 
         assertThat(result.getNumeroOP().getValue()).isEqualTo("OP-0000001");
         assertThat(result.getCosteoVersionId()).isEqualTo(888L);
@@ -201,7 +206,9 @@ class CrearOrdenProduccionUseCaseTest {
 
         when(evnRepository.findById(7L)).thenReturn(Optional.of(evnEntity));
 
-        OrdenProduccion result = useCase.execute(nv);
+        List<OrdenProduccion> resultados = useCase.execute(nv);
+        assertThat(resultados).hasSize(1);
+        OrdenProduccion result = resultados.get(0);
 
         assertThat(result.getNumeroOP().getValue()).isEqualTo("OP-0000001");
         assertThat(result.getCosteoVersionId()).isEqualTo(888L);
@@ -240,7 +247,9 @@ class CrearOrdenProduccionUseCaseTest {
         when(crearVersionCosteoUseCase.ejecutar(50L, "Versión inicial al crear OP", "SYSTEM"))
                 .thenReturn(version);
 
-        OrdenProduccion result = useCase.execute(nv);
+        List<OrdenProduccion> resultados = useCase.execute(nv);
+        assertThat(resultados).hasSize(1);
+        OrdenProduccion result = resultados.get(0);
 
         assertThat(result.getNumeroOP().getValue()).isEqualTo("OP-0000001");
         assertThat(result.getCosteoVersionId()).isEqualTo(777L);
@@ -287,7 +296,9 @@ class CrearOrdenProduccionUseCaseTest {
         ItemNV item = itemOP(2, 8, "NO", null);
         NotaVenta nv = notaVenta(null, List.of(item));
 
-        OrdenProduccion result = useCase.execute(nv);
+        List<OrdenProduccion> resultados = useCase.execute(nv);
+        assertThat(resultados).hasSize(1);
+        OrdenProduccion result = resultados.get(0);
 
         ArgumentCaptor<OrdenTrabajo> captor = ArgumentCaptor.forClass(OrdenTrabajo.class);
         verify(otRepository, times(3)).save(captor.capture());
@@ -312,7 +323,9 @@ class CrearOrdenProduccionUseCaseTest {
         ItemNV insumoItem = itemNoOP(2);
         NotaVenta nv = notaVenta(null, List.of(opItem, insumoItem));
 
-        OrdenProduccion result = useCase.execute(nv);
+        List<OrdenProduccion> resultados = useCase.execute(nv);
+        assertThat(resultados).hasSize(1);
+        OrdenProduccion result = resultados.get(0);
 
         assertThat(result.getItems()).hasSize(1);
         assertThat(result.getItems().get(0).getNroItem()).isEqualTo(1);
@@ -325,7 +338,9 @@ class CrearOrdenProduccionUseCaseTest {
         ItemNV item = itemOP(3, 25, "N/A", null);
         NotaVenta nv = notaVenta(null, List.of(item));
 
-        OrdenProduccion result = useCase.execute(nv);
+        List<OrdenProduccion> resultados = useCase.execute(nv);
+        assertThat(resultados).hasSize(1);
+        OrdenProduccion result = resultados.get(0);
 
         OrdenProduccionItem opItem = result.getItems().get(0);
         assertThat(opItem.getArticuloId()).isEqualTo(item.getArticuloId());

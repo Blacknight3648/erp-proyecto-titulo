@@ -1,0 +1,10 @@
+-- V24__hoja_compra_item_validacion_modificacion.sql
+--
+-- Esta migración quedó como no-op: `stock_actual` (ArticuloJpaEntity) y
+-- `cantidad_stock` / `cantidad_a_comprar` / `modificado` /
+-- `justificacion_modificacion` (HojaCompraItemJpaEntity) ya están mapeadas
+-- con @Column, por lo que Hibernate (ddl-auto=update) las crea. El
+-- `ADD COLUMN IF NOT EXISTS` era redundante y MySQL no lo soporta
+-- (ver V10__evn_item_costeo_columns.sql) → se retiró.
+--
+-- Se conserva el archivo (sin sentencias) para no alterar el versionado Flyway.

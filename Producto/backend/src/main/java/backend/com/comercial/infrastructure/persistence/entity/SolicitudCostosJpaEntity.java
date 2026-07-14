@@ -19,6 +19,7 @@ public class SolicitudCostosJpaEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id_scos")
     private Long idSCOS;
 
     @Column(unique = true, length = 20, nullable = false)

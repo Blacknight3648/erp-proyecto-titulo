@@ -48,6 +48,7 @@ public class CrearVersionCosteoUseCase {
                                 usuarioCreador,
                                 snapshotItems,
                                 costeo.getCostoManoObra(),
+                                costeo.getObservacionesManoObra(),
                                 costeo.getCostoHilos(),
                                 costeo.getCostoFlete(),
                                 costeo.getCostoEmbalaje(),

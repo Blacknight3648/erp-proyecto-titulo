@@ -9,8 +9,8 @@ public enum EstadoHC {
         if (destino == null) return false;
         return switch (this) {
             case BORRADOR -> destino == APROBADA;
-            case APROBADA -> destino == CERRADA;
-            case CERRADA  -> false;
+            case APROBADA -> destino == CERRADA || destino == BORRADOR;
+            case CERRADA  -> destino == BORRADOR || destino == APROBADA;
         };
     }
 }

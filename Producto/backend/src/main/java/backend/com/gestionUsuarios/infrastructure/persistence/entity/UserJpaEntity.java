@@ -3,6 +3,7 @@ package backend.com.gestionUsuarios.infrastructure.persistence.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -39,6 +40,18 @@ public class UserJpaEntity {
 
         @Column(name = "telefono", length = 50, nullable = false)
         private String telefono;
+
+        @Column(name = "fecha_nacimiento")
+        private LocalDate fechaNacimiento;
+
+        @Column(name = "direccion", length = 200)
+        private String direccion;
+
+        @Column(name = "region", length = 100)
+        private String region;
+
+        @Column(name = "comuna", length = 100)
+        private String comuna;
 
         @Builder.Default
         @Column(name = "enabled")

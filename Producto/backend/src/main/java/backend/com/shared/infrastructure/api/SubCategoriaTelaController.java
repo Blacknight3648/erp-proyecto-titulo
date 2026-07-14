@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v3/maestros/subcategorias-tela")
+@RequestMapping("/api/v1/maestros/subcategorias-tela")
 @RequiredArgsConstructor
 public class SubCategoriaTelaController {
 

@@ -7,7 +7,8 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum EstadoNV {
     BORRADOR("Borrador"),
-    APROBADA("Aprobada"),
+    EMITIDA("Emitida"),
+    
     EN_PRODUCCION("En ProducciÃ³n"),
     COMPLETADA("Completada"),
     ENTREGADA("Entregada"),

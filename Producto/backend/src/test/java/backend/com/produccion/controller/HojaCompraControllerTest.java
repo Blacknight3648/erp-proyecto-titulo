@@ -4,7 +4,6 @@ import backend.com.produccion.application.dto.HojaCompraDTO;
 import backend.com.produccion.application.service.HojaCompraService;
 import backend.com.produccion.domain.enums.EstadoHC;
 import backend.com.produccion.infrastructure.api.HojaCompraController;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -31,9 +30,6 @@ class HojaCompraControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
-
-    @Autowired
-    private ObjectMapper objectMapper;
 
     @MockitoBean
     private HojaCompraService hojaCompraService;

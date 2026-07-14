@@ -1,5 +1,6 @@
 import { api } from './api';
 import { NotaVentaDTO } from '../DTO/NotaVentaDTO';
+import { NVTrazabilidadResumenDTO } from '../DTO/NVTrazabilidadResumenDTO';
 
 /**
  * Servicio para la gestión de Notas de Venta.
@@ -41,6 +42,26 @@ export const NotaVentaService = {
             return response.data;
         } catch (error) {
             console.error("Error fetching next number for NV:", error);
+            throw error;
+        }
+    },
+
+    getTrazabilidad: async (id) => {
+        try {
+            const response = await api.get(`/comercial/notas-venta/${id}/trazabilidad`);
+            return response.data || [];
+        } catch (error) {
+            console.error(`Error fetching trazabilidad de NV ${id}:`, error);
+            throw error;
+        }
+    },
+
+    getTrazabilidadResumen: async () => {
+        try {
+            const response = await api.get('/comercial/notas-venta/trazabilidad-resumen');
+            return NVTrazabilidadResumenDTO.listFromResponse(response);
+        } catch (error) {
+            console.error("Error fetching resumen de trazabilidad de NVs:", error);
             throw error;
         }
     }

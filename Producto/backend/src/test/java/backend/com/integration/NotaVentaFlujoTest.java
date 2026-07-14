@@ -24,21 +24,21 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * Flujo de extremo a extremo del feature OT-NV que construimos:
  *
  *   POST  crear NV (ítem con requiereOt=true)  → estado BORRADOR, sin OT aún
- *   PATCH aprobar NV                            → dispara generarDesdeNotaVenta
+ *   PATCH emitir NV                             → dispara generarDesdeNotaVenta
  *   GET   ordenes-trabajo/nota-venta/{id}       → existe la OT de modificación,
  *                                                 con el detalleOt como observaciones
  *                                                 y la FK item_nv_id resuelta.
  *
  * Usa los clientes/vendedores sembrados por data.sql (cliente 1, vendedor 1).
  */
-@DisplayName("Flujo end-to-end · NV → aprobar → OT")
+@DisplayName("Flujo end-to-end · NV → emitir → OT")
 class NotaVentaFlujoTest extends AbstractIntegrationTest {
 
     private static final String DETALLE_OT = "Bordar logo bordado en el pecho";
 
     @Test
-    @DisplayName("aprobar una NV con ítem requiereOt genera la OT de modificación vinculada")
-    void aprobarNV_generaOrdenTrabajo() throws Exception {
+    @DisplayName("emitir una NV con ítem requiereOt genera la OT de modificación vinculada")
+    void emitirNV_generaOrdenTrabajo() throws Exception {
         // 0) La NV solo puede generarse desde una EVN ADJUDICADA. La EVN 2 sembrada
         //    está APROBADA, así que la adjudicamos primero.
         FirmaAprobacionRequest firmaEvn = new FirmaAprobacionRequest();
@@ -77,19 +77,19 @@ class NotaVentaFlujoTest extends AbstractIntegrationTest {
         Long nvId = objectMapper.readTree(creada.getResponse().getContentAsString()).get("idNV").asLong();
         assertThat(nvId).isNotNull();
 
-        // 2) Antes de aprobar no debe existir OT de modificación para esa NV
+        // 2) Antes de emitir no debe existir OT de modificación para esa NV
         mockMvc.perform(get("/api/v1/produccion/ordenes-trabajo/nota-venta/{id}", nvId))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(0));
 
-        // 3) Aprobar la NV (dispara la generación de la OT)
+        // 3) Emitir la NV (dispara la generación de la OT)
         FirmaAprobacionRequest firma = new FirmaAprobacionRequest();
         firma.setAprobador("tester");
-        mockMvc.perform(patch("/api/v1/comercial/notas-venta/{id}/aprobar", nvId)
+        mockMvc.perform(patch("/api/v1/comercial/notas-venta/{id}/emitir", nvId)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(firma)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.estado").value("APROBADA"));
+                .andExpect(jsonPath("$.estado").value("EMITIDA"));
 
         // 4) Ahora sí existe la OT, con el detalle como observaciones, estado PENDIENTE
         //    y la FK item_nv_id resuelta hacia el ítem de la NV.

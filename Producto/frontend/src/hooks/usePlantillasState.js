@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { usePlantillas } from './usePlantillas';
 
 export const usePlantillasState = () => {
-    const { configuraciones, loading, save, remove, getCamposForArticulo } = usePlantillas();
+    const { configuraciones, loading, save, remove, getCamposForArticulo, camposDisponibles } = usePlantillas();
     
     // UI Local States
     const [expanded, setExpanded] = useState(null);
@@ -176,6 +176,7 @@ export const usePlantillasState = () => {
 
     return {
         configuraciones, loading, remove,
+        camposDisponibles,
         expanded, toggleExpand,
         adding, setAdding,
         newName, setNewName,

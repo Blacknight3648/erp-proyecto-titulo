@@ -5,6 +5,7 @@ import backend.com.comercial.domain.model.EvaluacionNegocio;
 import backend.com.comercial.domain.model.ItemNV;
 import backend.com.comercial.domain.model.NotaVenta;
 import backend.com.comercial.domain.repository.EvaluacionNegocioRepository;
+import backend.com.comercial.domain.repository.NotaVentaRepository;
 import backend.com.produccion.domain.enums.FaseProduccion;
 import backend.com.produccion.domain.model.Costeo;
 import backend.com.produccion.domain.model.CosteoVersion;
@@ -22,6 +23,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class CrearOrdenProduccionUseCase {
@@ -30,36 +34,69 @@ public class CrearOrdenProduccionUseCase {
     private final EvaluacionNegocioRepository evnRepository;
     private final CosteoRepository costeoRepository;
     private final OrdenTrabajoRepository otRepository;
+    private final NotaVentaRepository nvRepository;
     private final CrearVersionCosteoUseCase crearVersionCosteoUseCase;
     private final NumeroDocumentoService numeroDocumentoService;
 
+    /**
+     * Cada ítem tipo OP que aún no tiene una OP asignada genera su propia Orden de
+     * Producción individual, con su propio costeo. Los ítems que ya tenían una OP (de un
+     * guardado anterior) quedan intactos — no se tocan ni se les crea una OP nueva.
+     */
     @Transactional
-    public OrdenProduccion execute(NotaVenta notaVenta) {
+    public List<OrdenProduccion> execute(NotaVenta notaVenta) {
         if (notaVenta == null)
             throw new ValidationException("La Nota de Venta no puede ser nula");
 
-        // Req 1: una NV solo puede tener una OP. Si ya existe, rechazar la creación.
-        boolean opExistente = !repository.findByNotaVentaId(notaVenta.getIdNV()).isEmpty();
-        if (opExistente) {
-            throw new ValidationException(
-                    "La NV " + notaVenta.getIdNV() + " ya tiene una Orden de Producción asociada. " +
-                    "No se puede crear una segunda OP para la misma NV.");
+        List<ItemNV> itemsSinOP = notaVenta.getItems() == null ? List.of()
+                : notaVenta.getItems().stream()
+                        .filter(i -> TipoItem.OP == i.getTipoItem() && i.getOpId() == null)
+                        .toList();
+
+        List<OrdenProduccion> creadas = new ArrayList<>();
+        for (ItemNV item : itemsSinOP) {
+            OrdenProduccion op = crearOPParaItem(notaVenta, item);
+            nvRepository.vincularOpAItem(item.getIdItemNV(), op.getIdOP());
+            creadas.add(op);
         }
+        return creadas;
+    }
 
-        boolean tieneItemsOP = notaVenta.getItems() != null &&
-                notaVenta.getItems().stream()
-                        .anyMatch(i -> backend.com.comercial.domain.enums.TipoItem.OP == i.getTipoItem());
+    private OrdenProduccion crearOPParaItem(NotaVenta notaVenta, ItemNV itemNV) {
+        // Si el ítem ya tiene un número de OP reservado (del borrador), usarlo.
+        // Si no, generar uno nuevo del contador atómico.
+        DocumentNumber numeroOP = itemNV.getNumeroOPReservado() != null
+                ? new DocumentNumber(itemNV.getNumeroOPReservado())
+                : numeroDocumentoService.siguienteFormateado("OP");
 
-        if (!tieneItemsOP) {
-            throw new ValidationException(
-                    "La NV " + notaVenta.getIdNV() + " no contiene ítems de tipo OP; no se puede crear una OP.");
-        }
-
-        DocumentNumber numeroOP = numeroDocumentoService.siguienteFormateado("OP");
         Long costeoVersionId = null;
 
-        // Intento 1: buscar costeo vinculado en los ítems OP de la EVN plantilla
-        if (notaVenta.getEvaluacionNegocioId() != null) {
+        // Intento 1: costeo elegido manualmente por el usuario (prioridad máxima).
+        // Si el usuario seleccionó un costeo en la UI, ese es el que se usa sin importar
+        // lo que traiga la EVN plantilla.
+        Long costeoIdManual = itemNV.getCosteoIdManual();
+        if (costeoIdManual != null) {
+            Costeo costeoManual = costeoRepository.findById(costeoIdManual)
+                    .orElseThrow(() -> new EntityNotFoundException("Costeo no encontrado: " + costeoIdManual));
+
+            if (costeoManual.getEstado() != backend.com.produccion.domain.enums.EstadoCosteo.APROBADO) {
+                throw new ValidationException(
+                        "El Costeo " + costeoIdManual + " debe estar APROBADO para poder vincularse a la OP.");
+            }
+            if (repository.findCosteoIdsEnUso().contains(costeoIdManual)) {
+                throw new ValidationException(
+                        "El Costeo " + costeoIdManual + " ya está vinculado a otra Orden de Producción.");
+            }
+
+            CosteoVersion versionManual = crearVersionCosteoUseCase.ejecutar(
+                    costeoManual.getIdCosteo(),
+                    "Costeo existente vinculado manualmente desde la NV",
+                    "SYSTEM");
+            costeoVersionId = versionManual.getIdCosteoVersion();
+        }
+
+        // Intento 2: costeo heredado de la EVN plantilla (solo si no hubo manual).
+        if (costeoVersionId == null && notaVenta.getEvaluacionNegocioId() != null) {
             EvaluacionNegocio evn = evnRepository.findById(notaVenta.getEvaluacionNegocioId())
                     .orElseThrow(() -> new EntityNotFoundException(
                             "Evaluación de Negocio no encontrada: " + notaVenta.getEvaluacionNegocioId()));
@@ -82,20 +119,15 @@ public class CrearOrdenProduccionUseCase {
             }
         }
 
-        // Intento 2 (garantía ACID): si la EVN no tenía costeo vinculado, crear uno vacío
-        // vinculado a la NV. La restricción UNIQUE(nota_venta_id) en produccion_costeos
-        // garantiza idempotencia — no se crea un duplicado si se llama dos veces.
+        // Intento 3 (fallback): crear un costeo vacío nuevo.
         if (costeoVersionId == null) {
-            Costeo costeoBase = costeoRepository.findByNotaVentaId(notaVenta.getIdNV())
-                    .orElseGet(() -> {
-                        DocumentNumber numeroCosteo = numeroDocumentoService.siguienteFormateado("COST");
-                        Costeo vacio = Costeo.crearVacio(numeroCosteo, notaVenta.getIdNV());
-                        return costeoRepository.save(vacio);
-                    });
+            DocumentNumber numeroCosteo = numeroDocumentoService.siguienteFormateado("COST");
+            Costeo vacio = Costeo.crearVacio(numeroCosteo, notaVenta.getIdNV());
+            Costeo costeoBase = costeoRepository.save(vacio);
 
             CosteoVersion version = crearVersionCosteoUseCase.ejecutar(
                     costeoBase.getIdCosteo(),
-                    "Costeo inicial auto-creado — NV sin costeo pre-vinculado en EVN",
+                    "Costeo inicial auto-creado — ítem sin costeo pre-vinculado en EVN",
                     "SYSTEM");
             costeoVersionId = version.getIdCosteoVersion();
         }
@@ -108,39 +140,24 @@ public class CrearOrdenProduccionUseCase {
         // costeoVersionId siempre es no-nulo en este punto (invariante garantizado)
         op.vincularCosteoVersion(costeoVersionId);
 
-        // Mapear ítems de la NV a la OP (solo los que requieren producción)
-        if (notaVenta.getItems() != null) {
-            for (ItemNV itemNV : notaVenta.getItems()) {
-                if (TipoItem.OP == itemNV.getTipoItem()) {
-                    OrdenProduccionItem itemOP = new OrdenProduccionItem(
-                            null,
-                            itemNV.getArticuloId(),
-                            itemNV.getNroItem(),
-                            itemNV.getModelo(),
-                            itemNV.getTela(),
-                            itemNV.getComposicion(),
-                            itemNV.getColor(),
-                            itemNV.getTalla(),
-                            itemNV.getGenero(),
-                            itemNV.getCodigo(),
-                            itemNV.getLlevaLogo(),
-                            itemNV.getCantidad());
-                    op.addItem(itemOP);
-                }
-            }
-        }
+        OrdenProduccionItem itemOP = new OrdenProduccionItem(
+                null,
+                itemNV.getArticuloId(),
+                itemNV.getNroItem(),
+                itemNV.getModelo(),
+                itemNV.getTela(),
+                itemNV.getComposicion(),
+                itemNV.getColor(),
+                itemNV.getTalla(),
+                itemNV.getGenero(),
+                itemNV.getCodigo(),
+                itemNV.getLlevaLogo(),
+                itemNV.getCantidad());
+        op.addItem(itemOP);
 
         OrdenProduccion opPersistida = repository.save(op);
 
-        // Generación automática de fases (OT) por cada ítem productivo
-        if (notaVenta.getItems() != null) {
-            for (ItemNV itemNV : notaVenta.getItems()) {
-                if (TipoItem.OP != itemNV.getTipoItem()) {
-                    continue;
-                }
-                generarFasesParaItem(opPersistida, notaVenta.getIdNV(), itemNV);
-            }
-        }
+        generarFasesParaItem(opPersistida, notaVenta.getIdNV(), itemNV);
 
         return opPersistida;
     }

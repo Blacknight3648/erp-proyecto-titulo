@@ -12,8 +12,7 @@ public class ComposicionDTO {
 
     private Integer idComposicion;
 
-    @NotBlank(message = "El código de composición es obligatorio")
-    @Size(max = 10)
+    @Size(max = 10, message = "El código no puede superar 10 caracteres")
     private String codigoComposicion;
 
     @NotBlank(message = "La descripción de composición es obligatoria")

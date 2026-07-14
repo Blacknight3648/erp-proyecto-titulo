@@ -1,9 +1,9 @@
 package backend.com.shared.application.service.impl;
 
 import backend.com.shared.application.dto.GramajeTelaDTO;
+import backend.com.shared.application.service.CodigoGeneratorService;
 import backend.com.shared.application.service.GramajeTelaService;
 import backend.com.shared.domain.model.GramajeTela;
-import backend.com.shared.exception.DuplicadoException;
 import backend.com.shared.exception.EntityNotFoundException;
 import backend.com.shared.infrastructure.mapper.GramajeTelaMapper;
 import backend.com.shared.infrastructure.persistence.repository.GramajeTelaRepository;
@@ -18,16 +18,18 @@ import java.util.List;
 @Transactional
 public class GramajeTelaServiceImpl implements GramajeTelaService {
 
+    private static final String PREFIJO_CODIGO = "G-";
+
     private final GramajeTelaRepository gramajeRepository;
     private final GramajeTelaMapper mapper;
+    private final CodigoGeneratorService codigoGeneratorService;
 
     @Override
     public GramajeTelaDTO crear(GramajeTelaDTO dto) {
-        if (gramajeRepository.existsByCodigoGramaje(dto.getCodigoGramaje())) {
-            throw new DuplicadoException("código de gramaje", dto.getCodigoGramaje());
-        }
+        String codigo = codigoGeneratorService.generarGramaje(
+                PREFIJO_CODIGO, dto.getValorGramosM2(), gramajeRepository::existsByCodigoGramaje);
         GramajeTela nuevo = GramajeTela.builder()
-                .codigoGramaje(dto.getCodigoGramaje())
+                .codigoGramaje(codigo)
                 .valorGramosM2(dto.getValorGramosM2())
                 .categoriaVestuario(dto.getCategoriaVestuario())
                 .build();

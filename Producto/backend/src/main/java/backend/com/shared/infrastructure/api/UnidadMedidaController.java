@@ -14,7 +14,7 @@ import java.util.List;
  * Controlador REST para la gestión de Unidades de Medida.
  *
  * <p>
- * Base URL: {@code /api/v3/maestros/unidades-medida}
+ * Base URL: {@code /api/v1/maestros/unidades-medida}
  * </p>
  *
  * <p>
@@ -34,7 +34,7 @@ import java.util.List;
  * </ul>
  */
 @RestController
-@RequestMapping("/api/v3/maestros/unidades-medida")
+@RequestMapping("/api/v1/maestros/unidades-medida")
 @RequiredArgsConstructor
 public class UnidadMedidaController {
 

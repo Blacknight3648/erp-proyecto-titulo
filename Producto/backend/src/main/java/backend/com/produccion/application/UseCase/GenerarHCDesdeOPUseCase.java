@@ -82,32 +82,12 @@ public class GenerarHCDesdeOPUseCase {
                 Long proveedorId = null;
                 String proveedorNombre = null;
 
-                // 1. Intentar resolver por SolicitudCostos (SCOS)
-                if (scosOpt.isPresent() && itemVersion.getArticuloId() != null) {
-                    backend.com.comercial.domain.model.SolicitudCostos scos = scosOpt.get();
-                    if (scos.getTelas() != null) {
-                        for (backend.com.comercial.domain.model.SCOSTela t : scos.getTelas()) {
-                            if (itemVersion.getArticuloId().equals(t.getIdArticulo())) {
-                                proveedorId = t.getProveedorId();
-                                break;
-                            }
-                        }
-                    }
-                    if (proveedorId == null && scos.getAccesorios() != null) {
-                        for (backend.com.comercial.domain.model.SCOSAccesorio a : scos.getAccesorios()) {
-                            if (itemVersion.getArticuloId().equals(a.getIdArticulo())) {
-                                proveedorId = a.getProveedorId();
-                                break;
-                            }
-                        }
-                    }
-                }
-
-                // 2. Intentar resolver por Articulo (si SCOS no lo tiene)
-                if (proveedorId == null && itemVersion.getArticuloId() != null) {
+                if (itemVersion.getArticuloId() != null) {
                     java.util.Optional<backend.com.shared.domain.model.Articulo> artOpt = articuloRepository.findById(itemVersion.getArticuloId());
                     if (artOpt.isPresent()) {
                         backend.com.shared.domain.model.Articulo art = artOpt.get();
+                        hcItem.asignarStock(art.getStockActual());
+                        
                         String providerTextName = null;
                         if (art.getDetallePrenda() != null) {
                             providerTextName = art.getDetallePrenda().getProveedor();
@@ -124,7 +104,22 @@ public class GenerarHCDesdeOPUseCase {
                     }
                 }
 
-                // 3. Obtener el nombre de la razón social del proveedor encontrado
+                // 1. Intentar resolver por SolicitudCostos (SCOS) si tiene prioridad o no se encontró
+                if (scosOpt.isPresent() && itemVersion.getArticuloId() != null) {
+                    backend.com.comercial.domain.model.SolicitudCostos scos = scosOpt.get();
+                    if (scos.getTelas() != null) {
+                        for (backend.com.comercial.domain.model.SCOSTela t : scos.getTelas()) {
+                            if (itemVersion.getArticuloId().equals(t.getIdArticulo())) {
+                                if (t.getProveedorId() != null) {
+                                    proveedorId = t.getProveedorId();
+                                }
+                                break;
+                            }
+                        }
+                    }
+                }
+
+                // Obtener el nombre de la razón social del proveedor encontrado
                 if (proveedorId != null) {
                     java.util.Optional<Proveedor> provOpt = proveedorRepository.findById(proveedorId);
                     if (provOpt.isPresent()) {

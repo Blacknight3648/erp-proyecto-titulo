@@ -128,6 +128,17 @@ export const validateNumericInput = (value, fieldName) => {
     return null;
 };
 
+/**
+ * Recorta un valor numérico ingresado en un <input> para que nunca sea negativo.
+ * Preserva '' mientras el usuario está escribiendo (no fuerza "0" en cada tecla).
+ */
+export const clampNonNegative = (value) => {
+    if (value === '') return '';
+    const num = parseFloat(value);
+    if (isNaN(num)) return '';
+    return Math.max(0, num);
+};
+
 /** -------------------------
  * Price formatting
  * ------------------------- */

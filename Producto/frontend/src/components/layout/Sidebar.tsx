@@ -183,15 +183,17 @@ export default function Sidebar({ isOpen, setIsOpen }) {
         />
       )}
 
-      <aside style={{
-        position: 'fixed', top: 0, left: 0, zIndex: 50,
-        height: '100vh',
-        display: 'flex', flexDirection: 'column',
-        backgroundColor: C.bg,
-        borderRight: `1px solid ${C.border}`,
-        transition: 'width 250ms cubic-bezier(0.4, 0, 0.2, 1)',
-        width: isOpen ? '260px' : '72px',
-      }}>
+      <aside
+        className={`${isOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0`}
+        style={{
+          position: 'fixed', top: 0, left: 0, zIndex: 50,
+          height: '100vh',
+          display: 'flex', flexDirection: 'column',
+          backgroundColor: C.bg,
+          borderRight: `1px solid ${C.border}`,
+          transition: 'width 250ms cubic-bezier(0.4, 0, 0.2, 1), transform 250ms cubic-bezier(0.4, 0, 0.2, 1)',
+          width: isOpen ? '260px' : '72px',
+        }}>
 
         {/* ── Cabecera ── */}
         <div style={{

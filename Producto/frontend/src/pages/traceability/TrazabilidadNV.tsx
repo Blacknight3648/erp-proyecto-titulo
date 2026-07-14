@@ -431,14 +431,14 @@ export default function TrazabilidadNV() {
             </div>
 
             {detalleNV && (
-                <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-6" onClick={cerrarDetalle}>
+                <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-3 sm:p-6" onClick={cerrarDetalle}>
                     <div
-                        className="bg-card rounded-[2.5rem] shadow-2xl border border-border w-full max-w-6xl max-h-[85vh] overflow-y-auto p-10"
+                        className="bg-card rounded-2xl sm:rounded-[2.5rem] shadow-2xl border border-border w-full max-w-6xl max-h-[90vh] sm:max-h-[85vh] overflow-y-auto p-4 sm:p-6 lg:p-10"
                         onClick={(e) => e.stopPropagation()}
                     >
-                        <div className="flex items-start justify-between mb-10">
+                        <div className="flex items-start justify-between mb-6 sm:mb-10">
                             <div>
-                                <h2 className="text-2xl font-black text-foreground tracking-tight italic flex items-center">
+                                <h2 className="text-lg sm:text-2xl font-black text-foreground tracking-tight italic flex items-center">
                                     <ArrowRight className="w-6 h-6 mr-3 text-primary" />
                                     Trazabilidad Completa — {detalleNV.numeroEVN || detalleNV.numeroNV}
                                 </h2>

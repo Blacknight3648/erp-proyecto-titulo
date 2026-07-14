@@ -137,26 +137,28 @@ export default function TrazabilidadOP() {
                                 </span>
                                 <span className="text-[10px] text-muted-foreground font-bold uppercase ml-auto">{data.hojaCompra.items.length} items</span>
                             </div>
-                            <table className="w-full text-left text-xs">
-                                <thead>
-                                    <tr className="text-[9px] font-black text-muted-foreground uppercase tracking-widest border-b border-border">
-                                        <th className="py-2">Insumo</th>
-                                        <th className="py-2 text-center">Tipo</th>
-                                        <th className="py-2 text-center">Cant. Req.</th>
-                                        <th className="py-2 text-right">Precio Ref.</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {data.hojaCompra.items.map(item => (
-                                        <tr key={item.idHCItem} className="border-b border-border">
-                                            <td className="py-2 font-bold uppercase">{item.nombreInsumo}</td>
-                                            <td className="py-2 text-[10px] text-muted-foreground uppercase text-center">{item.tipoInsumo}</td>
-                                            <td className="py-2 text-center font-black tabular-nums">{item.cantidadRequerida}</td>
-                                            <td className="py-2 text-right font-black text-brand-indigo tabular-nums">{formatCLP(item.precioUnitarioRef)}</td>
+                            <div className="overflow-x-auto">
+                                <table className="w-full min-w-[480px] text-left text-xs">
+                                    <thead>
+                                        <tr className="text-[9px] font-black text-muted-foreground uppercase tracking-widest border-b border-border">
+                                            <th className="py-2">Insumo</th>
+                                            <th className="py-2 text-center">Tipo</th>
+                                            <th className="py-2 text-center">Cant. Req.</th>
+                                            <th className="py-2 text-right">Precio Ref.</th>
                                         </tr>
-                                    ))}
-                                </tbody>
-                            </table>
+                                    </thead>
+                                    <tbody>
+                                        {data.hojaCompra.items.map(item => (
+                                            <tr key={item.idHCItem} className="border-b border-border">
+                                                <td className="py-2 font-bold uppercase">{item.nombreInsumo}</td>
+                                                <td className="py-2 text-[10px] text-muted-foreground uppercase text-center">{item.tipoInsumo}</td>
+                                                <td className="py-2 text-center font-black tabular-nums">{item.cantidadRequerida}</td>
+                                                <td className="py-2 text-right font-black text-brand-indigo tabular-nums">{formatCLP(item.precioUnitarioRef)}</td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
                         </Bloque>
                     ) : (
                         <Vacio mensaje="No se ha generado HC para esta OP" />

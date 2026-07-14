@@ -272,8 +272,8 @@ export default function DetalleNV({
                     </div>
                 </div>
 
-                <div className="mb-10 overflow-hidden border border-border rounded-[2rem]">
-                    <table className="w-full text-left border-collapse">
+                <div className="mb-10 overflow-x-auto border border-border rounded-[2rem]">
+                    <table className="w-full min-w-[900px] text-left border-collapse">
                         <thead>
                             <tr className="bg-brand-indigo/5">
                                 <th className="p-5 text-[9px] font-black text-brand-indigo uppercase tracking-widest">Prenda / Tipo</th>
@@ -416,10 +416,10 @@ export default function DetalleNV({
                                 </div>
                             ) : (
                                 <div className="relative pt-8 pb-12">
-                                    <div className="absolute top-[4.5rem] left-0 w-full h-1 bg-border rounded-full -z-0"></div>
-                                    <div className="flex justify-between relative z-10 text-center">
+                                    <div className="absolute top-[4.5rem] left-0 w-full h-1 bg-border rounded-full -z-0 hidden md:block"></div>
+                                    <div className="flex flex-col md:flex-row md:justify-between relative z-10 text-center gap-8 md:gap-0">
                                         {vista.productionTracking.map((stage, idx) => (
-                                            <div key={idx} className="flex flex-col items-center flex-1">
+                                            <div key={idx} className="flex flex-col items-center md:flex-1">
                                                 <div className={`w-14 h-14 rounded-2xl border-4 border-card shadow-xl flex items-center justify-center mb-4 ${stage.status === 'Completado' ? 'bg-success text-white' : stage.status === 'En Proceso' ? 'bg-primary text-white animate-pulse' : 'bg-muted-foreground/30 text-white'}`}>
                                                     {stage.status === 'Completado' ? <CheckCircle2 className="w-7 h-7" /> : <span className="text-lg font-black">{idx + 1}</span>}
                                                 </div>

@@ -58,7 +58,7 @@ export default function Navbar({ isSidebarOpen = true, setIsSidebarOpen }) {
                 {/* Botón menú móvil */}
                 <button
                     onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-                    className="p-2 text-muted-foreground hover:text-white hover:bg-white/[0.04] rounded-lg transition-colors lg:hidden"
+                    className="p-2 text-muted-foreground hover:text-white hover:bg-white/[0.04] rounded-lg transition-colors md:hidden"
                     aria-label="Alternar menú"
                 >
                     <Menu className="w-5 h-5" />

@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from "react-router-dom";
 
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
 import { NotificationProvider } from "./contexts/NotificationContext";
+import { useIsMobile } from "./ui/use-mobile";
 
 import Sidebar from "./components/layout/Sidebar";
 import Navbar from "./components/layout/Navbar";
@@ -79,8 +80,17 @@ function PrivateRoute({ children }) {
 function MainLayout({ children }) {
 
   const [isSidebarOpen, setIsSidebarOpen] = useState(() => window.innerWidth >= 768);
+  const isMobile = useIsMobile();
   const location = useLocation();
   const hasModule = !!getActiveModule(location.pathname);
+
+  // Mantiene isSidebarOpen coherente al cruzar el breakpoint md (768px): al
+  // achicar a movil, el drawer se cierra; al agrandar a desktop, el sidebar
+  // persistente vuelve a mostrarse. Corrige que antes solo se calculaba una
+  // vez al montar y no reaccionaba a resize/rotacion de pantalla.
+  useEffect(() => {
+    setIsSidebarOpen(!isMobile);
+  }, [isMobile]);
 
   return (
     <div className="flex min-h-screen">

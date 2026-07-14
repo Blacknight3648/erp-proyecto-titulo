@@ -74,14 +74,9 @@ export default function CintasPanel({
                     step="0.1"
                     min="0"
                     value={item.medida || 0}
-<<<<<<< HEAD
-                    onChange={(e) => onUpdate(item.id, 'medida', Math.max(0, parseFloat(e.target.value) || 0))}
-                    className="w-20 bg-muted p-2 rounded-lg text-center font-black text-xs text-foreground outline-none border border-transparent focus:border-accent"
-=======
-                    onChange={(e) => onUpdate(item.id, 'medida', parseFloat(e.target.value) || 0)}
+                    onChange={(e) => onUpdate(item.id, 'medida', clampNonNegative(e.target.value))}
                     disabled={readOnly}
                     className={`w-20 bg-muted p-2 rounded-lg text-center font-black text-xs text-foreground outline-none border border-transparent focus:border-accent ${readOnly ? 'cursor-not-allowed opacity-70' : ''}`}
->>>>>>> ccf47b327614ae5f2e57258f7e6c65325043ac47
                   />
                 </td>
                 <td className="px-4 py-3 border-y border-transparent group-hover:border-border text-center">
@@ -89,14 +84,9 @@ export default function CintasPanel({
                     type="number"
                     min="0"
                     value={item.consumo || 0}
-<<<<<<< HEAD
-                    onChange={(e) => onUpdate(item.id, 'consumo', Math.max(0, parseInt(e.target.value) || 0))}
-                    className="w-16 bg-accent/50 p-2 rounded-lg text-center font-black text-xs text-accent-foreground outline-none border border-accent"
-=======
-                    onChange={(e) => onUpdate(item.id, 'consumo', parseInt(e.target.value) || 0)}
+                    onChange={(e) => onUpdate(item.id, 'consumo', clampNonNegative(e.target.value))}
                     disabled={readOnly}
                     className={`w-16 bg-accent/50 p-2 rounded-lg text-center font-black text-xs text-accent-foreground outline-none border border-accent ${readOnly ? 'cursor-not-allowed opacity-70' : ''}`}
->>>>>>> ccf47b327614ae5f2e57258f7e6c65325043ac47
                   />
                 </td>
                 <td className="px-4 py-3 last:rounded-r-2xl border-y border-r border-transparent group-hover:border-border text-right">

@@ -260,7 +260,8 @@ INSERT IGNORE INTO contactos (contacto_id, nombre_contacto, telefono_contacto, e
     (1, 'CONTACTO HITES',          '+56227275000', 'CONTACTO.HITES@HITES.CL',       1, 1),
     (2, 'CONTACTO MEDCELL',        '+56224396000', 'COMPRAS@MEDCELL.CL',             1, 2),
     (3, 'CONTACTO GEODIS WILSON',  '+56223816500', 'INFO.CHILE@GEODIS.COM',          1, 3),
-    (4, 'CONTACTO BASF',           '+5622812081',  'CONTACTO@BASF.CL',               1, 22);
+    (4, 'CONTACTO BASF',           '+5622812081',  'CONTACTO@BASF.CL',               1, 22),
+    (5, 'CONTACTO LOGISTICA', '+56977445566', 'LOGISTICA@GEMELOS.CL',          1, 2);
 
 -- ============================================================
 -- 5.2. GEOGRAFÍA Y DIRECCIONES

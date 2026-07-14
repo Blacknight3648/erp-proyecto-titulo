@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { api, BACKEND_URL } from '../remote/service/api';
+import { api } from '../remote/service/api';
 import { toast } from 'sonner';
 
 export function useModelosSearch() {
@@ -10,7 +10,7 @@ export function useModelosSearch() {
         const fetchData = async () => {
             try {
                 setLoading(true);
-                const { data } = await api.get(`${BACKEND_URL}/api/v1/maestros/modelos`);
+                const { data } = await api.get(`/maestros/modelos`);
                 setModelos(Array.isArray(data) ? data : []);
             } catch (err) {
                 console.error('[useModelosSearch] fetch error:', err);
@@ -34,7 +34,7 @@ export function useModelosSearch() {
 
         try {
             setLoading(true);
-            const { data } = await api.post(`${BACKEND_URL}/api/v1/maestros/modelos`, {
+            const { data } = await api.post(`/maestros/modelos`, {
                 nombreModelo: nombreTrimmed,
             });
             setModelos(prev => [...prev, data]);

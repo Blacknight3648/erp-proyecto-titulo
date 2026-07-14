@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { api, BACKEND_URL } from '../remote/service/api';
+import { api } from '../remote/service/api';
 import { toast } from 'sonner';
 
 export function useArticulosSearch(tipo) {
@@ -13,8 +13,8 @@ export function useArticulosSearch(tipo) {
             try {
                 setLoading(true);
                 const [artRes, catRes] = await Promise.all([
-                    api.get(`${BACKEND_URL}/api/v1/maestros/articulos/tipo/${tipo}`),
-                    api.get(`${BACKEND_URL}/api/v1/maestros/categorias-tela`),
+                    api.get(`/maestros/articulos/tipo/${tipo}`),
+                    api.get(`/maestros/categorias-tela`),
                 ]);
                 setArticulos(Array.isArray(artRes.data) ? artRes.data : []);
                 const cats = Array.isArray(catRes.data) ? catRes.data : [];
@@ -46,7 +46,7 @@ export function useArticulosSearch(tipo) {
 
         try {
             setLoading(true);
-            const { data } = await api.post(`${BACKEND_URL}/api/v1/maestros/articulos`, {
+            const { data } = await api.post(`/maestros/articulos`, {
                 codigoArticulo: codigo,
                 nombreArticulo: nombreTrimmed,
                 tipoArticulo: tipo,

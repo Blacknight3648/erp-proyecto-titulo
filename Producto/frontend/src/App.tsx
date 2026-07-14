@@ -54,9 +54,6 @@ import TimelineGlobal from "./pages/traceability/TimelineGlobal";
 /* COMPONENTES COMPARTIDOS */
 import UnderMaintenance from "./ui/feedback/UnderMaintenance";
 
-/* COMPONENTES COMPARTIDOS */
-import UnderMaintenance from "./components/pages/shared/UnderMaintenance";
-
 
 
 /* =========================
